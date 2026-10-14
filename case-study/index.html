@@ -2,318 +2,354 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Space+Grotesk:wght@300;400&family=Newsreader:opsz,wght@6..72,400&display=swap">
 <style>
-/* Layout: a vertical deck. One idea per slide, generous whitespace, a single accent. */
+/* Layout: 1280×832 slides on a dark presentation canvas, mirroring the team's Figma review decks.
+   Single deliberate look: the canvas is always dark and the slides always the deck's cool grey. */
 :root{
-  --bg:#F6F7F9; --surface:#FFFFFF; --ink:#141725; --muted:#666B7E; --line:#DFE1E8;
-  --accent:#B0245C; --accent-soft:#F8E6ED;
-  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
-  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  --w:62rem; --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:dark;
+  --canvas:#1D1F22; --slide:#DBDFDF; --ink:#2A2F2E; --muted:#707877; --sub:#585F5E; --rule:#585F5E;
+  --accent:#6663F4; --owner:#86D6F6; --operator:#9CDC7F; --white:#FFFFFF; --frame:#EEF0F0;
+  --sans:"Basel Grotesk","Geist","Helvetica Neue",Arial,sans-serif;
+  --pill:"Space Grotesk","Geist",system-ui,sans-serif;
+  --mark:"Basel Classic","Newsreader",Georgia,serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#10121A; --surface:#191C27; --ink:#ECEEF4; --muted:#9A9FB2; --line:#2C3040;
-  --accent:#F27AA6; --accent-soft:#3A1B2A; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#10121A; --surface:#191C27; --ink:#ECEEF4; --muted:#9A9FB2; --line:#2C3040;
-  --accent:#F27AA6; --accent-soft:#3A1B2A; color-scheme:dark}
-
 *{box-sizing:border-box}
-html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05;letter-spacing:-.02em}
-h1{font-size:clamp(3rem,9vw,6.5rem);font-weight:700}
-h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:700}
-h3{font-size:1.15rem;font-weight:500;letter-spacing:0}
-p{margin:0}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+body{background:var(--canvas);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:clamp(16px,4vw,48px)}
+h1,h2,h3,p{margin:0;font-weight:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-/* Slides */
-.slide{min-height:min(100svh,60rem);scroll-snap-align:start;display:grid;align-content:center;
-  padding-block:clamp(4rem,10vh,6rem);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.slide + .slide{border-top:1px solid var(--line)}
-.in{width:100%;max-width:var(--w);margin-inline:auto;display:grid;gap:2rem}
-.kicker{font:500 .72rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:.75rem}
-.kicker b{color:var(--accent);font-weight:500}
-.sub{font-size:clamp(1.1rem,2vw,1.3rem);color:var(--muted);max-width:36rem}
+.deck{display:grid;gap:clamp(16px,3vw,40px);max-width:1280px;margin-inline:auto}
 
-/* Subtle entrance: content is always visible; it only settles into place. */
-.slide .in > *{transition:transform .7s var(--ease)}
-.slide.below .in > *{transform:translateY(14px)}
-@media (prefers-reduced-motion:reduce){.slide .in > *{transition:none}.slide.below .in > *{transform:none}}
+/* A slide is a 1280×832 artboard; --u is one design pixel at the current width. */
+.slide{container-type:inline-size;scroll-snap-align:center;border-radius:4px;overflow:hidden;background:var(--slide);
+  box-shadow:0 1px 0 rgb(255 255 255 / .04),0 20px 50px -20px rgb(0 0 0 / .6)}
+.stage{--u:calc(100cqw / 1280);position:relative;aspect-ratio:1280/832;padding:calc(var(--u)*128);display:grid;align-content:center;gap:calc(var(--u)*40);
+  font-size:max(14px,calc(var(--u)*20));line-height:1.35}
+.stage > *{transition:transform .8s var(--ease)}
+.slide.below .stage > *:not(.mark){transform:translateY(calc(var(--u)*16))}
+@media (prefers-reduced-motion:reduce){.stage > *{transition:none}.slide.below .stage > *{transform:none}}
 
-/* Title slide */
-.cover .meta{display:flex;flex-wrap:wrap;gap:.5rem 2rem;font:400 .85rem/1.4 var(--mono);color:var(--muted)}
-.cover .meta span::before{content:"";display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);margin-right:.5rem;vertical-align:.1em}
+/* Wordmark, top right, as on every deck slide */
+.mark{position:absolute;top:calc(var(--u)*48);right:calc(var(--u)*40);display:flex;align-items:center;gap:calc(var(--u)*6);
+  font:400 max(13px,calc(var(--u)*24))/1 var(--mark);letter-spacing:-.02em;color:var(--muted)}
+.mark svg{width:max(16px,calc(var(--u)*30));height:auto;fill:currentColor;margin-top:calc(var(--u)*-18)}
 
-/* Matrix */
-.scroll{overflow-x:auto}
-.matrix{display:grid;grid-template-columns:7.5rem 7rem repeat(3,minmax(6.5rem,1fr));min-width:36rem;font-size:.88rem}
-.matrix > div{padding:.6rem .75rem;border-bottom:1px solid var(--line)}
-.matrix .h{font:500 .68rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.matrix .h.l{color:var(--accent)}
-.matrix .r{font-weight:600}
-.matrix .o{color:var(--muted)}
-.matrix .c{background:var(--accent-soft)}
-.matrix > div:nth-last-child(-n+5){border-bottom:0}
+/* Type, from the deck's scale */
+.t64{font-size:max(30px,calc(var(--u)*64));font-weight:500;line-height:1.05;letter-spacing:-.01em}
+.t48{font-size:max(24px,calc(var(--u)*48));font-weight:500;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.t40{font-size:max(22px,calc(var(--u)*40));font-weight:500;line-height:1.1;letter-spacing:-.005em;text-wrap:balance}
+.t32{font-size:max(17px,calc(var(--u)*32));font-weight:500;line-height:1.25;color:var(--muted)}
+.t24{font-size:max(16px,calc(var(--u)*24));font-weight:500;line-height:1.5}
+.grey{color:var(--muted)} .sub{color:var(--sub)}
+.book{font-weight:400}
 
-/* Two columns */
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.25rem;display:grid;gap:.6rem;align-content:start;font-size:.95rem;transition:border-color .2s,transform .3s var(--ease)}
-.card:hover{transform:translateY(-2px)}
-.card.pick{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.card .tag{justify-self:start;font:500 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.35rem .5rem;border-radius:3px;background:var(--accent);color:var(--surface)}
-.card p{color:var(--muted)}
+/* Outlined pill label */
+.pill{justify-self:start;display:inline-flex;align-items:center;gap:.5em;height:max(28px,calc(var(--u)*41));padding-inline:max(12px,calc(var(--u)*18));
+  border:1px solid var(--sub);border-radius:999px;font:300 max(14px,calc(var(--u)*20))/1 var(--pill);color:var(--sub);white-space:nowrap}
+.pill.future{border-color:var(--accent);color:var(--accent)}
+.pill.dark{border-color:var(--ink);color:var(--ink)}
+
+/* Small coloured tag */
+.tag{display:inline-block;justify-self:start;padding:calc(var(--u)*3) max(6px,calc(var(--u)*8));border-radius:2px;font-size:max(11px,calc(var(--u)*14));font-weight:500;line-height:1.3;color:var(--ink)}
+.tag.owner{background:var(--owner)} .tag.operator{background:var(--operator)}
+
+.rule{height:1px;background:var(--rule);border:0;margin:0}
+.icon{width:max(28px,calc(var(--u)*48));height:max(28px,calc(var(--u)*48));stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
+
+/* Grids */
+.split{display:grid;grid-template-columns:1fr auto;gap:calc(var(--u)*80);align-items:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*80)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*48)}
+.col{display:grid;gap:calc(var(--u)*14);align-content:start}
+.center{text-align:center;justify-items:center}
+
+/* Legend rows (User / Biz / Loc) */
+.legend{display:grid;gap:calc(var(--u)*48)}
+.legend div{display:flex;align-items:center;gap:calc(var(--u)*40);color:var(--muted);font-size:max(16px,calc(var(--u)*24));font-weight:600}
+.locs{display:flex;gap:calc(var(--u)*100);color:var(--accent);font-size:max(14px,calc(var(--u)*22));font-weight:600}
+.locs div{display:grid;justify-items:center;gap:calc(var(--u)*6)}
 
 /* IA tree */
-.tree{display:grid;gap:.4rem;font:400 .85rem/1.3 var(--mono)}
-.node{display:inline-block;padding:.35rem .6rem;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
-.node.l{border-color:var(--accent);background:var(--accent-soft)}
-.ind{margin-left:.6rem;padding-left:1.2rem;border-left:1px dashed var(--line);display:grid;gap:.4rem}
+.tree{display:grid;gap:calc(var(--u)*14);font-size:max(14px,calc(var(--u)*22))}
+.node{display:inline-block;padding:calc(var(--u)*8) calc(var(--u)*16);border:1px solid var(--sub);border-radius:999px}
+.node.l{border-color:var(--accent);color:var(--accent)}
+.ind{margin-left:calc(var(--u)*20);padding-left:calc(var(--u)*28);border-left:1px solid var(--rule);display:grid;gap:calc(var(--u)*14)}
 
-/* Patterns list */
-.list{display:grid;border-top:1px solid var(--line)}
-.list div{display:grid;grid-template-columns:minmax(10rem,16rem) 1fr;gap:.25rem 2rem;padding:1rem 0;border-bottom:1px solid var(--line)}
-.list div p{color:var(--muted)}
-@media (max-width:40rem){.list div{grid-template-columns:1fr}}
+/* Decision columns */
+.opt{display:grid;gap:calc(var(--u)*12);align-content:start;padding-top:calc(var(--u)*20);border-top:1px solid var(--rule);transition:border-color .25s}
+.opt.pick{border-top:2px solid var(--accent)}
+.opt.pick h3{color:var(--accent)}
+.opt p{color:var(--sub)}
 
-/* Before / after compare */
-.compare{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface);--pos:50%;touch-action:pan-y}
+/* Pattern rows */
+.rows{display:grid}
+.rows div{display:grid;grid-template-columns:calc(var(--u)*380) 1fr;gap:calc(var(--u)*32);padding-block:calc(var(--u)*16);border-bottom:1px solid var(--rule)}
+.rows div:first-child{border-top:1px solid var(--rule)}
+
+/* Before / after slide */
+.ba{display:grid;grid-template-columns:calc(var(--u)*340) 1fr;gap:calc(var(--u)*56);align-items:center;padding-inline:calc(var(--u)*96) calc(var(--u)*72)}
+.ba .copy{display:grid;gap:calc(var(--u)*28);align-content:center}
+.points{list-style:none;margin:0;padding:0;display:grid;gap:calc(var(--u)*14);font-size:max(14px,calc(var(--u)*18));color:var(--sub)}
+.points li{display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u)*12)}
+.points li::before{content:"";width:calc(var(--u)*6);height:calc(var(--u)*6);min-width:5px;min-height:5px;border-radius:50%;background:var(--accent);margin-top:.55em}
+
+.compare{position:relative;aspect-ratio:1512/1072;max-width:100%;border:max(2px,calc(var(--u)*4)) solid var(--white);border-radius:max(4px,calc(var(--u)*8));overflow:hidden;
+  background:var(--frame);box-shadow:0 0 calc(var(--u)*2) rgb(14 23 22 / .15),0 calc(var(--u)*4) calc(var(--u)*8) rgb(14 23 22 / .15),0 calc(var(--u)*24) calc(var(--u)*48) calc(var(--u)*-12) rgb(14 23 22 / .2);
+  --pos:50%;touch-action:pan-y}
 .layer{position:absolute;inset:0;display:grid;place-items:center}
-.layer img{width:100%;height:100%;object-fit:contain;background:var(--surface)}
+.layer img{width:100%;height:100%;object-fit:cover;object-position:top left}
 .layer.after{clip-path:inset(0 0 0 var(--pos))}
-.ph{font:400 .78rem/1.5 var(--mono);color:var(--muted);text-align:center;padding:1rem;max-width:20rem}
-.layer.before{background:repeating-linear-gradient(135deg,transparent 0 11px,color-mix(in srgb,var(--line) 45%,transparent) 11px 12px),var(--surface)}
-.layer.after{background:var(--accent-soft)}
-.badge{position:absolute;top:.75rem;font:500 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.4rem .55rem;border-radius:3px;background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--ink);pointer-events:none}
-.badge.b{left:.75rem}.badge.a{right:.75rem;color:var(--accent)}
-.handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;margin-left:-1px;background:var(--ink);pointer-events:none}
-.handle::after{content:"";position:absolute;top:50%;left:50%;width:2.2rem;height:2.2rem;margin:-1.1rem 0 0 -1.1rem;border-radius:50%;
-  background:var(--surface);border:2px solid var(--ink);box-shadow:0 2px 10px rgb(0 0 0 / .12);transition:transform .2s var(--ease)}
-.compare:hover .handle::after,.compare:focus-within .handle::after{transform:scale(1.08)}
+.layer.before{background:var(--frame);justify-items:start;padding-left:8%}
+.layer.after{justify-items:end;padding-right:8%}
+.layer.after{background:#F7F8FF}
+.ph{font:300 max(12px,calc(var(--u)*16))/1.5 var(--pill);color:var(--muted);text-align:center;padding:1rem;max-width:22rem}
+.cap{position:absolute;top:calc(var(--u)*14);font:300 max(11px,calc(var(--u)*14))/1 var(--pill);padding:calc(var(--u)*7) calc(var(--u)*12);border-radius:999px;background:var(--white);pointer-events:none;color:var(--sub)}
+.cap.b{left:calc(var(--u)*14)} .cap.a{right:calc(var(--u)*14);color:var(--accent)}
+.handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;margin-left:-1px;background:var(--white);pointer-events:none}
+.handle::after{content:"";position:absolute;top:50%;left:50%;width:max(26px,calc(var(--u)*40));aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--white);
+  box-shadow:0 2px 8px rgb(14 23 22 / .25);transition:transform .25s var(--ease)}
+.handle::before{content:"";position:absolute;top:50%;left:50%;z-index:1;width:max(10px,calc(var(--u)*14));height:max(6px,calc(var(--u)*8));transform:translate(-50%,-50%);
+  background:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px calc(100% - 2px),var(--ink) calc(100% - 2px))}
+.compare:hover .handle::after,.compare:focus-within .handle::after{transform:translate(-50%,-50%) scale(1.1)}
 .compare input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
-.compare:focus-within{outline:2px solid var(--accent);outline-offset:3px}
+.compare:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:4px}
 
-.points{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem 2rem}
-.points li{border-top:2px solid var(--ink);padding-top:.6rem;font-size:.95rem}
-.points li b{display:block;font-weight:600;margin-bottom:.15rem}
-.points li span{color:var(--muted)}
-.flow{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;font-size:.82rem}
-.flow span{padding:.28rem .5rem;border-radius:4px;border:1px solid var(--line);background:var(--surface)}
-.flow span.n{border-color:var(--accent);background:var(--accent-soft)}
-.flow i{font-style:normal;color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:calc(var(--u)*6) calc(var(--u)*8);align-items:center;font:300 max(12px,calc(var(--u)*15))/1 var(--pill);color:var(--sub)}
+.flow span{padding:calc(var(--u)*7) calc(var(--u)*12);border:1px solid var(--sub);border-radius:999px}
+.flow span.n{border-color:var(--accent);color:var(--accent)}
 
-.pending{border:1.5px dashed var(--accent);border-radius:8px;padding:1.25rem;color:var(--muted);max-width:36rem}
+/* Cover pins */
+.pins{display:flex;gap:calc(var(--u)*10);flex-wrap:wrap;justify-content:center}
+
+/* Phone and narrow screens: drop the fixed artboard ratio so text stays readable */
+@media (max-width:760px){
+  .stage{aspect-ratio:auto;padding:28px 20px 32px;gap:22px;align-content:start;padding-top:64px}
+  .mark{top:20px;right:16px}
+  .split,.two,.three,.ba{grid-template-columns:1fr;padding-inline:0;gap:24px}
+  .rows div{grid-template-columns:1fr;gap:4px}
+  .legend{gap:16px}.locs{gap:28px}
+}
 
 /* Deck chrome */
-.rail{position:fixed;right:max(12px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:.55rem;z-index:5}
-.rail a{display:block;width:.5rem;height:.5rem;border-radius:50%;background:var(--line);position:relative;transition:background .2s,transform .2s var(--ease)}
-.rail a:hover{transform:scale(1.4)}
-.rail a.on{background:var(--accent);transform:scale(1.25)}
-.rail a span{position:absolute;right:1.1rem;top:50%;transform:translate(4px,-50%);white-space:nowrap;font:500 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:.35rem .5rem;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .15s,transform .2s var(--ease)}
+.rail{position:fixed;right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:10px;z-index:5}
+.rail a{display:block;width:6px;height:6px;border-radius:50%;background:#4A4E55;position:relative;transition:background .2s,transform .25s var(--ease)}
+.rail a:hover{transform:scale(1.5)}
+.rail a.on{background:var(--slide);transform:scale(1.35)}
+.rail a span{position:absolute;right:16px;top:50%;transform:translate(4px,-50%);white-space:nowrap;font:300 12px/1 var(--pill);color:var(--ink);
+  background:var(--slide);padding:6px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .15s,transform .25s var(--ease)}
 .rail a:hover span,.rail a:focus-visible span{opacity:1;transform:translate(0,-50%)}
-.count{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));font:500 .72rem/1 var(--mono);color:var(--muted);z-index:5;font-variant-numeric:tabular-nums}
-.count b{color:var(--ink);font-weight:500}
-.bar{position:fixed;left:0;top:0;height:2px;background:var(--accent);width:0;z-index:6;transition:width .1s linear}
-@media (max-width:40rem){.rail{display:none}}
+.count{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));font:300 12px/1 var(--pill);color:#8B9096;font-variant-numeric:tabular-nums;z-index:5}
+.count b{color:var(--slide);font-weight:400}
+@media (max-width:1360px){.rail{display:none}}
+@media (max-width:760px){.count{display:none}}
 </style>
 
-<div class="bar" id="bar"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="star" viewBox="0 0 42 42"><path d="M21 0c1.6 10.6 9.4 18.4 21 21-11.6 2.6-19.4 10.4-21 21-1.6-10.6-9.4-18.4-21-21C11.6 18.4 19.4 10.6 21 0z"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+  <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z"/></symbol>
+  <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6"/></symbol>
+</svg>
 
-<section class="slide cover" data-name="Intro">
-  <div class="in">
-    <p class="kicker"><b>GlossGenius</b> Case study</p>
-    <h1>Multi Location</h1>
-    <p class="sub">Redesigning every primary workflow for businesses with more than one location.</p>
-    <div class="meta"><span>Lead product designer</span><span>Apr – Oct 2025</span><span>Web</span></div>
+<main class="deck">
+
+<section class="slide" data-name="Intro"><div class="stage center" style="justify-items:center">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="pins">
+    <span class="pill future"><svg class="icon" style="width:1.1em;height:1.1em"><use href="#pin"/></svg>East Village</span>
+    <span class="pill future"><svg class="icon" style="width:1.1em;height:1.1em"><use href="#pin"/></svg>West Upperside</span>
+    <span class="pill future"><svg class="icon" style="width:1.1em;height:1.1em"><use href="#pin"/></svg>Soho</span>
   </div>
-</section>
+  <h1 class="t64">Multi Location</h1>
+  <p class="t32">Lead product designer · 2025</p>
+</div></section>
 
-<section class="slide" data-name="Problem">
-  <div class="in">
-    <p class="kicker"><b>01</b> Problem</p>
-    <h2>Every workflow assumed one location.</h2>
-    <p class="sub">Multi Location was the path upmarket. It couldn't ship as one feature, because location touched every surface.</p>
-    <div class="scroll" role="region" aria-label="Surfaces across locations" tabindex="0">
-      <div class="matrix">
-        <div class="h"></div><div class="h">Before</div><div class="h l">East Village</div><div class="h l">West Upperside</div><div class="h l">Soho</div>
-        <div class="r">Calendar</div><div class="o">One</div><div class="c">✓</div><div class="c">✓</div><div class="c">✓</div>
-        <div class="r">Staff</div><div class="o">One schedule</div><div class="c">Mon–Wed</div><div class="c">—</div><div class="c">Thu–Sat</div>
-        <div class="r">Services</div><div class="o">One price</div><div class="c">$100</div><div class="c">$105</div><div class="c">$120</div>
-        <div class="r">Settings</div><div class="o">One policy</div><div class="c">Standard</div><div class="c">Standard</div><div class="c">Card on file</div>
-        <div class="r">Clients</div><div class="o">One list</div><div class="c">Shared</div><div class="c">Shared</div><div class="c">Shared</div>
-      </div>
+<section class="slide" data-name="Today"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <span class="pill dark">Today</span>
+  <div class="split">
+    <h2 class="t40">Every workflow was designed for one location.<br><span class="grey">Booking an appointment or inviting a member assumed one place.</span></h2>
+    <div class="legend">
+      <div><svg class="icon"><use href="#person"/></svg>User</div>
+      <div><svg class="icon"><use href="#globe"/></svg>Biz</div>
     </div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Principle">
-  <div class="in">
-    <p class="kicker"><b>02</b> Principle</p>
-    <h2>Manage globally.<br>Operate locally.</h2>
-    <div class="cols">
-      <div class="card"><h3>Owners</h3><p>Manage the whole business from one place.</p></div>
-      <div class="card"><h3>Operators</h3><p>Run the location they work at.</p></div>
+<section class="slide" data-name="Tomorrow"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <span class="pill future">Tomorrow</span>
+  <div class="split">
+    <h2 class="t40">Multi location unlocks the move upmarket.<br><span class="grey">To get there, every workflow had to support many locations.</span></h2>
+    <div class="legend">
+      <div><svg class="icon"><use href="#person"/></svg>User</div>
+      <div><svg class="icon"><use href="#globe"/></svg>Biz</div>
     </div>
   </div>
-</section>
-
-<section class="slide" data-name="IA">
-  <div class="in">
-    <p class="kicker"><b>03</b> Information architecture</p>
-    <h2>Location became a layer.</h2>
-    <div class="cols">
-      <div class="card"><p class="kicker">Before</p>
-        <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div>
-      <div class="card"><p class="kicker">After</p>
-        <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node l">Locations</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div></div>
-    </div>
+  <div class="locs" style="justify-content:flex-end">
+    <div><svg class="icon"><use href="#pin"/></svg>Loc A</div>
+    <div><svg class="icon"><use href="#pin"/></svg>Loc B</div>
+    <div><svg class="icon"><use href="#pin"/></svg>Loc C</div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Switcher">
-  <div class="in">
-    <p class="kicker"><b>04</b> Key decision</p>
-    <h2>A location switcher in each workflow.</h2>
-    <div class="cols">
-      <div class="card"><h3>Global</h3><p>One switcher for the whole app. No central view for owners.</p></div>
-      <div class="card pick"><span class="tag">Chosen</span><h3>Per workflow</h3><p>"Team at Soho". Works for owners and operators, at any number of locations.</p></div>
-      <div class="card"><h3>Hybrid</h3><p>Both. Two switchers with conflicting logic.</p></div>
-    </div>
+<section class="slide" data-name="Needs"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <h2 class="t40" style="text-align:center">Core needs</h2>
+  <div class="two">
+    <div class="col center"><svg class="icon"><use href="#globe"/></svg><p class="t24">How do I manage my overall business across locations?</p><span class="tag owner" style="justify-self:center">Owner</span></div>
+    <div class="col center"><svg class="icon"><use href="#pin"/></svg><p class="t24">How do I keep operating each location?</p><span class="tag operator" style="justify-self:center">Operator</span></div>
   </div>
-</section>
+  <p class="t24 grey" style="text-align:center">Owner and operator responsibilities start to diverge.</p>
+</div></section>
 
-<section class="slide" data-name="Patterns">
-  <div class="in">
-    <p class="kicker"><b>05</b> System</p>
-    <h2>Five patterns, every surface.</h2>
-    <div class="list">
-      <div><h3>Default, then override</h3><p>Set once for the business, customize per location or person.</p></div>
-      <div><h3>Assign to locations</h3><p>Staff, services and clients belong to one or more locations.</p></div>
-      <div><h3>[Surface] at [Location]</h3><p>A filter in each workflow, with "All locations" for owners.</p></div>
-      <div><h3>Bulk by default</h3><p>Invite, assign and update many at once.</p></div>
-      <div><h3>Built for 20+</h3><p>Pickers search and truncate at scale.</p></div>
-    </div>
+<section class="slide" data-name="Principle"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <h2 class="t40 book" style="color:#000">Manage globally with flexibility to operate locally.</h2>
+  <div class="two">
+    <div class="col"><span class="tag owner">Owner</span><p>Centrally manage every location and see the whole business.</p>
+      <p class="sub"><i class="grey">For e.g</i><br>View all clients across locations<br>Track sales across locations<br>See analytics for the entire business</p></div>
+    <div class="col"><span class="tag operator">Operator</span><p>Operate at one location or several.</p>
+      <p class="sub"><i class="grey">For e.g</i><br>Book an appointment at a location<br>Edit my schedule per location<br>Manage inventory per location</p></div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Add location">
-  <div class="in">
-    <p class="kicker"><b>M1</b> Add a location</p>
-    <h2>A new location starts from an existing one.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Business switcher<br>MBR Deepdive 05/16</p></div>
-      <div class="layer after"><p class="ph">Add location flow<br>Spaces TB 10/07</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-add" aria-label="Compare before and after: add a location">
-    </div>
-    <div class="flow"><span class="n">Basics</span><i>→</i><span class="n">Hours</span><i>→</i><span class="n">Specialty</span><i>→</i><span class="n">Services</span><i>→</i><span class="n">Staff</span><i>→</i><span class="n">Settings</span><i>→</i><span class="n">Plan</span><i>→</i><span class="n">Done</span></div>
-    <ul class="points">
-      <li><b>Prefilled</b><span>Hours and specialty carry over.</span></li>
-      <li><b>Bulk</b><span>Copy services, staff and settings in one step.</span></li>
-      <li><b>Clear cost</b><span>The plan change shows before confirming.</span></li>
-    </ul>
+<section class="slide" data-name="IA"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <h2 class="t40">Location became a layer in the IA.</h2>
+  <div class="two">
+    <div class="col"><span class="pill">Current IA</span>
+      <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div>
+    <div class="col"><span class="pill future">New IA</span>
+      <div class="tree"><div><span class="node">Business · Global</span></div><div class="ind"><div><span class="node l">Locations · Local</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div></div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Services">
-  <div class="in">
-    <p class="kicker"><b>M2</b> Services</p>
-    <h2>One service, priced per location and per person.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Current service creation<br>M2 Service Management</p></div>
-      <div class="layer after"><p class="ph">Location & staff customization<br>Spaces TB 10/07</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-services" aria-label="Compare before and after: services">
-    </div>
-    <ul class="points">
-      <li><b>Create once</b><span>Switch it on per location. No duplicate menus.</span></li>
-      <li><b>Scoped staff</b><span>Only members at that location appear.</span></li>
-      <li><b>Per-member price</b><span>Shows the final price clients see.</span></li>
-    </ul>
+<section class="slide" data-name="Switcher"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <h2 class="t40">Where should switching locations live?</h2>
+  <div class="three">
+    <div class="opt"><h3 class="t24">Global</h3><p>One switcher for the whole app. Restricts every view, with no central view for owners.</p></div>
+    <div class="opt pick"><h3 class="t24">Workflow level</h3><p>"Team at Soho". Business and location stay distinct, works for owners and operators, and scales.</p></div>
+    <div class="opt"><h3 class="t24">Hybrid</h3><p>Both. Two switchers with conflicting logic and an extra step.</p></div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Staff invite">
-  <div class="in">
-    <p class="kicker"><b>M3</b> Staff · Invite</p>
-    <h2>New members are bookable from day one.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Current flow<br>Core Review ML3 08/02</p></div>
-      <div class="layer after"><p class="ph">Updated invite flow<br>Core Review ML3 08/02</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-invite" aria-label="Compare before and after: staff invite">
-    </div>
-    <div class="flow"><span>Add members</span><i>→</i><span class="n">Bulk invite</span><i>→</i><span>Roles</span><i>→</i><span class="n">Locations</span><i>→</i><span class="n">Schedule per location</span><i>→</i><span>Services</span></div>
+<section class="slide" data-name="Patterns"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <h2 class="t40">Five patterns across every surface</h2>
+  <div class="rows">
+    <div><p class="t24">Default, then override</p><p class="sub">Set once for the business, customize per location or member.</p></div>
+    <div><p class="t24">Assign to locations</p><p class="sub">Staff, services and clients belong to one or more locations.</p></div>
+    <div><p class="t24">[Surface] at [Location]</p><p class="sub">A switcher in each workflow, with "All locations" for owners.</p></div>
+    <div><p class="t24">Bulk by default</p><p class="sub">Invite, assign and update many at once.</p></div>
+    <div><p class="t24">Built for 20+</p><p class="sub">Pickers search and truncate at scale.</p></div>
   </div>
-</section>
+</div></section>
 
-<section class="slide" data-name="Staff page">
-  <div class="in">
-    <p class="kicker"><b>M3</b> Staff · Team page</p>
-    <h2>See who works where, and when.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Current staff surface<br>Core Review ML3 08/02</p></div>
-      <div class="layer after"><p class="ph">Updated staff surface<br>Core Review ML3 08/02</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-staff" aria-label="Compare before and after: team page">
-    </div>
-    <ul class="points">
-      <li><b>Team at [Location]</b><span>Filter the team by location.</span></li>
-      <li><b>Schedules</b><span>Hours set per location.</span></li>
-      <li><b>Permissions</b><span>Location settings access by role.</span></li>
-    </ul>
+<section class="slide" data-name="M1 Add location"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M1 · Add a location</span>
+    <h2 class="t40">A new location starts from an existing one.</h2>
+    <ul class="points"><li>Hours and specialty prefilled</li><li>Services, staff and settings copied in bulk</li><li>Plan change shown before confirming</li></ul>
   </div>
-</section>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Business switcher<br>MBR Deepdive 05/16</p></div>
+    <div class="layer after"><p class="ph">Add location flow<br>Spaces TB 10/07</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-add" aria-label="Compare before and after: add a location">
+  </div>
+</div></section>
 
-<section class="slide" data-name="Settings">
-  <div class="in">
-    <p class="kicker"><b>M4</b> Settings</p>
-    <h2>Standard everywhere, with room for exceptions.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Settings home<br>MBR Deepdive 05/16</p></div>
-      <div class="layer after"><p class="ph">Booking settings across locations<br>MBR Deepdive 05/16</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-settings" aria-label="Compare before and after: settings">
-    </div>
-    <ul class="points">
-      <li><b>At a glance</b><span>"All locations match" or "Some differ".</span></li>
-      <li><b>One update</b><span>Apply a change across locations.</span></li>
-      <li><b>Soft guardrail</b><span>A warning when a location drifts from standard.</span></li>
-    </ul>
+<section class="slide" data-name="M2 Services"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M2 · Services</span>
+    <h2 class="t40">One service, priced per location and member.</h2>
+    <ul class="points"><li>Created once, offered per location</li><li>Only staff at that location appear</li><li>Final client price shown per member</li></ul>
   </div>
-</section>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Current service creation<br>M2 Service Management</p></div>
+    <div class="layer after"><p class="ph">Location & staff customization<br>Spaces TB 10/07</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-services" aria-label="Compare before and after: services">
+  </div>
+</div></section>
 
-<section class="slide" data-name="Calendar">
-  <div class="in">
-    <p class="kicker"><b>M6</b> Calendar & clients</p>
-    <h2>Book anywhere, one client list.</h2>
-    <div class="compare" data-compare>
-      <div class="layer before"><p class="ph">Single-location calendar<br>DLT 05/08</p></div>
-      <div class="layer after"><p class="ph">Location switcher & live preview<br>DLT 05/08</p></div>
-      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
-      <input type="range" min="0" max="100" value="50" id="cmp-cal" aria-label="Compare before and after: calendar">
-    </div>
-    <ul class="points">
-      <li><b>Switch per calendar</b><span>Preview another location while booking.</span></li>
-      <li><b>Location travels</b><span>Through to the confirmation email.</span></li>
-      <li><b>Shared clients</b><span>Filter and history by location.</span></li>
-    </ul>
+<section class="slide" data-name="M3 Staff invite"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M3 · Staff invite</span>
+    <h2 class="t40">New members are bookable from day one.</h2>
+    <div class="flow"><span>Add</span><span class="n">Bulk invite</span><span>Roles</span><span class="n">Locations</span><span class="n">Schedule</span><span>Services</span></div>
   </div>
-</section>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Current flow<br>Core Review ML3 08/02</p></div>
+    <div class="layer after"><p class="ph">Updated invite flow<br>Core Review ML3 08/02</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-invite" aria-label="Compare before and after: staff invite">
+  </div>
+</div></section>
 
-<section class="slide" data-name="Outcome">
-  <div class="in">
-    <p class="kicker"><b>06</b> Outcome</p>
-    <h2>Ready for bigger businesses.</h2>
-    <p class="pending">To add: what shipped, adoption or plan-upgrade numbers, and customer feedback.</p>
+<section class="slide" data-name="M3 Team page"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M3 · Team page</span>
+    <h2 class="t40">See who works where, and when.</h2>
+    <ul class="points"><li>"Team at [Location]" switcher</li><li>Schedules set per location</li><li>Location settings access by role</li></ul>
   </div>
-</section>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Current staff surface<br>Core Review ML3 08/02</p></div>
+    <div class="layer after"><p class="ph">Updated staff surface<br>Core Review ML3 08/02</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-staff" aria-label="Compare before and after: team page">
+  </div>
+</div></section>
+
+<section class="slide" data-name="M4 Settings"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M4 · Settings</span>
+    <h2 class="t40">Standard everywhere, room for exceptions.</h2>
+    <ul class="points"><li>"All locations match" or "Some differ"</li><li>Update across locations in one step</li><li>A soft warning when a location drifts</li></ul>
+  </div>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Settings home<br>MBR Deepdive 05/16</p></div>
+    <div class="layer after"><p class="ph">Booking settings across locations<br>MBR Deepdive 05/16</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-settings" aria-label="Compare before and after: settings">
+  </div>
+</div></section>
+
+<section class="slide" data-name="M6 Calendar"><div class="stage ba">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <div class="copy">
+    <span class="pill">M6 · Calendar & clients</span>
+    <h2 class="t40">Book at any location, one client list.</h2>
+    <ul class="points"><li>Live preview of another location's calendar</li><li>Location carried into the confirmation email</li><li>Clients filtered and tagged by location</li></ul>
+  </div>
+  <div class="compare" data-compare>
+    <div class="layer before"><p class="ph">Single-location calendar<br>DLT 05/08</p></div>
+    <div class="layer after"><p class="ph">Location switcher & live preview<br>DLT 05/08</p></div>
+    <span class="cap b">Before</span><span class="cap a">After</span><span class="handle"></span>
+    <input type="range" min="0" max="100" value="50" id="cmp-cal" aria-label="Compare before and after: calendar">
+  </div>
+</div></section>
+
+<section class="slide" data-name="Outcome"><div class="stage">
+  <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
+  <span class="pill future">Outcome</span>
+  <h2 class="t48">Enable upmarket, multi-location businesses.</h2>
+  <p class="t32" style="border:1px dashed var(--accent);border-radius:8px;padding:calc(var(--u)*24);color:var(--accent)">To add: what shipped, plan-upgrade numbers, customer feedback.</p>
+</div></section>
+
+</main>
 
 <nav class="rail" id="rail" aria-label="Slides"></nav>
 <div class="count" id="count" aria-hidden="true"></div>
@@ -321,44 +357,50 @@ p{margin:0}
 <script>
 (function(){
   var slides=[].slice.call(document.querySelectorAll('.slide'));
-  var rail=document.getElementById('rail'),count=document.getElementById('count'),bar=document.getElementById('bar');
+  var rail=document.getElementById('rail'),count=document.getElementById('count');
   var pad=function(n){return String(n).padStart(2,'0')};
   slides.forEach(function(s,i){
-    s.id=s.id||'s'+(i+1);
+    s.id='s'+(i+1);
     var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',s.dataset.name);
     a.innerHTML='<span>'+s.dataset.name+'</span>';rail.appendChild(a);
   });
   var dots=[].slice.call(rail.children),cur=0;
-  function setCur(i){cur=i;dots.forEach(function(d,j){d.classList.toggle('on',j===i)});
-    count.innerHTML='<b>'+pad(i+1)+'</b> / '+pad(slides.length);}
+  function setCur(i){cur=i;dots.forEach(function(d,j){d.classList.toggle('on',j===i)});count.innerHTML='<b>'+pad(i+1)+'</b> / '+pad(slides.length);}
   setCur(0);
 
-  // Slides below the fold sit 14px low and settle as they arrive.
+  // Slides below the fold sit slightly low and settle into place as they arrive. Content is never hidden.
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){
-      var i=slides.indexOf(e.target);
-      if(e.isIntersecting){e.target.classList.remove('below');if(e.intersectionRatio>.5)setCur(i);}
-    })},{threshold:[0,.5]});
-    slides.forEach(function(s,i){if(s.getBoundingClientRect().top>innerHeight)s.classList.add('below');io.observe(s)});
+      if(e.isIntersecting){e.target.classList.remove('below');if(e.intersectionRatio>.55)setCur(slides.indexOf(e.target));}
+    })},{threshold:[0,.55]});
+    slides.forEach(function(s){if(s.getBoundingClientRect().top>innerHeight)s.classList.add('below');io.observe(s)});
   }
-  addEventListener('scroll',function(){var h=document.documentElement;
-    bar.style.width=(h.scrollTop/Math.max(1,h.scrollHeight-h.clientHeight)*100)+'%';},{passive:true});
 
-  // Keyboard paging (arrow keys on a compare slider stay with the slider).
+  // Keyboard paging; arrow keys on a compare slider stay with the slider.
   addEventListener('keydown',function(e){
     if(e.target.tagName==='INPUT')return;
     var k=e.key,n=null;
-    if(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))n=cur+1;
-    if(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))n=cur-1;
+    if(k==='ArrowDown'||k==='ArrowRight'||k==='PageDown'||(k===' '&&!e.shiftKey))n=cur+1;
+    if(k==='ArrowUp'||k==='ArrowLeft'||k==='PageUp'||(k===' '&&e.shiftKey))n=cur-1;
     if(n===null)return;e.preventDefault();
-    n=Math.max(0,Math.min(slides.length-1,n));slides[n].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides[n].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
   });
 
-  // Before/after compare sliders.
+  // Before/after compare sliders, with a short hint sweep the first time each one comes into view.
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('[data-compare]').forEach(function(c){
-    var r=c.querySelector('input');
-    var set=function(){c.style.setProperty('--pos',r.value+'%')};
-    r.addEventListener('input',set);set();
+    var r=c.querySelector('input'),touched=false;
+    var set=function(v){r.value=v;c.style.setProperty('--pos',v+'%')};
+    r.addEventListener('input',function(){touched=true;set(r.value)});
+    set(50);
+    if(reduce||!('IntersectionObserver' in window))return;
+    var hint=new IntersectionObserver(function(es){if(!es[0].isIntersecting||touched)return;hint.disconnect();
+      var t0=null;function step(t){if(touched)return;t0=t0||t;var p=(t-t0)/1400;if(p>=1){set(50);return;}
+        set(50+Math.sin(p*Math.PI*2)*14*(1-p));requestAnimationFrame(step);}
+      setTimeout(function(){requestAnimationFrame(step)},350);
+    },{threshold:.7});
+    hint.observe(c);
   });
 })();
 </script>
