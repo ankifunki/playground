@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
 /* Layout: 1504×846 slides on a 12-column grid (96 margins, 24 gutters) with a 12px vertical unit.
-   Every slide: title row (title + meta on one baseline) → content from a fixed line → folio.
+   Every slide: title row → content from a fixed line.
    Roles: Geist = titles and subheads · Funnel Sans = everything read · Geist Mono = meta only.
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
 :root{
@@ -29,7 +29,7 @@ h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 /* Artboard: --u is one design pixel at the current width */
 .slide{container-type:inline-size;scroll-snap-align:center;background:var(--slide)}
 .stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:1504/846;
-  padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);display:grid;grid-template-rows:auto 1fr auto}
+  padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);display:grid;grid-template-rows:auto 1fr}
 
 /* Row 1: title and meta share a baseline */
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
@@ -97,12 +97,10 @@ ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:v
 .nums div{display:grid;grid-template-columns:calc(var(--u)*196) 1fr;align-items:baseline;padding-block:calc(var(--u)*24);border-top:1px solid var(--rule)}
 .nums b{font:600 calc(var(--u)*40)/1 var(--head);letter-spacing:-.03em;color:var(--ink)}
 
-/* Folio */
-.folio{display:flex;justify-content:space-between;align-items:baseline}
 
 /* Divider */
 .slide.divider{background:var(--divider)}
-.divider .stage{grid-template-rows:auto 1fr auto}
+.divider .stage{grid-template-rows:auto 1fr}
 .divider .mono{color:#7F8786}
 .divider .big{align-self:end;display:grid;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*60)}
 .divider h2{font:600 calc(var(--u)*144)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider);margin-left:calc(var(--u)*-6)}
@@ -135,10 +133,6 @@ dialog[open]{animation:pop .3s var(--ease)}
   .dia{max-height:220px;margin-bottom:16px}
 }
 
-/* Deck chrome */
-.count{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));font:400 11px/1 var(--mono);letter-spacing:.08em;color:#6E7473;font-variant-numeric:tabular-nums;z-index:5}
-.count b{color:#D7DCDB;font-weight:400}
-@media (max-width:760px){.count{display:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -150,9 +144,8 @@ dialog[open]{animation:pop .3s var(--ease)}
 <main class="deck">
 
 <section class="slide divider" data-name="Multi Location"><div class="stage">
-  <div class="head"><span class="mono">Case Study — 001</span><span class="mono">GlossGenius</span></div>
+  <div class="head"><span class="mono">GlossGenius</span></div>
   <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every core workflow for multi-location businesses.</p></div>
-  <div class="folio"><span class="mono">Lead Product Designer</span><span class="mono">2025</span></div>
 </div></section>
 
 <section class="slide" data-name="Opportunity"><div class="stage">
@@ -164,11 +157,10 @@ dialog[open]{animation:pop .3s var(--ease)}
       <div class="fact"><span class="mono">Scope</span><span class="v">Locations, staff, services, settings, calendar, clients</span></div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="One to many"><div class="stage">
-  <div class="head"><h3 class="title">One location to many</h3><span class="mono">Context</span></div>
+  <div class="head"><h3 class="title">One location to many</h3></div>
   <div class="content" style="padding-top:calc(var(--u)*96)">
     <div class="cols">
       <div class="col c5">
@@ -192,11 +184,10 @@ dialog[open]{animation:pop .3s var(--ease)}
       </div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Core needs"><div class="stage">
-  <div class="head"><h3 class="title">Core needs</h3><span class="mono">Research</span></div>
+  <div class="head"><h3 class="title">Core needs</h3></div>
   <div class="content">
     <div class="cols">
       <div class="col c5"><span class="mono">Owner</span><p class="sub">Manage the whole business</p>
@@ -205,19 +196,17 @@ dialog[open]{animation:pop .3s var(--ease)}
         <ul class="list small"><li>Book at a location</li><li>Schedule per location</li><li>Inventory per location</li></ul></div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Principle"><div class="stage">
-  <div class="head"><h3 class="title">Principle</h3><span class="mono">Approach</span></div>
+  <div class="head"><h3 class="title">Principle</h3></div>
   <div class="content">
     <p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Information architecture"><div class="stage">
-  <div class="head"><h3 class="title">Information architecture</h3><span class="mono">Approach</span></div>
+  <div class="head"><h3 class="title">Information architecture</h3></div>
   <div class="content" style="padding-top:calc(var(--u)*96)">
     <div class="cols">
       <div class="col c5">
@@ -240,11 +229,10 @@ dialog[open]{animation:pop .3s var(--ease)}
       </div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Switching locations"><div class="stage">
-  <div class="head"><h3 class="title">Switching locations</h3><span class="mono">Key decision</span></div>
+  <div class="head"><h3 class="title">Switching locations</h3></div>
   <div class="content">
     <div class="cols">
       <div class="col c4 opt"><span class="mono">Option a</span><p class="sub">Global</p><p class="small">One switcher for everything. No owner overview.</p></div>
@@ -252,22 +240,20 @@ dialog[open]{animation:pop .3s var(--ease)}
       <div class="col c4 opt"><span class="mono">Option c</span><p class="sub">Hybrid</p><p class="small">Two switchers, conflicting logic.</p></div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Shared patterns"><div class="stage">
-  <div class="head"><h3 class="title">Shared patterns</h3><span class="mono">System</span></div>
+  <div class="head"><h3 class="title">Shared patterns</h3></div>
   <div class="content">
     <div class="cols">
       <ol class="list c6"><li><span>Default, then override per location</span></li><li><span>Assign people and services to locations</span></li><li><span>[Surface] at [Location]</span></li></ol>
       <ol class="list c6" style="counter-reset:n 3"><li><span>Bulk by default</span></li><li><span>Scales to 20+ locations</span></li></ol>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Add a location"><div class="stage">
-  <div class="head"><h3 class="title">Add a location</h3><span class="mono">M1</span></div>
+  <div class="head"><h3 class="title">Add a location</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: business switcher"><span class="ph">Business switcher<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -275,11 +261,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">New locations copy hours, services, staff and settings.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Services"><div class="stage">
-  <div class="head"><h3 class="title">Services</h3><span class="mono">M2</span></div>
+  <div class="head"><h3 class="title">Services</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: service creation"><span class="ph">Current service creation<br>M2 Service Management</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -287,11 +272,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">Create once. Offer per location. Price per member.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Staff invite"><div class="stage">
-  <div class="head"><h3 class="title">Staff invite</h3><span class="mono">M3</span></div>
+  <div class="head"><h3 class="title">Staff invite</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current invite flow"><span class="ph">Current flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -299,11 +283,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">Locations and schedules set at invite. Bookable on day one.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Team page"><div class="stage">
-  <div class="head"><h3 class="title">Team page</h3><span class="mono">M3</span></div>
+  <div class="head"><h3 class="title">Team page</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current staff surface"><span class="ph">Current staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -311,11 +294,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">Team at [Location]: who works where, and when.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Settings"><div class="stage">
-  <div class="head"><h3 class="title">Settings</h3><span class="mono">M4</span></div>
+  <div class="head"><h3 class="title">Settings</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: settings home"><span class="ph">Settings home<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -323,11 +305,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">One standard, with a soft warning when a location drifts.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide screens" data-name="Calendar & clients"><div class="stage">
-  <div class="head"><h3 class="title">Calendar & clients</h3><span class="mono">M6</span></div>
+  <div class="head"><h3 class="title">Calendar & clients</h3></div>
   <div class="content">
     <div class="pair">
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: single-location calendar"><span class="ph">Single-location calendar<br>DLT 05/08</span></button><figcaption class="mono">Before</figcaption></figure>
@@ -335,11 +316,10 @@ dialog[open]{animation:pop .3s var(--ease)}
     </div>
     <p class="foot">Book at any location. One client list.</p>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Results"><div class="stage">
-  <div class="head"><h3 class="title">Results</h3><span class="mono">Outcome</span></div>
+  <div class="head"><h3 class="title">Results</h3></div>
   <div class="content">
     <div class="nums" style="grid-column:1 / span 8">
       <div><b>—</b><span class="text">What shipped</span></div>
@@ -347,20 +327,16 @@ dialog[open]{animation:pop .3s var(--ease)}
       <div><b>—</b><span class="text">Customer feedback</span></div>
     </div>
   </div>
-  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 </main>
 
 <dialog id="zoom" aria-label="Enlarged screen"><form method="dialog"><button>Close</button></form><div id="zoom-body"></div></dialog>
-<div class="count" id="count" aria-hidden="true"></div>
 
 <script>
 (function(){
-  var slides=[].slice.call(document.querySelectorAll('.slide')),count=document.getElementById('count'),cur=0;
-  var pad=function(n){return String(n).padStart(2,'0')};
-  slides.forEach(function(s,i){var f=s.querySelector('[data-n]');if(f)f.textContent=pad(i+1)});
-  function setCur(i){cur=i;count.innerHTML='<b>'+pad(i+1)+'</b> / '+pad(slides.length);}
+  var slides=[].slice.call(document.querySelectorAll('.slide')),cur=0;
+  function setCur(i){cur=i;}
   setCur(0);
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)setCur(slides.indexOf(e.target))})},{threshold:.6});
