@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Space+Grotesk:wght@300;400&family=Newsreader:opsz,wght@6..72,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Space+Grotesk:wght@300;400&family=Newsreader:opsz,wght@6..72,400&display=swap">
 <style>
 /* Layout: 1280×832 slides on a dark presentation canvas, mirroring the team's Figma review decks.
    Single deliberate look: the canvas is always dark and the slides always the deck's cool grey. */
@@ -28,21 +28,23 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 /* A slide is a 1280×832 artboard; --u is one design pixel at the current width. */
 .slide{container-type:inline-size;scroll-snap-align:center;border-radius:4px;overflow:hidden;background:var(--slide);
   box-shadow:0 1px 0 rgb(255 255 255 / .04),0 20px 50px -20px rgb(0 0 0 / .6)}
-.stage{--u:calc(100cqw / 1280);position:relative;aspect-ratio:1280/832;padding:calc(var(--u)*128);display:grid;align-content:center;gap:calc(var(--u)*40);
+.stage{--u:calc(100cqw / 1280);position:relative;aspect-ratio:1280/832;padding:calc(var(--u)*120) calc(var(--u)*128);display:grid;align-content:center;gap:calc(var(--u)*56);
   font-size:max(14px,calc(var(--u)*20));line-height:1.35}
 .stage > *{transition:transform .8s var(--ease)}
 .slide.below .stage > *:not(.mark){transform:translateY(calc(var(--u)*16))}
 @media (prefers-reduced-motion:reduce){.stage > *{transition:none}.slide.below .stage > *{transform:none}}
 
 /* Wordmark, top right, as on every deck slide */
-.mark{position:absolute;top:calc(var(--u)*48);right:calc(var(--u)*40);display:flex;align-items:center;gap:calc(var(--u)*6);
-  font:400 max(13px,calc(var(--u)*24))/1 var(--mark);letter-spacing:-.02em;color:var(--muted)}
-.mark svg{width:max(16px,calc(var(--u)*30));height:auto;fill:currentColor;margin-top:calc(var(--u)*-18)}
+.mark{position:absolute;top:calc(var(--u)*56);right:calc(var(--u)*40);display:flex;align-items:flex-end;gap:0;
+  font:400 max(14px,calc(var(--u)*28))/1 var(--mark);letter-spacing:-.02em;color:var(--muted)}
+.mark svg{width:max(20px,calc(var(--u)*42));height:auto;fill:currentColor;margin:calc(var(--u)*-34) 0 0 calc(var(--u)*-14)}
 
 /* Type, from the deck's scale */
 .t64{font-size:max(30px,calc(var(--u)*64));font-weight:500;line-height:1.05;letter-spacing:-.01em}
 .t48{font-size:max(24px,calc(var(--u)*48));font-weight:500;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
-.t40{font-size:max(22px,calc(var(--u)*40));font-weight:500;line-height:1.1;letter-spacing:-.005em;text-wrap:balance}
+.t40{font-size:max(24px,calc(var(--u)*40));font-weight:560;line-height:1.02;letter-spacing:-.012em;text-wrap:balance;max-width:calc(var(--u)*560)}
+.t40.wide{max-width:none}
+.hl{color:var(--accent)}
 .t32{font-size:max(17px,calc(var(--u)*32));font-weight:500;line-height:1.25;color:var(--muted)}
 .t24{font-size:max(16px,calc(var(--u)*24));font-weight:500;line-height:1.5}
 .grey{color:var(--muted)} .sub{color:var(--sub)}
@@ -123,6 +125,18 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 .flow span{padding:calc(var(--u)*7) calc(var(--u)*12);border:1px solid var(--sub);border-radius:999px}
 .flow span.n{border-color:var(--accent);color:var(--accent)}
 
+/* Line diagrams, drawn in the deck's style: thin grey connectors, junction dots, outline icons */
+.dia{width:100%;height:auto;overflow:visible}
+.dia .ln{stroke:#B1B7B6;stroke-width:1.5;fill:none}
+.dia .dot{fill:#B1B7B6}
+.dia .ic{stroke:var(--muted);fill:none;stroke-width:1.6}
+.dia .ic.a{stroke:var(--accent)}
+.dia text{font-family:var(--sans);font-size:24px;font-weight:600;fill:var(--muted)}
+.dia text.a{fill:var(--accent)}
+.dia text.node{font-weight:560;font-size:26px;fill:var(--ink)}
+.dia-wrap{width:calc(var(--u)*500);justify-self:end}
+.lead{display:grid;grid-template-columns:1fr auto;align-items:center;gap:calc(var(--u)*40)}
+.lead .txt{display:grid;gap:calc(var(--u)*120);align-content:center}
 /* Cover pins */
 .pins{display:flex;gap:calc(var(--u)*10);flex-wrap:wrap;justify-content:center}
 
@@ -130,7 +144,8 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 @media (max-width:760px){
   .stage{aspect-ratio:auto;padding:28px 20px 32px;gap:22px;align-content:start;padding-top:64px}
   .mark{top:20px;right:16px}
-  .split,.two,.three,.ba{grid-template-columns:1fr;padding-inline:0;gap:24px}
+  .split,.two,.three,.ba,.lead{grid-template-columns:1fr;padding-inline:0;gap:24px}
+  .lead .txt{gap:20px}.dia-wrap{width:min(100%,320px);justify-self:center}.t40{max-width:none}
   .rows div{grid-template-columns:1fr;gap:4px}
   .legend{gap:16px}.locs{gap:28px}
 }
@@ -150,7 +165,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="star" viewBox="0 0 42 42"><path d="M21 0c1.6 10.6 9.4 18.4 21 21-11.6 2.6-19.4 10.4-21 21-1.6-10.6-9.4-18.4-21-21C11.6 18.4 19.4 10.6 21 0z"/></symbol>
+  <symbol id="star" viewBox="0 0 42 42"><path d="M21 0 22 19.6 42 21 22 22.4 21 42 20 22.4 0 21 20 19.6Z"/></symbol>
   <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
   <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z"/></symbol>
   <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6"/></symbol>
@@ -171,36 +186,38 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 
 <section class="slide" data-name="Today"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <span class="pill dark">Today</span>
-  <div class="split">
-    <h2 class="t40">Every workflow was designed for one location.<br><span class="grey">Booking an appointment or inviting a member assumed one place.</span></h2>
-    <div class="legend">
-      <div><svg class="icon"><use href="#person"/></svg>User</div>
-      <div><svg class="icon"><use href="#globe"/></svg>Biz</div>
-    </div>
+  <div class="lead">
+    <div class="txt"><span class="pill dark">Today</span>
+      <h2 class="t40">All our workflows are designed for <span class="hl">one business, one location</span></h2></div>
+    <div class="dia-wrap"><svg class="dia" viewBox="0 0 500 480" role="img" aria-label="User connected to one business">
+      <use href="#person" class="ic" x="168" y="10" width="64" height="64"/><text x="280" y="52">User</text>
+      <line class="ln" x1="200" y1="88" x2="200" y2="190"/><circle class="dot" cx="200" cy="190" r="3"/>
+      <use href="#globe" class="ic" x="168" y="208" width="64" height="64"/><text x="280" y="250">Biz</text>
+    </svg></div>
   </div>
 </div></section>
 
 <section class="slide" data-name="Tomorrow"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <span class="pill future">Tomorrow</span>
-  <div class="split">
-    <h2 class="t40">Multi location unlocks the move upmarket.<br><span class="grey">To get there, every workflow had to support many locations.</span></h2>
-    <div class="legend">
-      <div><svg class="icon"><use href="#person"/></svg>User</div>
-      <div><svg class="icon"><use href="#globe"/></svg>Biz</div>
-    </div>
-  </div>
-  <div class="locs" style="justify-content:flex-end">
-    <div><svg class="icon"><use href="#pin"/></svg>Loc A</div>
-    <div><svg class="icon"><use href="#pin"/></svg>Loc B</div>
-    <div><svg class="icon"><use href="#pin"/></svg>Loc C</div>
+  <div class="lead">
+    <div class="txt"><span class="pill future">Tomorrow</span>
+      <h2 class="t40">In order to enable ML, we need to <span class="hl">adapt our workflows</span> to support multiple locations</h2></div>
+    <div class="dia-wrap"><svg class="dia" viewBox="0 0 500 480" role="img" aria-label="User connected to a business with three locations">
+      <use href="#person" class="ic" x="218" y="10" width="64" height="64"/><text x="330" y="52">User</text>
+      <line class="ln" x1="250" y1="88" x2="250" y2="190"/><circle class="dot" cx="250" cy="190" r="3"/>
+      <use href="#globe" class="ic" x="218" y="208" width="64" height="64"/><text x="330" y="250">Biz</text>
+      <line class="ln" x1="250" y1="290" x2="250" y2="345"/>
+      <line class="ln" x1="50" y1="345" x2="450" y2="345"/>
+      <circle class="dot" cx="50" cy="345" r="3"/><circle class="dot" cx="250" cy="345" r="3"/><circle class="dot" cx="450" cy="345" r="3"/>
+      <use href="#pin" class="ic a" x="22" y="362" width="56" height="56"/><use href="#pin" class="ic a" x="222" y="362" width="56" height="56"/><use href="#pin" class="ic a" x="422" y="362" width="56" height="56"/>
+      <text class="a" x="50" y="462" text-anchor="middle">Loc A</text><text class="a" x="250" y="462" text-anchor="middle">Loc B</text><text class="a" x="450" y="462" text-anchor="middle">Loc C</text>
+    </svg></div>
   </div>
 </div></section>
 
 <section class="slide" data-name="Needs"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <h2 class="t40" style="text-align:center">Core needs</h2>
+  <h2 class="t40 wide" style="text-align:center;justify-self:center">Core ML needs</h2>
   <div class="two">
     <div class="col center"><svg class="icon"><use href="#globe"/></svg><p class="t24">How do I manage my overall business across locations?</p><span class="tag owner" style="justify-self:center">Owner</span></div>
     <div class="col center"><svg class="icon"><use href="#pin"/></svg><p class="t24">How do I keep operating each location?</p><span class="tag operator" style="justify-self:center">Operator</span></div>
@@ -210,7 +227,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 
 <section class="slide" data-name="Principle"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <h2 class="t40 book" style="color:#000">Manage globally with flexibility to operate locally.</h2>
+  <h2 class="t40 wide">Manage globally with flexibility to <span class="hl">operate locally</span></h2>
   <div class="two">
     <div class="col"><span class="tag owner">Owner</span><p>Centrally manage every location and see the whole business.</p>
       <p class="sub"><i class="grey">For e.g</i><br>View all clients across locations<br>Track sales across locations<br>See analytics for the entire business</p></div>
@@ -221,18 +238,26 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 
 <section class="slide" data-name="IA"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <h2 class="t40">Location became a layer in the IA.</h2>
-  <div class="two">
-    <div class="col"><span class="pill">Current IA</span>
-      <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div>
-    <div class="col"><span class="pill future">New IA</span>
-      <div class="tree"><div><span class="node">Business · Global</span></div><div class="ind"><div><span class="node l">Locations · Local</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div></div>
+  <div class="lead">
+    <div class="txt"><span class="pill future">New IA</span>
+      <h2 class="t40">Location becomes <span class="hl">a layer</span> between the business and its workflows</h2></div>
+    <div class="dia-wrap"><svg class="dia" viewBox="0 0 500 480" role="img" aria-label="Current IA: business, then workflows. New IA: business, then locations, then workflows">
+      <text x="60" y="20" style="font-size:20px;font-weight:400">Current</text><text class="a" x="300" y="20" style="font-size:20px;font-weight:400">New</text>
+      <use href="#globe" class="ic" x="60" y="60" width="48" height="48"/><text class="node" x="124" y="93">Biz</text>
+      <line class="ln" x1="84" y1="120" x2="84" y2="380"/><circle class="dot" cx="84" cy="380" r="3"/>
+      <rect x="60" y="398" width="48" height="48" rx="6" class="ic"/><text class="node" x="124" y="431">Workflows</text>
+      <use href="#globe" class="ic" x="300" y="60" width="48" height="48"/><text class="node" x="364" y="93">Biz</text>
+      <line class="ln" x1="324" y1="120" x2="324" y2="220"/><circle class="dot" cx="324" cy="220" r="3"/>
+      <use href="#pin" class="ic a" x="300" y="229" width="48" height="48"/><text class="node a" x="364" y="262" style="fill:var(--accent)">Locations</text>
+      <line class="ln" x1="324" y1="290" x2="324" y2="380"/><circle class="dot" cx="324" cy="380" r="3"/>
+      <rect x="300" y="398" width="48" height="48" rx="6" class="ic"/><text class="node" x="364" y="431">Workflows</text>
+    </svg></div>
   </div>
 </div></section>
 
 <section class="slide" data-name="Switcher"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <h2 class="t40">Where should switching locations live?</h2>
+  <h2 class="t40 wide">A location switcher <span class="hl">inside each workflow</span></h2>
   <div class="three">
     <div class="opt"><h3 class="t24">Global</h3><p>One switcher for the whole app. Restricts every view, with no central view for owners.</p></div>
     <div class="opt pick"><h3 class="t24">Workflow level</h3><p>"Team at Soho". Business and location stay distinct, works for owners and operators, and scales.</p></div>
@@ -242,7 +267,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 
 <section class="slide" data-name="Patterns"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
-  <h2 class="t40">Five patterns across every surface</h2>
+  <h2 class="t40 wide">Five patterns, <span class="hl">every surface</span></h2>
   <div class="rows">
     <div><p class="t24">Default, then override</p><p class="sub">Set once for the business, customize per location or member.</p></div>
     <div><p class="t24">Assign to locations</p><p class="sub">Staff, services and clients belong to one or more locations.</p></div>
@@ -256,7 +281,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M1 · Add a location</span>
-    <h2 class="t40">A new location starts from an existing one.</h2>
+    <h2 class="t40">A new location starts <span class="hl">from an existing one</span></h2>
     <ul class="points"><li>Hours and specialty prefilled</li><li>Services, staff and settings copied in bulk</li><li>Plan change shown before confirming</li></ul>
   </div>
   <div class="compare" data-compare>
@@ -271,7 +296,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M2 · Services</span>
-    <h2 class="t40">One service, priced per location and member.</h2>
+    <h2 class="t40">One service, <span class="hl">priced per location</span> and member</h2>
     <ul class="points"><li>Created once, offered per location</li><li>Only staff at that location appear</li><li>Final client price shown per member</li></ul>
   </div>
   <div class="compare" data-compare>
@@ -286,7 +311,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M3 · Staff invite</span>
-    <h2 class="t40">New members are bookable from day one.</h2>
+    <h2 class="t40">New members are <span class="hl">bookable from day one</span></h2>
     <div class="flow"><span>Add</span><span class="n">Bulk invite</span><span>Roles</span><span class="n">Locations</span><span class="n">Schedule</span><span>Services</span></div>
   </div>
   <div class="compare" data-compare>
@@ -301,7 +326,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M3 · Team page</span>
-    <h2 class="t40">See who works where, and when.</h2>
+    <h2 class="t40">See who works <span class="hl">where, and when</span></h2>
     <ul class="points"><li>"Team at [Location]" switcher</li><li>Schedules set per location</li><li>Location settings access by role</li></ul>
   </div>
   <div class="compare" data-compare>
@@ -316,7 +341,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M4 · Settings</span>
-    <h2 class="t40">Standard everywhere, room for exceptions.</h2>
+    <h2 class="t40">Standard everywhere, <span class="hl">room for exceptions</span></h2>
     <ul class="points"><li>"All locations match" or "Some differ"</li><li>Update across locations in one step</li><li>A soft warning when a location drifts</li></ul>
   </div>
   <div class="compare" data-compare>
@@ -331,7 +356,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <div class="copy">
     <span class="pill">M6 · Calendar & clients</span>
-    <h2 class="t40">Book at any location, one client list.</h2>
+    <h2 class="t40">Book at any location, <span class="hl">one client list</span></h2>
     <ul class="points"><li>Live preview of another location's calendar</li><li>Location carried into the confirmation email</li><li>Clients filtered and tagged by location</li></ul>
   </div>
   <div class="compare" data-compare>
@@ -345,7 +370,7 @@ h1,h2,h3,p{margin:0;font-weight:inherit}
 <section class="slide" data-name="Outcome"><div class="stage">
   <span class="mark">GlossGenius<svg viewBox="0 0 42 42"><use href="#star"/></svg></span>
   <span class="pill future">Outcome</span>
-  <h2 class="t48">Enable upmarket, multi-location businesses.</h2>
+  <h2 class="t40 wide">Enable <span class="hl">upmarket, multi-location</span> businesses</h2>
   <p class="t32" style="border:1px dashed var(--accent);border-radius:8px;padding:calc(var(--u)*24);color:var(--accent)">To add: what shipped, plan-upgrade numbers, customer feedback.</p>
 </div></section>
 
