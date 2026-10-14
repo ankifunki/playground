@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
-/* Layout: 1504×846 slides on a 12-column grid (96 margins, 24 gutters) with an 8px vertical unit.
+/* Layout: 1504×846 slides on a 12-column grid (96 margins, 24 gutters) with a 12px vertical unit.
    Every slide: title row (title + meta on one baseline) → content from a fixed line → folio.
    Roles: Geist = titles and subheads · Funnel Sans = everything read · Geist Mono = meta only.
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
@@ -29,28 +29,28 @@ h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 /* Artboard: --u is one design pixel at the current width */
 .slide{container-type:inline-size;scroll-snap-align:center;background:var(--slide)}
 .stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:1504/846;
-  padding:calc(var(--u)*88) calc(var(--u)*96) calc(var(--u)*64);display:grid;grid-template-rows:auto 1fr auto}
+  padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);display:grid;grid-template-rows:auto 1fr auto}
 
 /* Row 1: title and meta share a baseline */
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
 .title{font:600 calc(var(--u)*60)/1 var(--head);letter-spacing:-.035em;color:var(--ink);margin-left:calc(var(--u)*-2)}
-.mono{font:400 max(10px,calc(var(--u)*13))/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.mono{font:400 max(10px,calc(var(--u)*12))/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
 /* Row 2: content starts on a fixed line (y=320); screen slides start higher */
-.content{padding-top:calc(var(--u)*152);display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);align-content:start}
+.content{padding-top:calc(var(--u)*144);display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);align-content:start}
 .screens .content{padding-top:calc(var(--u)*72)}
 .content > *{grid-column:1 / -1}
 
 /* Type */
-.statement{grid-column:1 / span 9;font:400 calc(var(--u)*40)/calc(var(--u)*52) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
+.statement{grid-column:1 / span 9;font:400 calc(var(--u)*40)/calc(var(--u)*48) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
 .statement b{font-weight:500;color:var(--ink)}
-.sub{font:600 calc(var(--u)*24)/calc(var(--u)*32) var(--head);letter-spacing:-.02em;color:var(--ink)}
-.text{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:var(--grey);text-wrap:pretty}
-.small{font:400 calc(var(--u)*18)/calc(var(--u)*28) var(--body);color:var(--grey)}
+.sub{font:600 calc(var(--u)*24)/calc(var(--u)*36) var(--head);letter-spacing:-.02em;color:var(--ink)}
+.text{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:var(--grey);text-wrap:pretty}
+.small{font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
 
 /* Facts (label 8 above value) */
-.facts{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*64)}
-.fact{display:grid;gap:calc(var(--u)*8);align-content:start}
+.facts{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*60)}
+.fact{display:grid;gap:calc(var(--u)*12);align-content:start}
 .fact:nth-child(1){grid-column:1 / span 3}.fact:nth-child(2){grid-column:4 / span 5}
 .fact .v{font:500 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--ink)}
 
@@ -58,20 +58,20 @@ h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 .cols{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*24)}
 .c6{grid-column:span 6}.c4{grid-column:span 4}.c5{grid-column:span 5}
 .col{display:grid;gap:calc(var(--u)*12);align-content:start}
-.col .mono{margin-bottom:calc(var(--u)*4)}
-.list{list-style:none;display:grid;gap:calc(var(--u)*4);margin-top:calc(var(--u)*12);align-content:start}
+.col .mono{margin-bottom:0}
+.list{list-style:none;display:grid;gap:calc(var(--u)*6);margin-top:calc(var(--u)*12);align-content:start}
 ol.list{gap:0;margin-top:0}
 ol.list li:last-child{border-bottom:1px solid var(--rule)}
 ol.list{counter-reset:n}
-ol.list li{counter-increment:n;display:grid;grid-template-columns:calc(var(--u)*48) 1fr;padding-block:calc(var(--u)*16);border-top:1px solid var(--rule)}
-ol.list li::before{content:counter(n,decimal-leading-zero);font:400 calc(var(--u)*13)/calc(var(--u)*32) var(--mono);letter-spacing:.08em;color:var(--faint)}
-ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:var(--ink)}
-.opt{padding-top:calc(var(--u)*20);border-top:1px solid var(--rule)}
+ol.list li{counter-increment:n;display:grid;grid-template-columns:calc(var(--u)*48) 1fr;padding-block:calc(var(--u)*12);border-top:1px solid var(--rule)}
+ol.list li::before{content:counter(n,decimal-leading-zero);font:400 calc(var(--u)*12)/calc(var(--u)*36) var(--mono);letter-spacing:.08em;color:var(--faint)}
+ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:var(--ink)}
+.opt{padding-top:calc(var(--u)*24);border-top:1px solid var(--rule)}
 .opt.sel{border-top:2px solid var(--ink)}
 .opt.sel .mono{color:var(--accent)}
 
 /* Diagrams */
-.dia{width:100%;height:auto;max-height:calc(var(--u)*300);margin-bottom:calc(var(--u)*32)}
+.dia{width:100%;height:auto;max-height:calc(var(--u)*288);margin-bottom:calc(var(--u)*36)}
 .dia .ln{stroke:var(--rule);stroke-width:1.5;fill:none}
 .dia .dot{fill:var(--rule)}
 .dia .ic{stroke:var(--grey);fill:none;stroke-width:1.6}
@@ -90,11 +90,11 @@ ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:v
 .frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
 .frame .ph{font:400 max(10px,calc(var(--u)*13))/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1em}
 .shot.after .mono{color:var(--ink)}
-.foot{grid-column:2 / span 8;margin-top:calc(var(--u)*32);font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
+.foot{grid-column:2 / span 8;margin-top:calc(var(--u)*36);font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
 
 /* Results */
 .nums{display:grid}
-.nums div{display:grid;grid-template-columns:calc(var(--u)*196) 1fr;align-items:baseline;padding-block:calc(var(--u)*20);border-top:1px solid var(--rule)}
+.nums div{display:grid;grid-template-columns:calc(var(--u)*196) 1fr;align-items:baseline;padding-block:calc(var(--u)*24);border-top:1px solid var(--rule)}
 .nums b{font:600 calc(var(--u)*40)/1 var(--head);letter-spacing:-.03em;color:var(--ink)}
 
 /* Folio */
@@ -104,9 +104,9 @@ ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:v
 .slide.divider{background:var(--divider)}
 .divider .stage{grid-template-rows:auto 1fr auto}
 .divider .mono{color:#7F8786}
-.divider .big{align-self:end;display:grid;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*64)}
+.divider .big{align-self:end;display:grid;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*60)}
 .divider h2{font:600 calc(var(--u)*144)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider);margin-left:calc(var(--u)*-6)}
-.divider .by{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:#9AA2A1}
+.divider .by{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:#9AA2A1}
 
 /* Lightbox */
 dialog{border:0;padding:0;background:transparent;max-width:min(92vw,1600px);width:100%}
@@ -151,14 +151,14 @@ dialog[open]{animation:pop .3s var(--ease)}
 
 <section class="slide divider" data-name="Multi Location"><div class="stage">
   <div class="head"><span class="mono">Case Study — 001</span><span class="mono">GlossGenius</span></div>
-  <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every primary workflow for businesses with more than one location.</p></div>
+  <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every core workflow for multi-location businesses.</p></div>
   <div class="folio"><span class="mono">Lead Product Designer</span><span class="mono">2025</span></div>
 </div></section>
 
 <section class="slide" data-name="Opportunity"><div class="stage">
   <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
   <div class="content">
-    <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+    <p class="statement">GlossGenius was built for <b>single-location</b> salons. Moving upmarket meant supporting <b>multi-location</b> businesses, but every workflow assumed one location.</p>
     <div class="facts">
       <div class="fact"><span class="mono">Role</span><span class="v">Lead Product Designer</span></div>
       <div class="fact"><span class="mono">Scope</span><span class="v">Locations, staff, services, settings, calendar, clients</span></div>
@@ -177,7 +177,7 @@ dialog[open]{animation:pop .3s var(--ease)}
           <line class="ln" x1="260" y1="72" x2="260" y2="170"/><circle class="dot" cx="260" cy="170" r="3"/>
           <use href="#globe" class="ic" x="232" y="186" width="56" height="56"/><text x="310" y="222">Biz</text>
         </svg>
-        <span class="mono">Today</span><p class="sub">One business, one location</p><p class="text">Every workflow assumed a single place.</p>
+        <span class="mono">Today</span><p class="sub">One business, one location</p><p class="text">Every workflow assumed one place.</p>
       </div>
       <div class="col c5" style="grid-column:7 / span 5">
         <svg class="dia" viewBox="56 0 464 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Tomorrow: one business, three locations">
@@ -188,7 +188,7 @@ dialog[open]{animation:pop .3s var(--ease)}
           <circle class="dot" cx="80" cy="268" r="3"/><circle class="dot" cx="260" cy="268" r="3"/><circle class="dot" cx="440" cy="268" r="3"/>
           <use href="#pin" class="ic a" x="60" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="240" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="420" y="278" width="40" height="40"/>
         </svg>
-        <span class="mono">Tomorrow</span><p class="sub">One business, many locations</p><p class="text">Every workflow has to work across all of them.</p>
+        <span class="mono">Tomorrow</span><p class="sub">One business, many locations</p><p class="text">Every workflow must span all of them.</p>
       </div>
     </div>
   </div>
@@ -199,10 +199,10 @@ dialog[open]{animation:pop .3s var(--ease)}
   <div class="head"><h3 class="title">Core needs</h3><span class="mono">Research</span></div>
   <div class="content">
     <div class="cols">
-      <div class="col c5"><span class="mono">Owner</span><p class="sub">How do I manage my overall business?</p>
-        <ul class="list small"><li>View all clients across locations</li><li>Track sales across locations</li><li>See analytics for the entire business</li></ul></div>
-      <div class="col c5" style="grid-column:7 / span 5"><span class="mono">Operator</span><p class="sub">How do I keep running each location?</p>
-        <ul class="list small"><li>Book an appointment at a location</li><li>Edit my schedule per location</li><li>Manage inventory per location</li></ul></div>
+      <div class="col c5"><span class="mono">Owner</span><p class="sub">Manage the whole business</p>
+        <ul class="list small"><li>Clients across locations</li><li>Sales across locations</li><li>Business-wide analytics</li></ul></div>
+      <div class="col c5" style="grid-column:7 / span 5"><span class="mono">Operator</span><p class="sub">Run each location</p>
+        <ul class="list small"><li>Book at a location</li><li>Schedule per location</li><li>Inventory per location</li></ul></div>
     </div>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
@@ -211,7 +211,7 @@ dialog[open]{animation:pop .3s var(--ease)}
 <section class="slide" data-name="Principle"><div class="stage">
   <div class="head"><h3 class="title">Principle</h3><span class="mono">Approach</span></div>
   <div class="content">
-    <p class="statement">Manage <b>globally</b>, with the flexibility to operate <b>locally</b>. Every surface had to serve the owner's overview and the operator's day.</p>
+    <p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -226,7 +226,7 @@ dialog[open]{animation:pop .3s var(--ease)}
           <line class="ln" x1="144" y1="62" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
           <rect class="ic" x="122" y="274" width="44" height="44" rx="6"/><text class="k" x="188" y="304">Workflows</text>
         </svg>
-        <span class="mono">Current</span><p class="sub">Workflows sit under the business</p>
+        <span class="mono">Current</span><p class="sub">Business, then workflows</p>
       </div>
       <div class="col c5" style="grid-column:7 / span 5">
         <svg class="dia" viewBox="120 0 400 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="New IA: business, then locations, then workflows">
@@ -236,7 +236,7 @@ dialog[open]{animation:pop .3s var(--ease)}
           <line class="ln" x1="144" y1="198" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
           <rect class="ic" x="122" y="274" width="44" height="44" rx="6"/><text class="k" x="188" y="304">Workflows</text>
         </svg>
-        <span class="mono">New</span><p class="sub">Locations become a layer between</p>
+        <span class="mono">New</span><p class="sub">Business, locations, then workflows</p>
       </div>
     </div>
   </div>
@@ -247,9 +247,9 @@ dialog[open]{animation:pop .3s var(--ease)}
   <div class="head"><h3 class="title">Switching locations</h3><span class="mono">Key decision</span></div>
   <div class="content">
     <div class="cols">
-      <div class="col c4 opt"><span class="mono">Option a</span><p class="sub">Global</p><p class="small">One switcher for the whole app. No central view for owners.</p></div>
-      <div class="col c4 opt sel"><span class="mono">Selected</span><p class="sub">Per workflow</p><p class="small">"Team at Soho." Works for owners and operators at any number of locations.</p></div>
-      <div class="col c4 opt"><span class="mono">Option c</span><p class="sub">Hybrid</p><p class="small">Both switchers, with conflicting logic and an extra step.</p></div>
+      <div class="col c4 opt"><span class="mono">Option a</span><p class="sub">Global</p><p class="small">One switcher for everything. No owner overview.</p></div>
+      <div class="col c4 opt sel"><span class="mono">Selected</span><p class="sub">Per workflow</p><p class="small">"Team at Soho." Scales for owners and operators.</p></div>
+      <div class="col c4 opt"><span class="mono">Option c</span><p class="sub">Hybrid</p><p class="small">Two switchers, conflicting logic.</p></div>
     </div>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
@@ -259,8 +259,8 @@ dialog[open]{animation:pop .3s var(--ease)}
   <div class="head"><h3 class="title">Shared patterns</h3><span class="mono">System</span></div>
   <div class="content">
     <div class="cols">
-      <ol class="list c6"><li><span>Set a default, override per location</span></li><li><span>Assign people and services to locations</span></li><li><span>"[Surface] at [Location]" switcher</span></li></ol>
-      <ol class="list c6" style="counter-reset:n 3"><li><span>Bulk actions by default</span></li><li><span>Pickers that scale to 20+ locations</span></li></ol>
+      <ol class="list c6"><li><span>Default, then override per location</span></li><li><span>Assign people and services to locations</span></li><li><span>[Surface] at [Location]</span></li></ol>
+      <ol class="list c6" style="counter-reset:n 3"><li><span>Bulk by default</span></li><li><span>Scales to 20+ locations</span></li></ol>
     </div>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
@@ -273,7 +273,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: business switcher"><span class="ph">Business switcher<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: add location flow"><span class="ph">Add location flow<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">A new location starts from an existing one: hours, services, staff and settings carry over.</p>
+    <p class="foot">New locations copy hours, services, staff and settings.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -285,7 +285,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: service creation"><span class="ph">Current service creation<br>M2 Service Management</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: location and staff customization"><span class="ph">Location & staff customization<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">Created once, offered per location, priced per member.</p>
+    <p class="foot">Create once. Offer per location. Price per member.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -297,7 +297,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current invite flow"><span class="ph">Current flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated invite flow"><span class="ph">Updated invite flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">Locations and per-location schedules are part of the invite, so new members are bookable on day one.</p>
+    <p class="foot">Locations and schedules set at invite. Bookable on day one.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -309,7 +309,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current staff surface"><span class="ph">Current staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated staff surface"><span class="ph">Updated staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">"Team at [Location]" shows who works where, and when.</p>
+    <p class="foot">Team at [Location]: who works where, and when.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -321,7 +321,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: settings home"><span class="ph">Settings home<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: booking settings across locations"><span class="ph">Booking settings across locations<br>MBR Deepdive 05/16</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">Standard across locations, with a soft warning when one location drifts.</p>
+    <p class="foot">One standard, with a soft warning when a location drifts.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -333,7 +333,7 @@ dialog[open]{animation:pop .3s var(--ease)}
       <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: single-location calendar"><span class="ph">Single-location calendar<br>DLT 05/08</span></button><figcaption class="mono">Before</figcaption></figure>
       <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: calendar location switcher"><span class="ph">Location switcher & live preview<br>DLT 05/08</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
-    <p class="foot">Book at any location, with one shared client list.</p>
+    <p class="foot">Book at any location. One client list.</p>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
@@ -342,9 +342,9 @@ dialog[open]{animation:pop .3s var(--ease)}
   <div class="head"><h3 class="title">Results</h3><span class="mono">Outcome</span></div>
   <div class="content">
     <div class="nums" style="grid-column:1 / span 8">
-      <div><b>—</b><span class="text">To add: what shipped</span></div>
-      <div><b>—</b><span class="text">To add: plan upgrades or adoption</span></div>
-      <div><b>—</b><span class="text">To add: customer feedback</span></div>
+      <div><b>—</b><span class="text">What shipped</span></div>
+      <div><b>—</b><span class="text">Adoption or plan upgrades</span></div>
+      <div><b>—</b><span class="text">Customer feedback</span></div>
     </div>
   </div>
   <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
