@@ -2,122 +2,142 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
-/* Layout: 16:9 slides on a dark presentation canvas. One system on every slide:
-   title top-left as a plain label, a calm content zone, two levels of type, nothing else.
+/* Layout: 1504×846 slides on a 12-column grid (96 margins, 24 gutters) with an 8px vertical unit.
+   Every slide: title row (title + meta on one baseline) → content from a fixed line → folio.
+   Roles: Geist = titles and subheads · Funnel Sans = everything read · Geist Mono = meta only.
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
 :root{
   color-scheme:dark;
-  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1E2322; --grey:#7A8281; --faint:#A9B0AF; --line:#C3C9C8;
-  --accent:#6663F4; --divider:#1E2322; --on-divider:#EEF1F1;
-  --sans:"Inter","Helvetica Neue",Arial,sans-serif;
+  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --faint:#959C9B; --rule:#C3C9C8;
+  --accent:#6663F4; --divider:#1B201F; --on-divider:#EEF1F1; --frame:#EEF0F0;
+  --head:"Geist","Helvetica Neue",Arial,sans-serif;
+  --body:"Funnel Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-snap-type:y proximity}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{background:var(--canvas);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11";
+body{background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:clamp(16px,4vw,56px)}
 h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-
 .deck{display:grid;gap:clamp(16px,3vw,48px);max-width:1504px;margin-inline:auto}
 
-/* A slide is a 1504×846 artboard; --u is one design pixel at the current width. */
+/* Artboard: --u is one design pixel at the current width */
 .slide{container-type:inline-size;scroll-snap-align:center;background:var(--slide)}
-.stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:16/9;padding:calc(var(--u)*96) calc(var(--u)*80) calc(var(--u)*80);
-  display:grid;grid-template-rows:auto 1fr;gap:calc(var(--u)*72);font-size:max(14px,calc(var(--u)*24));line-height:1.4;color:var(--grey)}
-.stage > .body{display:grid;align-content:center;gap:calc(var(--u)*48);min-height:0}
+.stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:1504/846;
+  padding:calc(var(--u)*88) calc(var(--u)*96) calc(var(--u)*64);display:grid;grid-template-rows:auto 1fr auto}
 
-/* Two levels of type */
-.title{font-size:max(22px,calc(var(--u)*48));font-weight:400;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
-.meta{position:absolute;top:calc(var(--u)*108);right:calc(var(--u)*80);font-size:max(11px,calc(var(--u)*16));color:var(--faint);display:flex;gap:.5em;align-items:center}
-.meta svg{width:1.4em;height:1.4em;stroke:currentColor;fill:none;stroke-width:1.5}
-.statement{font-size:max(19px,calc(var(--u)*48));line-height:1.3;letter-spacing:-.015em;color:var(--grey);max-width:calc(var(--u)*1160)}
-.statement b{font-weight:400;color:var(--ink)}
-.sub{font-size:max(15px,calc(var(--u)*26));font-weight:600;letter-spacing:-.01em;color:var(--ink)}
-.small{font-size:max(12px,calc(var(--u)*18));color:var(--grey)}
-.note{display:flex;gap:calc(var(--u)*20);align-items:center;font-size:max(13px,calc(var(--u)*20));font-weight:600;color:var(--ink)}
-.note i{flex:none;width:max(24px,calc(var(--u)*40));aspect-ratio:1;border-radius:50%;background:var(--ink);display:grid;place-items:center}
-.note i svg{width:50%;fill:var(--slide)}
+/* Row 1: title and meta share a baseline */
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.title{font:600 calc(var(--u)*60)/1 var(--head);letter-spacing:-.035em;color:var(--ink);margin-left:calc(var(--u)*-2)}
+.mono{font:400 max(10px,calc(var(--u)*13))/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
-/* Columns */
-.cols{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:calc(var(--u)*64)}
-.col{display:grid;gap:calc(var(--u)*20);align-content:start}
-.list{list-style:none;display:grid;gap:calc(var(--u)*8)}
+/* Row 2: content starts on a fixed line (y=320); screen slides start higher */
+.content{padding-top:calc(var(--u)*152);display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);align-content:start}
+.screens .content{padding-top:calc(var(--u)*72)}
+.content > *{grid-column:1 / -1}
+
+/* Type */
+.statement{grid-column:1 / span 9;font:400 calc(var(--u)*40)/calc(var(--u)*52) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
+.statement b{font-weight:500;color:var(--ink)}
+.sub{font:600 calc(var(--u)*24)/calc(var(--u)*32) var(--head);letter-spacing:-.02em;color:var(--ink)}
+.text{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:var(--grey);text-wrap:pretty}
+.small{font:400 calc(var(--u)*18)/calc(var(--u)*28) var(--body);color:var(--grey)}
+
+/* Facts (label 8 above value) */
+.facts{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*64)}
+.fact{display:grid;gap:calc(var(--u)*8);align-content:start}
+.fact:nth-child(1){grid-column:1 / span 3}.fact:nth-child(2){grid-column:4 / span 5}
+.fact .v{font:500 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--ink)}
+
+/* Columns on the grid */
+.cols{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*24)}
+.c6{grid-column:span 6}.c4{grid-column:span 4}.c5{grid-column:span 5}
+.col{display:grid;gap:calc(var(--u)*12);align-content:start}
+.col .mono{margin-bottom:calc(var(--u)*4)}
+.list{list-style:none;display:grid;gap:calc(var(--u)*4);margin-top:calc(var(--u)*12);align-content:start}
+ol.list{gap:0;margin-top:0}
+ol.list li:last-child{border-bottom:1px solid var(--rule)}
 ol.list{counter-reset:n}
-ol.list li{counter-increment:n;display:grid;grid-template-columns:1.4em 1fr}
-ol.list li::before{content:counter(n) ".";color:var(--faint)}
-.people{display:flex;gap:calc(var(--u)*96);font-size:max(11px,calc(var(--u)*15))}
-.people div{display:grid;gap:calc(var(--u)*4)}
-.people b{font-weight:600;color:var(--ink)}
+ol.list li{counter-increment:n;display:grid;grid-template-columns:calc(var(--u)*48) 1fr;padding-block:calc(var(--u)*16);border-top:1px solid var(--rule)}
+ol.list li::before{content:counter(n,decimal-leading-zero);font:400 calc(var(--u)*13)/calc(var(--u)*32) var(--mono);letter-spacing:.08em;color:var(--faint)}
+ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:var(--ink)}
+.opt{padding-top:calc(var(--u)*20);border-top:1px solid var(--rule)}
+.opt.sel{border-top:2px solid var(--ink)}
+.opt.sel .mono{color:var(--accent)}
 
-/* Divider slides */
-.slide.divider{background:var(--divider)}
-.divider .stage{grid-template-rows:1fr auto;color:var(--on-divider)}
-.divider .kicker{font-size:max(11px,calc(var(--u)*15));color:#8C9493;align-self:end}
-.divider h2{font-size:max(36px,calc(var(--u)*120));font-weight:800;line-height:.95;letter-spacing:-.035em;color:var(--on-divider)}
-.divider .by{font-size:max(13px,calc(var(--u)*22));color:#8C9493;margin-top:calc(var(--u)*28)}
-
-/* Diagrams: thin connectors, junction dots, outline icons */
-.dia{width:100%;height:auto;max-height:calc(var(--u)*380)}
-.dia .ln{stroke:var(--line);stroke-width:1.5;fill:none}
-.dia .dot{fill:var(--line)}
+/* Diagrams */
+.dia{width:100%;height:auto;max-height:calc(var(--u)*300);margin-bottom:calc(var(--u)*32)}
+.dia .ln{stroke:var(--rule);stroke-width:1.5;fill:none}
+.dia .dot{fill:var(--rule)}
 .dia .ic{stroke:var(--grey);fill:none;stroke-width:1.6}
 .dia .ic.a{stroke:var(--accent)}
-.dia text{font-family:var(--sans);font-size:22px;font-weight:500;fill:var(--grey)}
-.dia text.k{fill:var(--ink)}
-.dia text.a{fill:var(--accent)}
-
-/* Options (switcher models) */
-.opt{display:grid;gap:calc(var(--u)*14);align-content:start;padding-top:calc(var(--u)*20);border-top:1px solid var(--line)}
-.opt.sel{border-top:2px solid var(--ink)}
-.opt .cap{font-size:max(11px,calc(var(--u)*16));color:var(--faint)}
-.opt.sel .cap{color:var(--accent)}
+.dia text{font-family:var(--body);font-size:22px;fill:var(--grey)}
+.dia text.k{fill:var(--ink);font-family:var(--head);font-weight:500}
+.dia text.a{fill:var(--accent);font-family:var(--head);font-weight:500}
 
 /* Screens */
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:calc(var(--u)*40)}
-.shot{display:grid;gap:calc(var(--u)*16);justify-items:center}
-.frame{width:100%;aspect-ratio:1512/1072;border-radius:max(4px,calc(var(--u)*10));overflow:hidden;background:#EEF0F0;
-  box-shadow:0 0 0 1px rgb(30 35 34 / .06),0 calc(var(--u)*12) calc(var(--u)*32) calc(var(--u)*-12) rgb(30 35 34 / .25);
-  display:grid;place-items:center;cursor:zoom-in;transition:transform .35s var(--ease),box-shadow .35s var(--ease);border:0;padding:0;font:inherit;color:inherit}
-.frame:hover{transform:translateY(calc(var(--u)*-4));box-shadow:0 0 0 1px rgb(30 35 34 / .06),0 calc(var(--u)*20) calc(var(--u)*40) calc(var(--u)*-12) rgb(30 35 34 / .3)}
+.pair{grid-column:2 / span 10;display:grid;grid-template-columns:1fr 1fr;column-gap:calc(var(--u)*24)}
+.shot{display:grid;gap:calc(var(--u)*12)}
+.frame{width:100%;aspect-ratio:1512/1072;border-radius:calc(var(--u)*8);overflow:hidden;background:var(--frame);border:0;padding:0;color:inherit;
+  box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*10) calc(var(--u)*28) calc(var(--u)*-12) rgb(27 32 31 / .25);
+  display:grid;place-items:center;cursor:zoom-in;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.frame:hover{transform:translateY(calc(var(--u)*-4));box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*20) calc(var(--u)*40) calc(var(--u)*-12) rgb(27 32 31 / .3)}
 .frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
-.frame .ph{font-size:max(11px,calc(var(--u)*15));color:var(--faint);text-align:center;padding:1em;line-height:1.5}
-.shot figcaption{font-size:max(12px,calc(var(--u)*20));color:var(--grey)}
-.shot.after figcaption{color:var(--ink)}
-.foot{font-size:max(12px,calc(var(--u)*18));color:var(--grey);max-width:calc(var(--u)*860)}
+.frame .ph{font:400 max(10px,calc(var(--u)*13))/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1em}
+.shot.after .mono{color:var(--ink)}
+.foot{grid-column:2 / span 8;margin-top:calc(var(--u)*32);font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
 
 /* Results */
-.nums{display:grid;gap:calc(var(--u)*28)}
-.nums div{display:grid;grid-template-columns:calc(var(--u)*140) 1fr;align-items:baseline;gap:calc(var(--u)*24)}
-.nums b{font-size:max(20px,calc(var(--u)*40));font-weight:400;color:var(--ink);letter-spacing:-.02em}
+.nums{display:grid}
+.nums div{display:grid;grid-template-columns:calc(var(--u)*196) 1fr;align-items:baseline;padding-block:calc(var(--u)*20);border-top:1px solid var(--rule)}
+.nums b{font:600 calc(var(--u)*40)/1 var(--head);letter-spacing:-.03em;color:var(--ink)}
+
+/* Folio */
+.folio{display:flex;justify-content:space-between;align-items:baseline}
+
+/* Divider */
+.slide.divider{background:var(--divider)}
+.divider .stage{grid-template-rows:auto 1fr auto}
+.divider .mono{color:#7F8786}
+.divider .big{align-self:end;display:grid;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*64)}
+.divider h2{font:600 calc(var(--u)*144)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider);margin-left:calc(var(--u)*-6)}
+.divider .by{font:400 calc(var(--u)*22)/calc(var(--u)*32) var(--body);color:#9AA2A1}
 
 /* Lightbox */
 dialog{border:0;padding:0;background:transparent;max-width:min(92vw,1600px);width:100%}
 dialog::backdrop{background:rgb(8 9 10 / .86)}
-dialog img,dialog .ph-big{width:100%;border-radius:8px;display:block;background:#EEF0F0}
-dialog .ph-big{aspect-ratio:1512/1072;display:grid;place-items:center;color:var(--grey);font:400 15px/1.5 var(--sans)}
-dialog form{position:absolute;top:-44px;right:0}
-dialog button{background:none;border:0;color:#C9CFCE;font:400 14px var(--sans);cursor:pointer;padding:8px}
+dialog img,dialog .ph-big{width:100%;border-radius:8px;display:block;background:var(--frame)}
+dialog .ph-big{aspect-ratio:1512/1072;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+dialog form{position:absolute;top:-40px;right:0}
+dialog button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:8px}
 dialog[open]{animation:pop .3s var(--ease)}
-@keyframes pop{from{transform:scale(.98)}to{transform:none}}
+@keyframes pop{from{transform:scale(.985)}to{transform:none}}
 @media (prefers-reduced-motion:reduce){dialog[open]{animation:none}.frame{transition:none}}
 
-/* Narrow screens: drop the fixed ratio so type stays readable */
+/* Narrow screens: drop the fixed ratio and floor the type so it stays readable */
 @media (max-width:760px){
-  .stage{aspect-ratio:auto;padding:28px 20px 32px;gap:28px;min-height:0}
-  .divider .stage{min-height:62vw;padding-top:48px}
-  .meta{position:static;justify-self:start;margin-top:-16px}
-  .cols,.pair{grid-template-columns:1fr;gap:24px}
-  .people{gap:32px;flex-wrap:wrap}
-  .nums div{grid-template-columns:72px 1fr}
+  .stage{aspect-ratio:auto;padding:28px 20px 24px;gap:0}
+  .title{font-size:30px}
+  .content,.screens .content{padding-top:32px;padding-bottom:32px}
+  .statement{grid-column:1 / -1;font-size:20px;line-height:28px}
+  .sub{font-size:17px;line-height:24px}.text{font-size:15px;line-height:22px}.small,.foot,.fact .v{font-size:14px;line-height:20px}
+  .c6,.c4,.c5,.pair,.foot{grid-column:1 / -1}
+  .cols{row-gap:28px}.pair{grid-template-columns:1fr;row-gap:20px}
+  .fact:nth-child(1),.fact:nth-child(2){grid-column:1 / -1}.facts{row-gap:16px;margin-top:28px}
+  ol.list li span{font-size:15px;line-height:22px}ol.list li{grid-template-columns:36px 1fr;padding-block:10px}
+  .nums b{font-size:26px}.nums div{grid-template-columns:72px 1fr;padding-block:12px}
+  .divider .stage{min-height:70vw}.divider h2{font-size:48px}.divider .by{font-size:15px;line-height:22px}
+  .dia{max-height:220px;margin-bottom:16px}
 }
 
 /* Deck chrome */
-.count{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));font:400 12px/1 var(--sans);color:#6E7473;font-variant-numeric:tabular-nums;z-index:5}
-.count b{color:#D7DCDB;font-weight:500}
+.count{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));font:400 11px/1 var(--mono);letter-spacing:.08em;color:#6E7473;font-variant-numeric:tabular-nums;z-index:5}
+.count b{color:#D7DCDB;font-weight:400}
 @media (max-width:760px){.count{display:none}}
 </style>
 
@@ -125,195 +145,209 @@ dialog[open]{animation:pop .3s var(--ease)}
   <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
   <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z"/></symbol>
   <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6"/></symbol>
-  <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
-  <symbol id="bolt" viewBox="0 0 24 24"><path d="M13.5 2 5 13.5h6L10 22l9-12h-6.2z"/></symbol>
 </svg>
 
 <main class="deck">
 
 <section class="slide divider" data-name="Multi Location"><div class="stage">
-  <p class="kicker">Case Study — 001</p>
-  <div><h2>Multi<br>Location</h2><p class="by">GlossGenius — Lead Product Designer</p></div>
+  <div class="head"><span class="mono">Case Study — 001</span><span class="mono">GlossGenius</span></div>
+  <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every primary workflow for businesses with more than one location.</p></div>
+  <div class="folio"><span class="mono">Lead Product Designer</span><span class="mono">2025</span></div>
 </div></section>
 
 <section class="slide" data-name="Opportunity"><div class="stage">
-  <h3 class="title">Opportunity</h3>
-  <span class="meta">Apr – Oct 2025 <svg><use href="#clock"/></svg></span>
-  <div class="body">
+  <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+  <div class="content">
     <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
-    <p class="note"><i><svg viewBox="0 0 24 24"><use href="#bolt"/></svg></i>Not a feature. A new dimension across the whole product.</p>
-    <div class="people"><div><b>Role</b>Lead Product Designer</div><div><b>Scope</b>Locations, staff, services, settings, calendar, clients</div></div>
+    <div class="facts">
+      <div class="fact"><span class="mono">Role</span><span class="v">Lead Product Designer</span></div>
+      <div class="fact"><span class="mono">Scope</span><span class="v">Locations, staff, services, settings, calendar, clients</span></div>
+    </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Today, tomorrow"><div class="stage">
-  <h3 class="title">One location to many</h3>
-  <div class="body">
+<section class="slide" data-name="One to many"><div class="stage">
+  <div class="head"><h3 class="title">One location to many</h3><span class="mono">Context</span></div>
+  <div class="content" style="padding-top:calc(var(--u)*96)">
     <div class="cols">
-      <div class="col">
-        <svg class="dia" viewBox="0 0 520 330" role="img" aria-label="Today: one user, one business">
+      <div class="col c5">
+        <svg class="dia" viewBox="232 0 288 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Today: one user, one business">
           <use href="#person" class="ic" x="232" y="0" width="56" height="56"/><text x="310" y="36">User</text>
           <line class="ln" x1="260" y1="72" x2="260" y2="170"/><circle class="dot" cx="260" cy="170" r="3"/>
           <use href="#globe" class="ic" x="232" y="186" width="56" height="56"/><text x="310" y="222">Biz</text>
         </svg>
-        <p class="sub">Today</p><p>Every workflow assumes one business and one location.</p>
+        <span class="mono">Today</span><p class="sub">One business, one location</p><p class="text">Every workflow assumed a single place.</p>
       </div>
-      <div class="col">
-        <svg class="dia" viewBox="0 0 520 330" role="img" aria-label="Tomorrow: one business, three locations">
+      <div class="col c5" style="grid-column:7 / span 5">
+        <svg class="dia" viewBox="56 0 464 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Tomorrow: one business, three locations">
           <use href="#person" class="ic" x="232" y="0" width="56" height="56"/><text x="310" y="36">User</text>
           <line class="ln" x1="260" y1="72" x2="260" y2="170"/><circle class="dot" cx="260" cy="170" r="3"/>
           <use href="#globe" class="ic" x="232" y="186" width="56" height="56"/><text x="310" y="222">Biz</text>
-          <line class="ln" x1="260" y1="252" x2="260" y2="270"/><line class="ln" x1="80" y1="270" x2="440" y2="270"/>
-          <circle class="dot" cx="80" cy="270" r="3"/><circle class="dot" cx="260" cy="270" r="3"/><circle class="dot" cx="440" cy="270" r="3"/>
-          <use href="#pin" class="ic a" x="60" y="282" width="40" height="40"/><use href="#pin" class="ic a" x="240" y="282" width="40" height="40"/><use href="#pin" class="ic a" x="420" y="282" width="40" height="40"/>
+          <line class="ln" x1="260" y1="252" x2="260" y2="268"/><line class="ln" x1="80" y1="268" x2="440" y2="268"/>
+          <circle class="dot" cx="80" cy="268" r="3"/><circle class="dot" cx="260" cy="268" r="3"/><circle class="dot" cx="440" cy="268" r="3"/>
+          <use href="#pin" class="ic a" x="60" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="240" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="420" y="278" width="40" height="40"/>
         </svg>
-        <p class="sub">Tomorrow</p><p>Every workflow has to work across many locations.</p>
+        <span class="mono">Tomorrow</span><p class="sub">One business, many locations</p><p class="text">Every workflow has to work across all of them.</p>
       </div>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Core needs"><div class="stage">
-  <h3 class="title">Core needs</h3>
-  <div class="body">
+  <div class="head"><h3 class="title">Core needs</h3><span class="mono">Research</span></div>
+  <div class="content">
     <div class="cols">
-      <div class="col"><p class="sub">Owner</p><p>How do I manage my overall business?</p>
+      <div class="col c5"><span class="mono">Owner</span><p class="sub">How do I manage my overall business?</p>
         <ul class="list small"><li>View all clients across locations</li><li>Track sales across locations</li><li>See analytics for the entire business</li></ul></div>
-      <div class="col"><p class="sub">Operator</p><p>How do I keep running each location?</p>
+      <div class="col c5" style="grid-column:7 / span 5"><span class="mono">Operator</span><p class="sub">How do I keep running each location?</p>
         <ul class="list small"><li>Book an appointment at a location</li><li>Edit my schedule per location</li><li>Manage inventory per location</li></ul></div>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Principle"><div class="stage">
-  <h3 class="title">Principle</h3>
-  <div class="body">
-    <p class="statement">Manage <b>globally</b>, with the flexibility to operate <b>locally</b>.</p>
+  <div class="head"><h3 class="title">Principle</h3><span class="mono">Approach</span></div>
+  <div class="content">
+    <p class="statement">Manage <b>globally</b>, with the flexibility to operate <b>locally</b>. Every surface had to serve the owner's overview and the operator's day.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="IA"><div class="stage">
-  <h3 class="title">Information architecture</h3>
-  <div class="body">
+<section class="slide" data-name="Information architecture"><div class="stage">
+  <div class="head"><h3 class="title">Information architecture</h3><span class="mono">Approach</span></div>
+  <div class="content" style="padding-top:calc(var(--u)*96)">
     <div class="cols">
-      <div class="col">
-        <svg class="dia" viewBox="0 0 520 330" role="img" aria-label="Current IA: business, then workflows">
+      <div class="col c5">
+        <svg class="dia" viewBox="120 0 400 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Current IA: business, then workflows">
           <use href="#globe" class="ic" x="120" y="0" width="48" height="48"/><text class="k" x="188" y="32">Business</text>
           <line class="ln" x1="144" y1="62" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
-          <rect class="ic" x="122" y="276" width="44" height="44" rx="6"/><text class="k" x="188" y="306">Workflows</text>
+          <rect class="ic" x="122" y="274" width="44" height="44" rx="6"/><text class="k" x="188" y="304">Workflows</text>
         </svg>
-        <p class="sub">Current</p><p>Workflows sit directly under the business.</p>
+        <span class="mono">Current</span><p class="sub">Workflows sit under the business</p>
       </div>
-      <div class="col">
-        <svg class="dia" viewBox="0 0 520 330" role="img" aria-label="New IA: business, then locations, then workflows">
-          <use href="#globe" class="ic" x="120" y="0" width="48" height="48"/><text class="k" x="188" y="32">Business</text><text x="330" y="32">Global</text>
-          <line class="ln" x1="144" y1="62" x2="144" y2="130"/><circle class="dot" cx="144" cy="130" r="3"/>
-          <use href="#pin" class="ic a" x="120" y="140" width="48" height="48"/><text class="a" x="188" y="172">Locations</text><text x="330" y="172">Local</text>
-          <line class="ln" x1="144" y1="200" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
-          <rect class="ic" x="122" y="276" width="44" height="44" rx="6"/><text class="k" x="188" y="306">Workflows</text>
+      <div class="col c5" style="grid-column:7 / span 5">
+        <svg class="dia" viewBox="120 0 400 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="New IA: business, then locations, then workflows">
+          <use href="#globe" class="ic" x="120" y="0" width="48" height="48"/><text class="k" x="188" y="32">Business</text><text x="340" y="32">Global</text>
+          <line class="ln" x1="144" y1="62" x2="144" y2="128"/><circle class="dot" cx="144" cy="128" r="3"/>
+          <use href="#pin" class="ic a" x="120" y="138" width="48" height="48"/><text class="a" x="188" y="170">Locations</text><text x="340" y="170">Local</text>
+          <line class="ln" x1="144" y1="198" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
+          <rect class="ic" x="122" y="274" width="44" height="44" rx="6"/><text class="k" x="188" y="304">Workflows</text>
         </svg>
-        <p class="sub">New</p><p>Locations become a layer between the two.</p>
+        <span class="mono">New</span><p class="sub">Locations become a layer between</p>
       </div>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Switching locations"><div class="stage">
-  <h3 class="title">Switching locations</h3>
-  <div class="body">
-    <div class="cols" style="--n:3">
-      <div class="opt"><span class="cap">Option a</span><p class="sub">Global</p><p class="small">One switcher for the whole app. No central view for owners.</p></div>
-      <div class="opt sel"><span class="cap">Selected</span><p class="sub">Per workflow</p><p class="small">"Team at Soho." Works for owners and operators at any number of locations.</p></div>
-      <div class="opt"><span class="cap">Option c</span><p class="sub">Hybrid</p><p class="small">Both, with conflicting logic and an extra step.</p></div>
+  <div class="head"><h3 class="title">Switching locations</h3><span class="mono">Key decision</span></div>
+  <div class="content">
+    <div class="cols">
+      <div class="col c4 opt"><span class="mono">Option a</span><p class="sub">Global</p><p class="small">One switcher for the whole app. No central view for owners.</p></div>
+      <div class="col c4 opt sel"><span class="mono">Selected</span><p class="sub">Per workflow</p><p class="small">"Team at Soho." Works for owners and operators at any number of locations.</p></div>
+      <div class="col c4 opt"><span class="mono">Option c</span><p class="sub">Hybrid</p><p class="small">Both switchers, with conflicting logic and an extra step.</p></div>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Shared patterns"><div class="stage">
-  <h3 class="title">Shared patterns</h3>
-  <div class="body">
+  <div class="head"><h3 class="title">Shared patterns</h3><span class="mono">System</span></div>
+  <div class="content">
     <div class="cols">
-      <ol class="list"><li>Set a default, override per location</li><li>Assign people and services to locations</li><li>"[Surface] at [Location]" switcher</li></ol>
-      <ol class="list" style="counter-reset:n 3"><li>Bulk actions by default</li><li>Pickers that scale to 20+ locations</li></ol>
+      <ol class="list c6"><li><span>Set a default, override per location</span></li><li><span>Assign people and services to locations</span></li><li><span>"[Surface] at [Location]" switcher</span></li></ol>
+      <ol class="list c6" style="counter-reset:n 3"><li><span>Bulk actions by default</span></li><li><span>Pickers that scale to 20+ locations</span></li></ol>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Add a location"><div class="stage">
-  <h3 class="title">Add a location</h3><span class="meta">M1</span>
-  <div class="body">
+<section class="slide screens" data-name="Add a location"><div class="stage">
+  <div class="head"><h3 class="title">Add a location</h3><span class="mono">M1</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: business switcher"><span class="ph">Business switcher<br>MBR Deepdive 05/16</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: add location flow"><span class="ph">Add location flow<br>Spaces TB 10/07</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: business switcher"><span class="ph">Business switcher<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: add location flow"><span class="ph">Add location flow<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">A new location starts from an existing one: hours, services, staff and settings carry over.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Services"><div class="stage">
-  <h3 class="title">Services</h3><span class="meta">M2</span>
-  <div class="body">
+<section class="slide screens" data-name="Services"><div class="stage">
+  <div class="head"><h3 class="title">Services</h3><span class="mono">M2</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: service creation"><span class="ph">Current service creation<br>M2 Service Management</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: location and staff customization"><span class="ph">Location & staff customization<br>Spaces TB 10/07</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: service creation"><span class="ph">Current service creation<br>M2 Service Management</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: location and staff customization"><span class="ph">Location & staff customization<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">Created once, offered per location, priced per member.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Staff invite"><div class="stage">
-  <h3 class="title">Staff invite</h3><span class="meta">M3</span>
-  <div class="body">
+<section class="slide screens" data-name="Staff invite"><div class="stage">
+  <div class="head"><h3 class="title">Staff invite</h3><span class="mono">M3</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current invite flow"><span class="ph">Current flow<br>Core Review ML3 08/02</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated invite flow"><span class="ph">Updated invite flow<br>Core Review ML3 08/02</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current invite flow"><span class="ph">Current flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated invite flow"><span class="ph">Updated invite flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">Locations and per-location schedules are part of the invite, so new members are bookable on day one.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Team page"><div class="stage">
-  <h3 class="title">Team page</h3><span class="meta">M3</span>
-  <div class="body">
+<section class="slide screens" data-name="Team page"><div class="stage">
+  <div class="head"><h3 class="title">Team page</h3><span class="mono">M3</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current staff surface"><span class="ph">Current staff surface<br>Core Review ML3 08/02</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated staff surface"><span class="ph">Updated staff surface<br>Core Review ML3 08/02</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current staff surface"><span class="ph">Current staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated staff surface"><span class="ph">Updated staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">"Team at [Location]" shows who works where, and when.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Settings"><div class="stage">
-  <h3 class="title">Settings</h3><span class="meta">M4</span>
-  <div class="body">
+<section class="slide screens" data-name="Settings"><div class="stage">
+  <div class="head"><h3 class="title">Settings</h3><span class="mono">M4</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: settings home"><span class="ph">Settings home<br>MBR Deepdive 05/16</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: booking settings across locations"><span class="ph">Booking settings across locations<br>MBR Deepdive 05/16</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: settings home"><span class="ph">Settings home<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: booking settings across locations"><span class="ph">Booking settings across locations<br>MBR Deepdive 05/16</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">Standard across locations, with a soft warning when one location drifts.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
-<section class="slide" data-name="Calendar"><div class="stage">
-  <h3 class="title">Calendar & clients</h3><span class="meta">M6</span>
-  <div class="body">
+<section class="slide screens" data-name="Calendar & clients"><div class="stage">
+  <div class="head"><h3 class="title">Calendar & clients</h3><span class="mono">M6</span></div>
+  <div class="content">
     <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: single-location calendar"><span class="ph">Single-location calendar<br>DLT 05/08</span></button><figcaption>Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: calendar location switcher"><span class="ph">Location switcher & live preview<br>DLT 05/08</span></button><figcaption>After</figcaption></figure>
+      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: single-location calendar"><span class="ph">Single-location calendar<br>DLT 05/08</span></button><figcaption class="mono">Before</figcaption></figure>
+      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: calendar location switcher"><span class="ph">Location switcher & live preview<br>DLT 05/08</span></button><figcaption class="mono">After</figcaption></figure>
     </div>
     <p class="foot">Book at any location, with one shared client list.</p>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 <section class="slide" data-name="Results"><div class="stage">
-  <h3 class="title">Results</h3>
-  <div class="body">
-    <div class="nums">
-      <div><b>—</b><span>To add: what shipped</span></div>
-      <div><b>—</b><span>To add: plan upgrades or adoption</span></div>
-      <div><b>—</b><span>To add: customer feedback</span></div>
+  <div class="head"><h3 class="title">Results</h3><span class="mono">Outcome</span></div>
+  <div class="content">
+    <div class="nums" style="grid-column:1 / span 8">
+      <div><b>—</b><span class="text">To add: what shipped</span></div>
+      <div><b>—</b><span class="text">To add: plan upgrades or adoption</span></div>
+      <div><b>—</b><span class="text">To add: customer feedback</span></div>
     </div>
   </div>
+  <div class="folio"><span class="mono">Multi Location</span><span class="mono" data-n></span></div>
 </div></section>
 
 </main>
@@ -325,6 +359,7 @@ dialog[open]{animation:pop .3s var(--ease)}
 (function(){
   var slides=[].slice.call(document.querySelectorAll('.slide')),count=document.getElementById('count'),cur=0;
   var pad=function(n){return String(n).padStart(2,'0')};
+  slides.forEach(function(s,i){var f=s.querySelector('[data-n]');if(f)f.textContent=pad(i+1)});
   function setCur(i){cur=i;count.innerHTML='<b>'+pad(i+1)+'</b> / '+pad(slides.length);}
   setCur(0);
   if('IntersectionObserver' in window){
@@ -333,20 +368,19 @@ dialog[open]{animation:pop .3s var(--ease)}
   }
   var dlg=document.getElementById('zoom'),body=document.getElementById('zoom-body');
   addEventListener('keydown',function(e){
-    if(dlg.open)return;
+    if(dlg.open||e.target.closest('button'))return;
     var k=e.key,n=null;
     if(k==='ArrowDown'||k==='ArrowRight'||k==='PageDown'||(k===' '&&!e.shiftKey))n=cur+1;
     if(k==='ArrowUp'||k==='ArrowLeft'||k==='PageUp'||(k===' '&&e.shiftKey))n=cur-1;
-    if(n===null||e.target.closest('button'))return;e.preventDefault();
+    if(n===null)return;e.preventDefault();
     n=Math.max(0,Math.min(slides.length-1,n));
     slides[n].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
   });
-  // Click a screen to see it large.
   document.querySelectorAll('[data-zoom]').forEach(function(b){
     b.addEventListener('click',function(){
       var img=b.querySelector('img');
-      body.innerHTML=img?'<img alt="" src="'+img.src+'">':'<div class="ph-big">'+b.querySelector('.ph').innerHTML+'</div>';
-      if(img)body.firstChild.alt=img.alt;
+      if(img){body.innerHTML='<img>';body.firstChild.src=img.src;body.firstChild.alt=img.alt;}
+      else body.innerHTML='<div class="ph-big">'+b.querySelector('.ph').innerHTML+'</div>';
       dlg.showModal();
     });
   });
