@@ -1,0 +1,66 @@
+<title>Type Pairings</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Schibsted+Grotesk:wght@400;500;600&family=DM+Mono:wght@400&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Instrument+Sans:wght@400;500;600&family=Fragment+Mono&display=swap">
+<style>
+/* Layout: one mini slide per pairing, stacked, same content so only the type changes. */
+:root{color-scheme:dark;--canvas:#0E1011;--slide:#DCE0E0;--ink:#1E2322;--grey:#6F7776;--faint:#9AA1A0;--label:#C9CFCE}
+*{box-sizing:border-box}
+body{background:var(--canvas);margin:0;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-family:system-ui,sans-serif}
+.wrap{max-width:1100px;margin-inline:auto;display:grid;gap:44px}
+.head{color:var(--label);display:grid;gap:6px}
+.head h2{margin:0;font:500 15px/1.3 system-ui,sans-serif;color:#EEF1F1}
+.head p{margin:0;font:400 13px/1.4 system-ui,sans-serif;color:#8C9493}
+.slide{container-type:inline-size;background:var(--slide)}
+.stage{--u:calc(100cqw / 1504);aspect-ratio:16/9;padding:calc(var(--u)*96) calc(var(--u)*80) calc(var(--u)*80);display:grid;grid-template-rows:auto 1fr;gap:calc(var(--u)*72);position:relative;color:var(--grey)}
+.title{margin:0;font-family:var(--sans);font-weight:500;font-size:max(18px,calc(var(--u)*48));letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
+.meta{position:absolute;top:calc(var(--u)*112);right:calc(var(--u)*80);font-family:var(--mono);font-size:max(10px,calc(var(--u)*15));letter-spacing:.02em;color:var(--faint);text-transform:uppercase}
+.body{display:grid;align-content:center;gap:calc(var(--u)*48)}
+.statement{margin:0;font-family:var(--sans);font-weight:400;font-size:max(15px,calc(var(--u)*46));line-height:1.28;letter-spacing:-.015em;max-width:calc(var(--u)*1160)}
+.statement b{font-weight:500;color:var(--ink)}
+.people{display:flex;gap:calc(var(--u)*96);flex-wrap:wrap}
+.people div{display:grid;gap:calc(var(--u)*8)}
+.people span{font-family:var(--mono);font-size:max(10px,calc(var(--u)*14));letter-spacing:.04em;text-transform:uppercase;color:var(--faint)}
+.people b{font-family:var(--sans);font-weight:500;font-size:max(11px,calc(var(--u)*20));color:var(--ink)}
+@media (max-width:640px){.stage{aspect-ratio:auto;padding:24px 18px;gap:24px}.meta{position:static}}
+</style>
+<div class="wrap">
+
+<section style="--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace">
+  <div class="head"><h2>1 · Geist + Geist Mono</h2><p>Crisp and modern, closest to Inter but with more presence. The mono is from the same family, so it blends in without effort.</p></div>
+  <div class="slide"><div class="stage">
+    <h3 class="title">Opportunity</h3><span class="meta">Apr – Oct 2025</span>
+    <div class="body"><p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+    <div class="people"><div><span>Role</span><b>Lead Product Designer</b></div><div><span>Scope</span><b>Locations, staff, services, settings</b></div></div></div>
+  </div></div>
+</section>
+
+<section style="--sans:'Schibsted Grotesk',sans-serif;--mono:'DM Mono',monospace">
+  <div class="head"><h2>2 · Schibsted Grotesk + DM Mono</h2><p>The heaviest and most editorial of the four, with a newspaper-grotesk feel. DM Mono is soft and quiet.</p></div>
+  <div class="slide"><div class="stage">
+    <h3 class="title">Opportunity</h3><span class="meta">Apr – Oct 2025</span>
+    <div class="body"><p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+    <div class="people"><div><span>Role</span><b>Lead Product Designer</b></div><div><span>Scope</span><b>Locations, staff, services, settings</b></div></div></div>
+  </div></div>
+</section>
+
+<section style="--sans:'Hanken Grotesk',sans-serif;--mono:'JetBrains Mono',monospace">
+  <div class="head"><h2>3 · Hanken Grotesk + JetBrains Mono</h2><p>Warm and slightly rounded, the closest in spirit to Basel Grotesk. JetBrains Mono is very clear at small sizes.</p></div>
+  <div class="slide"><div class="stage">
+    <h3 class="title">Opportunity</h3><span class="meta">Apr – Oct 2025</span>
+    <div class="body"><p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+    <div class="people"><div><span>Role</span><b>Lead Product Designer</b></div><div><span>Scope</span><b>Locations, staff, services, settings</b></div></div></div>
+  </div></div>
+</section>
+
+<section style="--sans:'Instrument Sans',sans-serif;--mono:'Fragment Mono',monospace">
+  <div class="head"><h2>4 · Instrument Sans + Fragment Mono</h2><p>Slightly condensed with a refined finish. Fragment Mono is built on Helvetica-like shapes, so it reads clean and neutral.</p></div>
+  <div class="slide"><div class="stage">
+    <h3 class="title">Opportunity</h3><span class="meta">Apr – Oct 2025</span>
+    <div class="body"><p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+    <div class="people"><div><span>Role</span><b>Lead Product Designer</b></div><div><span>Scope</span><b>Locations, staff, services, settings</b></div></div></div>
+  </div></div>
+</section>
+
+</div>
