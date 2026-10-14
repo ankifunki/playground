@@ -4,137 +4,155 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
-/* Layout: 1504×846 slides on a 12-column grid (96 margins, 24 gutters) with a 12px vertical unit.
-   Every slide: title row → content from a fixed line.
-   Roles: Geist = titles and subheads · Funnel Sans = everything read · Geist Mono = meta only.
-   Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
+/* Layout: a click-through deck. One 1504×846 slide fills the screen at a time (12-column grid,
+   96 margins, 24 gutters, 12px vertical unit). Roles: Geist = titles · Funnel Sans = reading ·
+   Geist Mono = meta. Single deliberate look: dark canvas, slides in the review-deck greys. */
 :root{
   color-scheme:dark;
   --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --faint:#959C9B; --rule:#C3C9C8;
-  --accent:#6663F4; --divider:#1B201F; --on-divider:#EEF1F1; --frame:#EEF0F0;
+  --accent:#6663F4; --divider:#1B201F; --on-divider:#EEF1F1; --frame:#EEF0F0; --frame-after:#F4F5FF;
   --head:"Geist","Helvetica Neue",Arial,sans-serif;
   --body:"Funnel Sans","Helvetica Neue",Arial,sans-serif;
   --mono:"Geist Mono",ui-monospace,Menlo,monospace;
-  --ease:cubic-bezier(.2,.7,.2,1);
+  --ease:cubic-bezier(.22,.8,.2,1);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-snap-type:y proximity}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:clamp(16px,4vw,56px)}
+html,body{height:100%}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow:hidden}
 h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.deck{display:grid;gap:clamp(16px,3vw,48px);max-width:1504px;margin-inline:auto}
+button{font:inherit;color:inherit}
 
-/* Artboard: --u is one design pixel at the current width */
-.slide{container-type:inline-size;scroll-snap-align:center;background:var(--slide)}
-.stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:1504/846;
-  padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);display:grid;grid-template-rows:auto 1fr}
+/* Deck: slides stacked, the active one shown */
+.deck{position:fixed;inset:0;display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.slide{grid-area:1/1;width:min(100%,calc((100dvh - 32px) * 16 / 9));container-type:inline-size;background:var(--slide);
+  opacity:0;visibility:hidden;transform:translateY(16px) scale(.995);transition:opacity .55s var(--ease),transform .7s var(--ease),visibility 0s .7s;cursor:pointer}
+.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .55s var(--ease),transform .7s var(--ease),visibility 0s}
+.slide.past{transform:translateY(-16px) scale(.995)}
+@media (prefers-reduced-motion:reduce){.slide,.slide.on,.slide.past{transform:none;transition:opacity .2s linear,visibility 0s .2s}.slide.on{transition:opacity .2s linear,visibility 0s}}
 
-/* Row 1: title and meta share a baseline */
+/* Artboard: --u is one design pixel */
+.stage{--u:calc(100cqw / 1504);position:relative;aspect-ratio:1504/846;padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);display:grid;grid-template-rows:auto 1fr}
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
 .title{font:600 calc(var(--u)*60)/1 var(--head);letter-spacing:-.035em;color:var(--ink);margin-left:calc(var(--u)*-2)}
 .mono{font:400 max(10px,calc(var(--u)*12))/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
-
-/* Row 2: content starts on a fixed line (y=320); screen slides start higher */
 .content{padding-top:calc(var(--u)*144);display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);align-content:start}
-.screens .content{padding-top:calc(var(--u)*72)}
+.screens .content{padding-top:calc(var(--u)*36)}
+.screens .stage{padding-bottom:calc(var(--u)*48)}
 .content > *{grid-column:1 / -1}
+
+/* Content settles in after the slide arrives */
+.slide .content > *{transition:transform .8s var(--ease) .12s,opacity .6s var(--ease) .12s}
+.slide:not(.on) .content > *{transform:translateY(calc(var(--u)*12));opacity:.001}
+@media (prefers-reduced-motion:reduce){.slide .content > *{transition:none}.slide:not(.on) .content > *{transform:none}}
 
 /* Type */
 .statement{grid-column:1 / span 9;font:400 calc(var(--u)*40)/calc(var(--u)*48) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
 .statement b{font-weight:500;color:var(--ink)}
 .sub{font:600 calc(var(--u)*24)/calc(var(--u)*36) var(--head);letter-spacing:-.02em;color:var(--ink)}
-.text{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:var(--grey);text-wrap:pretty}
+.text{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:var(--grey)}
 .small{font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
-
-/* Facts (label 8 above value) */
 .facts{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*60)}
 .fact{display:grid;gap:calc(var(--u)*12);align-content:start}
 .fact:nth-child(1){grid-column:1 / span 3}.fact:nth-child(2){grid-column:4 / span 5}
 .fact .v{font:500 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--ink)}
-
-/* Columns on the grid */
-.cols{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*24)}
-.c6{grid-column:span 6}.c4{grid-column:span 4}.c5{grid-column:span 5}
+.cols{display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24)}
+.c5{grid-column:span 5}.c5b{grid-column:7 / span 5}.c4{grid-column:span 4}.c6{grid-column:span 6}
 .col{display:grid;gap:calc(var(--u)*12);align-content:start}
-.col .mono{margin-bottom:0}
 .list{list-style:none;display:grid;gap:calc(var(--u)*6);margin-top:calc(var(--u)*12);align-content:start}
-ol.list{gap:0;margin-top:0}
-ol.list li:last-child{border-bottom:1px solid var(--rule)}
-ol.list{counter-reset:n}
+ol.list{counter-reset:n;gap:0;margin-top:0}
 ol.list li{counter-increment:n;display:grid;grid-template-columns:calc(var(--u)*48) 1fr;padding-block:calc(var(--u)*12);border-top:1px solid var(--rule)}
+ol.list li:last-child{border-bottom:1px solid var(--rule)}
 ol.list li::before{content:counter(n,decimal-leading-zero);font:400 calc(var(--u)*12)/calc(var(--u)*36) var(--mono);letter-spacing:.08em;color:var(--faint)}
 ol.list li span{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:var(--ink)}
 .opt{padding-top:calc(var(--u)*24);border-top:1px solid var(--rule)}
 .opt.sel{border-top:2px solid var(--ink)}
 .opt.sel .mono{color:var(--accent)}
 
-/* Diagrams */
+/* Diagrams draw in */
 .dia{width:100%;height:auto;max-height:calc(var(--u)*288);margin-bottom:calc(var(--u)*36)}
-.dia .ln{stroke:var(--rule);stroke-width:1.5;fill:none}
+.dia .ln{stroke:var(--rule);stroke-width:1.5;fill:none;stroke-dasharray:420;stroke-dashoffset:0;transition:stroke-dashoffset 1.1s var(--ease) .35s}
+.slide:not(.on) .dia .ln{stroke-dashoffset:420}
 .dia .dot{fill:var(--rule)}
 .dia .ic{stroke:var(--grey);fill:none;stroke-width:1.6}
 .dia .ic.a{stroke:var(--accent)}
+.dia .pop{transition:opacity .5s var(--ease) 1s}
+.slide:not(.on) .dia .pop{opacity:0}
 .dia text{font-family:var(--body);font-size:22px;fill:var(--grey)}
 .dia text.k{fill:var(--ink);font-family:var(--head);font-weight:500}
 .dia text.a{fill:var(--accent);font-family:var(--head);font-weight:500}
+@media (prefers-reduced-motion:reduce){.dia .ln,.dia .pop{transition:none}.slide:not(.on) .dia .ln{stroke-dashoffset:0}.slide:not(.on) .dia .pop{opacity:1}}
 
-/* Screens */
-.pair{grid-column:2 / span 10;display:grid;grid-template-columns:1fr 1fr;column-gap:calc(var(--u)*24)}
-.shot{display:grid;gap:calc(var(--u)*12)}
-.frame{width:100%;aspect-ratio:1512/1072;border-radius:calc(var(--u)*8);overflow:hidden;background:var(--frame);border:0;padding:0;color:inherit;
-  box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*10) calc(var(--u)*28) calc(var(--u)*-12) rgb(27 32 31 / .25);
-  display:grid;place-items:center;cursor:zoom-in;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.frame:hover{transform:translateY(calc(var(--u)*-4));box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*20) calc(var(--u)*40) calc(var(--u)*-12) rgb(27 32 31 / .3)}
-.frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
-.frame .ph{font:400 max(10px,calc(var(--u)*13))/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1em}
-.shot.after .mono{color:var(--ink)}
-.foot{grid-column:2 / span 8;margin-top:calc(var(--u)*36);font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
+/* Before → after: one large frame, the after wipes over the before */
+.morph{grid-column:3 / span 8;display:grid;gap:calc(var(--u)*24)}
+.frame{position:relative;width:100%;aspect-ratio:16/10;border-radius:calc(var(--u)*10);overflow:hidden;background:var(--frame);cursor:zoom-in;
+  box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*16) calc(var(--u)*40) calc(var(--u)*-16) rgb(27 32 31 / .3)}
+.layer{position:absolute;inset:0;display:grid;place-items:center;background:var(--frame)}
+.layer img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.layer.after{background:var(--frame-after);clip-path:inset(0 0 0 100%);transition:clip-path 1.1s var(--ease)}
+.layer.before{transition:transform 1.1s var(--ease),filter 1.1s var(--ease)}
+.morph.is-after .layer.after{clip-path:inset(0 0 0 0)}
+.morph.is-after .layer.before{transform:scale(.985);filter:saturate(.6)}
+.edge{position:absolute;top:0;bottom:0;left:100%;width:2px;background:var(--accent);box-shadow:0 0 calc(var(--u)*24) var(--accent);opacity:0;transition:left 1.1s var(--ease),opacity .3s}
+.morph.moving .edge{opacity:.9}
+.morph.is-after .edge{left:0}
+.ph{font:400 max(10px,calc(var(--u)*13))/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1em}
+.layer.after .ph{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.layer.after,.layer.before,.edge{transition:opacity .25s linear}.layer.after{clip-path:none;opacity:0}.morph.is-after .layer.after{opacity:1}.morph.is-after .layer.before{transform:none;filter:none}.edge{display:none}}
+.bar{display:flex;justify-content:space-between;align-items:baseline;gap:calc(var(--u)*24)}
+.toggle{display:inline-flex;gap:calc(var(--u)*24);position:relative}
+.toggle button{background:none;border:0;padding:calc(var(--u)*6) 0;cursor:pointer;font:400 max(10px,calc(var(--u)*12))/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);transition:color .3s}
+.toggle button[aria-pressed="true"]{color:var(--ink)}
+.toggle i{position:absolute;bottom:0;height:1px;background:var(--ink);transition:left .5s var(--ease),width .5s var(--ease)}
+.foot{font:400 calc(var(--u)*18)/calc(var(--u)*24) var(--body);color:var(--grey)}
 
 /* Results */
 .nums{display:grid}
 .nums div{display:grid;grid-template-columns:calc(var(--u)*196) 1fr;align-items:baseline;padding-block:calc(var(--u)*24);border-top:1px solid var(--rule)}
 .nums b{font:600 calc(var(--u)*40)/1 var(--head);letter-spacing:-.03em;color:var(--ink)}
 
-
-/* Divider */
-.logo{height:calc(var(--u)*24);width:auto;display:block}
-@media (max-width:760px){.logo{height:16px}}
+/* Cover */
 .slide.divider{background:var(--divider)}
-.divider .stage{grid-template-rows:auto 1fr}
-.divider .mono{color:#7F8786}
 .divider .big{align-self:end;display:grid;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*60)}
 .divider h2{font:600 calc(var(--u)*144)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider);margin-left:calc(var(--u)*-6)}
 .divider .by{font:400 calc(var(--u)*22)/calc(var(--u)*36) var(--body);color:#9AA2A1}
+.mark{height:calc(var(--u)*48);width:auto;display:block;color:var(--on-divider)}
+.divider .head{transition:opacity .8s var(--ease) .3s}
+.divider:not(.on) .head{opacity:0}
+
+/* Chrome: progress line and controls, shown on pointer movement */
+.progress{position:fixed;left:0;bottom:0;height:2px;background:#5A6160;width:0;transition:width .6s var(--ease);z-index:5}
+.nav{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;z-index:6;opacity:0;transition:opacity .4s}
+body.awake .nav{opacity:1}
+.nav button{width:36px;height:36px;border-radius:50%;border:1px solid #3A3F3E;background:rgb(14 16 17 / .7);color:#C9CFCE;cursor:pointer;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.nav button:hover{background:#1E2221;border-color:#5A6160}
+.nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
 
 /* Lightbox */
 dialog{border:0;padding:0;background:transparent;max-width:min(92vw,1600px);width:100%}
-dialog::backdrop{background:rgb(8 9 10 / .86)}
+dialog::backdrop{background:rgb(8 9 10 / .88)}
 dialog img,dialog .ph-big{width:100%;border-radius:8px;display:block;background:var(--frame)}
-dialog .ph-big{aspect-ratio:1512/1072;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+dialog .ph-big{aspect-ratio:16/10;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
 dialog form{position:absolute;top:-40px;right:0}
-dialog button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:8px}
-dialog[open]{animation:pop .3s var(--ease)}
-@keyframes pop{from{transform:scale(.985)}to{transform:none}}
-@media (prefers-reduced-motion:reduce){dialog[open]{animation:none}.frame{transition:none}}
+dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:8px}
 
-/* Narrow screens: drop the fixed ratio and floor the type so it stays readable */
-@media (max-width:760px){
-  .stage{aspect-ratio:auto;padding:28px 20px 24px;gap:0}
-  .title{font-size:30px}
-  .content,.screens .content{padding-top:32px;padding-bottom:32px}
-  .statement{grid-column:1 / -1;font-size:20px;line-height:28px}
-  .sub{font-size:17px;line-height:24px}.text{font-size:15px;line-height:22px}.small,.foot,.fact .v{font-size:14px;line-height:20px}
-  .c6,.c4,.c5,.pair,.foot{grid-column:1 / -1}
-  .cols{row-gap:28px}.pair{grid-template-columns:1fr;row-gap:20px}
-  .fact:nth-child(1),.fact:nth-child(2){grid-column:1 / -1}.facts{row-gap:16px;margin-top:28px}
-  ol.list li span{font-size:15px;line-height:22px}ol.list li{grid-template-columns:36px 1fr;padding-block:10px}
-  .nums b{font-size:26px}.nums div{grid-template-columns:72px 1fr;padding-block:12px}
-  .divider .stage{min-height:70vw}.divider h2{font-size:48px}.divider .by{font-size:15px;line-height:22px}
-  .dia{max-height:220px;margin-bottom:16px}
+/* Phones: slide fills the screen and scrolls inside if needed */
+@media (max-width:760px),(max-aspect-ratio:3/4){
+  .deck{padding:0;place-items:stretch}
+  .slide{width:100%;height:100%;overflow-y:auto}
+  .stage,.screens .stage{aspect-ratio:auto;min-height:100%;padding:calc(56px + env(safe-area-inset-top,0px)) 20px 88px;--u:1px}
+  .title{font-size:32px}.content{padding-top:40px}.screens .content{padding-top:28px}
+  .statement{grid-column:1 / -1;font-size:22px;line-height:30px}
+  .sub{font-size:18px;line-height:24px}.text{font-size:16px;line-height:24px}.small,.foot,.fact .v{font-size:15px;line-height:22px}
+  .c5,.c5b,.c4,.c6,.morph{grid-column:1 / -1}.cols{row-gap:32px}
+  .fact:nth-child(1),.fact:nth-child(2){grid-column:1 / -1}.facts{row-gap:20px;margin-top:32px}
+  ol.list li span{font-size:16px;line-height:24px}ol.list li{grid-template-columns:36px 1fr}ol.list li::before{line-height:24px}
+  .nums b{font-size:28px}.nums div{grid-template-columns:72px 1fr}
+  .divider h2{font-size:56px}.divider .by{font-size:16px;line-height:24px}.mark{height:36px}
+  .dia{max-height:200px}.mono{font-size:11px}
+  .nav{opacity:1}
 }
-
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -143,10 +161,12 @@ dialog[open]{animation:pop .3s var(--ease)}
   <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6"/></symbol>
 </svg>
 
-<main class="deck">
+<main class="deck" id="deck" aria-live="polite">
 
 <section class="slide divider" data-name="Multi Location"><div class="stage">
-  <div class="head"><svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 689.26 71.88" role="img" aria-label="GlossGenius"><defs><radialGradient id="gglogo0" gradientUnits="userSpaceOnUse" cx="0.5" cy="0.5" r="0.5" gradientTransform="matrix(-77.357 -58.271 80.578 -106.97 71.307 140.631)"><stop offset="0" stop-color="#f37344"/><stop offset="1" stop-color="#ea5188"/></radialGradient><radialGradient id="gglogo1" gradientUnits="userSpaceOnUse" cx="0.5" cy="0.5" r="0.5" gradientTransform="matrix(-129.567 54.226 -75.004 -179.215 167.959 63.767)"><stop offset="0" stop-color="#fcce74"/><stop offset="1" stop-color="#fcce74" stop-opacity="0"/></radialGradient><linearGradient id="gglogo2" gradientUnits="userSpaceOnUse" x1="0" y1="0.5" x2="1" y2="0.5" gradientTransform="matrix(21.87 0 0 21.87 11.58 -7.165)"><stop offset="0" stop-color="#ffcb77"/><stop offset="1" stop-color="#fbb77a" stop-opacity="0"/></linearGradient></defs><g><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 147.458 15.748)"><g transform="matrix(1 0 0 1 0 0)"><path d="M22.262 20.122L38.552 20.122L38.552 21.062C38.592 25.462 37.282 29.762 34.802 33.392C33.122 35.642 30.922 37.462 28.392 38.682C25.862 39.902 23.072 40.502 20.272 40.422C17.602 40.472 14.942 39.992 12.462 38.992C9.982 37.992 7.732 36.512 5.842 34.622C3.952 32.732 2.462 30.482 1.452 28.012C0.452 25.532 -0.038 22.882 0.002 20.212C0.002 8.842 8.722 0.002 20.392 0.002C24.702 -0.058 28.902 1.322 32.342 3.912C34.052 5.242 35.572 6.802 36.862 8.542L33.632 11.472C32.592 9.952 31.362 8.572 29.952 7.382C27.272 5.182 23.882 4.022 20.412 4.132C10.982 4.132 4.412 11.222 4.412 20.302C4.412 30.972 12.912 36.352 20.292 36.352C22.682 36.412 25.052 35.832 27.152 34.682C29.252 33.532 31.012 31.842 32.252 29.792C33.212 28.092 33.752 26.182 33.832 24.232L22.262 24.232L22.262 20.132L22.262 20.122Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 63.702 0.662)"><path d="M4.33 0L4.33 34.98L15.11 34.98L15.11 39.08L0 39.08L0 0L4.34 0L4.33 0Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 97.532 0.022)"><path d="M0 20.21C0 8.56 9.08 0 20.32 0C31.56 0 40.66 8.56 40.66 20.21C40.55 25.53 38.36 30.59 34.56 34.32C30.76 38.05 25.65 40.13 20.33 40.13C15.01 40.13 9.9 38.04 6.1 34.32C2.3 30.6 0.11 25.53 0 20.21L0 20.21ZM4.45 20.21C4.5 23.34 5.47 26.39 7.24 28.97C9.01 31.55 11.51 33.55 14.41 34.71C17.31 35.87 20.5 36.16 23.56 35.52C26.63 34.88 29.43 33.35 31.63 31.12C33.83 28.89 35.32 26.06 35.91 22.99C36.5 19.92 36.18 16.74 34.97 13.85C33.76 10.96 31.73 8.5 29.12 6.76C26.51 5.03 23.46 4.1 20.32 4.1C18.22 4.1 16.14 4.53 14.2 5.35C12.26 6.17 10.51 7.36 9.03 8.85C7.55 10.35 6.39 12.12 5.6 14.07C4.81 16.02 4.42 18.11 4.44 20.21L4.45 20.21Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 160.322 0.011)"><path d="M19.54 8.381C18.98 7.271 18.2 6.271 17.26 5.461C15.99 4.531 14.44 4.051 12.86 4.111C8.99 4.111 6.3 6.511 6.3 10.181C6.26 10.821 6.37 11.461 6.63 12.061C6.88 12.651 7.28 13.171 7.77 13.581C8.96 14.641 10.35 15.481 11.85 16.031L15.6 17.671C17.84 18.511 19.9 19.761 21.67 21.361C22.61 22.281 23.34 23.391 23.83 24.611C24.32 25.831 24.54 27.141 24.49 28.461C24.49 35.671 19.16 40.471 12.13 40.471C10.57 40.541 9.02 40.291 7.56 39.751C6.1 39.211 4.77 38.381 3.63 37.311C1.79 35.381 0.53 32.981 0 30.371L4.22 29.201C4.48 31.061 5.29 32.791 6.56 34.181C7.3 34.911 8.18 35.481 9.15 35.861C10.12 36.231 11.15 36.401 12.19 36.351C17.52 36.351 19.99 32.541 19.99 28.611C20.02 27.751 19.87 26.901 19.53 26.111C19.2 25.321 18.69 24.611 18.06 24.041C16.65 22.901 15.07 21.991 13.38 21.341L9.86 19.701C7.95 18.941 6.19 17.861 4.66 16.481C3.77 15.681 3.06 14.691 2.6 13.591C2.13 12.481 1.92 11.291 1.97 10.091C1.97 4.021 6.6 0.011 12.93 0.011C15.15 -0.089 17.34 0.521 19.2 1.741C20.81 2.851 22.12 4.341 23.01 6.081L19.58 8.391L19.54 8.381Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 207.642 0.011)"><path d="M19.53 8.381C18.97 7.261 18.19 6.271 17.24 5.461C15.97 4.531 14.42 4.051 12.84 4.111C8.98 4.111 6.29 6.511 6.29 10.181C6.25 10.821 6.36 11.461 6.62 12.061C6.87 12.651 7.27 13.171 7.76 13.581C8.96 14.651 10.35 15.491 11.86 16.041L15.61 17.681C17.84 18.521 19.9 19.771 21.68 21.371C22.62 22.291 23.35 23.401 23.84 24.621C24.32 25.841 24.55 27.151 24.49 28.461C24.49 35.671 19.16 40.471 12.13 40.471C10.57 40.541 9.02 40.291 7.56 39.751C6.1 39.211 4.76 38.381 3.63 37.311C1.79 35.381 0.53 32.981 0 30.371L4.21 29.201C4.47 31.061 5.29 32.801 6.56 34.181C7.3 34.911 8.18 35.481 9.14 35.861C10.11 36.231 11.14 36.401 12.18 36.351C17.51 36.351 20.04 32.541 20.04 28.611C20.07 27.751 19.92 26.901 19.58 26.111C19.25 25.321 18.74 24.611 18.1 24.041C16.69 22.901 15.1 21.991 13.41 21.341L9.9 19.701C7.99 18.951 6.22 17.861 4.7 16.481C3.81 15.681 3.1 14.691 2.63 13.591C2.16 12.481 1.95 11.291 2 10.091C2 4.021 6.62 0.011 12.95 0.011C15.17 -0.089 17.36 0.521 19.22 1.741C20.83 2.841 22.14 4.341 23.03 6.081L19.54 8.381L19.53 8.381Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 266.812 0.139)"><path d="M22.5 20.853L38.9 20.853C38.9 24.423 38.14 29.583 34.91 33.683C31.44 38.073 26.19 40.243 20.21 40.243C8.72 40.243 0 31.803 0 20.153C0 8.503 9.02 0.003 20.39 0.003C24.84 -0.077 29.17 1.423 32.63 4.213C34.43 5.613 36.02 7.273 37.32 9.143L35.27 10.783C34.26 9.143 33 7.683 31.52 6.443C28.38 3.813 24.42 2.363 20.32 2.343C10.3 2.343 2.69 10.313 2.69 20.263C2.69 30.213 10.07 37.903 20.14 37.903C26.82 37.903 31.62 34.503 33.73 31.283C35.25 28.843 36.14 26.063 36.33 23.193L22.49 23.193L22.49 20.853L22.5 20.853Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 330.842 0.662)"><path d="M18.74 2.37L2.6 2.37L2.6 16.55L18.42 16.55L18.42 18.85L2.6 18.85L2.6 36.72L18.76 36.72L18.76 39.06L0 39.06L0 0L18.75 0L18.75 2.38L18.74 2.37Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 374.142 0.252)"><path d="M0 39.49L0 0L32.81 34.33L32.81 0.41L35.41 0.41L35.41 40.49L2.6 6.16L2.6 39.49L0 39.49Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 437.412 0.662)"><path d="M2.6 0L2.6 39.08L0 39.08L0 0L2.6 0Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 467.772 0.662)"><path d="M2.55 0L2.55 24.44C2.55 28.13 2.72 30.51 4.19 32.88C6.47 36.57 10.75 37.39 13.27 37.39C15.79 37.39 20.07 36.52 22.35 32.88C23.82 30.54 24 28.14 24 24.44L24 0L26.6 0L26.6 24.44C26.6 28.71 26.36 31.52 24.37 34.46C21.44 38.73 16.82 39.73 13.3 39.73C9.78 39.73 5.16 38.73 2.23 34.46C0.24 31.53 0 28.72 0 24.44L0 0L2.56 0L2.55 0Z" fill="#EEF1F1"/></g><g transform="matrix(1 0 0 1 518.062 0.128)"><path d="M19.87 7.153C19.19 5.703 18.1 4.473 16.74 3.623C15.38 2.773 13.8 2.333 12.19 2.353C11.22 2.303 10.26 2.463 9.36 2.813C8.46 3.163 7.64 3.693 6.96 4.383C6.28 5.063 5.74 5.883 5.4 6.793C5.05 7.693 4.9 8.663 4.94 9.623C4.94 13.833 7.86 15.243 11.79 17.173C15.72 19.103 17.59 19.873 19.59 21.273C20.89 22.053 21.96 23.163 22.69 24.493C23.42 25.823 23.78 27.323 23.75 28.833C23.75 35.393 18.24 40.253 11.61 40.253C9.88 40.323 8.16 39.983 6.59 39.273C5.01 38.563 3.63 37.493 2.53 36.153C1.42 34.903 0.56 33.453 0 31.883L2.23 30.833C2.73 32.183 3.44 33.453 4.34 34.583C5.24 35.643 6.36 36.503 7.63 37.073C8.9 37.653 10.28 37.943 11.67 37.913C16.94 37.913 21.1 34.043 21.1 28.893C21.1 26.773 20.23 24.553 17.28 22.733C16.17 22.093 13.89 20.923 10.66 19.333C6.79 17.463 4.86 16.403 3.52 14.183C2.7 12.843 2.27 11.293 2.29 9.723C2.29 5.213 5.33 0.003 12.31 0.003C14.26 -0.047 16.19 0.443 17.87 1.423C19.55 2.403 20.93 3.843 21.85 5.563L19.87 7.143L19.87 7.153Z" fill="#EEF1F1"/></g></g><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 0 0)"><g transform="matrix(1 0 0 1 0 0)"><path d="M67.86 7.54C69.94 7.54 71.63 5.85 71.63 3.77C71.63 1.69 69.94 0 67.86 0L67.86 7.54ZM71.88 35.94C71.88 33.86 70.19 32.17 68.11 32.17C66.03 32.17 64.34 33.86 64.34 35.94L71.88 35.94L71.88 35.94ZM13.82 7.54L67.86 7.54L67.86 0L13.82 0L13.82 7.54ZM58.06 64.34L13.82 64.34L13.82 71.88L58.06 71.88L58.06 64.34ZM7.54 58.06L7.54 13.82L0 13.82L0 58.06L7.54 58.06ZM64.34 35.94L64.34 58.06L71.88 58.06L71.88 35.94L64.34 35.94ZM13.82 64.34C10.35 64.34 7.54 61.53 7.54 58.06L0 58.06C0 65.69 6.19 71.88 13.82 71.88L13.82 64.34L13.82 64.34ZM58.06 71.88C65.69 71.88 71.88 65.69 71.88 58.06L64.34 58.06C64.34 61.53 61.53 64.34 58.06 64.34L58.06 71.88L58.06 71.88ZM13.82 0C6.19 0 0 6.19 0 13.82L7.54 13.82C7.54 10.35 10.35 7.54 13.82 7.54L13.82 0Z" fill="url(#gglogo0)"/></g><g transform="matrix(1 0 0 1 0 0)"><path d="M67.86 7.54C69.94 7.54 71.63 5.85 71.63 3.77C71.63 1.69 69.94 0 67.86 0L67.86 7.54ZM71.88 35.94C71.88 33.86 70.19 32.17 68.11 32.17C66.03 32.17 64.34 33.86 64.34 35.94L71.88 35.94L71.88 35.94ZM13.82 7.54L67.86 7.54L67.86 0L13.82 0L13.82 7.54ZM58.06 64.34L13.82 64.34L13.82 71.88L58.06 71.88L58.06 64.34ZM7.54 58.06L7.54 13.82L0 13.82L0 58.06L7.54 58.06ZM64.34 35.94L64.34 58.06L71.88 58.06L71.88 35.94L64.34 35.94ZM13.82 64.34C10.35 64.34 7.54 61.53 7.54 58.06L0 58.06C0 65.69 6.19 71.88 13.82 71.88L13.82 64.34L13.82 64.34ZM58.06 71.88C65.69 71.88 71.88 65.69 71.88 58.06L64.34 58.06C64.34 61.53 61.53 64.34 58.06 64.34L58.06 71.88L58.06 71.88ZM13.82 0C6.19 0 0 6.19 0 13.82L7.54 13.82C7.54 10.35 10.35 7.54 13.82 7.54L13.82 0Z" fill="url(#gglogo1)"/></g><g transform="matrix(1 0 0 1 66.34 0)"><path d="M50.77 0L0 0L0 7.54L50.77 7.54L50.77 0Z" fill="url(#gglogo2)"/></g></g></g></g></g></g></g></g></svg></div>
+  <div class="head">
+    <svg class="mark" viewBox="0 0 45.353 64" role="img" aria-label="GlossGenius"><path fill="currentColor" transform="translate(0.141 0)" d="M31.409 5.088C36.057 5.088 38.945 8.498 39.852 12.872L41.832 12.872C41.997 7.151 38.972 0 29.373 0C14.632 0 1.815 19.28 0.248 37.019C0.083 38.835 0 40.54 0 42.162C0 56.932 6.573 64 16.447 64C27.366 64 33.471 52.201 37.212 43.648C38.119 41.557 38.587 41.172 40.292 41.172L44.885 41.172L45.353 39.852L41.007 37.019C39.77 36.222 39.687 35.534 40.045 33.004L41.172 24.863L39.907 24.505L36.469 32.316C35.452 34.654 34.214 34.572 32.151 33.966L22.608 31.161L22.113 32.536L31.024 38.284C32.069 38.945 32.509 39.632 32.509 40.512C32.509 41.667 31.959 42.768 30.804 45.133C27.366 52.201 22.415 55.859 18.07 55.859C12.982 55.859 8.746 50.853 8.746 40.567C8.746 39.77 8.774 38.972 8.829 38.147C9.599 25.303 19.115 5.088 31.409 5.088Z"/></svg>
+  </div>
   <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every core workflow for multi-location businesses.</p></div>
 </div></section>
 
@@ -161,7 +181,7 @@ dialog[open]{animation:pop .3s var(--ease)}
   </div>
 </div></section>
 
-<section class="slide" data-name="One to many"><div class="stage">
+<section class="slide" data-name="One location to many"><div class="stage">
   <div class="head"><h3 class="title">One location to many</h3></div>
   <div class="content" style="padding-top:calc(var(--u)*96)">
     <div class="cols">
@@ -173,14 +193,14 @@ dialog[open]{animation:pop .3s var(--ease)}
         </svg>
         <span class="mono">Today</span><p class="sub">One business, one location</p><p class="text">Every workflow assumed one place.</p>
       </div>
-      <div class="col c5" style="grid-column:7 / span 5">
+      <div class="col c5b">
         <svg class="dia" viewBox="56 0 464 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Tomorrow: one business, three locations">
           <use href="#person" class="ic" x="232" y="0" width="56" height="56"/><text x="310" y="36">User</text>
           <line class="ln" x1="260" y1="72" x2="260" y2="170"/><circle class="dot" cx="260" cy="170" r="3"/>
           <use href="#globe" class="ic" x="232" y="186" width="56" height="56"/><text x="310" y="222">Biz</text>
           <line class="ln" x1="260" y1="252" x2="260" y2="268"/><line class="ln" x1="80" y1="268" x2="440" y2="268"/>
-          <circle class="dot" cx="80" cy="268" r="3"/><circle class="dot" cx="260" cy="268" r="3"/><circle class="dot" cx="440" cy="268" r="3"/>
-          <use href="#pin" class="ic a" x="60" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="240" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="420" y="278" width="40" height="40"/>
+          <g class="pop"><circle class="dot" cx="80" cy="268" r="3"/><circle class="dot" cx="260" cy="268" r="3"/><circle class="dot" cx="440" cy="268" r="3"/>
+          <use href="#pin" class="ic a" x="60" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="240" y="278" width="40" height="40"/><use href="#pin" class="ic a" x="420" y="278" width="40" height="40"/></g>
         </svg>
         <span class="mono">Tomorrow</span><p class="sub">One business, many locations</p><p class="text">Every workflow must span all of them.</p>
       </div>
@@ -194,7 +214,7 @@ dialog[open]{animation:pop .3s var(--ease)}
     <div class="cols">
       <div class="col c5"><span class="mono">Owner</span><p class="sub">Manage the whole business</p>
         <ul class="list small"><li>Clients across locations</li><li>Sales across locations</li><li>Business-wide analytics</li></ul></div>
-      <div class="col c5" style="grid-column:7 / span 5"><span class="mono">Operator</span><p class="sub">Run each location</p>
+      <div class="col c5b"><span class="mono">Operator</span><p class="sub">Run each location</p>
         <ul class="list small"><li>Book at a location</li><li>Schedule per location</li><li>Inventory per location</li></ul></div>
     </div>
   </div>
@@ -202,9 +222,7 @@ dialog[open]{animation:pop .3s var(--ease)}
 
 <section class="slide" data-name="Principle"><div class="stage">
   <div class="head"><h3 class="title">Principle</h3></div>
-  <div class="content">
-    <p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p>
-  </div>
+  <div class="content"><p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p></div>
 </div></section>
 
 <section class="slide" data-name="Information architecture"><div class="stage">
@@ -219,11 +237,11 @@ dialog[open]{animation:pop .3s var(--ease)}
         </svg>
         <span class="mono">Current</span><p class="sub">Business, then workflows</p>
       </div>
-      <div class="col c5" style="grid-column:7 / span 5">
+      <div class="col c5b">
         <svg class="dia" viewBox="120 0 400 320" preserveAspectRatio="xMinYMin meet" role="img" aria-label="New IA: business, then locations, then workflows">
           <use href="#globe" class="ic" x="120" y="0" width="48" height="48"/><text class="k" x="188" y="32">Business</text><text x="340" y="32">Global</text>
           <line class="ln" x1="144" y1="62" x2="144" y2="128"/><circle class="dot" cx="144" cy="128" r="3"/>
-          <use href="#pin" class="ic a" x="120" y="138" width="48" height="48"/><text class="a" x="188" y="170">Locations</text><text x="340" y="170">Local</text>
+          <g class="pop"><use href="#pin" class="ic a" x="120" y="138" width="48" height="48"/><text class="a" x="188" y="170">Locations</text><text x="340" y="170">Local</text></g>
           <line class="ln" x1="144" y1="198" x2="144" y2="262"/><circle class="dot" cx="144" cy="262" r="3"/>
           <rect class="ic" x="122" y="274" width="44" height="44" rx="6"/><text class="k" x="188" y="304">Workflows</text>
         </svg>
@@ -256,68 +274,68 @@ dialog[open]{animation:pop .3s var(--ease)}
 
 <section class="slide screens" data-name="Add a location"><div class="stage">
   <div class="head"><h3 class="title">Add a location</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: business switcher"><span class="ph">Business switcher<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: add location flow"><span class="ph">Add location flow<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Business switcher<br>MBR Deepdive 05/16</span></div>
+      <div class="layer after"><span class="ph">After · Add location flow<br>Spaces TB 10/07</span></div><i class="edge"></i>
     </div>
-    <p class="foot">New locations copy hours, services, staff and settings.</p>
-  </div>
+    <div class="bar"><p class="foot">New locations copy hours, services, staff and settings.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Services"><div class="stage">
   <div class="head"><h3 class="title">Services</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: service creation"><span class="ph">Current service creation<br>M2 Service Management</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: location and staff customization"><span class="ph">Location & staff customization<br>Spaces TB 10/07</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Service creation<br>M2 Service Management</span></div>
+      <div class="layer after"><span class="ph">After · Location & staff customization<br>Spaces TB 10/07</span></div><i class="edge"></i>
     </div>
-    <p class="foot">Create once. Offer per location. Price per member.</p>
-  </div>
+    <div class="bar"><p class="foot">Create once. Offer per location. Price per member.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Staff invite"><div class="stage">
   <div class="head"><h3 class="title">Staff invite</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current invite flow"><span class="ph">Current flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated invite flow"><span class="ph">Updated invite flow<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Current invite flow<br>Core Review ML3 08/02</span></div>
+      <div class="layer after"><span class="ph">After · Updated invite flow<br>Core Review ML3 08/02</span></div><i class="edge"></i>
     </div>
-    <p class="foot">Locations and schedules set at invite. Bookable on day one.</p>
-  </div>
+    <div class="bar"><p class="foot">Locations and schedules set at invite. Bookable on day one.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Team page"><div class="stage">
   <div class="head"><h3 class="title">Team page</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: current staff surface"><span class="ph">Current staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: updated staff surface"><span class="ph">Updated staff surface<br>Core Review ML3 08/02</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Current staff surface<br>Core Review ML3 08/02</span></div>
+      <div class="layer after"><span class="ph">After · Updated staff surface<br>Core Review ML3 08/02</span></div><i class="edge"></i>
     </div>
-    <p class="foot">Team at [Location]: who works where, and when.</p>
-  </div>
+    <div class="bar"><p class="foot">Team at [Location]: who works where, and when.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Settings"><div class="stage">
   <div class="head"><h3 class="title">Settings</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: settings home"><span class="ph">Settings home<br>MBR Deepdive 05/16</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: booking settings across locations"><span class="ph">Booking settings across locations<br>MBR Deepdive 05/16</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Settings home<br>MBR Deepdive 05/16</span></div>
+      <div class="layer after"><span class="ph">After · Booking settings across locations<br>MBR Deepdive 05/16</span></div><i class="edge"></i>
     </div>
-    <p class="foot">One standard, with a soft warning when a location drifts.</p>
-  </div>
+    <div class="bar"><p class="foot">One standard, with a soft warning when a location drifts.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Calendar & clients"><div class="stage">
   <div class="head"><h3 class="title">Calendar & clients</h3></div>
-  <div class="content">
-    <div class="pair">
-      <figure class="shot"><button class="frame" data-zoom aria-label="Enlarge before: single-location calendar"><span class="ph">Single-location calendar<br>DLT 05/08</span></button><figcaption class="mono">Before</figcaption></figure>
-      <figure class="shot after"><button class="frame" data-zoom aria-label="Enlarge after: calendar location switcher"><span class="ph">Location switcher & live preview<br>DLT 05/08</span></button><figcaption class="mono">After</figcaption></figure>
+  <div class="content"><div class="morph">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
+      <div class="layer before"><span class="ph">Before · Single-location calendar<br>DLT 05/08</span></div>
+      <div class="layer after"><span class="ph">After · Location switcher & live preview<br>DLT 05/08</span></div><i class="edge"></i>
     </div>
-    <p class="foot">Book at any location. One client list.</p>
-  </div>
+    <div class="bar"><p class="foot">Book at any location. One client list.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
 </div></section>
 
 <section class="slide" data-name="Results"><div class="stage">
@@ -333,35 +351,77 @@ dialog[open]{animation:pop .3s var(--ease)}
 
 </main>
 
+<div class="progress" id="progress"></div>
+<div class="nav" aria-label="Slide controls">
+  <button type="button" id="prev" aria-label="Previous slide"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+  <button type="button" id="next" aria-label="Next slide"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+</div>
 <dialog id="zoom" aria-label="Enlarged screen"><form method="dialog"><button>Close</button></form><div id="zoom-body"></div></dialog>
 
 <script>
 (function(){
-  var slides=[].slice.call(document.querySelectorAll('.slide')),cur=0;
-  function setCur(i){cur=i;}
-  setCur(0);
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)setCur(slides.indexOf(e.target))})},{threshold:.6});
-    slides.forEach(function(s){io.observe(s)});
+  var slides=[].slice.call(document.querySelectorAll('.slide')),cur=-1,timers=[];
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var progress=document.getElementById('progress'),dlg=document.getElementById('zoom'),zb=document.getElementById('zoom-body');
+
+  // Before/after: set state, slide the toggle underline, show the wipe edge while moving
+  function setMorph(m,after,animate){
+    var tg=m.querySelectorAll('.toggle button'),line=m.querySelector('.toggle i');
+    m.classList.toggle('is-after',after);
+    tg[0].setAttribute('aria-pressed',String(!after));tg[1].setAttribute('aria-pressed',String(after));
+    var b=tg[after?1:0];line.style.left=b.offsetLeft+'px';line.style.width=b.offsetWidth+'px';
+    if(animate&&!reduce){m.classList.add('moving');clearTimeout(m._t);m._t=setTimeout(function(){m.classList.remove('moving')},1150);}
   }
-  var dlg=document.getElementById('zoom'),body=document.getElementById('zoom-body');
-  addEventListener('keydown',function(e){
-    if(dlg.open||e.target.closest('button'))return;
-    var k=e.key,n=null;
-    if(k==='ArrowDown'||k==='ArrowRight'||k==='PageDown'||(k===' '&&!e.shiftKey))n=cur+1;
-    if(k==='ArrowUp'||k==='ArrowLeft'||k==='PageUp'||(k===' '&&e.shiftKey))n=cur-1;
-    if(n===null)return;e.preventDefault();
-    n=Math.max(0,Math.min(slides.length-1,n));
-    slides[n].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+  slides.forEach(function(s,i){
+    s.id='s'+(i+1);
+    var m=s.querySelector('.morph');if(!m)return;
+    var tg=m.querySelectorAll('.toggle button');
+    tg[0].addEventListener('click',function(e){e.stopPropagation();setMorph(m,false,true)});
+    tg[1].addEventListener('click',function(e){e.stopPropagation();setMorph(m,true,true)});
   });
-  document.querySelectorAll('[data-zoom]').forEach(function(b){
-    b.addEventListener('click',function(){
-      var img=b.querySelector('img');
-      if(img){body.innerHTML='<img>';body.firstChild.src=img.src;body.firstChild.alt=img.alt;}
-      else body.innerHTML='<div class="ph-big">'+b.querySelector('.ph').innerHTML+'</div>';
-      dlg.showModal();
-    });
+
+  function go(n){
+    n=Math.max(0,Math.min(slides.length-1,n));if(n===cur)return;
+    timers.forEach(clearTimeout);timers=[];
+    slides.forEach(function(s,i){s.classList.toggle('on',i===n);s.classList.toggle('past',i<n);s.setAttribute('aria-hidden',String(i!==n));s.inert=i!==n;});
+    cur=n;progress.style.width=((n+1)/slides.length*100)+'%';
+    try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
+    var m=slides[n].querySelector('.morph');
+    if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1500));}
+  }
+  // Next: on a before/after slide still showing "before", the first advance plays the change
+  function next(){var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
+  function prev(){go(cur-1)}
+
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('button,[data-zoom],a'))return;
+    var r=slides[cur].getBoundingClientRect();(e.clientX<r.left+r.width*.25)?prev():next();
+  });
+  addEventListener('keydown',function(e){
+    if(dlg.open)return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey)){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey)){e.preventDefault();prev();}
+    else if(k==='Home'){go(0)}else if(k==='End'){go(slides.length-1)}
+  });
+  // Swipe on touch screens
+  var sx=null;addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)(dx<0?next:prev)();sx=null},{passive:true});
+  // Show controls on pointer movement
+  var idle;addEventListener('mousemove',function(){document.body.classList.add('awake');clearTimeout(idle);idle=setTimeout(function(){document.body.classList.remove('awake')},1800)});
+
+  // Enlarge a screen
+  function zoom(f){var m=f.closest('.morph'),l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');
+    var img=l.querySelector('img');if(img){zb.innerHTML='<img>';zb.firstChild.src=img.src;zb.firstChild.alt=img.alt}else zb.innerHTML='<div class="ph-big">'+l.querySelector('.ph').innerHTML+'</div>';dlg.showModal();}
+  document.querySelectorAll('[data-zoom]').forEach(function(f){
+    f.addEventListener('click',function(e){e.stopPropagation();zoom(f)});
+    f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();zoom(f)}});
   });
   dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
+
+  var start=0,h=location.hash.replace('#s','');if(/^\d+$/.test(h))start=+h-1;
+  go(start);
 })();
 </script>
