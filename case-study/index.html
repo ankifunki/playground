@@ -2,388 +2,363 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a single reading column, with wide bands for the location matrix and before/after pairs. */
+/* Layout: a vertical deck. One idea per slide, generous whitespace, a single accent. */
 :root{
-  --bg:#F5F6F8; --surface:#FFFFFF; --ink:#16192A; --muted:#5B6075; --line:#DADDE6;
-  --accent:#B0245C; --accent-soft:#F7E4EC; --new:#0F7B6C; --new-soft:#DFF2EE;
-  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
-  --body:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --w:68rem; --text:40rem;
+  --bg:#F6F7F9; --surface:#FFFFFF; --ink:#141725; --muted:#666B7E; --line:#DFE1E8;
+  --accent:#B0245C; --accent-soft:#F8E6ED;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --w:62rem; --ease:cubic-bezier(.2,.7,.2,1);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11131C; --surface:#1A1D29; --ink:#E9EBF2; --muted:#9CA1B5; --line:#2E3242;
-  --accent:#F0709F; --accent-soft:#3A1A29; --new:#5ACDB9; --new-soft:#14322D; color-scheme:dark}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10121A; --surface:#191C27; --ink:#ECEEF4; --muted:#9A9FB2; --line:#2C3040;
+  --accent:#F27AA6; --accent-soft:#3A1B2A; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11131C; --surface:#1A1D29; --ink:#E9EBF2; --muted:#9CA1B5; --line:#2E3242;
-  --accent:#F0709F; --accent-soft:#3A1A29; --new:#5ACDB9; --new-soft:#14322D; color-scheme:dark}
+  --bg:#10121A; --surface:#191C27; --ink:#ECEEF4; --muted:#9A9FB2; --line:#2C3040;
+  --accent:#F27AA6; --accent-soft:#3A1B2A; color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:400 1.0625rem/1.65 var(--body);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.wrap{max-width:var(--w);margin-inline:auto}
-.prose{max-width:var(--text)}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
-h1{font-size:clamp(2.6rem,7vw,4.75rem);font-weight:700;letter-spacing:-.02em}
-h2{font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:700;letter-spacing:-.01em}
-h3{font-size:1.3rem;font-weight:500}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05;letter-spacing:-.02em}
+h1{font-size:clamp(3rem,9vw,6.5rem);font-weight:700}
+h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:700}
+h3{font-size:1.15rem;font-weight:500;letter-spacing:0}
 p{margin:0}
-.label{font:500 .75rem/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.label b{color:var(--accent);font-weight:500}
-section{padding-block:clamp(3rem,8vw,5.5rem);border-top:1px solid var(--line)}
-.stack{display:grid;gap:1.25rem}
-.stack-lg{display:grid;gap:2.5rem}
-a{color:var(--accent)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
 
-/* Hero */
-header{padding-block:clamp(3rem,10vw,6.5rem) clamp(2.5rem,6vw,4rem)}
-.lede{font-size:clamp(1.15rem,2.2vw,1.4rem);line-height:1.5;color:var(--ink);max-width:38rem}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1rem 2rem;margin-top:2.5rem;max-width:46rem}
-.meta div{display:grid;gap:.25rem;border-top:2px solid var(--ink);padding-top:.6rem}
-.meta span:last-child{font-weight:500}
+/* Slides */
+.slide{min-height:min(100svh,60rem);scroll-snap-align:start;display:grid;align-content:center;
+  padding-block:clamp(4rem,10vh,6rem);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.slide + .slide{border-top:1px solid var(--line)}
+.in{width:100%;max-width:var(--w);margin-inline:auto;display:grid;gap:2rem}
+.kicker{font:500 .72rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:.75rem}
+.kicker b{color:var(--accent);font-weight:500}
+.sub{font-size:clamp(1.1rem,2vw,1.3rem);color:var(--muted);max-width:36rem}
 
-/* Location matrix */
-.matrix-scroll{overflow-x:auto;margin-top:2rem}
-.matrix{display:grid;grid-template-columns:minmax(8.5rem,1.2fr) minmax(7rem,1fr) repeat(3,minmax(7rem,1fr));
-  min-width:40rem;font-size:.92rem;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
-.matrix > div{padding:.65rem .85rem;border-bottom:1px solid var(--line)}
-.matrix .h{font:500 .72rem/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
-.matrix .h.loc{color:var(--accent)}
-.matrix .row{font-weight:600}
-.matrix .one{color:var(--muted)}
-.matrix .loc-cell{background:var(--accent-soft);color:var(--ink);border-left:1px solid var(--surface)}
-.matrix .last{border-bottom:0}
-.caption{font-size:.9rem;color:var(--muted);margin-top:.75rem;max-width:var(--text)}
+/* Subtle entrance: content is always visible; it only settles into place. */
+.slide .in > *{transition:transform .7s var(--ease)}
+.slide.below .in > *{transform:translateY(14px)}
+@media (prefers-reduced-motion:reduce){.slide .in > *{transition:none}.slide.below .in > *{transform:none}}
 
-/* Quote */
-.principle{font-family:var(--display);font-weight:500;font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.15;
-  border-left:4px solid var(--accent);padding-left:1.25rem;max-width:40rem}
+/* Title slide */
+.cover .meta{display:flex;flex-wrap:wrap;gap:.5rem 2rem;font:400 .85rem/1.4 var(--mono);color:var(--muted)}
+.cover .meta span::before{content:"";display:inline-block;width:.4rem;height:.4rem;border-radius:50%;background:var(--accent);margin-right:.5rem;vertical-align:.1em}
 
-/* IA diagram */
-.ia{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.25rem}
-.ia-card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1.25rem;display:grid;gap:.9rem;align-content:start}
-.tree{display:grid;gap:.45rem;font:400 .9rem/1.3 var(--mono)}
+/* Matrix */
+.scroll{overflow-x:auto}
+.matrix{display:grid;grid-template-columns:7.5rem 7rem repeat(3,minmax(6.5rem,1fr));min-width:36rem;font-size:.88rem}
+.matrix > div{padding:.6rem .75rem;border-bottom:1px solid var(--line)}
+.matrix .h{font:500 .68rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.matrix .h.l{color:var(--accent)}
+.matrix .r{font-weight:600}
+.matrix .o{color:var(--muted)}
+.matrix .c{background:var(--accent-soft)}
+.matrix > div:nth-last-child(-n+5){border-bottom:0}
+
+/* Two columns */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.25rem;display:grid;gap:.6rem;align-content:start;font-size:.95rem;transition:border-color .2s,transform .3s var(--ease)}
+.card:hover{transform:translateY(-2px)}
+.card.pick{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card .tag{justify-self:start;font:500 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.35rem .5rem;border-radius:3px;background:var(--accent);color:var(--surface)}
+.card p{color:var(--muted)}
+
+/* IA tree */
+.tree{display:grid;gap:.4rem;font:400 .85rem/1.3 var(--mono)}
 .node{display:inline-block;padding:.35rem .6rem;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
-.node.loc{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
-.indent{padding-left:1.4rem;border-left:1px dashed var(--line);margin-left:.6rem;display:grid;gap:.45rem}
+.node.l{border-color:var(--accent);background:var(--accent-soft)}
+.ind{margin-left:.6rem;padding-left:1.2rem;border-left:1px dashed var(--line);display:grid;gap:.4rem}
 
-/* Switcher options */
-.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
-.opt{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.2rem;display:grid;gap:.6rem;align-content:start;font-size:.95rem}
-.opt.chosen{border:2px solid var(--accent)}
-.opt ul{margin:0;padding-left:1.1rem;display:grid;gap:.2rem}
-.tag{display:inline-block;font:500 .7rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:.35rem .5rem;border-radius:3px}
-.tag.pick{background:var(--accent);color:var(--surface)}
-.pro{color:var(--new)} .con{color:var(--muted)}
+/* Patterns list */
+.list{display:grid;border-top:1px solid var(--line)}
+.list div{display:grid;grid-template-columns:minmax(10rem,16rem) 1fr;gap:.25rem 2rem;padding:1rem 0;border-bottom:1px solid var(--line)}
+.list div p{color:var(--muted)}
+@media (max-width:40rem){.list div{grid-template-columns:1fr}}
 
-/* Patterns */
-.patterns{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:0;border-top:1px solid var(--line)}
-.pattern{padding:1.1rem 1.25rem 1.25rem 0;border-bottom:1px solid var(--line);display:grid;gap:.4rem;align-content:start}
-.pattern h3{font-size:1.1rem}
-.pattern p{font-size:.95rem;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
-.chip{font:500 .7rem/1 var(--mono);padding:.3rem .45rem;border-radius:3px;background:var(--bg);border:1px solid var(--line);color:var(--ink)}
+/* Before / after compare */
+.compare{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface);--pos:50%;touch-action:pan-y}
+.layer{position:absolute;inset:0;display:grid;place-items:center}
+.layer img{width:100%;height:100%;object-fit:contain;background:var(--surface)}
+.layer.after{clip-path:inset(0 0 0 var(--pos))}
+.ph{font:400 .78rem/1.5 var(--mono);color:var(--muted);text-align:center;padding:1rem;max-width:20rem}
+.layer.before{background:repeating-linear-gradient(135deg,transparent 0 11px,color-mix(in srgb,var(--line) 45%,transparent) 11px 12px),var(--surface)}
+.layer.after{background:var(--accent-soft)}
+.badge{position:absolute;top:.75rem;font:500 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.4rem .55rem;border-radius:3px;background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--ink);pointer-events:none}
+.badge.b{left:.75rem}.badge.a{right:.75rem;color:var(--accent)}
+.handle{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;margin-left:-1px;background:var(--ink);pointer-events:none}
+.handle::after{content:"";position:absolute;top:50%;left:50%;width:2.2rem;height:2.2rem;margin:-1.1rem 0 0 -1.1rem;border-radius:50%;
+  background:var(--surface);border:2px solid var(--ink);box-shadow:0 2px 10px rgb(0 0 0 / .12);transition:transform .2s var(--ease)}
+.compare:hover .handle::after,.compare:focus-within .handle::after{transform:scale(1.08)}
+.compare input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.compare:focus-within{outline:2px solid var(--accent);outline-offset:3px}
 
-/* Roadmap */
-.road-scroll{overflow-x:auto}
-.road{display:grid;grid-template-columns:repeat(12,minmax(5.5rem,1fr));gap:4px;min-width:60rem}
-.ms{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.6rem;display:grid;gap:.3rem;font-size:.82rem;line-height:1.3;align-content:start}
-.ms .label{font-size:.68rem}
-.ms.core{border-color:var(--accent);background:var(--accent-soft)}
-
-/* Surfaces */
-.surface{display:grid;gap:1.75rem}
-.surface-head{display:grid;gap:.6rem}
-.jobs{display:flex;flex-wrap:wrap;gap:.5rem}
-.job{font-size:.9rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
-.ba{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem}
-.shot{display:grid;gap:.5rem;min-width:0}
-.shot-frame{aspect-ratio:16/10;max-width:100%;border-radius:6px;border:1.5px dashed var(--line);background:
-  repeating-linear-gradient(135deg,transparent 0 10px,color-mix(in srgb,var(--line) 35%,transparent) 10px 11px),var(--surface);
-  display:grid;place-items:center;text-align:center;padding:1rem}
-.shot-frame span{font:400 .78rem/1.4 var(--mono);color:var(--muted);max-width:18rem}
-.shot.after .shot-frame{border-color:var(--accent)}
-.shot .label{display:flex;gap:.5rem;align-items:center}
-.dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--muted);display:inline-block}
-.shot.after .dot{background:var(--accent)}
-.changes{display:grid;gap:.75rem;margin:0;padding:0;list-style:none;max-width:var(--text)}
-.changes li{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:baseline}
-.changes li::before{content:"+";font:600 1rem/1 var(--mono);color:var(--new)}
-.flow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.88rem}
-.flow span{padding:.3rem .55rem;border-radius:4px;background:var(--surface);border:1px solid var(--line)}
-.flow span.new{background:var(--new-soft);border-color:var(--new);color:var(--ink)}
+.points{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem 2rem}
+.points li{border-top:2px solid var(--ink);padding-top:.6rem;font-size:.95rem}
+.points li b{display:block;font-weight:600;margin-bottom:.15rem}
+.points li span{color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;font-size:.82rem}
+.flow span{padding:.28rem .5rem;border-radius:4px;border:1px solid var(--line);background:var(--surface)}
+.flow span.n{border-color:var(--accent);background:var(--accent-soft)}
 .flow i{font-style:normal;color:var(--muted)}
-.note{font-size:.9rem;color:var(--muted)}
 
-/* Outcome */
-.pending{border:1.5px dashed var(--accent);border-radius:6px;padding:1.25rem;background:var(--surface);display:grid;gap:.5rem;max-width:var(--text)}
-footer{padding-block:3rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+.pending{border:1.5px dashed var(--accent);border-radius:8px;padding:1.25rem;color:var(--muted);max-width:36rem}
 
-@media (prefers-reduced-motion:no-preference){
-  .loc-cell{transition:background .2s}
-}
+/* Deck chrome */
+.rail{position:fixed;right:max(12px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:.55rem;z-index:5}
+.rail a{display:block;width:.5rem;height:.5rem;border-radius:50%;background:var(--line);position:relative;transition:background .2s,transform .2s var(--ease)}
+.rail a:hover{transform:scale(1.4)}
+.rail a.on{background:var(--accent);transform:scale(1.25)}
+.rail a span{position:absolute;right:1.1rem;top:50%;transform:translate(4px,-50%);white-space:nowrap;font:500 .68rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:.35rem .5rem;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .15s,transform .2s var(--ease)}
+.rail a:hover span,.rail a:focus-visible span{opacity:1;transform:translate(0,-50%)}
+.count{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));font:500 .72rem/1 var(--mono);color:var(--muted);z-index:5;font-variant-numeric:tabular-nums}
+.count b{color:var(--ink);font-weight:500}
+.bar{position:fixed;left:0;top:0;height:2px;background:var(--accent);width:0;z-index:6;transition:width .1s linear}
+@media (max-width:40rem){.rail{display:none}}
 </style>
 
-<div class="wrap">
+<div class="bar" id="bar"></div>
 
-<header class="stack">
-  <p class="label">Case study · <b>GlossGenius</b></p>
-  <h1>Multi Location</h1>
-  <p class="lede">GlossGenius was built for a salon or spa with one front door. Supporting businesses with many locations meant redesigning every primary workflow in the product, because each one quietly assumed there was only one.</p>
-  <div class="meta">
-    <div><span class="label">Role</span><span>Lead product designer</span></div>
-    <div><span class="label">Timeline</span><span>Apr – Oct 2025</span></div>
-    <div><span class="label">Scope</span><span>Locations, staff, services, settings, calendar, clients</span></div>
+<section class="slide cover" data-name="Intro">
+  <div class="in">
+    <p class="kicker"><b>GlossGenius</b> Case study</p>
+    <h1>Multi Location</h1>
+    <p class="sub">Redesigning every primary workflow for businesses with more than one location.</p>
+    <div class="meta"><span>Lead product designer</span><span>Apr – Oct 2025</span><span>Web</span></div>
   </div>
-</header>
+</section>
 
-<section class="stack-lg" id="challenge">
-  <div class="stack prose">
-    <p class="label">01 · The challenge</p>
-    <h2>One assumption, built into everything</h2>
-    <p>Booking an appointment, inviting a team member, pricing a service, setting a cancellation policy: every workflow was designed for a single location. Multi Location was the path upmarket, but it couldn't ship as one feature. Location had to become a new dimension that ran across the whole product.</p>
-  </div>
-  <div>
-    <div class="matrix-scroll" role="region" aria-label="Surfaces across locations" tabindex="0">
+<section class="slide" data-name="Problem">
+  <div class="in">
+    <p class="kicker"><b>01</b> Problem</p>
+    <h2>Every workflow assumed one location.</h2>
+    <p class="sub">Multi Location was the path upmarket. It couldn't ship as one feature, because location touched every surface.</p>
+    <div class="scroll" role="region" aria-label="Surfaces across locations" tabindex="0">
       <div class="matrix">
-        <div class="h">Surface</div><div class="h">Before</div><div class="h loc">East Village</div><div class="h loc">West Upperside</div><div class="h loc">Soho</div>
-        <div class="row">Calendar</div><div class="one">One calendar</div><div class="loc-cell">Own calendar</div><div class="loc-cell">Own calendar</div><div class="loc-cell">Own calendar</div>
-        <div class="row">Booking</div><div class="one">No location</div><div class="loc-cell">Booked here</div><div class="loc-cell">Booked here</div><div class="loc-cell">Booked here</div>
-        <div class="row">Clients</div><div class="one">One list</div><div class="loc-cell">Shared list, tagged</div><div class="loc-cell">Shared list, tagged</div><div class="loc-cell">Shared list, tagged</div>
-        <div class="row">Staff</div><div class="one">One schedule</div><div class="loc-cell">Mon–Wed 9–3</div><div class="loc-cell">—</div><div class="loc-cell">Thu–Sat 10–5</div>
-        <div class="row">Services</div><div class="one">One price</div><div class="loc-cell">$100</div><div class="loc-cell">$105</div><div class="loc-cell">$120</div>
-        <div class="row">Settings</div><div class="one">One policy</div><div class="loc-cell">Standard</div><div class="loc-cell">Standard</div><div class="loc-cell">Card on file</div>
-        <div class="row last">Subscription</div><div class="one last">One plan</div><div class="loc-cell last" style="grid-column:span 3">One plan that scales with locations</div>
-      </div>
-    </div>
-    <p class="caption">Every row is a surface that had to change. Every column is a new place the business operates. The example values are illustrative.</p>
-  </div>
-</section>
-
-<section class="stack-lg" id="approach">
-  <div class="stack prose">
-    <p class="label">02 · The approach</p>
-    <h2>Set the rules before drawing the screens</h2>
-    <p>Owners and operators pull in different directions once a business has more than one location. Owners ask how to manage the business as a whole. Operators ask how to run the location they're standing in. Every surface had to answer both, so I started with a principle, a new information architecture and a small set of patterns, and applied them everywhere.</p>
-  </div>
-
-  <p class="principle">Manage globally, with flexibility to operate locally.</p>
-
-  <div class="stack">
-    <h3>A location layer in the information architecture</h3>
-    <div class="ia">
-      <div class="ia-card">
-        <p class="label">Before · current IA</p>
-        <div class="tree">
-          <div><span class="node">Business</span></div>
-          <div class="indent">
-            <div><span class="node">Workflows</span></div>
-            <div class="indent"><div><span class="node">Calendar · Clients · Staff · Services · Settings</span></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="ia-card">
-        <p class="label">After · new IA</p>
-        <div class="tree">
-          <div><span class="node">Business</span> <span class="note">global</span></div>
-          <div class="indent">
-            <div><span class="node loc">Locations</span> <span class="note">local</span></div>
-            <div class="indent"><div><span class="node">Calendar · Clients · Staff · Services · Settings</span></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <h3>Where the location switcher lives</h3>
-    <p class="prose">This was the first big decision, since every later screen depended on it. I explored three models and reviewed them against four jobs: always knowing which location you're in, moving a workflow between locations, seeing one location's content, and giving owners a central view.</p>
-    <div class="options">
-      <div class="opt">
-        <span class="label">Global</span>
-        <p>Pick a location once; everything shows that location.</p>
-        <ul><li class="pro">Familiar pattern</li><li class="con">Restricts every view to one location</li><li class="con">No central view for owners</li><li class="con">Doesn't scale past a few locations</li></ul>
-      </div>
-      <div class="opt chosen">
-        <span class="tag pick">Chosen</span>
-        <span class="label">Workflow level</span>
-        <p>Each workflow has its own location switcher, e.g. "Team at Soho".</p>
-        <ul><li class="pro">Business and location switchers stay distinct</li><li class="pro">Works for owners and operators</li><li class="pro">UI scales regardless of location count</li></ul>
-      </div>
-      <div class="opt">
-        <span class="label">Hybrid</span>
-        <p>A global switcher plus a switcher per workflow.</p>
-        <ul><li class="con">Purpose of the global switcher is unclear</li><li class="con">Its logic conflicts with switching inside a workflow</li><li class="con">An extra step with short-lived value</li></ul>
-      </div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <h3>Five patterns, reused on every surface</h3>
-    <div class="patterns">
-      <div class="pattern"><h3>Default, then override</h3><p>Set it once for the business; customize it for one location or one person.</p><div class="chips"><span class="chip">Services</span><span class="chip">Settings</span><span class="chip">Schedules</span></div></div>
-      <div class="pattern"><h3>Assign to locations</h3><p>Staff, services and clients belong to one or more locations.</p><div class="chips"><span class="chip">Staff</span><span class="chip">Services</span><span class="chip">Clients</span></div></div>
-      <div class="pattern"><h3>"[Surface] at [Location]"</h3><p>A location filter in each workflow's header, with an "All locations" view for owners.</p><div class="chips"><span class="chip">Calendar</span><span class="chip">Staff</span><span class="chip">Services</span><span class="chip">Clients</span></div></div>
-      <div class="pattern"><h3>Bulk by default</h3><p>Invite, assign and update many people or locations in one pass.</p><div class="chips"><span class="chip">Add location</span><span class="chip">Staff</span><span class="chip">Settings</span></div></div>
-      <div class="pattern"><h3>Built for 20+ locations</h3><p>Pickers search and truncate so they still work for large businesses.</p><div class="chips"><span class="chip">Services</span><span class="chip">Settings</span></div></div>
-    </div>
-  </div>
-
-  <div class="stack">
-    <h3>A roadmap in milestones</h3>
-    <p class="prose">I broke the work into twelve milestones so each one shipped a complete job for owners. The first four, highlighted, are the core surfaces this case study covers.</p>
-    <div class="road-scroll" role="region" aria-label="Milestones M1 to M12" tabindex="0">
-      <div class="road">
-        <div class="ms core"><span class="label">M1</span>Location management</div>
-        <div class="ms core"><span class="label">M2</span>Service management</div>
-        <div class="ms core"><span class="label">M3</span>Staff management</div>
-        <div class="ms core"><span class="label">M4</span>Settings management</div>
-        <div class="ms"><span class="label">M5</span>Client booking</div>
-        <div class="ms"><span class="label">M6</span>Booking & client management</div>
-        <div class="ms"><span class="label">M7</span>Checkout</div>
-        <div class="ms"><span class="label">M8</span>Reporting</div>
-        <div class="ms"><span class="label">M9</span>Subscription & pricing</div>
-        <div class="ms"><span class="label">M10</span>Time tracking, payroll, commissions</div>
-        <div class="ms"><span class="label">M11</span>Inventory</div>
-        <div class="ms"><span class="label">M12</span>Waitlist</div>
+        <div class="h"></div><div class="h">Before</div><div class="h l">East Village</div><div class="h l">West Upperside</div><div class="h l">Soho</div>
+        <div class="r">Calendar</div><div class="o">One</div><div class="c">✓</div><div class="c">✓</div><div class="c">✓</div>
+        <div class="r">Staff</div><div class="o">One schedule</div><div class="c">Mon–Wed</div><div class="c">—</div><div class="c">Thu–Sat</div>
+        <div class="r">Services</div><div class="o">One price</div><div class="c">$100</div><div class="c">$105</div><div class="c">$120</div>
+        <div class="r">Settings</div><div class="o">One policy</div><div class="c">Standard</div><div class="c">Standard</div><div class="c">Card on file</div>
+        <div class="r">Clients</div><div class="o">One list</div><div class="c">Shared</div><div class="c">Shared</div><div class="c">Shared</div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="stack-lg" id="surfaces">
-  <div class="stack prose">
-    <p class="label">03 · Surface by surface</p>
-    <h2>Before and after</h2>
-    <p>Each surface below uses the same principle and patterns. Green marks steps that are new for multi-location.</p>
-  </div>
-
-  <!-- Add a location -->
-  <article class="surface" id="add-location">
-    <div class="surface-head">
-      <p class="label"><b>M1</b> · Location management</p>
-      <h3>Add and set up a location</h3>
-      <div class="jobs"><span class="job">Add a location</span><span class="job">Set it up from an existing location</span><span class="job">Bring it online fully set up</span></div>
+<section class="slide" data-name="Principle">
+  <div class="in">
+    <p class="kicker"><b>02</b> Principle</p>
+    <h2>Manage globally.<br>Operate locally.</h2>
+    <div class="cols">
+      <div class="card"><h3>Owners</h3><p>Manage the whole business from one place.</p></div>
+      <div class="card"><h3>Operators</h3><p>Run the location they work at.</p></div>
     </div>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before</figcaption><div class="shot-frame"><span>Screen pending · Business switcher with separate accounts<br>MBR Deepdive 05/16</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After</figcaption><div class="shot-frame"><span>Screen pending · Add location flow<br>Spaces TB 10/07</span></div></figure>
-    </div>
-    <div class="flow" aria-label="Add location flow">
-      <span class="new">Basics</span><i>→</i><span class="new">Hours, prefilled</span><i>→</i><span class="new">Specialty, prefilled</span><i>→</i><span class="new">Services, in bulk</span><i>→</i><span class="new">Staff, in bulk</span><i>→</i><span class="new">Copy settings</span><i>→</i><span class="new">Confirm plan</span><i>→</i><span class="new">Location created</span>
-    </div>
-    <ul class="changes">
-      <li>Opening a second location starts from the first. Hours and specialty come prefilled, and services and staff carry over in bulk.</li>
-      <li>Settings and preferences can be copied from another location instead of being set up from scratch.</li>
-      <li>The subscription change is shown before confirming (for example, $48 to $96 a month), so the cost is never a surprise.</li>
-    </ul>
-  </article>
-
-  <!-- Services -->
-  <article class="surface" id="services">
-    <div class="surface-head">
-      <p class="label"><b>M2</b> · Service management</p>
-      <h3>Creating and pricing services</h3>
-      <div class="jobs"><span class="job">Offer a service at some locations</span><span class="job">Price it per location</span><span class="job">Customize price and duration per member</span></div>
-    </div>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before</figcaption><div class="shot-frame"><span>Screen pending · "Current (non-ML)" service creation<br>M2 Service Management</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After</figcaption><div class="shot-frame"><span>Screen pending · Service with location & staff customization<br>Spaces TB 10/07</span></div></figure>
-    </div>
-    <div class="flow" aria-label="Service creation">
-      <span>Default price & duration</span><i>→</i><span class="new">Choose locations</span><i>→</i><span class="new">Choose staff at those locations</span><i>→</i><span class="new">Price per member</span>
-    </div>
-    <ul class="changes">
-      <li>A service is created once for the business, then switched on per location. No duplicate menus.</li>
-      <li>Only members assigned to a location appear when choosing staff, which keeps long lists manageable.</li>
-      <li>Per-member pricing shows the final price clients will see on the booking site.</li>
-      <li>The services list shows "Offered at 1+ locations", and the location picker searches and truncates for businesses with 20+ locations.</li>
-    </ul>
-  </article>
-
-  <!-- Staff -->
-  <article class="surface" id="staff">
-    <div class="surface-head">
-      <p class="label"><b>M3</b> · Staff management</p>
-      <h3>Inviting and managing the team</h3>
-      <div class="jobs"><span class="job">Assign a member to locations</span><span class="job">Set their schedule per location</span><span class="job">Make them bookable online</span></div>
-    </div>
-    <p class="prose note">Before: owners couldn't assign a location when inviting a member, schedules couldn't vary by location, and members couldn't set their own availability per location.</p>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before · invite flow</figcaption><div class="shot-frame"><span>Screen pending · "Current flow"<br>Core Review ML3 08/02</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After · invite flow</figcaption><div class="shot-frame"><span>Screen pending · "Updated invite flow"<br>Core Review ML3 08/02</span></div></figure>
-    </div>
-    <div class="flow" aria-label="Updated invite flow">
-      <span>Add members</span><i>→</i><span class="new">Bulk invite</span><i>→</i><span>Roles & permissions</span><i>→</i><span class="new">Assign locations</span><i>→</i><span class="new">Schedule per location</span><i>→</i><span>Assign services</span>
-    </div>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before · staff page</figcaption><div class="shot-frame"><span>Screen pending · "Current staff surface"<br>Core Review ML3 08/02</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After · staff page</figcaption><div class="shot-frame"><span>Screen pending · "Updated staff surface"<br>Core Review ML3 08/02</span></div></figure>
-    </div>
-    <ul class="changes">
-      <li>Locations and per-location schedules are part of the invite flow, so new members are bookable from day one.</li>
-      <li>"Staff at [Location]" filters the team, and each member shows where and when they work.</li>
-      <li>Permissions gained location settings, and roles can be customized for one member or many at once.</li>
-    </ul>
-  </article>
-
-  <!-- Settings -->
-  <article class="surface" id="settings">
-    <div class="surface-head">
-      <p class="label"><b>M4</b> · Settings management</p>
-      <h3>Standardizing settings across locations</h3>
-      <div class="jobs"><span class="job">Standardize settings across locations</span><span class="job">Override a setting for one location</span><span class="job">Control who can change what</span></div>
-    </div>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before</figcaption><div class="shot-frame"><span>Screen pending · Settings home<br>MBR Deepdive 05/16</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After</figcaption><div class="shot-frame"><span>Screen pending · Booking settings across locations<br>MBR Deepdive 05/16</span></div></figure>
-    </div>
-    <ul class="changes">
-      <li>Each setting shows whether all locations match or some differ, and owners can update across locations in one step.</li>
-      <li>Members with access to a location can adjust its settings. A gentle, non-blocking warning appears when they move away from the business standard.</li>
-      <li>Access follows the role: owners manage global settings, and staff see only their assigned locations.</li>
-    </ul>
-    <p class="note prose">Informed by a competitive review of Boulevard, Fresha and other salon platforms, which split business-level and location-level settings in different ways.</p>
-  </article>
-
-  <!-- Calendar & clients -->
-  <article class="surface" id="calendar">
-    <div class="surface-head">
-      <p class="label"><b>M6</b> · Booking & client management</p>
-      <h3>Calendar, booking and clients</h3>
-      <div class="jobs"><span class="job">View my schedule at another location</span><span class="job">Book at a different location</span><span class="job">One client list across locations</span></div>
-    </div>
-    <div class="ba">
-      <figure class="shot" style="margin:0"><figcaption class="label"><span class="dot"></span>Before</figcaption><div class="shot-frame"><span>Screen pending · Single-location calendar<br>DLT 05/08</span></div></figure>
-      <figure class="shot after" style="margin:0"><figcaption class="label"><span class="dot"></span>After</figcaption><div class="shot-frame"><span>Screen pending · Calendar location switcher & live preview<br>DLT 05/08</span></div></figure>
-    </div>
-    <ul class="changes">
-      <li>The calendar gets its own location switcher, with a live preview of another location's calendar while booking.</li>
-      <li>Appointments carry their location through to the client's confirmation email.</li>
-      <li>Clients stay in one shared list, filterable by location, with appointment history tagged by location.</li>
-    </ul>
-  </article>
-</section>
-
-<section class="stack-lg" id="outcome">
-  <div class="stack prose">
-    <p class="label">04 · Outcome</p>
-    <h2>Opening the door to bigger businesses</h2>
-    <p>The business goal was to enable upmarket, multi-location businesses on GlossGenius and grow the share of customers on the higher plans.</p>
-  </div>
-  <div class="pending">
-    <p class="label"><b>To add</b></p>
-    <p>What shipped, adoption or plan-upgrade numbers, and customer feedback (for example, the member list update on 09/05 that came from user feedback).</p>
-  </div>
-  <div class="stack prose">
-    <h3>What I learned</h3>
-    <p>When a change runs horizontally across a product, the shared decisions matter more than any single screen. Settling the principle, the information architecture and the switcher model first let each later milestone move quickly and stay consistent with the rest.</p>
   </div>
 </section>
 
-<footer>Multi Location · GlossGenius · Lead product designer</footer>
+<section class="slide" data-name="IA">
+  <div class="in">
+    <p class="kicker"><b>03</b> Information architecture</p>
+    <h2>Location became a layer.</h2>
+    <div class="cols">
+      <div class="card"><p class="kicker">Before</p>
+        <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div>
+      <div class="card"><p class="kicker">After</p>
+        <div class="tree"><div><span class="node">Business</span></div><div class="ind"><div><span class="node l">Locations</span></div><div class="ind"><div><span class="node">Workflows</span></div></div></div></div></div>
+    </div>
+  </div>
+</section>
 
-</div>
+<section class="slide" data-name="Switcher">
+  <div class="in">
+    <p class="kicker"><b>04</b> Key decision</p>
+    <h2>A location switcher in each workflow.</h2>
+    <div class="cols">
+      <div class="card"><h3>Global</h3><p>One switcher for the whole app. No central view for owners.</p></div>
+      <div class="card pick"><span class="tag">Chosen</span><h3>Per workflow</h3><p>"Team at Soho". Works for owners and operators, at any number of locations.</p></div>
+      <div class="card"><h3>Hybrid</h3><p>Both. Two switchers with conflicting logic.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-name="Patterns">
+  <div class="in">
+    <p class="kicker"><b>05</b> System</p>
+    <h2>Five patterns, every surface.</h2>
+    <div class="list">
+      <div><h3>Default, then override</h3><p>Set once for the business, customize per location or person.</p></div>
+      <div><h3>Assign to locations</h3><p>Staff, services and clients belong to one or more locations.</p></div>
+      <div><h3>[Surface] at [Location]</h3><p>A filter in each workflow, with "All locations" for owners.</p></div>
+      <div><h3>Bulk by default</h3><p>Invite, assign and update many at once.</p></div>
+      <div><h3>Built for 20+</h3><p>Pickers search and truncate at scale.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-name="Add location">
+  <div class="in">
+    <p class="kicker"><b>M1</b> Add a location</p>
+    <h2>A new location starts from an existing one.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Business switcher<br>MBR Deepdive 05/16</p></div>
+      <div class="layer after"><p class="ph">Add location flow<br>Spaces TB 10/07</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-add" aria-label="Compare before and after: add a location">
+    </div>
+    <div class="flow"><span class="n">Basics</span><i>→</i><span class="n">Hours</span><i>→</i><span class="n">Specialty</span><i>→</i><span class="n">Services</span><i>→</i><span class="n">Staff</span><i>→</i><span class="n">Settings</span><i>→</i><span class="n">Plan</span><i>→</i><span class="n">Done</span></div>
+    <ul class="points">
+      <li><b>Prefilled</b><span>Hours and specialty carry over.</span></li>
+      <li><b>Bulk</b><span>Copy services, staff and settings in one step.</span></li>
+      <li><b>Clear cost</b><span>The plan change shows before confirming.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-name="Services">
+  <div class="in">
+    <p class="kicker"><b>M2</b> Services</p>
+    <h2>One service, priced per location and per person.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Current service creation<br>M2 Service Management</p></div>
+      <div class="layer after"><p class="ph">Location & staff customization<br>Spaces TB 10/07</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-services" aria-label="Compare before and after: services">
+    </div>
+    <ul class="points">
+      <li><b>Create once</b><span>Switch it on per location. No duplicate menus.</span></li>
+      <li><b>Scoped staff</b><span>Only members at that location appear.</span></li>
+      <li><b>Per-member price</b><span>Shows the final price clients see.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-name="Staff invite">
+  <div class="in">
+    <p class="kicker"><b>M3</b> Staff · Invite</p>
+    <h2>New members are bookable from day one.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Current flow<br>Core Review ML3 08/02</p></div>
+      <div class="layer after"><p class="ph">Updated invite flow<br>Core Review ML3 08/02</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-invite" aria-label="Compare before and after: staff invite">
+    </div>
+    <div class="flow"><span>Add members</span><i>→</i><span class="n">Bulk invite</span><i>→</i><span>Roles</span><i>→</i><span class="n">Locations</span><i>→</i><span class="n">Schedule per location</span><i>→</i><span>Services</span></div>
+  </div>
+</section>
+
+<section class="slide" data-name="Staff page">
+  <div class="in">
+    <p class="kicker"><b>M3</b> Staff · Team page</p>
+    <h2>See who works where, and when.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Current staff surface<br>Core Review ML3 08/02</p></div>
+      <div class="layer after"><p class="ph">Updated staff surface<br>Core Review ML3 08/02</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-staff" aria-label="Compare before and after: team page">
+    </div>
+    <ul class="points">
+      <li><b>Team at [Location]</b><span>Filter the team by location.</span></li>
+      <li><b>Schedules</b><span>Hours set per location.</span></li>
+      <li><b>Permissions</b><span>Location settings access by role.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-name="Settings">
+  <div class="in">
+    <p class="kicker"><b>M4</b> Settings</p>
+    <h2>Standard everywhere, with room for exceptions.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Settings home<br>MBR Deepdive 05/16</p></div>
+      <div class="layer after"><p class="ph">Booking settings across locations<br>MBR Deepdive 05/16</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-settings" aria-label="Compare before and after: settings">
+    </div>
+    <ul class="points">
+      <li><b>At a glance</b><span>"All locations match" or "Some differ".</span></li>
+      <li><b>One update</b><span>Apply a change across locations.</span></li>
+      <li><b>Soft guardrail</b><span>A warning when a location drifts from standard.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-name="Calendar">
+  <div class="in">
+    <p class="kicker"><b>M6</b> Calendar & clients</p>
+    <h2>Book anywhere, one client list.</h2>
+    <div class="compare" data-compare>
+      <div class="layer before"><p class="ph">Single-location calendar<br>DLT 05/08</p></div>
+      <div class="layer after"><p class="ph">Location switcher & live preview<br>DLT 05/08</p></div>
+      <span class="badge b">Before</span><span class="badge a">After</span><span class="handle"></span>
+      <input type="range" min="0" max="100" value="50" id="cmp-cal" aria-label="Compare before and after: calendar">
+    </div>
+    <ul class="points">
+      <li><b>Switch per calendar</b><span>Preview another location while booking.</span></li>
+      <li><b>Location travels</b><span>Through to the confirmation email.</span></li>
+      <li><b>Shared clients</b><span>Filter and history by location.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-name="Outcome">
+  <div class="in">
+    <p class="kicker"><b>06</b> Outcome</p>
+    <h2>Ready for bigger businesses.</h2>
+    <p class="pending">To add: what shipped, adoption or plan-upgrade numbers, and customer feedback.</p>
+  </div>
+</section>
+
+<nav class="rail" id="rail" aria-label="Slides"></nav>
+<div class="count" id="count" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var rail=document.getElementById('rail'),count=document.getElementById('count'),bar=document.getElementById('bar');
+  var pad=function(n){return String(n).padStart(2,'0')};
+  slides.forEach(function(s,i){
+    s.id=s.id||'s'+(i+1);
+    var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',s.dataset.name);
+    a.innerHTML='<span>'+s.dataset.name+'</span>';rail.appendChild(a);
+  });
+  var dots=[].slice.call(rail.children),cur=0;
+  function setCur(i){cur=i;dots.forEach(function(d,j){d.classList.toggle('on',j===i)});
+    count.innerHTML='<b>'+pad(i+1)+'</b> / '+pad(slides.length);}
+  setCur(0);
+
+  // Slides below the fold sit 14px low and settle as they arrive.
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      var i=slides.indexOf(e.target);
+      if(e.isIntersecting){e.target.classList.remove('below');if(e.intersectionRatio>.5)setCur(i);}
+    })},{threshold:[0,.5]});
+    slides.forEach(function(s,i){if(s.getBoundingClientRect().top>innerHeight)s.classList.add('below');io.observe(s)});
+  }
+  addEventListener('scroll',function(){var h=document.documentElement;
+    bar.style.width=(h.scrollTop/Math.max(1,h.scrollHeight-h.clientHeight)*100)+'%';},{passive:true});
+
+  // Keyboard paging (arrow keys on a compare slider stay with the slider).
+  addEventListener('keydown',function(e){
+    if(e.target.tagName==='INPUT')return;
+    var k=e.key,n=null;
+    if(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey))n=cur+1;
+    if(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey))n=cur-1;
+    if(n===null)return;e.preventDefault();
+    n=Math.max(0,Math.min(slides.length-1,n));slides[n].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+
+  // Before/after compare sliders.
+  document.querySelectorAll('[data-compare]').forEach(function(c){
+    var r=c.querySelector('input');
+    var set=function(){c.style.setProperty('--pos',r.value+'%')};
+    r.addEventListener('input',set);set();
+  });
+})();
+</script>
