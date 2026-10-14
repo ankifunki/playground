@@ -1,0 +1,139 @@
+<title>Sans Candidates</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=Funnel+Display:wght@500;600&family=Host+Grotesk:wght@400;500;600&family=Mona+Sans:wght@400;500;600&family=Geist+Mono&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap">
+<style>@font-face{font-family:"Overused Grotesk";src:url("https://cdn.jsdelivr.net/gh/RandomMaerks/Overused-Grotesk@main/fonts/variable/OverusedGrotesk-VF.woff2") format("woff2");font-weight:300 900;font-display:swap}</style>
+<style>
+/* Layout: 1504×846 artboard on a 12-column grid (96 margins, 24 gutters) and an 8px vertical unit.
+   Roles: Spectral Bold = title only · Geist = everything read · Geist Mono = meta only. */
+:root{
+  color-scheme:dark;
+  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --faint:#959C9B; --rule:#C6CCCB;
+  --serif:"Spectral",Georgia,serif; --sans:"Geist","Helvetica Neue",Arial,sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);margin:0;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin-inline:auto;display:grid;gap:40px}
+.slide{container-type:inline-size;background:var(--slide);position:relative}
+.stage{
+  --u:calc(100cqw / 1504);
+  position:relative;aspect-ratio:1504/846;
+  padding:calc(var(--u)*88) calc(var(--u)*96) calc(var(--u)*64);
+  display:grid;grid-template-rows:auto 1fr auto;
+}
+
+/* Row 1 — title and meta share a baseline */
+.head{display:flex;justify-content:space-between;align-items:baseline}
+.title{margin:0;font:600 calc(var(--u)*60)/1 var(--tf,var(--sans));letter-spacing:var(--tl,-.035em);color:var(--ink);margin-left:calc(var(--u)*-3)} /* optical: pull the O to the margin */
+.mono{font:400 calc(var(--u)*13)/calc(var(--u)*16) var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+
+/* Row 2 — content block starts at a fixed line (y = 320), not centred */
+.content{padding-top:calc(var(--u)*152);display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);align-content:start}
+.statement{grid-column:1 / span 9;margin:0;font:400 calc(var(--u)*40)/calc(var(--u)*52) var(--sans);letter-spacing:-.018em;color:var(--grey);text-wrap:pretty}
+.statement b{font-weight:500;color:var(--ink)}
+.facts{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*64)}
+.fact{display:grid;gap:calc(var(--u)*8);align-content:start}
+.fact:nth-child(1){grid-column:1 / span 3}
+.fact:nth-child(2){grid-column:4 / span 5}
+.fact span:last-child{font:500 calc(var(--u)*18)/calc(var(--u)*24) var(--sans);letter-spacing:-.005em;color:var(--ink)}
+
+/* Row 3 — folio */
+.folio{display:flex;justify-content:space-between;align-items:baseline}
+
+/* Grid overlay */
+.grid .stage::before{content:"";position:absolute;inset:0 calc(var(--u)*96);pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgb(102 99 244 / .09) 0 calc((100% - var(--u)*264) / 12),transparent calc((100% - var(--u)*264) / 12) calc((100% - var(--u)*264) / 12 + var(--u)*24))}
+.grid .stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,transparent 0 calc(var(--u)*7),rgb(102 99 244 / .16) calc(var(--u)*7) calc(var(--u)*8))}
+.grid .guide{position:absolute;left:0;right:0;height:1px;background:rgb(222 33 97 / .55)}
+.cap{color:#C9CFCE;font:400 13px/1.4 system-ui,sans-serif;margin:0 0 10px}
+</style>
+
+<div class="wrap">
+<div style="--sans:'Overused Grotesk',sans-serif;--tl:-.03em">
+    <p class="cap"><b style="color:#fff;font-weight:500">Overused Grotesk</b> — Swiss and Helvetica-like, the most praised free grotesk on X. Neutral but with real presence. OFL (free, can be embedded).</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+<div style="--sans:'Switzer',sans-serif;--tl:-.03em">
+    <p class="cap"><b style="color:#fff;font-weight:500">Switzer</b> — Fontshare's neo-grotesk, very clean Swiss feel. Free under the ITF licence (no redistribution, so self-hosting needs permission).</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+<div style="--sans:'Familjen Grotesk',sans-serif;--tl:-.03em">
+    <p class="cap"><b style="color:#fff;font-weight:500">Familjen Grotesk</b> — From Stockholm. Slightly quirky details (look at the g, y and t) in an otherwise clean grotesk. Google Fonts.</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+<div style="--sans:'Funnel Sans',sans-serif;--tl:-.03em; --tf:'Funnel Display',sans-serif">
+    <p class="cap"><b style="color:#fff;font-weight:500">Funnel Display + Funnel Sans</b> — A display cut for titles with a text cut for body, from the same family. Subtle, distinctive curves. Google Fonts.</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+<div style="--sans:'Host Grotesk',sans-serif;--tl:-.035em">
+    <p class="cap"><b style="color:#fff;font-weight:500">Host Grotesk</b> — Contemporary and compact, a little tighter than Geist. Google Fonts.</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+<div style="--sans:'Mona Sans',sans-serif;--tl:-.03em">
+    <p class="cap"><b style="color:#fff;font-weight:500">Mona Sans</b> — GitHub's grotesk. Sturdy, slightly wide, very confident at weight. Google Fonts.</p>
+    <div class="slide"><div class="stage">
+      <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
+      <div class="content">
+        <p class="statement">GlossGenius was built for <b>single-location</b> salons and spas. Supporting <b>multi-location</b> businesses was the path upmarket, but every primary workflow assumed one location.</p>
+        <div class="facts">
+          <div class="fact"><span class="mono">Role</span><span>Lead Product Designer</span></div>
+          <div class="fact"><span class="mono">Scope</span><span>Locations, staff, services, settings</span></div>
+        </div>
+      </div>
+      <div class="folio"><span class="mono">Multi Location</span><span class="mono">02</span></div>
+    </div></div>
+  </div>
+</div>
