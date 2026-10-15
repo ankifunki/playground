@@ -105,6 +105,25 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 @media (prefers-reduced-motion:reduce){.dia .ln,.dia .pop{transition:none}.slide:not(.on) .dia .ln{stroke-dashoffset:0}.slide:not(.on) .dia .pop{opacity:1}}
 
 
+
+/* Story: beats build up one at a time; earlier beats dim */
+.story{display:grid;gap:var(--gap-m)}
+.pins{display:flex;flex-wrap:wrap;gap:8px}
+.pin{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 8px;border:1px solid var(--rule);border-radius:999px;font:500 13px/16px var(--body);color:var(--ink);background:rgb(255 255 255 / .35);transition:opacity .5s var(--ease),transform .6s var(--ease),border-color .5s,background .5s}
+.pin svg{width:16px;height:16px;fill:none;stroke:var(--accent);stroke-width:1.8}
+.pin .acct{font:400 var(--t-mono)/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .6s var(--ease)}
+.story .pin:nth-child(n+2){opacity:0;transform:translateY(6px)}
+.story:not([data-step="0"]) .pin{opacity:1;transform:none}
+.story[data-step="2"] .pin{border-style:dashed;background:none}
+.story[data-step="2"] .pin svg{stroke:var(--grey)}
+.story[data-step="2"] .pin .acct{max-width:9em}
+.beats{display:grid;gap:var(--gap-m)}
+.beats .note{grid-area:auto;display:grid;align-content:start;gap:var(--gap-xs);font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--grey);transform:translateY(6px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.beats .note b{font-weight:500;color:var(--ink)}
+.beats .note.on,.beats .note.past{transform:none}
+.beats .note.past{opacity:.45}
+.story .steps button{min-width:0;flex:1}
+
 /* How a booking works: one booking, lifted from business to location level */
 .rel{display:grid;gap:var(--gap-m)}
 .terms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -209,6 +228,15 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
   .rel .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
   .rel .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
   .rel .notes{grid-column:6 / span 7}
+  .story{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*48)}
+  .pins{grid-column:1 / -1;gap:calc(var(--u)*12)}
+  .pin{font-size:calc(var(--u)*18);line-height:calc(var(--u)*24);padding:calc(var(--u)*8) calc(var(--u)*16) calc(var(--u)*8) calc(var(--u)*12);gap:calc(var(--u)*8)}
+  .pin svg{width:calc(var(--u)*20);height:calc(var(--u)*20)}
+  .beats{grid-column:1 / -1;grid-template-columns:repeat(3,1fr);column-gap:calc(var(--u)*24)}
+  .beats .note{font-size:calc(var(--u)*24);line-height:calc(var(--u)*36);gap:calc(var(--u)*12)}
+  .story .steps{grid-column:1 / span 4;flex-direction:row;gap:calc(var(--u)*16)}
+  .story .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
+  .story .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
   .tabs button{padding-block:calc(var(--u)*14)}
   .tabs button:last-child[aria-pressed="true"]{border-left-color:var(--accent)}
   .note,.flowseq .foot{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
@@ -321,6 +349,20 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     <svg class="mark" viewBox="0 0 45.353 64" role="img" aria-label="GlossGenius"><path fill="currentColor" transform="translate(0.141 0)" d="M31.409 5.088C36.057 5.088 38.945 8.498 39.852 12.872L41.832 12.872C41.997 7.151 38.972 0 29.373 0C14.632 0 1.815 19.28 0.248 37.019C0.083 38.835 0 40.54 0 42.162C0 56.932 6.573 64 16.447 64C27.366 64 33.471 52.201 37.212 43.648C38.119 41.557 38.587 41.172 40.292 41.172L44.885 41.172L45.353 39.852L41.007 37.019C39.77 36.222 39.687 35.534 40.045 33.004L41.172 24.863L39.907 24.505L36.469 32.316C35.452 34.654 34.214 34.572 32.151 33.966L22.608 31.161L22.113 32.536L31.024 38.284C32.069 38.945 32.509 39.632 32.509 40.512C32.509 41.667 31.959 42.768 30.804 45.133C27.366 52.201 22.415 55.859 18.07 55.859C12.982 55.859 8.746 50.853 8.746 40.567C8.746 39.77 8.774 38.972 8.829 38.147C9.599 25.303 19.115 5.088 31.409 5.088Z"/></svg>
   </div>
   <div class="big"><h2>Multi<br>Location</h2><p class="by">A platform shift across every core workflow.</p></div>
+</div></section>
+
+<section class="slide" data-name="GlossGenius"><div class="stage">
+  <div class="head"><h3 class="title">GlossGenius</h3></div>
+  <div class="content"><p class="statement">Software that runs <b>salons, barbershops and spas</b>. Booking, payments, staff and clients, in one place.</p></div>
+</div></section>
+
+<section class="slide" data-name="Meet Flow Studio"><div class="stage">
+  <div class="head"><h3 class="title">Meet Flow Studio</h3></div>
+  <div class="content" style="padding-top:calc(var(--u)*96)"><div class="story">
+    <div class="pins"><span class="pin"><svg viewBox="0 0 24 24"><use href="#pin"/></svg>Brooklyn<span class="acct">· Account 1</span></span><span class="pin"><svg viewBox="0 0 24 24"><use href="#pin"/></svg>Soho<span class="acct">· Account 2</span></span><span class="pin"><svg viewBox="0 0 24 24"><use href="#pin"/></svg>East Village<span class="acct">· Account 3</span></span></div>
+    <div class="beats notes"><p class="note on"><span class="mono">One location</span><span>Opens in Brooklyn. <b>One team, one menu, one calendar.</b> GlossGenius fits.</span></p><p class="note"><span class="mono">Growth</span><span>Opens in Soho, then East Village. <b>Stylists split their week</b> and prices change by neighborhood.</span></p><p class="note"><span class="mono">Workaround</span><span>Each location becomes <b>its own account</b>. Staff, menus and clients duplicated by hand, and no view of the whole.</span></p></div>
+    <div class="steps" role="group" aria-label="Story"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Start</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Grow</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Break</b></button></div>
+  </div></div>
 </div></section>
 
 <section class="slide" data-name="Opportunity"><div class="stage">
@@ -604,17 +646,17 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     q._i=i;q.setAttribute('data-step',i);
     imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1)im.loading='eager'});
     btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(j===i));b.classList.toggle('seen',j<i)});
-    notes.forEach(function(n,j){n.classList.toggle('on',j===i)});
+    notes.forEach(function(n,j){n.classList.toggle('on',j===i);n.classList.toggle('past',j<i)});
     var b=btns[i];if(b&&b.scrollIntoView&&b.parentNode.scrollWidth>b.parentNode.clientWidth){b.parentNode.scrollTo({left:b.offsetLeft-24,behavior:reduce?'auto':'smooth'})}
   }
-  var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel'));
+  var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel,.story'));
   seqs.forEach(function(q){
     setStep(q,0);
     q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);setStep(q,j)})});
   });
   function playSeq(q){
     clearInterval(q._t);setStep(q,0);
-    var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
+    var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('story')?3400:q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
     if(reduce)return;
     q._t=setInterval(function(){if(q._i>=n-1){clearInterval(q._t);return}setStep(q,q._i+1)},ms);
   }
@@ -627,12 +669,12 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
     seqs.forEach(function(q){clearInterval(q._t)});
-    var q=slides[n].querySelector('.flowseq,.models,.rel');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
+    var q=slides[n].querySelector('.flowseq,.models,.rel,.story');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
     var m=slides[n].querySelector('.morph');
     if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1400));}
   }
   // On a before/after slide still on "before", the first advance plays the change
-  function next(){var r=slides[cur].querySelector('.rel');if(r&&r._i<1){timers.forEach(clearTimeout);clearInterval(r._t);setStep(r,1);return;}var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
+  function next(){var r=slides[cur].querySelector('.rel,.story');if(r&&r._i<r.querySelectorAll('.steps button').length-1){timers.forEach(clearTimeout);clearInterval(r._t);setStep(r,r._i+1);return;}var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
   function prev(){go(cur-1)}
 
   document.getElementById('next').addEventListener('click',next);
