@@ -28,17 +28,13 @@ const plane = (x0, z, w, inner, cls) =>
   `<g class="pl ${cls}"><path class="pf" d="${rect(x0, 0, w, PD, z, R)}"/><path class="po" d="${rect(x0, 0, w, PD, z, R)}"/>${inner}</g>`;
 
 // plane contents, relative to x0
-const svcInner = (x0) => [[30, 62, "hc"], [64, 34, ""], [92, 70, ""]].map(([x, y, c]) => dot(x0 + x, y, Z.svc, 6, `mk ${c}`)).join("");
-const schInner = (x0) => [0, 1, 2, 3, 4].map((c) => `<path class="col c${c}" d="${rect(x0 + COLX(c), 10, 16, 80, Z.sch, 3)}"/>`).join("");
+const svcInner = (x0) => dot(x0 + 30, 62, Z.svc, 6, "mk hc");
+const schInner = (x0, days = [0, 1, 2, 3, 4]) => days.map((c) => `<path class="col c${c}" d="${rect(x0 + COLX(c), 10, 16, 80, Z.sch, 3)}"/>`).join("");
 const calInner = (x0, hit) => {
-  let out = "";
-  for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
-    const on = hit && hit[0] === c && hit[1] === r;
-    out += `<path class="cell${on ? " hit" : ""}" d="${rect(x0 + COLX(c) + 1, ROWY(r) + 1, 14, 14, Z.cal, 1.5)}"/>`;
-  }
-  return out;
+  const [c, r] = hit;
+  return `<path class="cell hit" d="${rect(x0 + COLX(c) + 1, ROWY(r) + 1, 14, 14, Z.cal, 1.5)}"/>`;
 };
-const people = (x0, w) => [[w / 2 - 34, 72], [w / 2 + 30, 76]].map(([x, y]) => dot(x0 + x, y, Z.stf, 4.5, "mk")).join("");
+
 
 // the booking thread: haircut → Selina → day column → slot
 const HC = [30, 62], SEL = [70, 36], SEL_WIDE = [(PW + SPLIT) / 2, 36];
@@ -61,11 +57,11 @@ const body = [
   seg(T0.c, "t0 s3"), seg(TA.c, "ta s5"), seg(TB.c, "tb s5"),
   // schedule layer
   plane(0, Z.sch, PW, schInner(0), "sch a"),
-  plane(SPLIT, Z.sch, PW, schInner(SPLIT), "sch b"),
+  plane(SPLIT, Z.sch, PW, schInner(SPLIT, [3, 4]), "sch b"),
   seg(T0.b, "t0 s2"), seg(TA.b, "ta s5"), seg(TB.b, "tb s5"),
   // staff layer: one plane for the business, one wide plane spanning both locations
-  plane(0, Z.stf, PW, people(0, PW) + dot(...SEL, Z.stf, 6, "mk sel"), "stf one"),
-  plane(0, Z.stf, SPLIT + PW, people(0, SPLIT + PW) + dot(...SEL_WIDE, Z.stf, 6, "mk sel"), "stf wide"),
+  plane(0, Z.stf, PW, dot(...SEL, Z.stf, 6, "mk sel"), "stf one"),
+  plane(0, Z.stf, SPLIT + PW, dot(...SEL_WIDE, Z.stf, 6, "mk sel"), "stf wide"),
   seg(T0.a, "t0 s1"), seg(TA.a, "ta s5"), seg(TB.a, "tb s5"),
   // services layer
   plane(0, Z.svc, PW, svcInner(0), "svc a"),
