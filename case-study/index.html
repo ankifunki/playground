@@ -125,7 +125,18 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .story .steps button{min-width:0;flex:1}
 
 
+
+/* Phone flows: a swipeable row on phones, a fixed row on desktop */
+.phones{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x);scroll-padding-inline:var(--pad-x)}
+.phones::-webkit-scrollbar{display:none}
+.phone{flex:0 0 auto;width:min(56vw,calc((100svh - 330px) * 393 / 852));min-width:150px;margin:0;display:grid;gap:8px;scroll-snap-align:start}
+.phone img{display:block;width:100%;aspect-ratio:393/852;border-radius:16px;background:#0E1716;box-shadow:0 0 0 1px rgb(27 32 31 / .08),0 12px 28px -14px rgb(27 32 31 / .45)}
+.phone figcaption{display:flex;gap:8px;align-items:baseline}
+.phone figcaption b{font:500 13px/16px var(--body);color:var(--ink)}
+.mob{display:grid;gap:var(--gap-m)}
+
 /* How they connect: the scope at the centre moves from business to location */
+.rel{display:grid;gap:var(--gap-m)}
 .gfig{margin:0}
 .graph{display:block;width:100%;height:auto;color:var(--grey);overflow:visible}
 .graph .gn rect{fill:rgb(255 255 255 / .45);stroke:var(--rule);stroke-width:1}
@@ -147,33 +158,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .conn[data-step="1"] .graph .spk line{stroke:var(--accent)}
 .conn[data-step="1"] .graph .gn rect{stroke:rgb(102 99 244 / .45)}
 
-/* How a booking works: one booking, lifted from business to location level */
-.rel{display:grid;gap:var(--gap-m)}
-.terms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.terms .op{display:none}
-.term{position:relative;display:grid;gap:4px;align-content:start;padding:12px;border:1px solid var(--rule);border-radius:10px;background:rgb(255 255 255 / .35);transition:border-color .6s var(--ease),background .6s var(--ease)}
-.term .sub{font-size:16px;line-height:20px}
-.term .sw{display:grid}
-.term .sw > *{grid-area:1/1;font:400 13px/18px var(--body);color:var(--grey);transition:opacity .5s var(--ease),transform .6s var(--ease)}
-.term .sw .loc{color:var(--ink);opacity:0;transform:translateY(4px)}
-.term .at{justify-self:start;margin-top:4px;font:400 var(--t-mono)/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);opacity:0;transform:scale(.9);transform-origin:left;transition:opacity .4s var(--ease),transform .5s var(--ease)}
-.term.bk{border-color:var(--ink)}
-.rel[data-step="1"] .term{border-color:rgb(102 99 244 / .45);background:rgb(244 245 255 / .7)}
-.rel[data-step="1"] .term.bk{border-color:var(--accent)}
-.rel[data-step="1"] .sw .biz{opacity:0;transform:translateY(-4px)}
-.rel[data-step="1"] .sw .loc{opacity:1;transform:none}
-.rel[data-step="1"] .at{opacity:1;transform:none}
-.rel[data-step="1"] .term:nth-of-type(2) *{transition-delay:.12s}
-.rel[data-step="1"] .term:nth-of-type(3) *{transition-delay:.24s}
-.rel[data-step="1"] .term:nth-of-type(4) *{transition-delay:.4s}
-.scope{display:flex;align-items:baseline;gap:var(--gap-s)}
-.scope .sw{display:grid}
-.scope .sw > b{grid-area:1/1;font:600 var(--t-text)/var(--lh-text) var(--head);color:var(--ink);transition:opacity .5s var(--ease)}
-.scope .sw .loc{color:var(--accent);opacity:0}
-.rel[data-step="1"] .scope .biz{opacity:0}
-.rel[data-step="1"] .scope .loc{opacity:1}
 .rel .steps button{min-width:0;flex:1}
-@media (prefers-reduced-motion:reduce){.term,.term *,.scope *{transition:none!important}}
 
 /* Before → after: the after wipes over the before */
 .morph{display:grid;gap:var(--gap-m)}
@@ -241,17 +226,18 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
   .steps button.seen{border-left-color:var(--grey)}
   .steps button[aria-pressed="true"]{border-left-color:var(--ink)}
   .rel{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*36)}
-  .rel .scope,.rel .terms{grid-column:1 / -1}
-  .terms{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:calc(var(--u)*16);align-items:stretch}
-  .terms .op{display:grid;place-items:center;font:400 calc(var(--u)*24)/1 var(--mono);color:var(--faint)}
-  .term{padding:calc(var(--u)*20);gap:calc(var(--u)*6);border-radius:calc(var(--u)*12)}
-  .term .sub{font-size:calc(var(--u)*24);line-height:calc(var(--u)*32)}
-  .term .sw > *{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
   .rel .steps{grid-column:1 / span 4;flex-direction:row;gap:calc(var(--u)*16)}
   .rel .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
   .rel .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
   .rel .notes{grid-column:6 / span 7}
   .conn{align-items:start}
+  .mob{grid-column:1 / -1;grid-template-columns:repeat(4,calc(var(--u)*220)) 1fr;column-gap:calc(var(--u)*32);align-items:end}
+  .phones{display:contents}
+  .phone{width:auto;min-width:0;gap:calc(var(--u)*12)}
+  .phone img{border-radius:calc(var(--u)*22)}
+  .phone figcaption{gap:calc(var(--u)*10)}
+  .phone figcaption b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+  .mob .foot{align-self:end;padding-bottom:calc(var(--u)*36);font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
   .conn .gfig{grid-column:1 / span 7;grid-row:1 / span 3}
   .conn .graph{max-height:none;height:calc(var(--u)*500);width:auto;max-width:100%}
   .conn .steps{grid-column:9 / span 4;grid-row:1;align-self:start}
@@ -440,31 +426,13 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
       <g class="ed"><line x1="240" y1="44" x2="122" y2="44" marker-end="url(#ah)"/><line x1="300" y1="68" x2="300" y2="230" marker-end="url(#ah)"/><line x1="240" y1="256" x2="122" y2="256" marker-end="url(#ah)"/><line x1="60" y1="68" x2="60" y2="230" marker-end="url(#ah)"/></g>
       <g class="el"><text x="180" y="36">provides</text><text class="st" x="308" y="154">works</text><text x="180" y="248">opens slots</text><text class="st" x="68" y="154">booked on</text></g>
       <g class="gn"><rect x="0" y="20" width="120" height="48" rx="8"/><text class="nm" x="60" y="41">Services</text><text class="sb biz" x="60" y="58">one price</text><text class="sb loc" x="60" y="58">priced per location</text></g>
-      <g class="gn"><rect x="240" y="20" width="120" height="48" rx="8"/><text class="nm" x="300" y="41">Staff</text><text class="sb biz" x="300" y="58">one team</text><text class="sb loc" x="300" y="58">assigned to locations</text></g>
-      <g class="gn"><rect x="240" y="232" width="120" height="48" rx="8"/><text class="nm" x="300" y="253">Schedule</text><text class="sb biz" x="300" y="270">one week</text><text class="sb loc" x="300" y="270">per location</text></g>
+      <g class="gn"><rect x="240" y="20" width="120" height="48" rx="8"/><text class="nm" x="300" y="41">Staff</text><text class="sb biz" x="300" y="58">one team</text><text class="sb loc" x="300" y="58">works at 1+ locations</text></g>
+      <g class="gn"><rect x="240" y="232" width="120" height="48" rx="8"/><text class="nm" x="300" y="253">Schedule</text><text class="sb biz" x="300" y="270">one week</text><text class="sb loc" x="300" y="270">days vary by location</text></g>
       <g class="gn"><rect x="0" y="232" width="120" height="48" rx="8"/><text class="nm" x="60" y="253">Calendar</text><text class="sb biz" x="60" y="270">one calendar</text><text class="sb loc" x="60" y="270">one per location</text></g>
       <g class="hub"><rect x="136" y="126" width="88" height="48" rx="24"/><text class="nm biz" x="180" y="155">Business</text><text class="nm loc" x="180" y="155">Location</text></g>
     </svg></figure>
     <div class="steps" role="group" aria-label="Scope"><button type="button" aria-pressed="true"><span class="mono">01</span><b>One business</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Many locations</b></button></div>
-    <div class="notes"><p class="note on">Staff provide services and work a schedule. The schedule opens slots, and services are booked into them. Everything hangs off one business.</p><p class="note">Now everything hangs off a location. Each part, and each link between them, has to be set per location, together.</p></div>
-  </div></div>
-</div></section>
-
-<section class="slide" data-name="How a booking works"><div class="stage">
-  <div class="head"><h3 class="title">How a booking works</h3></div>
-  <div class="content" style="padding-top:calc(var(--u)*96)"><div class="rel">
-    <div class="scope"><span class="mono">Rules live at</span><span class="sw"><b class="biz">The business</b><b class="loc">Each location</b></span></div>
-    <div class="terms">
-      <div class="term"><span class="mono">Service</span><p class="sub">Haircut</p><p class="sw"><span class="biz">One price, $40</span><span class="loc">$55 at Soho, more with a senior stylist</span></p><span class="at">At Soho</span></div>
-      <span class="op">&rarr;</span>
-      <div class="term"><span class="mono">Provided by</span><p class="sub">Selina</p><p class="sw"><span class="biz">Can do haircuts</span><span class="loc">Senior stylist, at Soho and East Village</span></p><span class="at">At Soho</span></div>
-      <span class="op">&rarr;</span>
-      <div class="term"><span class="mono">When scheduled</span><p class="sub">Selina&rsquo;s week</p><p class="sw"><span class="biz">Mon–Fri, 9–6</span><span class="loc"><span style="white-space:nowrap">Soho Mon–Wed,</span> <span style="white-space:nowrap">East Village Thu–Fri</span></span></p><span class="at">At Soho</span></div>
-      <span class="op">&rarr;</span>
-      <div class="term bk"><span class="mono">Booked on</span><p class="sub">The calendar</p><p class="sw"><span class="biz">Tue 10:00, one calendar</span><span class="loc">Tue 10:00 on Soho&rsquo;s calendar</span></p><span class="at">At Soho</span></div>
-    </div>
-    <div class="steps" role="group" aria-label="Rule level"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Business level</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Location level</b></button></div>
-    <div class="notes"><p class="note on">A service is bookable only through staff who provide it, and only when they&rsquo;re on schedule. With one location, that chain is simple.</p><p class="note">With many, every link carries a location. Services book only on days staff are scheduled there, prices vary by location and seniority, and managers read each location&rsquo;s calendar for the week.</p></div>
+    <div class="notes"><p class="note on">Staff provide services and work a schedule. The schedule opens slots, and services are booked into them. Everything hangs off one business.</p><p class="note">Now everything hangs off a location. Prices vary by location and seniority, staff split their week, and managers read each location&rsquo;s calendar.</p></div>
   </div></div>
 </div></section>
 
@@ -580,6 +548,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/svc-1.webp" alt="Step 1: Basics" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-2.webp" alt="Step 2: Price & duration" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-3.webp" alt="Step 3: Locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-4.webp" alt="Step 4: Staff" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-5.webp" alt="Step 5: Per member" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Basics" aria-pressed="true"><span class="mono">01</span><b>Basics</b></button><button type="button" aria-label="Step 2: Price & duration" aria-pressed="false"><span class="mono">02</span><b>Price & duration</b></button><button type="button" aria-label="Step 3: Locations" aria-pressed="false"><span class="mono">03</span><b>Locations</b></button><button type="button" aria-label="Step 4: Staff" aria-pressed="false"><span class="mono">04</span><b>Staff</b></button><button type="button" aria-label="Step 5: Per member" aria-pressed="false"><span class="mono">05</span><b>Per member</b></button></div>
     <p class="foot">Set defaults once, switch locations on, then customize per member.</p>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="Create a service on mobile"><div class="stage">
+  <div class="head"><h3 class="title">On mobile</h3></div>
+  <div class="content"><div class="mob">
+    <div class="phones"><figure class="phone"><img src="img/m-svc-1.webp" alt="Mobile: Add service" loading="lazy" decoding="async"><figcaption><span class="mono">01</span><b>Add service</b></figcaption></figure><figure class="phone"><img src="img/m-svc-2.webp" alt="Mobile: Locations" loading="lazy" decoding="async"><figcaption><span class="mono">02</span><b>Locations</b></figcaption></figure><figure class="phone"><img src="img/m-svc-3.webp" alt="Mobile: Staff" loading="lazy" decoding="async"><figcaption><span class="mono">03</span><b>Staff</b></figcaption></figure><figure class="phone"><img src="img/m-svc-4.webp" alt="Mobile: Customize" loading="lazy" decoding="async"><figcaption><span class="mono">04</span><b>Customize</b></figcaption></figure></div>
+    <p class="foot">The same flow, native to the app: offer it at some locations, then choose who offers it where.</p>
   </div></div>
 </div></section>
 
@@ -740,7 +716,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   });
   // Horizontal swipe; vertical drags stay as scrolling inside a tall slide
   var sx=null,sy=null;
-  addEventListener('touchstart',function(e){if(dlg.open)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+  addEventListener('touchstart',function(e){sx=sy=null;if(dlg.open||e.target.closest('.phones'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
   addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
     if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.5){(dx<0?next:prev)();}sx=sy=null},{passive:true});
   var idle;addEventListener('mousemove',function(){document.body.classList.add('awake');clearTimeout(idle);idle=setTimeout(function(){document.body.classList.remove('awake')},1800)});
