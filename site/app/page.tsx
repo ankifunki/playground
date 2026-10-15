@@ -1,7 +1,6 @@
 import { about, intro, profile, projects } from "@/content/site";
-import { WorkList } from "./work-list";
 import { CopyEmail } from "./copy-email";
-import { Feature } from "./feature";
+import { Tiles } from "./tiles";
 
 const LockMark = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -13,15 +12,6 @@ const LockMark = () => (
 export default function Home() {
   const hasLocked = projects.some((p) => p.access === "password");
   const notes = about.notes.filter((n) => n.mark !== "lock" || hasLocked);
-  // Only public work can be featured, since the panel shows its screens.
-  const featured = projects.find((p) => p.feature && p.access === "public") as
-    | (typeof projects[number] & { feature: NonNullable<typeof projects[number]["feature"]> })
-    | undefined;
-  // Locked work never sends its cover to the browser.
-  const rest = projects
-    .filter((p) => p !== featured)
-    .map((p) => (p.access === "password" ? { ...p, cover: undefined } : p));
-
   return (
     <main className="page">
       <header className="topbar">
@@ -35,22 +25,20 @@ export default function Home() {
 
       <h1 className="statement">
         <span className="ink">{intro.lead}</span> {intro.before}{" "}
-        <span className="inline-co">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={intro.company.mark} alt="" width="28" height="28" />
-          <span className="ink">{intro.company.name}</span>
+        <span className="co">
+          <picture>
+            <source srcSet={intro.company.markDark} media="(prefers-color-scheme: dark)" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={intro.company.mark} alt="" />
+          </picture>
+          {intro.company.name}
         </span>
-        , {intro.after}
+        {intro.after}
       </h1>
 
       <div id="work" className="work-area">
-        {featured && <Feature project={featured} />}
-        {rest.length > 0 && (
-          <section className="section" aria-labelledby="more-work">
-            <h2 id="more-work" className="mono">More work</h2>
-            <WorkList projects={rest} />
-          </section>
-        )}
+        <h2 className="mono">Selected work</h2>
+        <Tiles projects={projects} />
         <p className="soon">More case studies soon. Some will be password protected; ask and I’ll walk you through them.</p>
       </div>
 

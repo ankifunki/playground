@@ -2,12 +2,18 @@
 
 export type Access = "public" | "password";
 
-export type Chapter = {
-  label: string; // tab name
-  img: string; // path under the case study folder
-  alt: string;
-  caption: string;
-};
+// The picture on a project's tile: an artistic crop of a real screen, or a logo on its brand color.
+export type Art =
+  | {
+      kind: "crop";
+      src: string;
+      bg: string; // tile color
+      bgDark?: string;
+      w: string; // image width relative to the tile, e.g. "150%"
+      x: string; // image left offset
+      y: string; // image top offset
+    }
+  | { kind: "logo"; src: string; srcDark?: string; bg: string; bgDark?: string };
 
 export type Project = {
   slug: string; // served at /work/<slug>/
@@ -17,9 +23,8 @@ export type Project = {
   year: string;
   role: string;
   access: Access;
-  cover?: string; // shown beside the cursor on hover in the work list
-  // Featured projects get the big panel with a tab per chapter.
-  feature?: { facts: { k: string; v: string }[]; chapters: Chapter[] };
+  art: Art;
+  wide?: boolean; // span both columns on desktop
 };
 
 export const profile = {
@@ -36,9 +41,13 @@ export const profile = {
 // DRAFT copy. Ankit to rewrite in his own words.
 export const intro = {
   lead: "I’m Ankit, a product designer.",
-  before: "Most recently I led Multi Location at",
-  company: { name: "GlossGenius", mark: "/work/multi-location/assets/glossgenius-g-black.svg" },
-  after: "rebuilding software for salons, barbershops and spas so one business can run many locations.",
+  before: "Currently Lead Product Designer at",
+  company: {
+    name: "Genius AI",
+    mark: "/brand/genius-g-black.svg",
+    markDark: "/brand/genius-g-light.svg",
+  },
+  after: ".",
 };
 
 export const about = {
@@ -52,31 +61,24 @@ export const about = {
   ],
 };
 
-const ml = (f: string) => `/work/multi-location/img/${f}`;
-
 export const projects: Project[] = [
   {
     slug: "multi-location",
     title: "Multi Location",
     line: "A platform shift across every core workflow, from one location to many.",
-    company: "GlossGenius",
+    company: "Genius AI",
     year: "2025",
     role: "Lead Product Designer",
     access: "public",
-    cover: ml("team-after.webp"),
-    feature: {
-      facts: [
-        { k: "Role", v: "Lead Product Designer" },
-        { k: "Timeline", v: "Apr – Oct 2025" },
-        { k: "Outcome", v: "120+ businesses on multi-location" },
-      ],
-      chapters: [
-        { label: "Locations", img: ml("add-1.webp"), alt: "Add a location: location details step", caption: "New locations start from an existing one. Eight steps, most of them prefilled." },
-        { label: "Services", img: ml("svclist-after.webp"), alt: "Services at a location", caption: "One service menu, offered per location." },
-        { label: "Staff", img: ml("team-after.webp"), alt: "Staff list scoped to all locations", caption: "Same list, now scoped to any location, showing where each person works." },
-        { label: "Settings", img: ml("set-1.webp"), alt: "Settings home with the location switcher open", caption: "One settings home, scoped to every location or just one." },
-        { label: "Calendar", img: ml("cal-4.webp"), alt: "Appointment booked at the Soho location", caption: "Switch location mid-booking and preview that calendar live." },
-      ],
+    wide: true,
+    art: {
+      kind: "crop",
+      src: "/work/multi-location/img/cal-4.webp",
+      bg: "#dddcf6",
+      bgDark: "#272644",
+      w: "150%",
+      x: "6%",
+      y: "10%",
     },
   },
 ];

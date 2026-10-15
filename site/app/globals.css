@@ -1,5 +1,5 @@
-/* Layout: a typeset index on the same 12px rhythm and greys as the Multi Location case study.
-   Work on the left, about on the right; one column on phones.
+/* Layout: a statement, then work as big tiles (an artistic crop of a real screen, or a logo on its brand color),
+   then about and contact. Same 12px rhythm and greys as the case studies; one column on phones.
    Roles: Geist = name and titles · Funnel Sans = reading · Geist Mono = meta. */
 :root {
   --paper: #eef1f0;
@@ -71,39 +71,6 @@ a { color: inherit; }
 
 .section { display: grid; gap: var(--s3); align-content: start; }
 
-/* ---------- Work index ---------- */
-.work { list-style: none; border-bottom: 1px solid var(--rule); }
-.work li { border-top: 1px solid var(--rule); }
-.row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--s2) var(--s3);
-  padding-block: var(--s3);
-  text-decoration: none;
-}
-.row-text { display: grid; gap: var(--s2); min-width: 0; }
-.row-title { font: 400 22px/1.35 var(--body); letter-spacing: -0.015em; color: var(--grey); text-wrap: pretty; }
-.row-title b {
-  font: 600 22px/1.35 var(--head);
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 0.25s var(--ease);
-}
-.row-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: center; }
-.row-arrow {
-  align-self: start;
-  margin-top: 6px;
-  width: 18px; height: 18px;
-  color: var(--faint);
-  transition: transform 0.35s var(--ease), color 0.25s var(--ease);
-}
-.row:hover .row-title b, .row:focus-visible .row-title b { text-decoration-color: var(--accent); }
-.row:hover .row-arrow, .row:focus-visible .row-arrow { color: var(--accent); transform: translate(3px, -3px); }
-
 /* Locked work: a redaction bar where the company would be, and a password chip */
 .redacted { display: inline-block; height: 11px; background: var(--bar); border-radius: 1px; vertical-align: -1px; }
 .chip {
@@ -115,20 +82,6 @@ a { color: inherit; }
 .chip svg { width: 10px; height: 10px; }
 
 .soon { color: var(--faint); font-size: 15px; }
-
-/* Cover that follows the cursor over the work list (fine pointers only) */
-.peek {
-  position: fixed; left: 0; top: 0; z-index: 10;
-  width: 360px; aspect-ratio: 3 / 2;
-  pointer-events: none;
-  border-radius: 6px; overflow: hidden;
-  box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 48px -16px rgba(14,16,17,.35);
-  opacity: 0; transform: scale(0.96);
-  transition: opacity 0.25s var(--ease), transform 0.35s var(--ease);
-}
-.peek.on { opacity: 1; transform: scale(1); }
-.peek img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; background: #fff; }
-@media (hover: none), (pointer: coarse) { .peek { display: none; } }
 
 /* ---------- About ---------- */
 .prose { display: grid; gap: var(--s3); }
@@ -193,106 +146,52 @@ a { color: inherit; }
   margin-top: var(--s4);
 }
 .statement .ink { color: var(--ink); }
-.inline-co { white-space: nowrap; }
-.inline-co img {
-  width: 0.82em; height: 0.82em;
-  vertical-align: -0.08em;
-  margin: 0 0.12em 0 0.04em;
-  padding: 0.1em;
-  border-radius: 0.2em;
-  background: #fff;
-  box-shadow: 0 0 0 1px var(--rule);
-}
 @media (prefers-reduced-motion: no-preference) {
   .statement { animation: settle 0.9s var(--ease) both; }
-  .feature { animation: settle 0.9s var(--ease) 0.12s both; }
+  .tiles { animation: settle 0.9s var(--ease) 0.12s both; }
 }
 @keyframes settle { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
+.statement .co { white-space: nowrap; color: var(--ink); }
+.statement .co picture, .statement .co img { display: inline-block; }
+.statement .co img { height: 0.78em; width: auto; vertical-align: -0.06em; margin: 0 0.16em 0 0.02em; }
+
+/* ---------- Work: one big tile per project ---------- */
 .work-area { display: grid; gap: var(--s3); }
+.tiles { list-style: none; display: grid; gap: var(--s5) var(--s3); }
+@media (min-width: 900px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles .wide { grid-column: 1 / -1; }
+}
+.tile { display: grid; gap: var(--s3); text-decoration: none; }
+.art {
+  position: relative; overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  background: var(--tile-bg);
+}
+.wide .art { aspect-ratio: 16 / 9; }
+@media (prefers-color-scheme: dark) { .art { background: var(--tile-bg-dark, var(--tile-bg)); } }
+.art .crop {
+  position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; max-width: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(14,16,17,.08), 0 40px 80px -32px rgba(14,16,17,.45);
+  transition: transform 0.9s var(--ease);
+}
+.art .logo { position: absolute; inset: 0; margin: auto; height: 22%; width: auto; transition: transform 0.9s var(--ease); }
+.tile:hover .crop, .tile:focus-visible .crop { transform: translate(-1.2%, -1.6%); }
+.tile:hover .logo, .tile:focus-visible .logo { transform: scale(1.04); }
+.art .chip { position: absolute; left: 16px; top: 16px; background: var(--paper); }
 
-/* ---------- Feature: the one dark, bold object on the page ---------- */
-.feature {
-  --f-bg: #141716; --f-ink: #eef1f1; --f-grey: #a3abaa; --f-faint: #6f7776; --f-rule: #2a2f2e; --f-slide: #dce0e0;
-  background: var(--f-bg);
-  color: var(--f-ink);
-  border-radius: 18px;
-  padding: clamp(20px, 4vw, 48px);
-  display: grid;
-  gap: var(--s4);
-  box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 40px 80px -48px rgba(14,16,17,.55);
+.tile-text { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2) var(--s3); align-items: start; }
+.tile-title { font: 400 22px/1.35 var(--body); letter-spacing: -0.015em; color: var(--grey); text-wrap: pretty; }
+.tile-title b {
+  font: 600 22px/1.35 var(--head); letter-spacing: -0.03em; color: var(--ink);
+  text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  transition: text-decoration-color 0.25s var(--ease);
 }
-@media (prefers-color-scheme: dark) { .feature { --f-bg: #181c1b; box-shadow: inset 0 0 0 1px #262b2a; } }
-.feature .mono { color: var(--f-faint); }
-.feature-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s3); }
-.feature-title { display: grid; gap: var(--s2); }
-.feature-title h2 { font: 600 clamp(36px, 5.4vw, 64px) / 1 var(--head); letter-spacing: -0.045em; }
-.feature-title h2 a { text-decoration: none; }
-.feature-line { color: var(--f-grey); font-size: 18px; max-width: 40ch; }
-.feature-cta {
-  display: inline-flex; align-items: center; gap: 10px;
-  font: 500 15px/1 var(--body); text-decoration: none;
-  color: var(--f-bg); background: var(--f-ink);
-  padding: 14px 18px; border-radius: 999px;
-  transition: background 0.25s var(--ease), color 0.25s var(--ease);
-}
-.feature-cta svg { width: 16px; height: 16px; transition: transform 0.35s var(--ease); }
-.feature-cta:hover { background: var(--accent); color: #fff; }
-.feature-cta:hover svg { transform: translateX(3px); }
-
-.tabs { display: flex; gap: var(--s1); overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding: 4px; }
-.tabs::-webkit-scrollbar { display: none; }
-.tabs button {
-  position: relative; flex: none;
-  display: inline-flex; align-items: baseline; gap: 8px;
-  font: 500 15px/1 var(--body); color: var(--f-grey);
-  background: transparent; border: 1px solid var(--f-rule); border-radius: 999px;
-  padding: 10px 16px; cursor: pointer; overflow: hidden;
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
-}
-.tabs button:hover { color: var(--f-ink); border-color: var(--f-faint); }
-.tabs button.on { color: var(--f-bg); background: var(--f-ink); border-color: var(--f-ink); }
-.tab-n { font: 400 10px/1 var(--mono); letter-spacing: 0.06em; opacity: 0.6; }
-.tab-progress {
-  position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
-  background: var(--accent); transform-origin: left; animation: fill linear both;
-}
-.tab-progress.paused { animation-play-state: paused; }
-@keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
-.panel { display: grid; gap: var(--s2); }
-.screen {
-  position: relative;
-  aspect-ratio: 1512 / 1040;
-  background: var(--f-slide);
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: none;
-}
-@media (hover: none) { .screen { cursor: auto; } }
-.screen img {
-  position: absolute; inset: 4% 5% auto; width: 90%; height: auto;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(14,16,17,.08), 0 24px 48px -24px rgba(14,16,17,.35);
-  opacity: 0; transform: translateY(10px) scale(0.985);
-  transition: opacity 0.5s var(--ease), transform 0.7s var(--ease);
-}
-.screen img.on { opacity: 1; transform: none; }
-.lens {
-  position: absolute; left: 0; top: 0; z-index: 2;
-  width: 200px; height: 200px; border-radius: 50%;
-  pointer-events: none; background-repeat: no-repeat; background-color: #fff;
-  box-shadow: 0 0 0 1px rgba(14,16,17,.12), 0 18px 40px -12px rgba(14,16,17,.45);
-  opacity: 0; transition: opacity 0.2s var(--ease);
-}
-.lens.on { opacity: 1; }
-.caption { color: var(--f-grey); font-size: 16px; min-height: 1.6em; }
-
-.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--s3); border-top: 1px solid var(--f-rule); padding-top: var(--s3); margin: 0; }
-.facts div { display: grid; gap: var(--s1); }
-.facts dd { margin: 0; color: var(--f-ink); font-size: 16px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .tab-progress { display: none; }
-  .screen img { transform: none; }
-}
+.tile-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: center; margin-top: var(--s2); }
+.tile-arrow { width: 18px; height: 18px; margin-top: 6px; color: var(--faint); transition: transform 0.35s var(--ease), color 0.25s var(--ease); }
+.tile:hover .tile-title b, .tile:focus-visible .tile-title b { text-decoration-color: var(--accent); }
+.tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent); transform: translate(3px, -3px); }
+.tile:focus-visible { outline-offset: 6px; border-radius: 16px; }
