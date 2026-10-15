@@ -10,7 +10,7 @@
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
 :root{
   color-scheme:dark;
-  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --faint:#959C9B; --rule:#C3C9C8;
+  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --copy:#2C3231; --faint:#959C9B; --rule:#C3C9C8;
   --accent:#6663F4; --divider:#1B201F; --on-divider:#EEF1F1; --frame:#EEF1F0; --frame-after:#F4F5FF;
   --head:"Geist","Helvetica Neue",Arial,sans-serif;
   --body:"Funnel Sans","Helvetica Neue",Arial,sans-serif;
@@ -58,11 +58,11 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){.slide .content > *{transition:none}.slide:not(.on) .content > *{transform:none}}
 
 /* Type */
-.statement{font:400 var(--t-statement)/var(--lh-statement) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
+.statement{font:400 var(--t-statement)/var(--lh-statement) var(--body);letter-spacing:-.015em;color:var(--copy);text-wrap:pretty}
 .statement b{font-weight:500;color:var(--ink)}
 .sub{font:600 var(--t-sub)/var(--lh-sub) var(--head);letter-spacing:-.02em;color:var(--ink)}
-.text{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--grey)}
-.small{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--grey)}
+.text{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--copy)}
+.small{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--copy)}
 
 /* Facts */
 .facts{display:grid;gap:var(--gap-m)}
@@ -83,7 +83,7 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
 ol.list.hard{grid-column:1 / -1}
 ol.list.hard li span{display:grid;gap:2px}
 ol.list.hard li b{font:600 var(--t-text)/var(--lh-text) var(--head);letter-spacing:-.01em;color:var(--ink)}
-ol.list.hard li i{font-style:normal;color:var(--grey)}
+ol.list.hard li i{font-style:normal;color:var(--copy)}
 @media (max-width:899px) and (max-height:720px){ol.list.hard li{padding-block:8px}}
 
 .opt{padding-top:var(--gap-m);border-top:1px solid var(--rule)}
@@ -118,7 +118,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .story[data-step="2"] .pin svg{stroke:var(--grey)}
 .story[data-step="2"] .pin .acct{max-width:9em}
 .beats{display:grid;gap:var(--gap-m)}
-.beats .note{grid-area:auto;display:grid;align-content:start;gap:var(--gap-xs);font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--grey);transform:translateY(6px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.beats .note{grid-area:auto;display:grid;align-content:start;gap:var(--gap-xs);font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--copy);transform:translateY(6px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
 .beats .note b{font-weight:500;color:var(--ink)}
 .beats .note.on,.beats .note.past{transform:none}
 .beats .note.past{opacity:.45}
@@ -191,7 +191,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .toggle button:hover{color:var(--ink)}
 .toggle button[aria-pressed="true"]{color:var(--ink)}
 .toggle i{position:absolute;top:3px;bottom:3px;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgb(27 32 31 / .12),0 0 0 1px rgb(27 32 31 / .05);transition:left .5s var(--ease),width .5s var(--ease)}
-.foot{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--grey)}
+.foot{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--copy)}
 
 /* Results */
 .nums{display:grid}
@@ -223,7 +223,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .tabs button:last-child[aria-pressed="true"]{border-top-color:var(--accent)}
 .tabs button:last-child[aria-pressed="true"] .mono{color:var(--accent)}
 .notes{display:grid}
-.note{grid-area:1/1;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--grey);opacity:0;transition:opacity .4s var(--ease)}
+.note{grid-area:1/1;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--copy);opacity:0;transition:opacity .4s var(--ease)}
 .note.on{opacity:1}
 @media (prefers-reduced-motion:reduce){.frame.seq img{transition:opacity .2s linear;transform:none}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
