@@ -1,0 +1,26 @@
+{
+  "name": "joshiankit-portfolio",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync-case-studies.mjs",
+    "dev": "npm run sync && next dev",
+    "build": "npm run sync && next build",
+    "start": "next start",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/funnel-sans": "5.2.6",
+    "geist": "1.4.2",
+    "next": "15.5.27",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.30",
+    "@types/react": "19.1.12",
+    "typescript": "5.8.3"
+  },
+  "overrides": {
+    "postcss": "8.5.28"
+  }
+}
