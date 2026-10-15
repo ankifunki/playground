@@ -104,6 +104,35 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .dia text.a{fill:var(--accent);font-family:var(--head);font-weight:500}
 @media (prefers-reduced-motion:reduce){.dia .ln,.dia .pop{transition:none}.slide:not(.on) .dia .ln{stroke-dashoffset:0}.slide:not(.on) .dia .pop{opacity:1}}
 
+
+/* How a booking works: one booking, lifted from business to location level */
+.rel{display:grid;gap:var(--gap-m)}
+.terms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.terms .op{display:none}
+.term{position:relative;display:grid;gap:4px;align-content:start;padding:12px;border:1px solid var(--rule);border-radius:10px;background:rgb(255 255 255 / .35);transition:border-color .6s var(--ease),background .6s var(--ease)}
+.term .sub{font-size:16px;line-height:20px}
+.term .sw{display:grid}
+.term .sw > *{grid-area:1/1;font:400 13px/18px var(--body);color:var(--grey);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.term .sw .loc{color:var(--ink);opacity:0;transform:translateY(4px)}
+.term .at{justify-self:start;margin-top:4px;font:400 var(--t-mono)/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);opacity:0;transform:scale(.9);transform-origin:left;transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.term.bk{border-color:var(--ink)}
+.rel[data-step="1"] .term{border-color:rgb(102 99 244 / .45);background:rgb(244 245 255 / .7)}
+.rel[data-step="1"] .term.bk{border-color:var(--accent)}
+.rel[data-step="1"] .sw .biz{opacity:0;transform:translateY(-4px)}
+.rel[data-step="1"] .sw .loc{opacity:1;transform:none}
+.rel[data-step="1"] .at{opacity:1;transform:none}
+.rel[data-step="1"] .term:nth-of-type(2) *{transition-delay:.12s}
+.rel[data-step="1"] .term:nth-of-type(3) *{transition-delay:.24s}
+.rel[data-step="1"] .term:nth-of-type(4) *{transition-delay:.4s}
+.scope{display:flex;align-items:baseline;gap:var(--gap-s)}
+.scope .sw{display:grid}
+.scope .sw > b{grid-area:1/1;font:600 var(--t-text)/var(--lh-text) var(--head);color:var(--ink);transition:opacity .5s var(--ease)}
+.scope .sw .loc{color:var(--accent);opacity:0}
+.rel[data-step="1"] .scope .biz{opacity:0}
+.rel[data-step="1"] .scope .loc{opacity:1}
+.rel .steps button{min-width:0;flex:1}
+@media (prefers-reduced-motion:reduce){.term,.term *,.scope *{transition:none!important}}
+
 /* Before → after: the after wipes over the before */
 .morph{display:grid;gap:var(--gap-m)}
 .frame{position:relative;width:100%;aspect-ratio:var(--r,var(--frame-ratio));border-radius:12px;overflow:hidden;background:var(--frame);cursor:zoom-in;
@@ -169,6 +198,17 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
   .steps button b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
   .steps button.seen{border-left-color:var(--grey)}
   .steps button[aria-pressed="true"]{border-left-color:var(--ink)}
+  .rel{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*36)}
+  .rel .scope,.rel .terms{grid-column:1 / -1}
+  .terms{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:calc(var(--u)*16);align-items:stretch}
+  .terms .op{display:grid;place-items:center;font:400 calc(var(--u)*24)/1 var(--mono);color:var(--faint)}
+  .term{padding:calc(var(--u)*20);gap:calc(var(--u)*6);border-radius:calc(var(--u)*12)}
+  .term .sub{font-size:calc(var(--u)*24);line-height:calc(var(--u)*32)}
+  .term .sw > *{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+  .rel .steps{grid-column:1 / span 4;flex-direction:row;gap:calc(var(--u)*16)}
+  .rel .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
+  .rel .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
+  .rel .notes{grid-column:6 / span 7}
   .tabs button{padding-block:calc(var(--u)*14)}
   .tabs button:last-child[aria-pressed="true"]{border-left-color:var(--accent)}
   .note,.flowseq .foot{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
@@ -319,6 +359,24 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
       </div>
     </div>
   </div>
+</div></section>
+
+<section class="slide" data-name="How a booking works"><div class="stage">
+  <div class="head"><h3 class="title">How a booking works</h3></div>
+  <div class="content" style="padding-top:calc(var(--u)*96)"><div class="rel">
+    <div class="scope"><span class="mono">Rules live at</span><span class="sw"><b class="biz">The business</b><b class="loc">Each location</b></span></div>
+    <div class="terms">
+      <div class="term"><span class="mono">Service</span><p class="sub">Haircut</p><p class="sw"><span class="biz">$40 · 45 min, everywhere</span><span class="loc">$55 at Soho, $40 elsewhere</span></p><span class="at">At Soho</span></div>
+      <span class="op">+</span>
+      <div class="term"><span class="mono">Staff</span><p class="sub">Selina</p><p class="sw"><span class="biz">Performs haircuts</span><span class="loc">Performs haircuts at Soho only</span></p><span class="at">At Soho</span></div>
+      <span class="op">+</span>
+      <div class="term"><span class="mono">Time</span><p class="sub">Selina&rsquo;s week</p><p class="sw"><span class="biz">Mon–Fri, 9–6</span><span class="loc"><span style="white-space:nowrap">Soho Mon–Wed,</span> <span style="white-space:nowrap">East Village Thu–Fri</span></span></p><span class="at">At Soho</span></div>
+      <span class="op">=</span>
+      <div class="term bk"><span class="mono">Booking</span><p class="sub">Tue, 10:00</p><p class="sw"><span class="biz">Any open slot with Selina</span><span class="loc">Only where all three line up</span></p><span class="at">At Soho</span></div>
+    </div>
+    <div class="steps" role="group" aria-label="Rule level"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Business level</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Location level</b></button></div>
+    <div class="notes"><p class="note on">A booking resolves a service, someone who performs it, and a time they&rsquo;re free. Each rule was set once, for the whole business.</p><p class="note">Lift it to locations and every rule forks, together. Price, who works where, when, and what they perform there must all agree before one slot can be booked.</p></div>
+  </div></div>
 </div></section>
 
 <section class="slide" data-name="What made it hard"><div class="stage">
@@ -543,20 +601,20 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   // Sequences (flow steps, switcher models): crossfade screens, auto-advance once on arrival
   function setStep(q,i){
     var imgs=q.querySelectorAll('.frame.seq img'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
-    q._i=i;
+    q._i=i;q.setAttribute('data-step',i);
     imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1)im.loading='eager'});
     btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(j===i));b.classList.toggle('seen',j<i)});
     notes.forEach(function(n,j){n.classList.toggle('on',j===i)});
     var b=btns[i];if(b&&b.scrollIntoView&&b.parentNode.scrollWidth>b.parentNode.clientWidth){b.parentNode.scrollTo({left:b.offsetLeft-24,behavior:reduce?'auto':'smooth'})}
   }
-  var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models'));
+  var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel'));
   seqs.forEach(function(q){
     setStep(q,0);
     q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);setStep(q,j)})});
   });
   function playSeq(q){
     clearInterval(q._t);setStep(q,0);
-    var n=q.querySelectorAll('.frame.seq img').length,ms=q.classList.contains('models')?2600:1700;
+    var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
     if(reduce)return;
     q._t=setInterval(function(){if(q._i>=n-1){clearInterval(q._t);return}setStep(q,q._i+1)},ms);
   }
@@ -569,12 +627,12 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
     seqs.forEach(function(q){clearInterval(q._t)});
-    var q=slides[n].querySelector('.flowseq,.models');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
+    var q=slides[n].querySelector('.flowseq,.models,.rel');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
     var m=slides[n].querySelector('.morph');
     if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1400));}
   }
   // On a before/after slide still on "before", the first advance plays the change
-  function next(){var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
+  function next(){var r=slides[cur].querySelector('.rel');if(r&&r._i<1){timers.forEach(clearTimeout);clearInterval(r._t);setStep(r,1);return;}var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
   function prev(){go(cur-1)}
 
   document.getElementById('next').addEventListener('click',next);
