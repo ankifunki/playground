@@ -186,10 +186,11 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .hint{position:absolute;right:8px;bottom:8px;font:400 9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);background:rgb(255 255 255 / .8);padding:6px 8px;border-radius:999px;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.layer.after,.layer.before,.edge{transition:opacity .25s linear}.layer.after{clip-path:none;opacity:0}.morph.is-after .layer.after{opacity:1}.morph.is-after .layer.before{transform:none;filter:none}.edge{display:none}}
 .bar{display:flex;flex-direction:column-reverse;gap:var(--gap-m)}
-.toggle{display:inline-flex;gap:var(--gap-m);position:relative;align-self:flex-start}
-.toggle button{background:none;border:0;padding:12px 0;min-height:44px;cursor:pointer;font:400 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);transition:color .3s}
+.toggle{display:inline-flex;position:relative;align-self:flex-start;padding:3px;border-radius:999px;background:rgb(27 32 31 / .07);box-shadow:inset 0 0 0 1px rgb(27 32 31 / .06)}
+.toggle button{position:relative;z-index:1;background:none;border:0;padding:0 16px;min-height:38px;border-radius:999px;cursor:pointer;font:400 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);transition:color .3s}
+.toggle button:hover{color:var(--ink)}
 .toggle button[aria-pressed="true"]{color:var(--ink)}
-.toggle i{position:absolute;bottom:8px;height:1px;background:var(--ink);transition:left .5s var(--ease),width .5s var(--ease)}
+.toggle i{position:absolute;top:3px;bottom:3px;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgb(27 32 31 / .12),0 0 0 1px rgb(27 32 31 / .05);transition:left .5s var(--ease),width .5s var(--ease)}
 .foot{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--grey)}
 
 /* Results */
@@ -337,8 +338,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .layer img,.frame.seq img{object-position:top left!important}
   .layer img[style*="top center"],.frame.seq img[style*="top center"]{object-position:top center!important}
   .bar{flex-direction:row;justify-content:space-between;align-items:baseline}
-  .toggle button{min-height:0;padding:calc(var(--u)*6) 0;font-size:max(10px,calc(var(--u)*12))}
-  .toggle i{bottom:0}
+  .toggle button{min-height:calc(var(--u)*34);padding:0 calc(var(--u)*16);font-size:max(10px,calc(var(--u)*12))}
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
