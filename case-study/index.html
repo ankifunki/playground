@@ -134,7 +134,7 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
 .divider .by{font:400 var(--t-text)/var(--lh-text) var(--body);color:#9AA2A1;max-width:28ch}
 .mark{height:36px;width:auto;display:block;color:var(--on-divider)}
-.divider .head{transition:opacity .8s var(--ease) .3s}
+.divider .head,.chapter .head{transition:opacity .8s var(--ease) .3s}
 .divider:not(.on) .head{opacity:0}
 
 
@@ -167,6 +167,14 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
   .tabs button:last-child[aria-pressed="true"]{border-left-color:var(--accent)}
   .note,.flowseq .foot{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
 }
+
+
+/* Chapter dividers: one per domain */
+.slide.chapter{background:var(--divider)}
+.chapter .stage{justify-content:space-between}
+.chapter .mono{color:#7F8786}
+.chapter .big{padding-bottom:var(--gap-xl)}
+.chapter h2{font:600 48px/1 var(--head);letter-spacing:-.04em;color:var(--on-divider)}
 
 /* ---------- Chrome: stories-style progress, tap zones, arrows on large screens ---------- */
 .progress{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
@@ -232,7 +240,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
-  .divider .stage{display:grid;grid-template-rows:auto 1fr}
+  .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
+  .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
+  .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
   .divider .big{align-self:end;padding-bottom:calc(var(--u)*60)}
   .divider h2{margin-left:calc(var(--u)*-6)}
   .divider .by{max-width:none}
@@ -365,6 +375,11 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div>
 </div></section>
 
+<section class="slide chapter" data-name="Locations"><div class="stage">
+  <div class="head"><span class="mono">Chapter 01</span></div>
+  <div class="big"><h2>Locations</h2></div>
+</div></section>
+
 <section class="slide screens" data-name="Add a location"><div class="stage">
   <div class="head"><h3 class="title">Add a location</h3></div>
   <div class="content"><div class="flowseq">
@@ -374,8 +389,13 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Services"><div class="stage">
-  <div class="head"><h3 class="title">Services</h3></div>
+<section class="slide chapter" data-name="Services"><div class="stage">
+  <div class="head"><span class="mono">Chapter 02</span></div>
+  <div class="big"><h2>Services</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Service menu"><div class="stage">
+  <div class="head"><h3 class="title">Service menu</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
       <div class="layer before"><img src="img/svclist-before.webp" alt="Before: one services list for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
@@ -394,14 +414,19 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Team"><div class="stage">
-  <div class="head"><h3 class="title">Team</h3></div>
+<section class="slide chapter" data-name="Staff"><div class="stage">
+  <div class="head"><span class="mono">Chapter 03</span></div>
+  <div class="big"><h2>Staff</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Schedules"><div class="stage">
+  <div class="head"><h3 class="title">Schedules</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
-      <div class="layer before"><img src="img/team-before.webp" alt="Before: staff list with no location context" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/team-after.webp" alt="After: Staff at [location] with each member's locations and role" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+      <div class="layer before"><img src="img/team-before.webp" alt="Before: Manage Schedule panel with one schedule per member" style="object-position:top left" loading="lazy" decoding="async"></div>
+      <div class="layer after"><img src="img/team-after.webp" alt="After: Edit schedule panel, set per location, on the Staff at [location] page" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">Staff at [Location]: who works where, and when.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">Same task, now per location: who works where, and when.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
   </div></div>
 </div></section>
 
@@ -414,25 +439,33 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Settings"><div class="stage">
-  <div class="head"><h3 class="title">Settings</h3></div>
+<section class="slide chapter" data-name="Settings"><div class="stage">
+  <div class="head"><span class="mono">Chapter 04</span></div>
+  <div class="big"><h2>Settings</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Settings home"><div class="stage">
+  <div class="head"><h3 class="title">Settings home</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
       <div class="layer before"><img src="img/settings-before.webp" alt="Before: settings home for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/settings-after.webp" alt="After: booking settings showing which locations match and where they differ" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+      <div class="layer after"><img src="img/settings-after.webp" alt="After: the same settings home with an All locations switcher" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">One standard, with a soft warning when a location drifts.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">Same settings home, now scoped to all locations or any one.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Calendar & clients"><div class="stage">
-  <div class="head"><h3 class="title">Calendar & clients</h3></div>
-  <div class="content"><div class="morph">
-    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
-      <div class="layer before"><img src="img/cal-before.webp" alt="Before: single-location calendar" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/cal-after.webp" alt="After: calendar with a location switcher and live preview while booking" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
-    </div>
-    <div class="bar"><p class="foot">Book at any location. One client list.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+<section class="slide chapter" data-name="Calendar"><div class="stage">
+  <div class="head"><span class="mono">Chapter 05</span></div>
+  <div class="big"><h2>Calendar</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Book at any location"><div class="stage">
+  <div class="head"><h3 class="title">Book at any location</h3></div>
+  <div class="content"><div class="flowseq">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen"><img src="img/cal-1.webp" alt="Step 1: Add" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-2.webp" alt="Step 2: New appointment" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-3.webp" alt="Step 3: Another location" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-4.webp" alt="Step 4: Booked" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Add" aria-pressed="true"><span class="mono">01</span><b>Add</b></button><button type="button" aria-label="Step 2: New appointment" aria-pressed="false"><span class="mono">02</span><b>New appointment</b></button><button type="button" aria-label="Step 3: Another location" aria-pressed="false"><span class="mono">03</span><b>Another location</b></button><button type="button" aria-label="Step 4: Booked" aria-pressed="false"><span class="mono">04</span><b>Booked</b></button></div>
+    <p class="foot">Switch location mid-booking and preview that calendar live.</p>
   </div></div>
 </div></section>
 
@@ -508,7 +541,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     timers.forEach(clearTimeout);timers=[];
     slides.forEach(function(s,i){s.classList.toggle('on',i===n);s.classList.toggle('past',i<n);s.setAttribute('aria-hidden',String(i!==n));s.inert=i!==n;if(i===n)s.scrollTop=0;});
     segs.forEach(function(g,i){g.classList.toggle('done',i<=n)});
-    document.body.classList.toggle('on-dark',slides[n].classList.contains('divider'));
+    document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
     seqs.forEach(function(q){clearInterval(q._t)});
