@@ -21,7 +21,6 @@ export type Project = {
   line: string; // one sentence on what it is or what changed
   company: string;
   year: string;
-  role: string;
   access: Access;
   art: Art;
   wide?: boolean; // span both columns on desktop
@@ -41,7 +40,7 @@ export const profile = {
 // DRAFT copy. Ankit to rewrite in his own words.
 export const intro = {
   lead: "I’m Ankit, a product designer.",
-  before: "Currently Lead Product Designer at",
+  before: "Currently at",
   company: {
     name: "Genius AI",
     mark: "/brand/genius-g-black.svg",
@@ -68,7 +67,6 @@ export const projects: Project[] = [
     line: "A platform shift across every core workflow, from one location to many.",
     company: "Genius AI",
     year: "2025",
-    role: "Lead Product Designer",
     access: "public",
     wide: true,
     art: {

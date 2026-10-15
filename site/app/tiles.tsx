@@ -66,8 +66,6 @@ export function Tiles({ projects }: { projects: Project[] }) {
                       <span>{p.company}</span>
                     )}
                     <span aria-hidden="true">·</span>
-                    <span>{p.role}</span>
-                    <span aria-hidden="true">·</span>
                     <span>{p.year}</span>
                   </span>
                 </span>
