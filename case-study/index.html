@@ -27,7 +27,7 @@
   --t-mono:11px;
   --t-cover:60px;
   --gap-xs:6px; --gap-s:12px; --gap-m:24px; --gap-l:36px; --gap-xl:48px;
-  --dia-h:132px; --frame-ratio:1/1;
+  --dia-h:132px; --frame-ratio:3/2; --fit:contain;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -103,7 +103,7 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
 .frame{position:relative;width:100%;aspect-ratio:var(--frame-ratio);border-radius:12px;overflow:hidden;background:var(--frame);cursor:zoom-in;
   box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 12px 36px -12px rgb(27 32 31 / .3)}
 .layer{position:absolute;inset:0;display:grid;place-items:center;background:var(--frame)}
-.layer img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.layer img{width:100%;height:100%;object-fit:var(--fit);object-position:center!important;display:block}
 .layer.after{background:var(--frame-after);clip-path:inset(0 0 0 100%);transition:clip-path 1.1s var(--ease)}
 .layer.before{transition:transform 1.1s var(--ease),filter 1.1s var(--ease)}
 .morph.is-after .layer.after{clip-path:inset(0 0 0 0)}
@@ -113,7 +113,7 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
 .morph.is-after .edge{left:0}
 .ph{font:400 var(--t-mono)/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1.5em}
 .layer.after .ph{color:var(--accent)}
-.hint{position:absolute;right:12px;bottom:12px;font:400 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);background:rgb(255 255 255 / .8);padding:6px 8px;border-radius:999px;pointer-events:none}
+.hint{position:absolute;right:8px;bottom:8px;font:400 9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);background:rgb(255 255 255 / .8);padding:6px 8px;border-radius:999px;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.layer.after,.layer.before,.edge{transition:opacity .25s linear}.layer.after{clip-path:none;opacity:0}.morph.is-after .layer.after{opacity:1}.morph.is-after .layer.before{transform:none;filter:none}.edge{display:none}}
 .bar{display:flex;flex-direction:column-reverse;gap:var(--gap-m)}
 .toggle{display:inline-flex;gap:var(--gap-m);position:relative;align-self:flex-start}
@@ -140,7 +140,7 @@ ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--in
 
 /* Sequences: stacked screens that crossfade (Add a location steps, switcher models) */
 .flowseq,.models{display:grid;gap:var(--gap-m)}
-.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.015);transition:opacity .6s var(--ease),transform 1.2s var(--ease)}
+.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;transform:scale(1.015);transition:opacity .6s var(--ease),transform 1.2s var(--ease)}
 .frame.seq img.on{opacity:1;transform:none}
 .steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
 .steps::-webkit-scrollbar{display:none}
@@ -205,7 +205,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     --t-small:calc(var(--u)*18);--lh-small:calc(var(--u)*24);
     --t-mono:max(10px,calc(var(--u)*12));--t-cover:calc(var(--u)*144);
     --gap-xs:calc(var(--u)*6);--gap-s:calc(var(--u)*12);--gap-m:calc(var(--u)*24);--gap-l:calc(var(--u)*36);--gap-xl:calc(var(--u)*60);
-    --dia-h:calc(var(--u)*288);--frame-ratio:16/10}
+    --dia-h:calc(var(--u)*288);--frame-ratio:16/10;--fit:cover}
   .title{margin-left:calc(var(--u)*-2)}
   .content{padding:calc(var(--u)*144) 0 0;align-content:start;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:0}
   .content > *{grid-column:1 / -1}
@@ -224,6 +224,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .morph{grid-column:3 / span 8}
   .frame{border-radius:calc(var(--u)*10);box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*16) calc(var(--u)*40) calc(var(--u)*-16) rgb(27 32 31 / .3)}
   .hint{display:none}
+  .layer img,.frame.seq img{object-position:top left!important}
+  .layer img[style*="top center"],.frame.seq img[style*="top center"]{object-position:top center!important}
   .bar{flex-direction:row;justify-content:space-between;align-items:baseline}
   .toggle button{min-height:0;padding:calc(var(--u)*6) 0;font-size:max(10px,calc(var(--u)*12))}
   .toggle i{bottom:0}
@@ -467,7 +469,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   slides.forEach(function(s,i){
     s.id='s'+(i+1);
     var m=s.querySelector('.morph');if(!m)return;
-    var f=m.querySelector('.frame');if(f&&!f.querySelector('.hint')){var h=document.createElement('span');h.className='hint';h.textContent='Tap to expand';f.appendChild(h);}
+    
     var tg=m.querySelectorAll('.toggle button');
     tg[0].addEventListener('click',function(e){e.stopPropagation();setMorph(m,false,true)});
     tg[1].addEventListener('click',function(e){e.stopPropagation();setMorph(m,true,true)});
