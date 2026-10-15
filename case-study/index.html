@@ -170,6 +170,11 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Before → after: the after wipes over the before */
 .morph{display:grid;gap:var(--gap-m)}
+.loupe{position:fixed;left:0;top:0;width:200px;height:200px;border-radius:50%;pointer-events:none;z-index:60;background-color:var(--frame);background-repeat:no-repeat;box-shadow:0 0 0 1px rgb(27 32 31 / .14),0 0 0 4px rgb(255 255 255 / .55),0 16px 36px -10px rgb(27 32 31 / .45);opacity:0;scale:.86;transition:opacity .18s ease,scale .28s var(--ease)}
+.loupe.on{opacity:1;scale:1}
+.frame.looking{cursor:none}
+.frame{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+@media (prefers-reduced-motion:reduce){.loupe{transition:none}}
 .frame{position:relative;width:100%;aspect-ratio:var(--r,var(--frame-ratio));border-radius:3px;overflow:hidden;background:var(--frame);cursor:zoom-in;
   box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 12px 36px -12px rgb(27 32 31 / .3)}
 .layer{position:absolute;inset:0;display:grid;place-items:center;background:var(--frame)}
@@ -701,7 +706,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   // Horizontal swipe; vertical drags stay as scrolling inside a tall slide
   var sx=null,sy=null;
   addEventListener('touchstart',function(e){sx=sy=null;if(dlg.open||e.target.closest('.phones'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
-  addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+  addEventListener('touchend',function(e){if(sx===null||loupeOn){sx=sy=null;return}var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
     if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.5){(dx<0?next:prev)();}sx=sy=null},{passive:true});
   var idle;addEventListener('mousemove',function(){document.body.classList.add('awake');clearTimeout(idle);idle=setTimeout(function(){document.body.classList.remove('awake')},1800)});
 
@@ -711,10 +716,39 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     if(img){var c=document.createElement('img');c.src=img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
-    f.addEventListener('click',function(e){e.stopPropagation();zoom(f)});
+    f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});
     f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();zoom(f)}});
   });
   dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
+  // Loupe: a 2x magnifier that follows the cursor (desktop) or a held finger (touch)
+  var loupeOn=false,LZ=1.8,LR=100;
+  var loupe=document.createElement('div');loupe.className='loupe';loupe.setAttribute('aria-hidden','true');document.body.appendChild(loupe);
+  function shownImg(f){if(f.classList.contains('seq'))return f.querySelector('img.on');var m=f.closest('.morph');return f.querySelector((m&&m.classList.contains('is-after')?'.layer.after':'.layer.before')+' img')}
+  function pct(v,free){return /%$/.test(v)?parseFloat(v)/100:(free?parseFloat(v)/free:0)}
+  function aim(f,x,y,lift){var img=shownImg(f);if(!img||!img.naturalWidth)return false;
+    var r=img.getBoundingClientRect(),cs=getComputedStyle(img),nw=img.naturalWidth,nh=img.naturalHeight;
+    var sc=cs.objectFit==='cover'?Math.max(r.width/nw,r.height/nh):Math.min(r.width/nw,r.height/nh);
+    var w=nw*sc,h=nh*sc,pos=cs.objectPosition.split(' ');
+    var ox=r.left+(r.width-w)*pct(pos[0],r.width-w),oy=r.top+(r.height-h)*pct(pos[1]||'50%',r.height-h);
+    var u=(x-ox)/w,v=(y-oy)/h;if(u<0||u>1||v<0||v>1){loupe.classList.remove('on');return true}
+    if(loupe._src!==img.currentSrc){loupe._src=img.currentSrc;loupe.style.backgroundImage='url("'+img.currentSrc+'")'}
+    loupe.style.backgroundSize=(w*LZ)+'px '+(h*LZ)+'px';
+    loupe.style.backgroundPosition=(LR-u*w*LZ)+'px '+(LR-v*h*LZ)+'px';
+    loupe.style.translate=(x-LR)+'px '+(y-LR-(lift||0))+'px';loupe.classList.add('on');return true}
+  function hide(f){loupe.classList.remove('on');loupeOn=false;if(f)f.classList.remove('looking')}
+  var fine=matchMedia('(hover:hover) and (pointer:fine)');
+  document.querySelectorAll('[data-zoom]').forEach(function(f){
+    f.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse'||!fine.matches)return;var q=f.closest('.flowseq,.models');if(q)clearInterval(q._t);f.classList.add('looking');aim(f,e.clientX,e.clientY)});
+    f.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'&&fine.matches)aim(f,e.clientX,e.clientY)});
+    f.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide(f)});
+    var hold=null;
+    f.addEventListener('touchstart',function(e){var t=e.touches[0];clearTimeout(hold);hold=setTimeout(function(){var q=f.closest('.flowseq,.models');if(q)clearInterval(q._t);loupeOn=true;f._held=true;aim(f,t.clientX,t.clientY,LR+24)},320)},{passive:true});
+    f.addEventListener('touchmove',function(e){if(!loupeOn){clearTimeout(hold);return}e.preventDefault();var t=e.touches[0];aim(f,t.clientX,t.clientY,LR+24)},{passive:false});
+    f.addEventListener('touchend',function(){clearTimeout(hold);if(loupeOn)setTimeout(function(){hide(f)},60)});
+    f.addEventListener('touchcancel',function(){clearTimeout(hold);hide(f)});
+    f.addEventListener('contextmenu',function(e){if(loupeOn||f._held)e.preventDefault()});
+  });
+
 
   var start=0,h=location.hash.replace('#s','');if(/^\d+$/.test(h))start=+h-1;
   go(start);
