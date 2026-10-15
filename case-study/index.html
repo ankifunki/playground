@@ -378,32 +378,39 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="head"><h3 class="title">Services</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
-      <div class="layer before"><img src="img/services-before.webp" alt="Before: service editor with one long staff list and no locations" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/services-after.webp" alt="After: service editor with per-location toggles and staff filtered by location" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+      <div class="layer before"><img src="img/svclist-before.webp" alt="Before: one services list for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
+      <div class="layer after"><img src="img/svclist-after.webp" alt="After: Services at [location], one menu offered per location" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">Create once. Offer per location. Price per member.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">One service menu, offered per location.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Staff invite"><div class="stage">
-  <div class="head"><h3 class="title">Staff invite</h3></div>
-  <div class="content"><div class="morph">
-    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
-      <div class="layer before"><img src="img/invite-before.webp" alt="Before: invite flow with name and contact fields only" style="object-position:top center" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/invite-after.webp" alt="After: invite flow with a step to assign each member to locations" style="object-position:top center" loading="lazy" decoding="async"></div><i class="edge"></i>
-    </div>
-    <div class="bar"><p class="foot">Locations and schedules set at invite. Bookable on day one.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+<section class="slide screens" data-name="Create a service"><div class="stage">
+  <div class="head"><h3 class="title">Create a service</h3></div>
+  <div class="content"><div class="flowseq">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen"><img src="img/svc-1.webp" alt="Step 1: Basics" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-2.webp" alt="Step 2: Price & duration" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-3.webp" alt="Step 3: Locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-4.webp" alt="Step 4: Staff" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-5.webp" alt="Step 5: Per member" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Basics" aria-pressed="true"><span class="mono">01</span><b>Basics</b></button><button type="button" aria-label="Step 2: Price & duration" aria-pressed="false"><span class="mono">02</span><b>Price & duration</b></button><button type="button" aria-label="Step 3: Locations" aria-pressed="false"><span class="mono">03</span><b>Locations</b></button><button type="button" aria-label="Step 4: Staff" aria-pressed="false"><span class="mono">04</span><b>Staff</b></button><button type="button" aria-label="Step 5: Per member" aria-pressed="false"><span class="mono">05</span><b>Per member</b></button></div>
+    <p class="foot">Set defaults once, switch locations on, then customize per member.</p>
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Team page"><div class="stage">
-  <div class="head"><h3 class="title">Team page</h3></div>
+<section class="slide screens" data-name="Team"><div class="stage">
+  <div class="head"><h3 class="title">Team</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
       <div class="layer before"><img src="img/team-before.webp" alt="Before: staff list with no location context" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/team-after.webp" alt="After: Staff at [location] list with locations on each member" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+      <div class="layer after"><img src="img/team-after.webp" alt="After: Staff at [location] with each member's locations and role" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">Team at [Location]: who works where, and when.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">Staff at [Location]: who works where, and when.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="Invite staff"><div class="stage">
+  <div class="head"><h3 class="title">Invite staff</h3></div>
+  <div class="content"><div class="flowseq">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen"><img src="img/inv-1.webp" alt="Step 1: Add" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-2.webp" alt="Step 2: Roles" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-3.webp" alt="Step 3: Locations" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-4.webp" alt="Step 4: Schedule" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-5.webp" alt="Step 5: Services" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-6.webp" alt="Step 6: Done" style="object-position:top center" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Add" aria-pressed="true"><span class="mono">01</span><b>Add</b></button><button type="button" aria-label="Step 2: Roles" aria-pressed="false"><span class="mono">02</span><b>Roles</b></button><button type="button" aria-label="Step 3: Locations" aria-pressed="false"><span class="mono">03</span><b>Locations</b></button><button type="button" aria-label="Step 4: Schedule" aria-pressed="false"><span class="mono">04</span><b>Schedule</b></button><button type="button" aria-label="Step 5: Services" aria-pressed="false"><span class="mono">05</span><b>Services</b></button><button type="button" aria-label="Step 6: Done" aria-pressed="false"><span class="mono">06</span><b>Done</b></button></div>
+    <p class="foot">Locations and schedules set during the invite. Bookable on day one.</p>
   </div></div>
 </div></section>
 
