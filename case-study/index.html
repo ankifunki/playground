@@ -80,6 +80,12 @@ ol.list li{counter-increment:n;display:grid;grid-template-columns:36px 1fr;paddi
 ol.list li:last-child{border-bottom:1px solid var(--rule)}
 ol.list li::before{content:counter(n,decimal-leading-zero);font:400 var(--t-mono)/var(--lh-text) var(--mono);letter-spacing:.08em;color:var(--faint)}
 ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--ink)}
+ol.list.hard{grid-column:1 / -1}
+ol.list.hard li span{display:grid;gap:2px}
+ol.list.hard li b{font:600 var(--t-text)/var(--lh-text) var(--head);letter-spacing:-.01em;color:var(--ink)}
+ol.list.hard li i{font-style:normal;color:var(--grey)}
+@media (max-width:899px) and (max-height:720px){ol.list.hard li{padding-block:8px}}
+
 .opt{padding-top:var(--gap-m);border-top:1px solid var(--rule)}
 .opt.sel{border-top:2px solid var(--ink)}
 .opt.sel .mono{color:var(--accent)}
@@ -227,6 +233,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .c5{grid-column:span 5}.c5b{grid-column:7 / span 5}.c4{grid-column:span 4}.c6{grid-column:span 6}
   .cols > ol.list + ol.list{margin-top:0}
   ol.list li{grid-template-columns:calc(var(--u)*48) 1fr}
+  ol.list.hard{grid-column:1 / span 10}
+  ol.list.hard li span{grid-template-columns:calc(var(--u)*240) 1fr;column-gap:calc(var(--u)*24)}
   .dia{margin-bottom:calc(var(--u)*36)}
   .dia text{font-size:22px}
   .morph{grid-column:3 / span 8}
@@ -272,13 +280,13 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="head">
     <svg class="mark" viewBox="0 0 45.353 64" role="img" aria-label="GlossGenius"><path fill="currentColor" transform="translate(0.141 0)" d="M31.409 5.088C36.057 5.088 38.945 8.498 39.852 12.872L41.832 12.872C41.997 7.151 38.972 0 29.373 0C14.632 0 1.815 19.28 0.248 37.019C0.083 38.835 0 40.54 0 42.162C0 56.932 6.573 64 16.447 64C27.366 64 33.471 52.201 37.212 43.648C38.119 41.557 38.587 41.172 40.292 41.172L44.885 41.172L45.353 39.852L41.007 37.019C39.77 36.222 39.687 35.534 40.045 33.004L41.172 24.863L39.907 24.505L36.469 32.316C35.452 34.654 34.214 34.572 32.151 33.966L22.608 31.161L22.113 32.536L31.024 38.284C32.069 38.945 32.509 39.632 32.509 40.512C32.509 41.667 31.959 42.768 30.804 45.133C27.366 52.201 22.415 55.859 18.07 55.859C12.982 55.859 8.746 50.853 8.746 40.567C8.746 39.77 8.774 38.972 8.829 38.147C9.599 25.303 19.115 5.088 31.409 5.088Z"/></svg>
   </div>
-  <div class="big"><h2>Multi<br>Location</h2><p class="by">Redesigning every core workflow for multi-location businesses.</p></div>
+  <div class="big"><h2>Multi<br>Location</h2><p class="by">A platform shift across every core workflow.</p></div>
 </div></section>
 
 <section class="slide" data-name="Opportunity"><div class="stage">
   <div class="head"><h3 class="title">Opportunity</h3><span class="mono">Apr — Oct 2025</span></div>
   <div class="content">
-    <p class="statement">GlossGenius was built for <b>single-location</b> salons. Moving upmarket meant supporting <b>multi-location</b> businesses, but every workflow assumed one location.</p>
+    <p class="statement">Multi-location was the <b>#1&nbsp;request</b> from sales and support. Upmarket businesses and bigger teams couldn&rsquo;t buy GlossGenius without it.</p>
     <div class="facts">
       <div class="fact"><span class="mono">Role</span><span class="v">Lead Product Designer</span></div>
       <div class="fact"><span class="mono">Scope</span><span class="v">Locations, staff, services, settings, calendar, clients</span></div>
@@ -311,6 +319,20 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
       </div>
     </div>
   </div>
+</div></section>
+
+<section class="slide" data-name="What made it hard"><div class="stage">
+  <div class="head"><h3 class="title">What made it hard</h3></div>
+  <div class="content">
+    <div class="cols">
+      <ol class="list hard"><li><span><b>Platform shift</b><i>Cut across every surface. Most workflows had to be rethought.</i></span></li><li><span><b>Every team</b><i>True cross-functional work. I learned each domain to solve it.</i></span></li><li><span><b>Moving target</b><i>A rebrand ran in parallel, so the design system shifted underfoot.</i></span></li><li><span><b>Two platforms</b><i>Desktop and mobile parity, native to each. Mobile was legacy code on an old design system.</i></span></li><li><span><b>No clear shape</b><i>Vague, broad and complex. Everyone had an idea; nothing was tangible.</i></span></li></ol>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-name="Making it tangible"><div class="stage">
+  <div class="head"><h3 class="title">Making it tangible</h3></div>
+  <div class="content"><p class="statement">I prototyped with AI from <b>first-principles user needs</b>, to align the team and put something real in front of users early.</p></div>
 </div></section>
 
 <section class="slide" data-name="Core needs"><div class="stage">
