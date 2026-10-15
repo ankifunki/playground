@@ -9,10 +9,8 @@ import * as k from "../../.claude/skills/anatomy/kit/iso-kit.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const W = 720, H = 440;
-const PW = 120, PD = 100, R = 6, SPLIT = 170;          // plane size, location offset along x
-const Z = { svc: 168, stf: 112, sch: 56, cal: 0 };
-const COLX = (c) => 12 + c * 20;                       // day columns / calendar columns
-const ROWY = (r) => 14 + r * 20;
+const PW = 84, PD = 64, R = 5, SPLIT = 150;          // plane size, location offset along x
+const Z = { svc: 186, stf: 124, sch: 62, cal: 0 };
 
 const all = [];
 for (const dx of [0, SPLIT]) for (const z of Object.values(Z)) all.push([dx, 0, z], [dx + PW, 0, z], [dx, PD, z], [dx + PW, PD, z]);
@@ -28,36 +26,33 @@ const plane = (x0, z, w, inner, cls) =>
   `<g class="pl ${cls}"><path class="pf" d="${rect(x0, 0, w, PD, z, R)}"/><path class="po" d="${rect(x0, 0, w, PD, z, R)}"/>${inner}</g>`;
 
 // plane contents, relative to x0
-const svcInner = (x0) => dot(x0 + 30, 62, Z.svc, 6, "mk hc");
-const schInner = (x0, days = [0, 1, 2, 3, 4]) => days.map((c) => `<path class="col c${c}" d="${rect(x0 + COLX(c), 10, 16, 80, Z.sch, 3)}"/>`).join("");
-const calInner = (x0, hit) => {
-  const [c, r] = hit;
-  return `<path class="cell hit" d="${rect(x0 + COLX(c) + 1, ROWY(r) + 1, 14, 14, Z.cal, 1.5)}"/>`;
-};
+const C = [PW / 2, PD / 2];
+const svcInner = (x0) => dot(x0 + C[0], C[1], Z.svc, 6, "mk hc");
+const schInner = (x0) => dot(x0 + C[0], C[1], Z.sch, 6, "mk day");
+const calInner = (x0) => dot(x0 + C[0], C[1], Z.cal, 6, "mk slot");
 
 
 // the booking thread: haircut → Selina → day column → slot
-const HC = [30, 62], SEL = [70, 36], SEL_WIDE = [(PW + SPLIT) / 2, 36];
+const HC = C, SEL = C, SEL_WIDE = [(PW + SPLIT) / 2, C[1]];
 const thread = (svc, sel, day, slot) => ({
   a: path([[...sel, Z.stf], [...svc, Z.svc]]),
   b: path([[...day, Z.sch], [...sel, Z.stf]]),
   c: path([[...slot, Z.cal], [...day, Z.sch]]),
 });
-const cellC = (x0, c, r) => [x0 + COLX(c) + 8, ROWY(r) + 8];
-const colC = (x0, c, r) => [x0 + COLX(c) + 8, ROWY(r) + 8];
-const T0 = thread(HC, SEL, colC(0, 1, 1), cellC(0, 1, 1));
-const TA = thread(HC, SEL_WIDE, colC(0, 1, 1), cellC(0, 1, 1));
-const TB = thread([SPLIT + HC[0], HC[1]], SEL_WIDE, colC(SPLIT, 3, 2), cellC(SPLIT, 3, 2));
+const CB = [SPLIT + C[0], C[1]];
+const T0 = thread(C, C, C, C);
+const TA = thread(C, SEL_WIDE, C, C);
+const TB = thread(CB, SEL_WIDE, CB, CB);
 const seg = (d, cls) => `<path class="th ${cls}" pathLength="1" d="${d}"/>`;
 
 const body = [
   // calendar layer
-  plane(0, Z.cal, PW, calInner(0, [1, 1]), "cal a"),
-  plane(SPLIT, Z.cal, PW, calInner(SPLIT, [3, 2]), "cal b"),
+  plane(0, Z.cal, PW, calInner(0), "cal a"),
+  plane(SPLIT, Z.cal, PW, calInner(SPLIT), "cal b"),
   seg(T0.c, "t0 s3"), seg(TA.c, "ta s5"), seg(TB.c, "tb s5"),
   // schedule layer
   plane(0, Z.sch, PW, schInner(0), "sch a"),
-  plane(SPLIT, Z.sch, PW, schInner(SPLIT, [3, 4]), "sch b"),
+  plane(SPLIT, Z.sch, PW, schInner(SPLIT), "sch b"),
   seg(T0.b, "t0 s2"), seg(TA.b, "ta s5"), seg(TB.b, "tb s5"),
   // staff layer: one plane for the business, one wide plane spanning both locations
   plane(0, Z.stf, PW, dot(...SEL, Z.stf, 6, "mk sel"), "stf one"),
