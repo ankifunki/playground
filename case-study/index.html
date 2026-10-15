@@ -446,12 +446,10 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
 <section class="slide screens" data-name="Settings home"><div class="stage">
   <div class="head"><h3 class="title">Settings home</h3></div>
-  <div class="content"><div class="morph">
-    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">
-      <div class="layer before"><img src="img/settings-before.webp" alt="Before: settings home for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/settings-after.webp" alt="After: the same settings home with an All locations switcher" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
-    </div>
-    <div class="bar"><p class="foot">Same settings home, now scoped to all locations or any one.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  <div class="content"><div class="flowseq">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen"><img src="img/set-1.webp" alt="Step 1: All locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/set-2.webp" alt="Step 2: One location" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: All locations" aria-pressed="true"><span class="mono">01</span><b>All locations</b></button><button type="button" aria-label="Step 2: One location" aria-pressed="false"><span class="mono">02</span><b>One location</b></button></div>
+    <p class="foot">One settings home, scoped to every location or just one.</p>
   </div></div>
 </div></section>
 
