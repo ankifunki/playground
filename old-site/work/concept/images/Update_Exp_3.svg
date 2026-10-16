@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="754px" height="214px" viewBox="0 0 754 214" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44 (41411) - http://www.bohemiancoding.com/sketch -->
+    <title>Update_Profile</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="750" height="210" rx="2"></rect>
+        <filter x="-0.5%" y="-1.2%" width="100.9%" height="103.3%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.678431373   0 0 0 0 0.733333333   0 0 0 0 0.792156863  0 0 0 0.7 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LI_Exp_Done" transform="translate(-538.000000, -248.000000)">
+            <g id="MyFeed" transform="translate(540.000000, 90.000000)">
+                <g id="Update_Profile" transform="translate(0.000000, 159.000000)">
+                    <g id="Rectangle-4-Copy-2">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill-opacity="0.7" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="FB" transform="translate(0.000000, 30.000000)">
+                        <rect id="Rectangle-4-Copy-2" fill="#FFFFFF" x="0" y="0" width="750" height="119" rx="2"></rect>
+                        <text id="Experience" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#7C8C9F">
+                            <tspan x="27.2" y="80">Experience</tspan>
+                        </text>
+                        <g id="Minus_Icon" transform="translate(111.000000, 68.000000)" stroke="#7C8C9F">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <path d="M4,7 L10,7" id="Line" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </g>
+                        </g>
+                        <g id="Add_Icon" transform="translate(230.000000, 68.000000)" stroke="#0077B5">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <g id="Add" transform="translate(4.000000, 4.000000)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3,1.42108547e-14 L3,6" id="Line"></path>
+                                    <path d="M7.1666597e-15,3 L6,3" id="Line"></path>
+                                </g>
+                            </g>
+                        </g>
+                        <g id="Add_Icon" transform="translate(397.000000, 68.000000)" stroke="#0077B5">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <g id="Add" transform="translate(4.000000, 4.000000)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3,1.42108547e-14 L3,6" id="Line"></path>
+                                    <path d="M7.1666597e-15,3 L6,3" id="Line"></path>
+                                </g>
+                            </g>
+                        </g>
+                        <text id="Education" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                            <tspan x="154.182" y="80">Education</tspan>
+                        </text>
+                        <text id="Accomplishments" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                            <tspan x="273.627" y="80">Accomplishments</tspan>
+                        </text>
+                        <text id="No-Update" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="12" font-weight="500" fill="#0077B5">
+                            <tspan x="441.943369" y="79">No Update</tspan>
+                        </text>
+                    </g>
+                    <text id="An-up-to-date-profil" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="12" font-weight="normal" fill="#283E4A">
+                        <tspan x="26" y="54">An up to date profile helps us better serve you the relevant content. </tspan>
+                        <tspan x="26" y="69" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500">Do you have any update on?</tspan>
+                    </text>
+                    <text id="Lets-get-your-profil" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="12" font-weight="normal" fill="#7C8C9F">
+                        <tspan x="24.06" y="19">Lets get your profile updated</tspan>
+                    </text>
+                    <path d="M0.5,149.5 L750.5,149.5" id="Line" stroke="#E8ECF1" stroke-linecap="square"></path>
+                    <path d="M37,166 C31.4860241,166 27,170.486024 27,176 C27,181.513976 31.4860241,186 37,186 C42.5139759,186 47,181.513976 47,176 C47,170.486024 42.5139759,166 37,166 Z M37,185.130435 C31.9655577,185.130435 27.8695652,181.034442 27.8695652,176 C27.8695652,170.965558 31.9655577,166.869565 37,166.869565 C42.0344423,166.869565 46.1304348,170.965558 46.1304348,176 C46.1304348,181.034442 42.0344423,185.130435 37,185.130435 Z" id="Page-1" fill="#00A0DC"></path>
+                    <text id="Updated-experience-i" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="12" font-weight="500" fill="#00A0DC">
+                        <tspan x="62" y="182">Updated experience in your profile</tspan>
+                    </text>
+                    <rect id="Rectangle-6" fill="#0077B5" x="642" y="165" width="80" height="29" rx="2"></rect>
+                    <text id="Done" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="666.047" y="184">Done</tspan>
+                    </text>
+                    <text id="Add-More" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                        <tspan x="564.802" y="185">Add More</tspan>
+                    </text>
+                    <g id="Tick" transform="translate(32.000000, 173.000000)" stroke="#00A0DC" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M0.5,2.5 L2.5,5.5" id="Line"></path>
+                        <path d="M2.5,5.5 L9.5,0.5" id="Line"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

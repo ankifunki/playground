@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="754px" height="334px" viewBox="0 0 754 334" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44 (41411) - http://www.bohemiancoding.com/sketch -->
+    <title>Update_Profile</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="750" height="330" rx="2"></rect>
+        <filter x="-0.5%" y="-0.8%" width="100.9%" height="102.1%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.678431373   0 0 0 0 0.733333333   0 0 0 0 0.792156863  0 0 0 0.7 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <rect id="path-3" x="72" y="138" width="212" height="30" rx="2"></rect>
+        <rect id="path-4" x="383" y="189" width="200" height="30" rx="2"></rect>
+        <rect id="path-5" x="72" y="189" width="200" height="30" rx="2"></rect>
+        <rect id="path-6" x="655" y="196" width="15" height="15" rx="2"></rect>
+        <rect id="path-7" x="382" y="138" width="340" height="30" rx="2"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LI_Exp_Filled" transform="translate(-538.000000, -248.000000)">
+            <g id="MyFeed" transform="translate(540.000000, 90.000000)">
+                <g id="Update_Profile" transform="translate(0.000000, 159.000000)">
+                    <g id="Rectangle-4-Copy-2">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill-opacity="0.7" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="FB" transform="translate(0.000000, 30.000000)">
+                        <rect id="Rectangle-4-Copy-2" fill="#FFFFFF" x="0" y="0" width="750" height="119" rx="2"></rect>
+                        <g id="Rectangle-6-Copy-4">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                            <rect stroke="#ADBBCB" stroke-width="1" x="72.5" y="138.5" width="211" height="29" rx="2"></rect>
+                        </g>
+                        <text id="Sr-Product-Designer" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="82.073" y="158">Sr Product Designer</tspan>
+                        </text>
+                        <g id="Rectangle-6-Copy-6">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-4"></use>
+                            <rect stroke="#ADBBCB" stroke-width="1" x="383.5" y="189.5" width="199" height="29" rx="2"></rect>
+                        </g>
+                        <path d="M511,189.5 L511,217.5" id="Line" stroke="#ADBBCB" stroke-linecap="square"></path>
+                        <g id="Rectangle-6-Copy-6">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-5"></use>
+                            <rect stroke="#ADBBCB" stroke-width="1" x="72.5" y="189.5" width="199" height="29" rx="2"></rect>
+                        </g>
+                        <path d="M197,189.5 L197,217.5" id="Line" stroke="#ADBBCB" stroke-linecap="square"></path>
+                        <g id="Dropdown" transform="translate(180.000000, 203.000000)" stroke-linecap="round" stroke="#7C8C9F" stroke-linejoin="round">
+                            <g id="Line">
+                                <path d="M0,0 L2.82842712,2.82842712" stroke-width="1.5"></path>
+                                <path d="M3,2.82842712 L5.82842712,0" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                        <g id="Dropdown" transform="translate(494.000000, 203.000000)" stroke-linecap="round" stroke="#7C8C9F" stroke-linejoin="round">
+                            <g id="Line">
+                                <path d="M0,0 L2.82842712,2.82842712" stroke-width="1.5"></path>
+                                <path d="M3,2.82842712 L5.82842712,0" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                        <g id="Dropdown" transform="translate(255.000000, 203.000000)" stroke-linecap="round" stroke="#7C8C9F" stroke-linejoin="round">
+                            <g id="Line">
+                                <path d="M0,0 L2.82842712,2.82842712" stroke-width="1.5"></path>
+                                <path d="M3,2.82842712 L5.82842712,0" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                        <g id="Dropdown" transform="translate(566.000000, 203.000000)" stroke-linecap="round" stroke="#7C8C9F" stroke-linejoin="round">
+                            <g id="Line">
+                                <path d="M0,0 L2.82842712,2.82842712" stroke-width="1.5"></path>
+                                <path d="M3,2.82842712 L5.82842712,0" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                        <text id="November" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="84.063" y="208">November</tspan>
+                        </text>
+                        <text id="March" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="394" y="208">March</tspan>
+                        </text>
+                        <text id="2016" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="216.136" y="208">2016</tspan>
+                        </text>
+                        <text id="2017" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="529" y="208">2017</tspan>
+                        </text>
+                        <g id="Rectangle-6-Copy-9">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                            <rect stroke="#ADBBCB" stroke-width="1" x="655.5" y="196.5" width="14" height="14" rx="2"></rect>
+                        </g>
+                        <g id="Rectangle-6-Copy-5">
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-7"></use>
+                            <rect stroke="#ADBBCB" stroke-width="1" x="382.5" y="138.5" width="339" height="29" rx="2"></rect>
+                        </g>
+                        <text id="Best-Design-co." font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500" fill="#283E4A">
+                            <tspan x="393.556" y="158">Best Design co.</tspan>
+                        </text>
+                        <text id="Title" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="14" font-weight="normal" fill="#ADBBCB">
+                            <tspan x="34.876" y="158">Title</tspan>
+                        </text>
+                        <text id="From" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="14" font-weight="normal" fill="#ADBBCB">
+                            <tspan x="30.102" y="206">From</tspan>
+                        </text>
+                        <text id="To" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="14" font-weight="normal" fill="#ADBBCB">
+                            <tspan x="355.978" y="206">To</tspan>
+                        </text>
+                        <text id="Current" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="14" font-weight="normal" fill="#ADBBCB">
+                            <tspan x="677.205" y="208">Current</tspan>
+                        </text>
+                        <text id="Company" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="14" font-weight="normal" fill="#ADBBCB">
+                            <tspan x="314.374" y="158">Company</tspan>
+                        </text>
+                        <text id="Experience" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#7C8C9F">
+                            <tspan x="27.2" y="80">Experience</tspan>
+                        </text>
+                        <g id="Minus_Icon" transform="translate(111.000000, 68.000000)" stroke="#7C8C9F">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <path d="M4,7 L10,7" id="Line" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </g>
+                        </g>
+                        <g id="Add_Icon" transform="translate(230.000000, 68.000000)" stroke="#0077B5">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <g id="Add" transform="translate(4.000000, 4.000000)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3,1.42108547e-14 L3,6" id="Line"></path>
+                                    <path d="M7.1666597e-15,3 L6,3" id="Line"></path>
+                                </g>
+                            </g>
+                        </g>
+                        <g id="Add_Icon" transform="translate(397.000000, 68.000000)" stroke="#0077B5">
+                            <g>
+                                <circle id="Oval-8" fill="#FFFFFF" cx="7" cy="7" r="7"></circle>
+                                <g id="Add" transform="translate(4.000000, 4.000000)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3,1.42108547e-14 L3,6" id="Line"></path>
+                                    <path d="M7.1666597e-15,3 L6,3" id="Line"></path>
+                                </g>
+                            </g>
+                        </g>
+                        <text id="Education" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                            <tspan x="154.182" y="80">Education</tspan>
+                        </text>
+                        <text id="Accomplishments" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                            <tspan x="273.627" y="80">Accomplishments</tspan>
+                        </text>
+                        <text id="No-Update" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="12" font-weight="500" fill="#0077B5">
+                            <tspan x="441.943369" y="79">No Update</tspan>
+                        </text>
+                    </g>
+                    <text id="An-up-to-date-profil" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="12" font-weight="normal" fill="#283E4A">
+                        <tspan x="26" y="54">An up to date profile helps us better serve you the relevant content. </tspan>
+                        <tspan x="26" y="69" font-family="SourceSansPro-Semibold, Source Sans Pro" font-size="14" font-weight="500">Do you have any update on?</tspan>
+                    </text>
+                    <text id="Lets-get-your-profil" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="12" font-weight="normal" fill="#7C8C9F">
+                        <tspan x="24.06" y="19">Lets get your profile updated</tspan>
+                    </text>
+                    <rect id="Rectangle-6" fill="#0077B5" x="642" y="275" width="80" height="29" rx="2"></rect>
+                    <text id="Update" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="659.792" y="295">Update</tspan>
+                    </text>
+                    <text id="Cancel" font-family="SourceSansPro-Bold, Source Sans Pro" font-size="14" font-weight="bold" fill="#0077B5">
+                        <tspan x="581.602" y="295">Cancel</tspan>
+                    </text>
+                    <path d="M0.5,149.5 L750.5,149.5" id="Line" stroke="#E8ECF1" stroke-linecap="square"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
