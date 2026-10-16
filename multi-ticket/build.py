@@ -254,6 +254,8 @@ SLIDES = f'''
 
 {chapter(1, "Phase 1")}
 
+{morph("The cart", "cart-before", "cart-after", "393/852", "Items lead and adding more sits right below them, so a second appointment reads as one more line, not a new sale.", ["add items sits above the items", "items first, with add items inline below"], tall=True)}
+
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
 {flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip"), ("m-7", "Sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
