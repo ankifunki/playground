@@ -210,7 +210,7 @@ SLIDES = f'''
   <div class="content">
     <p class="statement">Build <b>one flexible checkout</b> for every multi scenario: one client with many appointments, or many clients paying together.</p>
     <div class="facts">
-      <div class="fact"><span class="mono">Role</span><span class="v">Sole product designer</span></div>
+      <div class="fact"><span class="mono">Role</span><span class="v">Staff product designer</span></div>
       <div class="fact"><span class="mono">Scope</span><span class="v">Research, mobile, web, tipping, payments</span></div>
     </div>
   </div>
