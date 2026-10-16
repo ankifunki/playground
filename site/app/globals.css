@@ -300,29 +300,25 @@ a { color: inherit; }
 .theme-toggle svg { width: 18px; height: 18px; overflow: visible; }
 .theme-toggle g, .theme-toggle circle { transform-box: fill-box; transform-origin: center; }
 .tt-sun, .tt-moon { transform-box: view-box !important; transform-origin: 12px 12px !important; }
-.tt-sun { transition: transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.3s var(--ease); }
-.tt-moon { transition: transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.3s var(--ease); opacity: 0; transform: rotate(-70deg) scale(0.4); }
-.tt-star { opacity: 0; transform: scale(0); transition: opacity 0.3s var(--ease), transform 0.5s cubic-bezier(0.3, 1.8, 0.5, 1); }
+.tt-sun { transition: transform 0.5s var(--ease), opacity 0.35s var(--ease); }
+.tt-moon { transition: transform 0.5s var(--ease), opacity 0.35s var(--ease); opacity: 0; transform: rotate(-30deg) scale(0.7); }
+.tt-star { opacity: 0; transform: scale(0.4); transition: opacity 0.35s var(--ease), transform 0.45s var(--ease); }
 .tt-star + .tt-star { transition-delay: 0.08s; }
 
-/* Dark: the sun's rays spin away and the moon springs in, with two little stars */
+/* Dark: the sun turns and fades out as the moon eases in, with two small stars */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tt-sun { opacity: 0; transform: rotate(90deg) scale(0.4); }
+  :root:not([data-theme="light"]) .tt-sun { opacity: 0; transform: rotate(45deg) scale(0.7); }
   :root:not([data-theme="light"]) .tt-moon { opacity: 1; transform: none; }
-  :root:not([data-theme="light"]) .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.25s; }
+  :root:not([data-theme="light"]) .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
 }
-:root[data-theme="dark"] .tt-sun { opacity: 0; transform: rotate(90deg) scale(0.4); }
+:root[data-theme="dark"] .tt-sun { opacity: 0; transform: rotate(45deg) scale(0.7); }
 :root[data-theme="dark"] .tt-moon { opacity: 1; transform: none; }
-:root[data-theme="dark"] .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.25s; }
+:root[data-theme="dark"] .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
 
-/* A small wobble on every click */
-.theme-toggle.spin svg { animation: tt-wobble 0.6s cubic-bezier(0.3, 1.6, 0.5, 1); }
-@keyframes tt-wobble { 0% { transform: rotate(0); } 40% { transform: rotate(-18deg); } 100% { transform: rotate(0); } }
 
-/* The circular reveal replaces the default crossfade */
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+/* A soft crossfade between themes */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.45s; animation-timing-function: var(--ease); }
 
 @media (prefers-reduced-motion: reduce) {
   .tt-sun, .tt-moon, .tt-star { transition: opacity 0.15s linear; }
-  .theme-toggle.spin svg { animation: none; }
 }
