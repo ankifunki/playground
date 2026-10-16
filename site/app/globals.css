@@ -316,8 +316,37 @@ a { color: inherit; }
 :root[data-theme="dark"] .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
 
 
-/* A soft crossfade between themes */
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.45s; animation-timing-function: var(--ease); }
+/* Theme sweep: the old page holds still while the new one is revealed through a feathered mask
+   that delight.js slides from left to right. */
+html.sweeping::view-transition-old(root) { animation: none; }
+html.sweeping::view-transition-new(root) {
+  animation: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+  mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+  -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0; mask-position: 100% 0;
+}
+::view-transition-group(sky-orb) { animation: none; z-index: 10; }
+::view-transition-new(sky-orb) { animation: none; }
+
+/* The sun or moon that crosses the sky during the sweep */
+.sky-orb {
+  position: fixed; left: 0; top: 0; width: 64px; height: 64px; border-radius: 50%;
+  pointer-events: none; view-transition-name: sky-orb;
+}
+.sky-orb.sun {
+  background: radial-gradient(circle at 40% 38%, #fff8e1, #ffd47e 45%, #f4a53a);
+  box-shadow: 0 0 36px 14px rgba(255, 196, 92, 0.45), 0 0 120px 60px rgba(255, 196, 92, 0.16);
+}
+.sky-orb.moon {
+  background:
+    radial-gradient(circle at 62% 64%, rgba(160, 166, 190, 0.35) 0 7%, transparent 8%),
+    radial-gradient(circle at 34% 58%, rgba(160, 166, 190, 0.3) 0 5%, transparent 6%),
+    radial-gradient(circle at 56% 30%, rgba(160, 166, 190, 0.28) 0 4%, transparent 5%),
+    radial-gradient(circle at 38% 36%, #ffffff, #e6e9f3 55%, #c4c9da);
+  box-shadow: 0 0 32px 10px rgba(205, 214, 255, 0.35), 0 0 110px 50px rgba(160, 170, 255, 0.12);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tt-sun, .tt-moon, .tt-star { transition: opacity 0.15s linear; }
