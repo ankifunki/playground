@@ -260,6 +260,8 @@ SLIDES = f'''
 
 {flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip"), ("m-7", "Sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
 
+{proto("Checkout, played", "393/852", [("sc-1", "Checkout", "50,32", "slide"), ("sc-2", "Appointment", "50,91.8", "slide"), ("sc-3", "One sale", "61,91.8", "slide"), ("sc-4", "Payment", "50,36.6", "slide"), ("sc-5", "Card reader", "", "slide"), ("sc-6", "Tip and sign", "50,86.8", "slide"), ("sc-7", "Processing", "", "slide"), ("sc-8", "Done", "", "")], "Rachel&rsquo;s three appointments check out as one sale, from the list to a single payment.", meta="Prototype")}
+
 {chapter(2, "Web")}
 
 {flow("Line items with add-ons", "1100/1036", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "Add-ons travel with their service, collapsed in the cart until you need them.", tall="dt")}
@@ -268,7 +270,7 @@ SLIDES = f'''
 
 {morph("Group checkout", "list-before", "list-after", "393/852", "Same-day appointments group into one checkout, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
-{proto("Group checkout, played", "393/852", [("p-1", "Open client", "50,31.9", "slide"), ("p-2", "Group checkout", "27.5,92", "slide"), ("p-3", "Select", "50,29.6", "fade"), ("p-4", "Add to cart", "50,91.4", "slide"), ("p-5", "One cart", "", "")], "The Figma prototype, replayed: open Rachel, start a group checkout, pull in her other appointment, and pay once.", meta="Prototype")}
+{proto("Group checkout, played", "393/852", [("gc-1", "Discover", "50,28.9", "fade"), ("gc-2", "Group checkout", "51,23.2", "fade"), ("gc-3", "Select mode", "50,52.8", "fade"), ("gc-4", "Mark", "50,66.4", "fade"), ("gc-5", "Ashley", "50,88.9", "slide"), ("gc-6", "One sale", "58.8,92", "slide"), ("gc-7", "Pay", "50,58.8", "slide"), ("gc-8", "Tip on", "50,36.5", "slide"), ("gc-9", "Tip and sign", "50,87", "slide"), ("gc-10", "Processing", "", "slide"), ("gc-11", "Done", "", "")], "Discover group checkout, pick Mark and Ashley, and settle both in one sale, one payment, one tip.", meta="Prototype")}
 
 <section class="slide divider" data-name="End"><div class="stage">
   <div class="head">
