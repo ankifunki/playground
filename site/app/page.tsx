@@ -52,13 +52,10 @@ export default function Home() {
         {intro.after}
       </h1>
 
-      <div id="work" className="work-area">
-        <h2 className="mono">
-          Selected work <span className="count">{String(projects.length).padStart(2, "0")}</span>
-        </h2>
+      <section id="work" className="work-area" aria-label="Work">
         <Tiles projects={projects} />
         <p className="soon">More case studies soon. Some will be password protected; ask and I’ll walk you through them.</p>
-      </div>
+      </section>
 
       <div className="columns">
         <section className="section" aria-labelledby="about">
