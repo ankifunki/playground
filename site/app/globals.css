@@ -164,8 +164,8 @@ a { color: inherit; }
 .page { gap: var(--s6); }
 .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
-.aj { width: auto; height: 22px; overflow: visible; }
-.aj path { fill: #ffdc28; stroke: #ffdc28; stroke-width: 0.6; stroke-linejoin: round; }
+.aj { width: auto; height: 24px; overflow: visible; display: block; }
+.aj path { fill: var(--ink); stroke: var(--ink); stroke-width: 0.6; stroke-linejoin: round; }
 @media (prefers-reduced-motion: no-preference) {
   .aj path { stroke-dasharray: 1; animation: aj-draw 1.4s cubic-bezier(0.45, 0.05, 0.25, 1) both, aj-fill 0.7s var(--ease) 0.9s both; }
 }
@@ -206,10 +206,9 @@ a { color: inherit; }
   aspect-ratio: 4 / 3;
   border-radius: 16px;
   background: var(--tile-bg);
-  /* At night each tile glows in its own night colour, lifted and saturated so it reads against the dark */
+  /* At night each tile glows in its own night colour */
   --tile-night-color: var(--tile-bg-dark, var(--tile-bg));
-  --tile-night: 0 0 0 1px color-mix(in oklch, var(--tile-night-color), white 8%),
-    0 30px 90px -36px color-mix(in oklch, var(--tile-night-color) 70%, white 30%);
+  --tile-night: 0 30px 90px -36px var(--tile-night-color);
   box-shadow: var(--tile-shadow);
   transition: box-shadow 0.5s var(--ease);
 }
@@ -355,11 +354,11 @@ html.revealing::view-transition-new(root) {
 }
 
 
-/* Where relative colours are supported, lift and saturate the night glow in the tile's own hue */
+/* Where relative colours are supported, deepen and saturate the night glow in the tile's own hue
+   (kept dark, never lightened toward white) */
 @supports (color: oklch(from red l c h)) {
   .art {
-    --tile-night: 0 0 0 1px color-mix(in oklch, var(--tile-night-color), white 8%),
-      0 30px 90px -36px oklch(from var(--tile-night-color) calc(l + 0.22) calc(c * 2.2) h / 0.7);
+    --tile-night: 0 30px 90px -36px oklch(from var(--tile-night-color) calc(l + 0.06) calc(c * 3) h / 0.75);
   }
 }
 
