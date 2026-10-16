@@ -288,36 +288,35 @@ a { color: inherit; }
 .tile:hover .phone, .tile:focus-visible .phone { transform: translateY(calc(-2% - var(--i) * 2%)); }
 
 /* ---------- Theme toggle ---------- */
+/* The sun and moon sit on opposite sides of a small wheel whose hub is below the icon.
+   Switching turns the wheel half a turn: the sun sets to the right as the moon rises from the left,
+   clipped by the button's circle like a horizon. */
 .topright { display: flex; align-items: center; gap: var(--s3); }
 .theme-toggle {
-  position: relative; display: grid; place-items: center;
+  position: relative; display: grid; place-items: center; overflow: hidden;
   width: 32px; height: 32px; margin: -8px -8px -8px 0;
   color: var(--ink); background: transparent; border: 0; border-radius: 999px; cursor: pointer;
   transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  /* Kept out of the page snapshot during the theme reveal, so it turns smoothly on top of it */
+  view-transition-name: theme-toggle;
 }
 .theme-toggle:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
-.theme-toggle:active { transform: scale(0.88); }
+.theme-toggle:active { transform: scale(0.9); }
 .theme-toggle svg { width: 18px; height: 18px; overflow: visible; }
 .tt-sun { color: #e8962e; filter: drop-shadow(0 0 3px rgba(245, 166, 58, 0.45)); }
 .tt-moon { color: #9aa2ff; filter: drop-shadow(0 0 3px rgba(154, 162, 255, 0.45)); }
 .tt-star { color: #ffcf6e; }
-.theme-toggle g, .theme-toggle circle { transform-box: fill-box; transform-origin: center; }
-.tt-sun, .tt-moon { transform-box: view-box !important; transform-origin: 12px 12px !important; }
-.tt-sun { transition: transform 0.5s var(--ease), opacity 0.35s var(--ease); }
-.tt-moon { transition: transform 0.5s var(--ease), opacity 0.35s var(--ease); opacity: 0; transform: rotate(-30deg) scale(0.7); }
-.tt-star { opacity: 0; transform: scale(0.4); transition: opacity 0.35s var(--ease), transform 0.45s var(--ease); }
-.tt-star + .tt-star { transition-delay: 0.08s; }
+.tt-dial, .tt-moon { transform-box: view-box; transform-origin: 12px 30px; }
+.tt-moon { transform: rotate(180deg); } /* parked on the far side of the wheel */
+.tt-dial { transition: transform 0.9s cubic-bezier(0.45, 0.05, 0.25, 1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tt-dial { transform: rotate(180deg); } }
+:root[data-theme="dark"] .tt-dial { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .tt-dial { transition: none; } }
 
-/* Dark: the sun turns and fades out as the moon eases in, with two small stars */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tt-sun { opacity: 0; transform: rotate(45deg) scale(0.7); }
-  :root:not([data-theme="light"]) .tt-moon { opacity: 1; transform: none; }
-  :root:not([data-theme="light"]) .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
-}
-:root[data-theme="dark"] .tt-sun { opacity: 0; transform: rotate(45deg) scale(0.7); }
-:root[data-theme="dark"] .tt-moon { opacity: 1; transform: none; }
-:root[data-theme="dark"] .tt-star { opacity: 1; transform: scale(1); transition-delay: 0.15s; }
-
+/* During the reveal, show the live toggle only (no snapshot pair, no crossfade) */
+::view-transition-group(theme-toggle) { animation: none; z-index: 2; }
+::view-transition-old(theme-toggle) { display: none; }
+::view-transition-new(theme-toggle) { animation: none; }
 
 /* Theme reveal: the old page holds still while the new one grows out of the toggle through a
    radial mask that's solid in the middle and feathers out over the outer half (sized by delight.js). */
@@ -330,6 +329,3 @@ html.revealing::view-transition-new(root) {
   -webkit-mask-size: 0 0; mask-size: 0 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .tt-sun, .tt-moon, .tt-star { transition: opacity 0.15s linear; }
-}
