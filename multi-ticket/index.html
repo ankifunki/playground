@@ -1,0 +1,766 @@
+<title>Multi Ticket at GlossGenius</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
+<style>
+/* Layout: mobile first. Base = full-screen portrait slides, one column, real pixel sizes on a 12px rhythm.
+   Large landscape screens (≥900px wide) switch to a 1504×846 artboard on a 12-column grid, scaled by --u.
+   Roles: Geist = titles · Funnel Sans = reading · Geist Mono = meta.
+   Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
+:root{
+  color-scheme:dark;
+  --canvas:#0E1011; --slide:#DCE0E0; --ink:#1B201F; --grey:#6E7675; --faint:#959C9B; --rule:#C3C9C8;
+  --accent:#6663F4; --divider:#1B201F; --on-divider:#EEF1F1; --frame:#EEF1F0; --frame-after:#F4F5FF;
+  --head:"Geist","Helvetica Neue",Arial,sans-serif;
+  --body:"Funnel Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.22,.8,.2,1);
+
+  /* Mobile scale (px). Every size and gap sits on the 12px rhythm. */
+  --pad-x:24px; --pad-top:calc(60px + env(safe-area-inset-top,0px)); --pad-bot:calc(36px + env(safe-area-inset-bottom,0px));
+  --t-title:32px; --lh-title:36px;
+  --t-statement:24px; --lh-statement:36px;
+  --t-sub:18px; --lh-sub:24px;
+  --t-text:16px; --lh-text:24px;
+  --t-small:15px; --lh-small:24px;
+  --t-mono:11px;
+  --t-cover:60px;
+  --gap-xs:6px; --gap-s:12px; --gap-m:24px; --gap-l:36px; --gap-xl:48px;
+  --dia-h:132px; --frame-ratio:3/2; --fit:contain;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button{font:inherit;color:inherit}
+
+/* ---------- Deck (mobile base: each slide is the full screen) ---------- */
+.deck{position:fixed;inset:0;display:grid}
+.slide{grid-area:1/1;background:var(--slide);overflow-y:auto;overscroll-behavior:contain;
+  opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s .6s}
+.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s}
+.slide.past{transform:translateX(-24px)}
+@media (prefers-reduced-motion:reduce){.slide,.slide.on,.slide.past{transform:none;transition:opacity .2s linear,visibility 0s .2s}.slide.on{transition:opacity .2s linear,visibility 0s}}
+
+.stage{min-height:100%;display:flex;flex-direction:column;padding:var(--pad-top) var(--pad-x) var(--pad-bot)}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--gap-s)}
+.title{font:600 var(--t-title)/var(--lh-title) var(--head);letter-spacing:-.035em;color:var(--ink)}
+.mono{font:400 var(--t-mono)/12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.content{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;row-gap:var(--gap-l);padding-block:var(--gap-l)}
+.content > *{min-width:0}
+
+/* Content settles after the slide arrives */
+.slide .content > *{transition:transform .7s var(--ease) .1s,opacity .5s var(--ease) .1s}
+.slide:not(.on) .content > *{transform:translateY(12px);opacity:.001}
+@media (prefers-reduced-motion:reduce){.slide .content > *{transition:none}.slide:not(.on) .content > *{transform:none}}
+
+/* Type */
+.statement{font:400 var(--t-statement)/var(--lh-statement) var(--body);letter-spacing:-.015em;color:var(--grey);text-wrap:pretty}
+.statement b{font-weight:500;color:var(--ink)}
+.sub{font:600 var(--t-sub)/var(--lh-sub) var(--head);letter-spacing:-.02em;color:var(--ink)}
+.text{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--grey)}
+.small{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--grey)}
+
+/* Facts */
+.facts{display:grid;gap:var(--gap-m)}
+.fact{display:grid;gap:var(--gap-s);align-content:start}
+.fact .v{font:500 var(--t-small)/var(--lh-small) var(--body);color:var(--ink)}
+
+/* Columns (stacked on mobile) */
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--gap-l)}
+.col{display:grid;gap:var(--gap-s);align-content:start}
+.list{list-style:none;display:grid;gap:var(--gap-xs);align-content:start}
+ol.list{counter-reset:n;gap:0}
+.cols:has(> ol.list){gap:0}
+.cols > ol.list + ol.list{margin-top:-1px}
+ol.list li{counter-increment:n;display:grid;grid-template-columns:36px 1fr;padding-block:var(--gap-s);border-top:1px solid var(--rule)}
+ol.list li:last-child{border-bottom:1px solid var(--rule)}
+ol.list li::before{content:counter(n,decimal-leading-zero);font:400 var(--t-mono)/var(--lh-text) var(--mono);letter-spacing:.08em;color:var(--faint)}
+ol.list li span{font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--ink)}
+ol.list.hard{grid-column:1 / -1}
+ol.list.hard li span{display:grid;gap:2px}
+ol.list.hard li b{font:600 var(--t-text)/var(--lh-text) var(--head);letter-spacing:-.01em;color:var(--ink)}
+ol.list.hard li i{font-style:normal;color:var(--grey)}
+@media (max-width:899px) and (max-height:720px){ol.list.hard li{padding-block:8px}}
+
+.opt{padding-top:var(--gap-m);border-top:1px solid var(--rule)}
+.opt.sel{border-top:2px solid var(--ink)}
+.opt.sel .mono{color:var(--accent)}
+
+/* Diagrams: one fixed height so every diagram shares a scale; lines draw in */
+.dia{display:block;height:var(--dia-h);width:auto;max-width:100%;margin-bottom:var(--gap-s)}
+.dia .ln{stroke:var(--rule);stroke-width:1.5;fill:none;stroke-dasharray:420;stroke-dashoffset:0;transition:stroke-dashoffset 1.1s var(--ease) .35s}
+.slide:not(.on) .dia .ln{stroke-dashoffset:420}
+.dia .dot{fill:var(--rule)}
+.dia .ic{stroke:var(--grey);fill:none;stroke-width:1.6}
+.dia .ic.a{stroke:var(--accent)}
+.dia .pop{transition:opacity .5s var(--ease) 1s}
+.slide:not(.on) .dia .pop{opacity:0}
+.dia text{font-family:var(--body);font-size:26px;fill:var(--grey)}
+.dia text.k{fill:var(--ink);font-family:var(--head);font-weight:500}
+.dia text.a{fill:var(--accent);font-family:var(--head);font-weight:500}
+@media (prefers-reduced-motion:reduce){.dia .ln,.dia .pop{transition:none}.slide:not(.on) .dia .ln{stroke-dashoffset:0}.slide:not(.on) .dia .pop{opacity:1}}
+
+
+
+/* Story: beats build up one at a time; earlier beats dim */
+.story{display:grid;gap:var(--gap-m)}
+.pins{display:flex;flex-wrap:wrap;gap:8px}
+.pin{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 8px;border:1px solid var(--rule);border-radius:999px;font:500 13px/16px var(--body);color:var(--ink);background:rgb(255 255 255 / .35);transition:opacity .5s var(--ease),transform .6s var(--ease),border-color .5s,background .5s}
+.pin svg{width:16px;height:16px;fill:none;stroke:var(--accent);stroke-width:1.8}
+.pin .acct{font:400 var(--t-mono)/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .6s var(--ease)}
+.story .pin:nth-child(n+2){opacity:0;transform:translateY(6px)}
+.story:not([data-step="0"]) .pin{opacity:1;transform:none}
+.story[data-step="2"] .pin{border-style:dashed;background:none}
+.story[data-step="2"] .pin svg{stroke:var(--grey)}
+.story[data-step="2"] .pin .acct{max-width:9em}
+.beats{display:grid;gap:var(--gap-m)}
+.beats .note{grid-area:auto;display:grid;align-content:start;gap:var(--gap-xs);font:400 var(--t-text)/var(--lh-text) var(--body);color:var(--grey);transform:translateY(6px);transition:opacity .5s var(--ease),transform .6s var(--ease)}
+.beats .note b{font-weight:500;color:var(--ink)}
+.beats .note.on,.beats .note.past{transform:none}
+.beats .note.past{opacity:.45}
+.story .steps button{min-width:0;flex:1}
+
+
+
+/* Phone flows: a swipeable row on phones, a fixed row on desktop */
+.phones{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x);scroll-padding-inline:var(--pad-x)}
+.phones::-webkit-scrollbar{display:none}
+.phone{flex:0 0 auto;width:min(56vw,calc((100svh - 330px) * 393 / 852));min-width:150px;margin:0;display:grid;gap:8px;scroll-snap-align:start}
+.phone img{display:block;width:100%;aspect-ratio:393/852;border-radius:16px;background:#0E1716;box-shadow:0 0 0 1px rgb(27 32 31 / .08),0 12px 28px -14px rgb(27 32 31 / .45)}
+.phone figcaption{display:flex;gap:8px;align-items:baseline}
+.phone figcaption b{font:500 13px/16px var(--body);color:var(--ink)}
+.mob{display:grid;gap:var(--gap-m)}
+
+/* How they connect: the scope at the centre moves from business to location */
+.rel{display:grid;gap:var(--gap-m)}
+.gfig{margin:0}
+/* How they connect: stacked planes threaded by one booking */
+.cx{display:block;width:100%;height:auto;overflow:visible}
+.cx path,.cx ellipse{vector-effect:non-scaling-stroke}
+.cx .pf{fill:var(--slide);opacity:.84}
+.cx .po{fill:none;stroke:var(--grey);stroke-width:1}
+.cx .mk{fill:var(--slide);stroke:var(--grey);stroke-width:1;transition:stroke .5s var(--ease),fill .5s var(--ease) .6s}
+.cx .mk.hc{stroke:var(--accent);stroke-width:1.4}
+.cx .th{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .9s var(--ease) .45s,opacity .2s var(--ease) .45s}
+.cx .lb{font:400 11px var(--mono);fill:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.cx .lb.loc{fill:var(--accent)}
+@media (max-width:899px){.cx .lb{font-size:19px}}
+.cx .pl,.cx .locs{transition:transform .9s var(--ease),opacity .6s var(--ease)}
+.cx :is(.stf,.sch,.cal){opacity:0;transform:translate(var(--drop-x),var(--drop-y))}
+.cx .b{opacity:0;transform:translate(var(--b-x),var(--b-y))}
+.cx .locs{opacity:0}
+.conn:is([data-step="1"],[data-step="2"],[data-step="3"],[data-step="4"]) .cx .stf.one,.conn:is([data-step="2"],[data-step="3"],[data-step="4"]) .cx .sch.a,.conn:is([data-step="3"],[data-step="4"]) .cx .cal.a{opacity:1;transform:none}
+.conn:is([data-step="1"],[data-step="2"],[data-step="3"],[data-step="4"]) .cx .th.s1,.conn:is([data-step="2"],[data-step="3"],[data-step="4"]) .cx .th.s2,.conn:is([data-step="3"],[data-step="4"]) .cx .th.s3{stroke-dashoffset:0;opacity:1}
+.conn:is([data-step="1"],[data-step="2"],[data-step="3"],[data-step="4"]) .cx .stf.one .sel{stroke:var(--accent);stroke-width:1.4}
+.conn:is([data-step="2"],[data-step="3"],[data-step="4"]) .cx .day{stroke:var(--accent);stroke-width:1.4}
+.conn:is([data-step="3"],[data-step="4"]) .cx .slot{stroke:var(--accent);fill:var(--accent)}
+.conn[data-step="4"] .cx .th.t0[class],.conn[data-step="4"] .cx .stf.one{opacity:0;transition-delay:0s}
+.conn[data-step="4"] .cx :is(.b,.stf.wide){opacity:1;transform:none}
+.conn[data-step="4"] .cx .stf.wide .sel{stroke:var(--accent);stroke-width:1.4}
+.conn[data-step="4"] .cx .th.s5{stroke-dashoffset:0;opacity:1;transition-delay:1.5s}
+.conn[data-step="4"] .cx .th.s5.tb{transition-delay:1.9s}
+.conn[data-step="4"] .cx .locs{opacity:1;transition-delay:1s}
+@media (prefers-reduced-motion:reduce){.cx *{transition:none!important}}
+
+.rel .steps button{min-width:0;flex:1}
+
+/* Before → after: the after wipes over the before */
+.morph{display:grid;gap:var(--gap-m)}
+.loupe{position:fixed;left:0;top:0;width:200px;height:200px;border-radius:50%;pointer-events:none;z-index:60;background-color:var(--frame);background-repeat:no-repeat;box-shadow:0 0 0 1px rgb(27 32 31 / .14),0 0 0 4px rgb(255 255 255 / .55),0 16px 36px -10px rgb(27 32 31 / .45);opacity:0;scale:.86;transition:opacity .18s ease,scale .28s var(--ease)}
+.loupe.on{opacity:1;scale:1}
+.frame.looking{cursor:none}
+.frame{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+@media (prefers-reduced-motion:reduce){.loupe{transition:none}}
+.frame{position:relative;width:100%;aspect-ratio:var(--r,var(--frame-ratio));border-radius:3px;overflow:hidden;background:var(--frame);cursor:zoom-in;
+  box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 12px 36px -12px rgb(27 32 31 / .3)}
+.layer{position:absolute;inset:0;display:grid;place-items:center;background:var(--frame)}
+.layer img{width:100%;height:100%;object-fit:var(--fit);object-position:center!important;display:block}
+.layer.after{background:var(--frame-after);clip-path:inset(0 0 0 100%);transition:clip-path 1.1s var(--ease)}
+.layer.before{transition:transform 1.1s var(--ease),filter 1.1s var(--ease)}
+.morph.is-after .layer.after{clip-path:inset(0 0 0 0)}
+.morph.is-after .layer.before{transform:scale(.985);filter:saturate(.6)}
+.edge{position:absolute;top:0;bottom:0;left:100%;width:2px;background:var(--accent);box-shadow:0 0 24px var(--accent);opacity:0;transition:left 1.1s var(--ease),opacity .3s}
+.morph.moving .edge{opacity:.9}
+.morph.is-after .edge{left:0}
+.ph{font:400 var(--t-mono)/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center;padding:1.5em}
+.layer.after .ph{color:var(--accent)}
+.hint{position:absolute;right:8px;bottom:8px;font:400 9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);background:rgb(255 255 255 / .8);padding:6px 8px;border-radius:999px;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.layer.after,.layer.before,.edge{transition:opacity .25s linear}.layer.after{clip-path:none;opacity:0}.morph.is-after .layer.after{opacity:1}.morph.is-after .layer.before{transform:none;filter:none}.edge{display:none}}
+.bar{display:flex;flex-direction:column-reverse;gap:var(--gap-m)}
+.toggle{display:inline-flex;position:relative;align-self:flex-start;padding:3px;border-radius:999px;background:rgb(27 32 31 / .07);box-shadow:inset 0 0 0 1px rgb(27 32 31 / .06)}
+.toggle button{position:relative;z-index:1;background:none;border:0;padding:0 16px;min-height:38px;border-radius:999px;cursor:pointer;font:400 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey);transition:color .3s}
+.toggle button:hover{color:var(--ink)}
+.toggle button[aria-pressed="true"]{color:var(--ink)}
+.toggle i{position:absolute;top:3px;bottom:3px;border-radius:999px;background:#fff;box-shadow:0 1px 2px rgb(27 32 31 / .12),0 0 0 1px rgb(27 32 31 / .05);transition:left .5s var(--ease),width .5s var(--ease)}
+.foot{font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink)}
+
+/* Results */
+.nums{display:grid}
+.nums div{display:grid;grid-template-columns:72px 1fr;align-items:baseline;padding-block:var(--gap-m);border-top:1px solid var(--rule)}
+.nums b{font:600 28px/1 var(--head);letter-spacing:-.03em;color:var(--ink)}
+
+/* Cover */
+.slide.divider{background:var(--divider)}
+.divider .stage{justify-content:space-between}
+.divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
+.divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
+.divider .by{font:400 var(--t-text)/var(--lh-text) var(--body);color:#9AA2A1;max-width:28ch}
+.mark{height:36px;width:auto;display:block;color:var(--on-divider)}
+.divider .head,.chapter .head{transition:opacity .8s var(--ease) .3s}
+.divider:not(.on) .head{opacity:0}
+
+
+/* Sequences: stacked screens that crossfade (Add a location steps, switcher models) */
+.flowseq,.models{display:grid;gap:var(--gap-m)}
+.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;transform:scale(1.015);transition:opacity .6s var(--ease),transform 1.2s var(--ease)}
+.frame.seq img.on{opacity:1;transform:none}
+.steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
+.steps::-webkit-scrollbar{display:none}
+.steps button{flex:1 0 auto;min-width:72px;display:grid;gap:6px;text-align:left;background:none;border:0;border-top:2px solid var(--rule);padding:10px 0 0;cursor:pointer;color:var(--faint);transition:border-color .3s,color .3s}
+.steps button b{font:500 13px/16px var(--body);color:inherit}
+.steps button .mono{color:inherit}
+.steps button.seen{border-top-color:var(--grey)}
+.steps button[aria-pressed="true"]{border-top-color:var(--ink);color:var(--ink)}
+.tabs button:last-child[aria-pressed="true"]{border-top-color:var(--accent)}
+.tabs button:last-child[aria-pressed="true"] .mono{color:var(--accent)}
+.notes{display:grid}
+.note{grid-area:1/1;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink);opacity:0;transition:opacity .4s var(--ease)}
+.note.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.frame.seq img{transition:opacity .2s linear;transform:none}}
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
+  .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
+  .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
+  .steps button{min-width:0;flex:none;display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
+  .steps button b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+  .steps button.seen{border-left-color:var(--grey)}
+  .steps button[aria-pressed="true"]{border-left-color:var(--ink)}
+  .rel{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*36)}
+  .rel .steps{grid-column:1 / span 4;flex-direction:row;gap:calc(var(--u)*16)}
+  .rel .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
+  .rel .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
+  .rel .notes{grid-column:6 / span 7}
+  .conn{align-items:start}
+  .mob{grid-column:1 / -1;grid-template-columns:repeat(4,calc(var(--u)*220)) 1fr;column-gap:calc(var(--u)*32);align-items:end}
+  .phones{display:contents}
+  .phone{width:auto;min-width:0;gap:calc(var(--u)*12)}
+  .phone img{border-radius:calc(var(--u)*22)}
+  .phone figcaption{gap:calc(var(--u)*10)}
+  .phone figcaption b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+  .mob .foot{align-self:end;padding-bottom:calc(var(--u)*36);font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+  .conn .gfig{grid-column:1 / span 7;grid-row:1 / span 3}
+  .conn .cx{height:auto;width:100%}
+  .conn .gfig{grid-column:1 / span 8}
+  .conn .steps{grid-column:9 / span 4;grid-row:1;align-self:start;flex-direction:column;gap:0}
+  .conn .steps button{display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
+  .conn .steps button.seen{border-left-color:var(--grey)}
+  .conn .steps button[aria-pressed="true"]{border-left-color:var(--ink)}
+  .conn .notes{grid-column:9 / span 4;grid-row:2}
+  .story{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:calc(var(--u)*48)}
+  .pins{grid-column:1 / -1;gap:calc(var(--u)*12)}
+  .pin{font-size:calc(var(--u)*18);line-height:calc(var(--u)*24);padding:calc(var(--u)*8) calc(var(--u)*16) calc(var(--u)*8) calc(var(--u)*12);gap:calc(var(--u)*8)}
+  .pin svg{width:calc(var(--u)*20);height:calc(var(--u)*20)}
+  .beats{grid-column:1 / -1;grid-template-columns:repeat(3,1fr);column-gap:calc(var(--u)*24)}
+  .beats .note{font-size:calc(var(--u)*24);line-height:calc(var(--u)*36);gap:calc(var(--u)*12)}
+  .story .steps{grid-column:1 / span 4;flex-direction:row;gap:calc(var(--u)*16)}
+  .story .steps button{border-left:0;border-top:2px solid var(--rule);padding:calc(var(--u)*10) 0 0;display:grid;gap:calc(var(--u)*4)}
+  .story .steps button[aria-pressed="true"]{border-top-color:var(--ink)}
+  .tabs button{padding-block:calc(var(--u)*14)}
+  .tabs button:last-child[aria-pressed="true"]{border-left-color:var(--accent)}
+  .note,.flowseq .foot{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
+}
+
+
+/* Chapter dividers: one per domain */
+.slide.chapter{background:var(--divider)}
+.chapter .stage{justify-content:space-between}
+.chapter .mono{color:#7F8786}
+.chapter .big{padding-bottom:var(--gap-xl)}
+.chapter h2{font:600 48px/1 var(--head);letter-spacing:-.04em;color:var(--on-divider)}
+
+/* ---------- Chrome: stories-style progress, tap zones, arrows on large screens ---------- */
+.progress{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
+.progress i{flex:1;height:2px;border-radius:2px;background:rgb(110 118 117 / .3);position:relative;overflow:hidden}
+.progress i::after{content:"";position:absolute;inset:0;background:var(--grey);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.progress i.done::after{transform:none}
+.on-dark .progress i{background:rgb(238 241 241 / .2)}.on-dark .progress i::after{background:#C9CFCE}
+.nav{display:none}
+
+/* Lightbox (scrollable so wide screens can be panned on a phone) */
+dialog{border:0;padding:0;background:transparent;max-width:none;width:100%;max-height:100dvh;overflow:auto}
+dialog::backdrop{background:rgb(8 9 10 / .92)}
+dialog .zwrap{padding:56px 0 24px;overflow-x:auto}
+dialog img,dialog .ph-big{display:block;width:max(100%,900px);border-radius:5px;background:var(--frame)}
+dialog .ph-big{aspect-ratio:16/10;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+dialog form{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:8px}
+dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:14px}
+
+/* Short phones: tighten the vertical rhythm */
+@media (max-height:700px){
+  .steps button{padding-top:8px;gap:4px}.note{font-size:14px;line-height:20px}.flowseq,.models{gap:16px}
+  :root{--pad-top:calc(48px + env(safe-area-inset-top,0px));--gap-l:24px;--dia-h:108px;--t-statement:22px;--lh-statement:32px}
+}
+
+/* ---------- Large landscape screens: the 16:9 artboard ---------- */
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .deck{place-items:center;padding:16px}
+  .slide{width:min(100%,calc((100dvh - 32px) * 16 / 9));height:auto;overflow:visible;container-type:inline-size;cursor:pointer;transform:translateY(16px) scale(.995)}
+  .slide.on{transform:none}.slide.past{transform:translateY(-16px) scale(.995)}
+  .stage{--u:calc(100cqw / 1504);min-height:0;aspect-ratio:1504/846;display:grid;grid-template-rows:auto 1fr;
+    --pad-x:calc(var(--u)*96);padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);
+    --t-title:calc(var(--u)*60);--lh-title:calc(var(--u)*60);
+    --t-statement:calc(var(--u)*40);--lh-statement:calc(var(--u)*48);
+    --t-sub:calc(var(--u)*24);--lh-sub:calc(var(--u)*36);
+    --t-text:calc(var(--u)*22);--lh-text:calc(var(--u)*36);
+    --t-small:calc(var(--u)*18);--lh-small:calc(var(--u)*24);
+    --t-mono:max(10px,calc(var(--u)*12));--t-cover:calc(var(--u)*144);
+    --gap-xs:calc(var(--u)*6);--gap-s:calc(var(--u)*12);--gap-m:calc(var(--u)*24);--gap-l:calc(var(--u)*36);--gap-xl:calc(var(--u)*60);
+    --dia-h:calc(var(--u)*288);--frame-ratio:16/10;--fit:cover}
+  .title{margin-left:calc(var(--u)*-2)}
+  .content{padding:calc(var(--u)*144) 0 0;align-content:start;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:0}
+  .content > *{grid-column:1 / -1}
+  .content[style]{padding-top:calc(var(--u)*96)!important}
+  .screens .content{padding-top:calc(var(--u)*36)}
+  .screens .stage{padding-bottom:calc(var(--u)*48)}
+  .statement{grid-column:1 / span 9}
+  .facts{grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*60)}
+  .fact:nth-child(1){grid-column:1 / span 3}.fact:nth-child(2){grid-column:4 / span 5}
+  .cols{grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);row-gap:0}
+  .c5{grid-column:span 5}.c5b{grid-column:7 / span 5}.c4{grid-column:span 4}.c6{grid-column:span 6}
+  .cols > ol.list + ol.list{margin-top:0}
+  ol.list li{grid-template-columns:calc(var(--u)*48) 1fr}
+  ol.list.hard{grid-column:1 / span 10}
+  ol.list.hard li span{grid-template-columns:calc(var(--u)*240) 1fr;column-gap:calc(var(--u)*24)}
+  .dia{margin-bottom:calc(var(--u)*36)}
+  .dia text{font-size:22px}
+  .morph{grid-column:3 / span 8}
+  .frame{aspect-ratio:var(--frame-ratio);border-radius:calc(var(--u)*4.5);box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*16) calc(var(--u)*40) calc(var(--u)*-16) rgb(27 32 31 / .3)}
+  .hint{display:none}
+  .layer img,.frame.seq img{object-position:top left!important}
+  .layer img[style*="top center"],.frame.seq img[style*="top center"]{object-position:top center!important}
+  .bar{flex-direction:row;justify-content:space-between;align-items:baseline}
+  .toggle button{min-height:calc(var(--u)*34);padding:0 calc(var(--u)*16);font-size:max(10px,calc(var(--u)*12))}
+  .nums{grid-column:1 / span 8!important}
+  .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
+  .nums b{font-size:calc(var(--u)*40)}
+  .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
+  .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
+  .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
+  .divider .big{align-self:end;padding-bottom:calc(var(--u)*60)}
+  .divider h2{margin-left:calc(var(--u)*-6)}
+  .divider .by{max-width:none}
+  .mark{height:calc(var(--u)*48)}
+  .progress{top:auto;bottom:0;left:0;right:0;gap:2px}
+  .progress i{height:2px;border-radius:0}
+  .nav{display:flex;position:fixed;right:16px;bottom:16px;gap:6px;z-index:6;opacity:0;transition:opacity .4s}
+  body.awake .nav{opacity:1}
+  .nav button{width:36px;height:36px;border-radius:50%;border:1px solid #3A3F3E;background:rgb(14 16 17 / .7);color:#C9CFCE;cursor:pointer;display:grid;place-items:center}
+  .nav button:hover{background:#1E2221;border-color:#5A6160}
+  .nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+  dialog{max-width:min(92vw,1600px);overflow:visible}
+  dialog .zwrap{padding:0;overflow:visible}
+  dialog img,dialog .ph-big{width:100%}
+  dialog form{position:absolute;top:-44px;right:0}
+}
+
+/* ---- Multi Ticket additions ---- */
+/* Phone-shaped screens: the frame takes the phone's proportions and a fixed height */
+.tall .frame{width:auto;height:min(50svh,460px);aspect-ratio:var(--r);margin-inline:auto}
+.dt .frame{height:auto;width:100%}
+.morph.tall{justify-items:start}
+.morph.tall .frame{margin-inline:0}
+
+/* Prototype player: replays a Figma prototype path with taps on the real hotspots */
+.proto{display:grid;gap:var(--gap-m)}
+.proto.tall .frame{height:min(44svh,400px)}
+.proto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transition:transform .55s var(--ease),opacity .45s var(--ease)}
+.proto .frame img.on{opacity:1}
+.tap{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;pointer-events:none;z-index:5;opacity:0}
+.tap::before,.tap::after{content:"";position:absolute;inset:0;border-radius:50%}
+.tap::before{background:rgb(255 255 255 / .5);box-shadow:0 0 0 1px rgb(255 255 255 / .6);scale:.45}
+.tap::after{border:1.5px solid rgb(255 255 255 / .8)}
+.tap.go{animation:tapdot .7s var(--ease) both}.tap.go::after{animation:tapring .7s var(--ease) both}
+@keyframes tapdot{0%{opacity:0;scale:1.3}25%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
+@keyframes tapring{0%{scale:.5;opacity:.9}100%{scale:1.7;opacity:0}}
+/* Benchmark matrix */
+.mx{display:grid;grid-template-columns:minmax(0,2.6fr) repeat(5,minmax(0,1fr));align-items:stretch}
+.mx > *{padding:6px 0;border-top:1px solid var(--rule);display:flex;align-items:center}
+.mx .dc{justify-content:center}
+.mx .h{border-top:0;padding-top:0;justify-content:center;font:400 var(--t-mono)/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center}
+.mx .h:first-child{justify-content:flex-start}
+.mx .h .full{display:none}
+.mx .c{font:400 12px/16px var(--body);color:var(--grey);padding-right:8px;transition:color .5s var(--ease)}
+:is(.mx,.mx-legend) .d{display:inline-block;flex:none;width:12px;height:12px;border-radius:50%;box-sizing:border-box;border:1.4px solid var(--ink);opacity:0;scale:.4;transition:opacity .35s var(--ease),scale .45s var(--ease)}
+:is(.mx,.mx-legend) .d.s{background:var(--ink)}
+:is(.mx,.mx-legend) .d.m{background:linear-gradient(90deg,var(--ink) 50%,transparent 50%)}
+:is(.mx,.mx-legend) .d.w{background:radial-gradient(circle,var(--ink) 0 2px,transparent 2.5px)}
+:is(.mx,.mx-legend) .d.n{border-color:rgb(27 32 31 / .22)}
+.slide.on .mx .d{opacity:1;scale:1}
+.slide.on .mx .c.gap{color:var(--accent)}
+.mx-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font:400 var(--t-mono)/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.mx-legend span{display:inline-flex;align-items:center;gap:6px}
+.mx-legend .d{opacity:1;scale:1;width:10px;height:10px}
+.bench{display:grid;gap:var(--gap-m)}
+.story .pin:nth-child(2){opacity:1;transform:none}
+/* Order of steps: tip before or after payment */
+.order{display:grid;gap:var(--gap-l)}
+.seq{display:grid;gap:var(--gap-s)}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--rule);font:500 14px/1 var(--body);color:var(--ink);background:rgb(255 255 255 / .35);opacity:0;translate:0 6px;transition:opacity .4s var(--ease),translate .5s var(--ease)}
+.chip.k{border-color:var(--accent);color:var(--accent);background:rgb(244 245 255 / .8)}
+.arw{color:var(--faint);font:400 14px/1 var(--mono);opacity:0;transition:opacity .4s var(--ease)}
+.slide.on .chip,.slide.on .arw{opacity:1;translate:0 0}
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .tall .frame,.proto.tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
+  .morph.tall{grid-column:1 / -1;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*64);align-items:end}
+  .morph.tall .bar{flex-direction:column-reverse;align-items:flex-start;gap:calc(var(--u)*24);padding-bottom:calc(var(--u)*8)}
+  .flowseq.tall,.proto{grid-template-columns:auto minmax(0,1fr);column-gap:calc(var(--u)*64);row-gap:calc(var(--u)*24);align-content:start}
+  .proto > .frame{grid-row:1 / span 3}
+  .bench{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24)}
+  .bench .mx{grid-column:1 / span 8}
+  .bench aside{grid-column:10 / span 3;display:grid;gap:calc(var(--u)*24);align-content:start}
+  .mx{grid-template-columns:minmax(0,1.7fr) repeat(5,minmax(0,1fr))}
+  .mx > *{padding:calc(var(--u)*11) 0}
+  .mx .c{font-size:calc(var(--u)*16);line-height:calc(var(--u)*22)}
+  .mx .h .full{display:inline}.mx .h .short{display:none}
+  .mx .d{width:calc(var(--u)*14);height:calc(var(--u)*14)}
+  .order{grid-column:1 / span 9;gap:calc(var(--u)*48)}
+  .chip{height:calc(var(--u)*44);padding:0 calc(var(--u)*20);font-size:calc(var(--u)*18)}
+  .arw{font-size:calc(var(--u)*18)}
+}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+  <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5s1.2-6.1 3.6-8.5z"/></symbol>
+  <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c.9-3.9 3.8-6 7.5-6s6.6 2.1 7.5 6"/></symbol>
+</svg>
+
+<main class="deck" id="deck" aria-live="polite">
+
+<section class="slide divider" data-name="Multi Ticket"><div class="stage">
+  <div class="head">
+    <svg class="mark" viewBox="0 0 45.353 64" role="img" aria-label="GlossGenius"><path fill="currentColor" transform="translate(0.141 0)" d="M31.409 5.088C36.057 5.088 38.945 8.498 39.852 12.872L41.832 12.872C41.997 7.151 38.972 0 29.373 0C14.632 0 1.815 19.28 0.248 37.019C0.083 38.835 0 40.54 0 42.162C0 56.932 6.573 64 16.447 64C27.366 64 33.471 52.201 37.212 43.648C38.119 41.557 38.587 41.172 40.292 41.172L44.885 41.172L45.353 39.852L41.007 37.019C39.77 36.222 39.687 35.534 40.045 33.004L41.172 24.863L39.907 24.505L36.469 32.316C35.452 34.654 34.214 34.572 32.151 33.966L22.608 31.161L22.113 32.536L31.024 38.284C32.069 38.945 32.509 39.632 32.509 40.512C32.509 41.667 31.959 42.768 30.804 45.133C27.366 52.201 22.415 55.859 18.07 55.859C12.982 55.859 8.746 50.853 8.746 40.567C8.746 39.77 8.774 38.972 8.829 38.147C9.599 25.303 19.115 5.088 31.409 5.088Z"/></svg>
+  </div>
+  <div class="big"><h2>Multi<br>Ticket</h2><p class="by">One checkout for every appointment at the counter.</p></div>
+</div></section>
+
+<section class="slide" data-name="GlossGenius"><div class="stage">
+  <div class="head"><h3 class="title">GlossGenius</h3></div>
+  <div class="content"><p class="statement">Software that runs <b>salons, barbershops and spas</b>. Booking, payments, staff and clients, in one place.</p></div>
+</div></section>
+
+<section class="slide" data-name="Meet Rachel"><div class="stage">
+  <div class="head"><h3 class="title">Meet Rachel</h3></div>
+  <div class="content" style="padding-top:calc(var(--u)*96)"><div class="story">
+    <div class="pins"><span class="pin">Cut<span class="acct">· Ticket 1</span></span><span class="pin">Color<span class="acct">· Ticket 2</span></span><span class="pin">Trim<span class="acct">· Ticket 3</span></span></div>
+    <div class="beats notes"><p class="note on"><span class="mono">One client</span><span>Rachel books a cut and color with <b>two stylists</b>, back to back.</span></p><p class="note"><span class="mono">Plus one</span><span>Her daughter tags along for a trim. <b>Rachel pays for both.</b></span></p><p class="note"><span class="mono">Checkout</span><span>The front desk rings up <b>three tickets</b>: three tips, three signatures, while the line grows.</span></p></div>
+    <div class="steps" role="group" aria-label="Story"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Book</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Add</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Pay</b></button></div>
+  </div></div>
+</div></section>
+
+<section class="slide" data-name="Goal"><div class="stage">
+  <div class="head"><h3 class="title">Goal</h3></div>
+  <div class="content">
+    <p class="statement">Build <b>one flexible checkout</b> for every multi scenario: one client with many appointments, or many clients paying together.</p>
+    <div class="facts">
+      <div class="fact"><span class="mono">Role</span><span class="v">Staff product designer</span></div>
+      <div class="fact"><span class="mono">Scope</span><span class="v">Research, mobile, web, tipping, payments</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-name="Two phases"><div class="stage">
+  <div class="head"><h3 class="title">Two phases</h3></div>
+  <div class="content">
+    <div class="cols">
+      <div class="col c5"><span class="mono">Phase 1</span><p class="sub">One client, many appointments</p><p class="text">A single checkout for the same client with multiple appointments on the same day.</p></div>
+      <div class="col c5b"><span class="mono">Phase 2</span><p class="sub">Many clients, one checkout</p><p class="text">A single checkout for multiple clients and appointments on the same day.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-name="How others do it"><div class="stage">
+  <div class="head"><h3 class="title">How others do it</h3><span class="mono">Benchmark · Mar 2026</span></div>
+  <div class="content"><div class="bench">
+    <div class="mx" role="table" aria-label="Group checkout capabilities across Square, Zenoti, Boulevard, Fresha and Mangomint"><span class="h">Capability</span><span class="h"><span class="full">Square</span><span class="short">Sq</span></span><span class="h"><span class="full">Zenoti</span><span class="short">Zen</span></span><span class="h"><span class="full">Boulevard</span><span class="short">Blvd</span></span><span class="h"><span class="full">Fresha</span><span class="short">Fre</span></span><span class="h"><span class="full">Mangomint</span><span class="short">MM</span></span><span class="c" style="transition-delay:2s">Group checkout</span><span class="dc"><i class="d n" style="transition-delay:120ms"></i></span><span class="dc"><i class="d s" style="transition-delay:148ms"></i></span><span class="dc"><i class="d s" style="transition-delay:176ms"></i></span><span class="dc"><i class="d w" style="transition-delay:204ms"></i></span><span class="dc"><i class="d s" style="transition-delay:232ms"></i></span><span class="c gap" style="transition-delay:2s">Group on the fly</span><span class="dc"><i class="d n" style="transition-delay:260ms"></i></span><span class="dc"><i class="d s" style="transition-delay:288ms"></i></span><span class="dc"><i class="d m" style="transition-delay:316ms"></i></span><span class="dc"><i class="d n" style="transition-delay:344ms"></i></span><span class="dc"><i class="d s" style="transition-delay:372ms"></i></span><span class="c" style="transition-delay:2s">One pays for all</span><span class="dc"><i class="d n" style="transition-delay:400ms"></i></span><span class="dc"><i class="d s" style="transition-delay:428ms"></i></span><span class="dc"><i class="d s" style="transition-delay:456ms"></i></span><span class="dc"><i class="d s" style="transition-delay:484ms"></i></span><span class="dc"><i class="d s" style="transition-delay:512ms"></i></span><span class="c gap" style="transition-delay:2s">Each pays their own</span><span class="dc"><i class="d n" style="transition-delay:540ms"></i></span><span class="dc"><i class="d s" style="transition-delay:568ms"></i></span><span class="dc"><i class="d m" style="transition-delay:596ms"></i></span><span class="dc"><i class="d w" style="transition-delay:624ms"></i></span><span class="dc"><i class="d s" style="transition-delay:652ms"></i></span><span class="c" style="transition-delay:2s">Mixed payers</span><span class="dc"><i class="d n" style="transition-delay:680ms"></i></span><span class="dc"><i class="d s" style="transition-delay:708ms"></i></span><span class="dc"><i class="d n" style="transition-delay:736ms"></i></span><span class="dc"><i class="d n" style="transition-delay:764ms"></i></span><span class="dc"><i class="d s" style="transition-delay:792ms"></i></span><span class="c" style="transition-delay:2s">Split mid-checkout</span><span class="dc"><i class="d n" style="transition-delay:820ms"></i></span><span class="dc"><i class="d m" style="transition-delay:848ms"></i></span><span class="dc"><i class="d n" style="transition-delay:876ms"></i></span><span class="dc"><i class="d n" style="transition-delay:904ms"></i></span><span class="dc"><i class="d s" style="transition-delay:932ms"></i></span><span class="c gap" style="transition-delay:2s">Shared memberships</span><span class="dc"><i class="d n" style="transition-delay:960ms"></i></span><span class="dc"><i class="d n" style="transition-delay:988ms"></i></span><span class="dc"><i class="d n" style="transition-delay:1016ms"></i></span><span class="dc"><i class="d n" style="transition-delay:1044ms"></i></span><span class="dc"><i class="d s" style="transition-delay:1072ms"></i></span><span class="c" style="transition-delay:2s">Tip split by provider</span><span class="dc"><i class="d m" style="transition-delay:1100ms"></i></span><span class="dc"><i class="d s" style="transition-delay:1128ms"></i></span><span class="dc"><i class="d n" style="transition-delay:1156ms"></i></span><span class="dc"><i class="d n" style="transition-delay:1184ms"></i></span><span class="dc"><i class="d s" style="transition-delay:1212ms"></i></span></div>
+    <aside><div class="mx-legend"><span><i class="d s"></i>Strong</span><span><i class="d m"></i>Medium</span><span><i class="d w"></i>Weak</span><span><i class="d n"></i>None</span></div><p class="foot">Five platforms, eight capabilities, from help docs, forums and verified reviews. Square has no group checkout at all; Mangomint comes closest. The highlighted rows are where nearly everyone falls short.</p></aside>
+  </div></div>
+</div></section>
+
+<section class="slide" data-name="Where nobody gets it right"><div class="stage">
+  <div class="head"><h3 class="title">Where nobody gets it right</h3></div>
+  <div class="content">
+    <div class="cols">
+      <ol class="list hard"><li><span><b>Grouping on the fly</b><i>&ldquo;Two friends walk in without a booking. One wants to pay for both.&rdquo;</i></span></li><li><span><b>Paying separately</b><i>&ldquo;Eight bridesmaids, all paying separately.&rdquo;</i></span></li><li><span><b>Shared memberships</b><i>&ldquo;Can I use my membership credits for my mom&rsquo;s blowout?&rdquo;</i></span></li><li><span><b>Discounts any time</b><i>&ldquo;I forgot to apply their membership before grouping.&rdquo;</i></span></li></ol>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-name="Tip before or after payment"><div class="stage">
+  <div class="head"><h3 class="title">Tip, then pay?</h3></div>
+  <div class="content"><div class="order">
+    <div class="seq"><span class="mono">GlossGenius</span><div class="chips"><span class="chip" style="transition-delay:0ms">Checkout</span><span class="arw" style="transition-delay:80ms">&rarr;</span><span class="chip k" style="transition-delay:160ms">Tip</span><span class="arw" style="transition-delay:240ms">&rarr;</span><span class="chip" style="transition-delay:320ms">Payment</span><span class="arw" style="transition-delay:400ms">&rarr;</span><span class="chip" style="transition-delay:480ms">Done</span></div></div>
+    <div class="seq"><span class="mono">Competitors</span><div class="chips"><span class="chip" style="transition-delay:0ms">Checkout</span><span class="arw" style="transition-delay:80ms">&rarr;</span><span class="chip" style="transition-delay:160ms">Payment</span><span class="arw" style="transition-delay:240ms">&rarr;</span><span class="chip k" style="transition-delay:320ms">Tip</span><span class="arw" style="transition-delay:400ms">&rarr;</span><span class="chip" style="transition-delay:480ms">Done</span></div></div>
+    <p class="foot">Checkout is one of the most sensitive flows for our users, and ours was already longer than competitors&rsquo;. I prototyped both orders, one close to production and one aligned with the industry, to agree on direction before going deep.</p>
+  </div></div>
+</div></section>
+
+<section class="slide chapter" data-name="Phase 1"><div class="stage">
+  <div class="head"><span class="mono">Chapter 01</span></div>
+  <div class="big"><h2>Phase 1</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="The cart"><div class="stage">
+  <div class="head"><h3 class="title">The cart</h3></div>
+  <div class="content"><div class="morph tall">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852">
+      <div class="layer before"><img src="img/cart-before.webp" alt="Before: add items sits above the items" style="object-position:top left" loading="lazy" decoding="async"></div>
+      <div class="layer after"><img src="img/cart-after.webp" alt="After: items first, with add items inline below" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+    </div>
+    <div class="bar"><p class="foot">Items lead and adding more sits right below them, so a second appointment reads as one more line, not a new sale.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="Tipping on one ticket"><div class="stage">
+  <div class="head"><h3 class="title">Tipping on one ticket</h3></div>
+  <div class="content"><div class="morph tall">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852">
+      <div class="layer before"><img src="img/tip-before.webp" alt="Before: tip and signature on a single appointment" style="object-position:top left" loading="lazy" decoding="async"></div>
+      <div class="layer after"><img src="img/tip-after.webp" alt="After: one tip across every provider on the ticket" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+    </div>
+    <div class="bar"><p class="foot">One tip for the whole ticket, split across providers by service value.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="One cart, every appointment"><div class="stage">
+  <div class="head"><h3 class="title">One cart, every appointment</h3></div>
+  <div class="content"><div class="flowseq tall">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852"><img src="img/m-1.webp" alt="Step 1: Cart" style="object-position:top left" decoding="async"><img src="img/m-2.webp" alt="Step 2: Add items" style="object-position:top left" loading="lazy" decoding="async"><img src="img/m-3.webp" alt="Step 3: Edit item" style="object-position:top left" loading="lazy" decoding="async"><img src="img/m-4.webp" alt="Step 4: Gift card" style="object-position:top left" loading="lazy" decoding="async"><img src="img/m-5.webp" alt="Step 5: Collect tip" style="object-position:top left" loading="lazy" decoding="async"><img src="img/m-6.webp" alt="Step 6: Tip" style="object-position:top left" loading="lazy" decoding="async"><img src="img/m-7.webp" alt="Step 7: Sign" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Cart" aria-pressed="true"><span class="mono">01</span><b>Cart</b></button><button type="button" aria-label="Step 2: Add items" aria-pressed="false"><span class="mono">02</span><b>Add items</b></button><button type="button" aria-label="Step 3: Edit item" aria-pressed="false"><span class="mono">03</span><b>Edit item</b></button><button type="button" aria-label="Step 4: Gift card" aria-pressed="false"><span class="mono">04</span><b>Gift card</b></button><button type="button" aria-label="Step 5: Collect tip" aria-pressed="false"><span class="mono">05</span><b>Collect tip</b></button><button type="button" aria-label="Step 6: Tip" aria-pressed="false"><span class="mono">06</span><b>Tip</b></button><button type="button" aria-label="Step 7: Sign" aria-pressed="false"><span class="mono">07</span><b>Sign</b></button></div>
+    <p class="foot">All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.</p>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="Checkout, played"><div class="stage">
+  <div class="head"><h3 class="title">Checkout, played</h3><span class="mono">Prototype</span></div>
+  <div class="content"><div class="proto tall">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852"><img src="img/sc-1.webp" alt="Checkout" data-tap="50,32" data-tr="slide" decoding="async"><img src="img/sc-2.webp" alt="Appointment" data-tap="50,91.8" data-tr="slide" decoding="async"><img src="img/sc-3.webp" alt="One sale" data-tap="61,91.8" data-tr="slide" decoding="async"><img src="img/sc-4.webp" alt="Payment" data-tap="50,36.6" data-tr="slide" decoding="async"><img src="img/sc-5.webp" alt="Card reader" data-tap="" data-tr="slide" decoding="async"><img src="img/sc-6.webp" alt="Tip and sign" data-tap="50,86.8" data-tr="slide" decoding="async"><img src="img/sc-7.webp" alt="Processing" data-tap="" data-tr="slide" decoding="async"><img src="img/sc-8.webp" alt="Done" data-tap="" data-tr="" decoding="async"><i class="tap"></i></div>
+    <div class="steps" role="group" aria-label="Prototype steps"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Checkout</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Appointment</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>One sale</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Payment</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>Card reader</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>Tip and sign</b></button><button type="button" aria-pressed="false"><span class="mono">07</span><b>Processing</b></button><button type="button" aria-pressed="false"><span class="mono">08</span><b>Done</b></button></div>
+    <p class="foot">Rachel&rsquo;s three appointments check out as one sale, from the list to a single payment.</p>
+  </div></div>
+</div></section>
+
+<section class="slide chapter" data-name="Web"><div class="stage">
+  <div class="head"><span class="mono">Chapter 02</span></div>
+  <div class="big"><h2>Web</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Line items with add-ons"><div class="stage">
+  <div class="head"><h3 class="title">Line items with add-ons</h3></div>
+  <div class="content"><div class="flowseq tall dt">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1100/1036"><img src="img/w-1.webp" alt="Step 1: Cart" style="object-position:top left" decoding="async"><img src="img/w-2.webp" alt="Step 2: Add items" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-3.webp" alt="Step 3: Add-ons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-4.webp" alt="Step 4: Grouped" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Cart" aria-pressed="true"><span class="mono">01</span><b>Cart</b></button><button type="button" aria-label="Step 2: Add items" aria-pressed="false"><span class="mono">02</span><b>Add items</b></button><button type="button" aria-label="Step 3: Add-ons" aria-pressed="false"><span class="mono">03</span><b>Add-ons</b></button><button type="button" aria-label="Step 4: Grouped" aria-pressed="false"><span class="mono">04</span><b>Grouped</b></button></div>
+    <p class="foot">Add-ons travel with their service, collapsed in the cart until you need them.</p>
+  </div></div>
+</div></section>
+
+<section class="slide chapter" data-name="Phase 2"><div class="stage">
+  <div class="head"><span class="mono">Chapter 03</span></div>
+  <div class="big"><h2>Phase 2</h2></div>
+</div></section>
+
+<section class="slide screens" data-name="Group checkout"><div class="stage">
+  <div class="head"><h3 class="title">Group checkout</h3><span class="mono">In progress</span></div>
+  <div class="content"><div class="morph tall">
+    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852">
+      <div class="layer before"><img src="img/list-before.webp" alt="Before: one ticket per appointment" style="object-position:top left" loading="lazy" decoding="async"></div>
+      <div class="layer after"><img src="img/list-after.webp" alt="After: appointments grouped under a new group checkout" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
+    </div>
+    <div class="bar"><p class="foot">Same-day appointments group into one checkout, with a clear way in.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+  </div></div>
+</div></section>
+
+<section class="slide screens" data-name="Group checkout, played"><div class="stage">
+  <div class="head"><h3 class="title">Group checkout, played</h3><span class="mono">Prototype</span></div>
+  <div class="content"><div class="proto tall">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852"><img src="img/gc-1.webp" alt="Discover" data-tap="50,28.9" data-tr="fade" decoding="async"><img src="img/gc-2.webp" alt="Group checkout" data-tap="51,23.2" data-tr="fade" decoding="async"><img src="img/gc-3.webp" alt="Select mode" data-tap="50,52.8" data-tr="fade" decoding="async"><img src="img/gc-4.webp" alt="Mark" data-tap="50,66.4" data-tr="fade" decoding="async"><img src="img/gc-5.webp" alt="Ashley" data-tap="50,88.9" data-tr="slide" decoding="async"><img src="img/gc-6.webp" alt="One sale" data-tap="58.8,92" data-tr="slide" decoding="async"><img src="img/gc-7.webp" alt="Pay" data-tap="50,58.8" data-tr="slide" decoding="async"><img src="img/gc-8.webp" alt="Tip on" data-tap="50,36.5" data-tr="slide" decoding="async"><img src="img/gc-9.webp" alt="Tip and sign" data-tap="50,87" data-tr="slide" decoding="async"><img src="img/gc-10.webp" alt="Processing" data-tap="" data-tr="slide" decoding="async"><img src="img/gc-11.webp" alt="Done" data-tap="" data-tr="" decoding="async"><i class="tap"></i></div>
+    <div class="steps" role="group" aria-label="Prototype steps"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Discover</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Group checkout</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Select mode</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Mark</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>Ashley</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>One sale</b></button><button type="button" aria-pressed="false"><span class="mono">07</span><b>Pay</b></button><button type="button" aria-pressed="false"><span class="mono">08</span><b>Tip on</b></button><button type="button" aria-pressed="false"><span class="mono">09</span><b>Tip and sign</b></button><button type="button" aria-pressed="false"><span class="mono">10</span><b>Processing</b></button><button type="button" aria-pressed="false"><span class="mono">11</span><b>Done</b></button></div>
+    <p class="foot">Discover group checkout, pick Mark and Ashley, and settle both in one sale, one payment, one tip.</p>
+  </div></div>
+</div></section>
+
+<section class="slide divider" data-name="End"><div class="stage">
+  <div class="head">
+    <svg class="mark" viewBox="0 0 45.353 64" role="img" aria-label="GlossGenius"><path fill="currentColor" transform="translate(0.141 0)" d="M31.409 5.088C36.057 5.088 38.945 8.498 39.852 12.872L41.832 12.872C41.997 7.151 38.972 0 29.373 0C14.632 0 1.815 19.28 0.248 37.019C0.083 38.835 0 40.54 0 42.162C0 56.932 6.573 64 16.447 64C27.366 64 33.471 52.201 37.212 43.648C38.119 41.557 38.587 41.172 40.292 41.172L44.885 41.172L45.353 39.852L41.007 37.019C39.77 36.222 39.687 35.534 40.045 33.004L41.172 24.863L39.907 24.505L36.469 32.316C35.452 34.654 34.214 34.572 32.151 33.966L22.608 31.161L22.113 32.536L31.024 38.284C32.069 38.945 32.509 39.632 32.509 40.512C32.509 41.667 31.959 42.768 30.804 45.133C27.366 52.201 22.415 55.859 18.07 55.859C12.982 55.859 8.746 50.853 8.746 40.567C8.746 39.77 8.774 38.972 8.829 38.147C9.599 25.303 19.115 5.088 31.409 5.088Z"/></svg>
+  </div>
+  <div class="big"><h2>One checkout.<br>Every ticket.</h2></div>
+</div></section>
+
+</main>
+
+<dialog id="zoom" aria-label="Enlarged screen"><form method="dialog"><button>Close</button></form><div id="zoom-body"></div></dialog>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="nav" aria-label="Slide controls">
+  <button type="button" id="prev" aria-label="Previous slide"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+  <button type="button" id="next" aria-label="Next slide"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')),cur=-1,timers=[];
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var progress=document.getElementById('progress'),dlg=document.getElementById('zoom'),zb=document.getElementById('zoom-body');
+  slides.forEach(function(){progress.appendChild(document.createElement('i'))});
+  var segs=[].slice.call(progress.children);
+
+  // Before/after state, with the toggle underline and the wipe edge
+  function setMorph(m,after,animate){
+    var tg=m.querySelectorAll('.toggle button'),line=m.querySelector('.toggle i');
+    m.classList.toggle('is-after',after);
+    tg[0].setAttribute('aria-pressed',String(!after));tg[1].setAttribute('aria-pressed',String(after));
+    var b=tg[after?1:0];line.style.left=b.offsetLeft+'px';line.style.width=b.offsetWidth+'px';
+    if(animate&&!reduce){m.classList.add('moving');clearTimeout(m._t);m._t=setTimeout(function(){m.classList.remove('moving')},1150);}
+  }
+  slides.forEach(function(s,i){
+    s.id='s'+(i+1);
+    var m=s.querySelector('.morph');if(!m)return;
+    
+    var tg=m.querySelectorAll('.toggle button');
+    tg[0].addEventListener('click',function(e){e.stopPropagation();setMorph(m,false,true)});
+    tg[1].addEventListener('click',function(e){e.stopPropagation();setMorph(m,true,true)});
+  });
+
+
+  // Sequences (flow steps, switcher models): crossfade screens, auto-advance once on arrival
+  function setStep(q,i){
+    var imgs=q.querySelectorAll('.frame.seq img'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
+    q._i=i;q.setAttribute('data-step',i);var ro=q.querySelector('[data-readouts]');if(ro){var t=JSON.parse(ro.dataset.readouts)[i];var el=ro.querySelector('[data-readout]');if(el&&t)el.textContent=t;}
+    imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1)im.loading='eager'});
+    btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(j===i));b.classList.toggle('seen',j<i)});
+    notes.forEach(function(n,j){n.classList.toggle('on',j===i);n.classList.toggle('past',j<i)});
+    var b=btns[i];if(b&&b.scrollIntoView&&b.parentNode.scrollWidth>b.parentNode.clientWidth){b.parentNode.scrollTo({left:b.offsetLeft-24,behavior:reduce?'auto':'smooth'})}
+  }
+  var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel,.story'));
+  seqs.forEach(function(q){
+    setStep(q,0);
+    q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);setStep(q,j)})});
+  });
+  function playSeq(q){
+    clearInterval(q._t);setStep(q,0);
+    var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('story')?3400:q.classList.contains('conn')?2800:q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
+    if(reduce)return;
+    q._t=setInterval(function(){if(q._i>=n-1){clearInterval(q._t);return}setStep(q,q._i+1)},ms);
+  }
+  function go(n){
+    n=Math.max(0,Math.min(slides.length-1,n));if(n===cur)return;
+    timers.forEach(clearTimeout);timers=[];
+    slides.forEach(function(s,i){s.classList.toggle('on',i===n);s.classList.toggle('past',i<n);s.setAttribute('aria-hidden',String(i!==n));s.inert=i!==n;if(i===n)s.scrollTop=0;});
+    segs.forEach(function(g,i){g.classList.toggle('done',i<=n)});
+    document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
+    cur=n;
+    try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
+    seqs.forEach(function(q){clearInterval(q._t)});
+    var q=slides[n].querySelector('.flowseq,.models,.rel,.story');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
+    var m=slides[n].querySelector('.morph');
+    if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1400));}
+  }
+  // On a before/after slide still on "before", the first advance plays the change
+  function next(){var r=slides[cur].querySelector('.rel,.story');if(r&&r._i<r.querySelectorAll('.steps button').length-1){timers.forEach(clearTimeout);clearInterval(r._t);setStep(r,r._i+1);return;}var m=slides[cur].querySelector('.morph');if(m&&!m.classList.contains('is-after')){timers.forEach(clearTimeout);setMorph(m,true,true);return;}go(cur+1)}
+  function prev(){go(cur-1)}
+
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+  // Tap zones: left third goes back, the rest goes forward
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('button,[data-zoom],a'))return;
+    if(getSelection&&String(getSelection()).length)return;
+    var r=slides[cur].getBoundingClientRect();(e.clientX<r.left+r.width/3)?prev():next();
+  });
+  addEventListener('keydown',function(e){
+    if(dlg.open)return;var k=e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey)){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey)){e.preventDefault();prev();}
+    else if(k==='Home'){go(0)}else if(k==='End'){go(slides.length-1)}
+  });
+  // Horizontal swipe; vertical drags stay as scrolling inside a tall slide
+  var sx=null,sy=null;
+  addEventListener('touchstart',function(e){sx=sy=null;if(dlg.open||e.target.closest('.phones'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+  addEventListener('touchend',function(e){if(sx===null||loupeOn){sx=sy=null;return}var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.5){(dx<0?next:prev)();}sx=sy=null},{passive:true});
+  var idle;addEventListener('mousemove',function(){document.body.classList.add('awake');clearTimeout(idle);idle=setTimeout(function(){document.body.classList.remove('awake')},1800)});
+
+  // Expand a screen (scrollable sideways on phones)
+  function zoom(f){var m=f.closest('.morph'),img;
+    if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
+    if(img){var c=document.createElement('img');c.src=img.src;c.alt=img.alt;w.appendChild(c)}
+    dlg.showModal();}
+  document.querySelectorAll('[data-zoom]').forEach(function(f){
+    f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});
+    f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();zoom(f)}});
+  });
+  dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
+  // Loupe: a 2x magnifier that follows the cursor (desktop) or a held finger (touch)
+  var loupeOn=false,LZ=1.8,LR=100;
+  var loupe=document.createElement('div');loupe.className='loupe';loupe.setAttribute('aria-hidden','true');document.body.appendChild(loupe);
+  function shownImg(f){if(f.classList.contains('seq'))return f.querySelector('img.on');var m=f.closest('.morph');return f.querySelector((m&&m.classList.contains('is-after')?'.layer.after':'.layer.before')+' img')}
+  function pct(v,free){return /%$/.test(v)?parseFloat(v)/100:(free?parseFloat(v)/free:0)}
+  function aim(f,x,y,lift){var img=shownImg(f);if(!img||!img.naturalWidth)return false;
+    var r=img.getBoundingClientRect(),cs=getComputedStyle(img),nw=img.naturalWidth,nh=img.naturalHeight;
+    var sc=cs.objectFit==='cover'?Math.max(r.width/nw,r.height/nh):Math.min(r.width/nw,r.height/nh);
+    var w=nw*sc,h=nh*sc,pos=cs.objectPosition.split(' ');
+    var ox=r.left+(r.width-w)*pct(pos[0],r.width-w),oy=r.top+(r.height-h)*pct(pos[1]||'50%',r.height-h);
+    var u=(x-ox)/w,v=(y-oy)/h;if(u<0||u>1||v<0||v>1){loupe.classList.remove('on');return true}
+    if(loupe._src!==img.currentSrc){loupe._src=img.currentSrc;loupe.style.backgroundImage='url("'+img.currentSrc+'")'}
+    loupe.style.backgroundSize=(w*LZ)+'px '+(h*LZ)+'px';
+    loupe.style.backgroundPosition=(LR-u*w*LZ)+'px '+(LR-v*h*LZ)+'px';
+    loupe.style.translate=(x-LR)+'px '+(y-LR-(lift||0))+'px';loupe.classList.add('on');return true}
+  function hide(f){loupe.classList.remove('on');loupeOn=false;if(f)f.classList.remove('looking')}
+  var fine=matchMedia('(hover:hover) and (pointer:fine)');
+  document.querySelectorAll('[data-zoom]').forEach(function(f){
+    f.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse'||!fine.matches)return;var q=f.closest('.flowseq,.models');if(q)clearInterval(q._t);f.classList.add('looking');aim(f,e.clientX,e.clientY)});
+    f.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'&&fine.matches)aim(f,e.clientX,e.clientY)});
+    f.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide(f)});
+    var hold=null;
+    f.addEventListener('touchstart',function(e){var t=e.touches[0];clearTimeout(hold);hold=setTimeout(function(){var q=f.closest('.flowseq,.models');if(q)clearInterval(q._t);loupeOn=true;f._held=true;aim(f,t.clientX,t.clientY,LR+24)},320)},{passive:true});
+    f.addEventListener('touchmove',function(e){if(!loupeOn){clearTimeout(hold);return}e.preventDefault();var t=e.touches[0];aim(f,t.clientX,t.clientY,LR+24)},{passive:false});
+    f.addEventListener('touchend',function(){clearTimeout(hold);if(loupeOn)setTimeout(function(){hide(f)},60)});
+    f.addEventListener('touchcancel',function(){clearTimeout(hold);hide(f)});
+    f.addEventListener('contextmenu',function(e){if(loupeOn||f._held)e.preventDefault()});
+  });
+
+
+  var start=0,h=location.hash.replace('#s','');if(/^\d+$/.test(h))start=+h-1;
+  go(start);
+})();
+</script>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.proto').forEach(function(p){
+    var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),i=0,t=[];
+    function clear(){t.forEach(clearTimeout);t=[]}
+    function mark(j){btns.forEach(function(b,k){b.setAttribute('aria-pressed',String(k===j));b.classList.toggle('seen',k<j)})}
+    function show(j){imgs.forEach(function(im,k){im.style.transition='none';im.style.transform='';im.style.zIndex='';im.classList.toggle('on',k===j)});void f.offsetWidth;imgs.forEach(function(im){im.style.transition=''});i=j;mark(j)}
+    function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;
+      if(tr==='slide'&&j>i){b.style.transition='none';b.style.transform='translateX(100%)';b.style.zIndex=2;b.classList.add('on');void b.offsetWidth;b.style.transition='';b.style.transform='translateX(0)';a.style.transform='translateX(-28%)';
+        setTimeout(function(){if(b.classList.contains('on')&&imgs[i]!==a)a.classList.remove('on');a.style.transition='none';a.style.transform='';b.style.zIndex='';void a.offsetWidth;a.style.transition=''},600)}
+      else{b.classList.add('on');a.classList.remove('on')}
+      i=j;mark(j)}
+    function tapAt(j){var d=(imgs[j].dataset.tap||'').split(',');if(d.length<2)return;tap.style.left=d[0]+'%';tap.style.top=d[1]+'%';tap.classList.remove('go');void tap.offsetWidth;tap.classList.add('go')}
+    function run(){clear();if(reduce)return;
+      if(i>=imgs.length-1){t.push(setTimeout(function(){show(0);run()},2400));return}
+      t.push(setTimeout(function(){tapAt(i);t.push(setTimeout(function(){go(i+1);run()},420))},1300))}
+    btns.forEach(function(b,k){b.addEventListener('click',function(e){e.stopPropagation();clear();show(k);run()})});
+    var slide=p.closest('.slide');
+    new MutationObserver(function(){if(slide.classList.contains('on')){clear();show(0);t.push(setTimeout(run,500))}else clear()}).observe(slide,{attributes:true,attributeFilter:['class']});
+    f.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')clear()});
+    f.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')run()});
+    show(0);if(slide.classList.contains('on'))t.push(setTimeout(run,500));
+  });
+})();
+</script>
