@@ -165,6 +165,16 @@ a { color: inherit; }
 .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
 .aj { width: auto; height: 24px; overflow: visible; display: block; }
+/* The name stays tucked away beside the mark and glides out on hover or keyboard focus */
+.wordmark { gap: 0; }
+.wordmark-name {
+  display: inline-block; overflow: hidden; white-space: nowrap;
+  max-width: 0; opacity: 0; margin-left: 0; transform: translateX(-6px);
+  transition: max-width 0.55s var(--ease), opacity 0.35s var(--ease), margin-left 0.55s var(--ease), transform 0.55s var(--ease);
+}
+.wordmark:hover .wordmark-name, .wordmark:focus-visible .wordmark-name {
+  max-width: 12em; opacity: 1; margin-left: 10px; transform: none;
+}
 .aj path { fill: var(--ink); stroke: var(--ink); stroke-width: 0.6; stroke-linejoin: round; }
 @media (prefers-reduced-motion: no-preference) {
   .aj path { stroke-dasharray: 1; animation: aj-draw 1.4s cubic-bezier(0.45, 0.05, 0.25, 1) both, aj-fill 0.7s var(--ease) 0.9s both; }
