@@ -95,47 +95,32 @@
     try { localStorage.setItem("theme", t); } catch (e) {}
     label();
   };
-  // The switch plays like a day passing: a sun (or moon) rises at the left, arcs across the top
-  // and sets at the right, and the new theme follows it in a soft-edged sweep.
-  var SWEEP_MS = 1600;
-  var SWEEP_EASE = "cubic-bezier(0.45, 0.05, 0.35, 1)";
-  var clamp01 = function (v) { return Math.max(0, Math.min(1, v)); };
+  // The new theme grows out of the button as a circle with a wide, feathered edge.
+  var REVEAL_MS = 1600;
+  var REVEAL_EASE = "cubic-bezier(0.45, 0.05, 0.25, 1)";
+  var FEATHER = 0.5; // the mask is solid for the inner half of its radius, then fades to nothing
   toggles.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var next = current() === "dark" ? "light" : "dark";
       if (reduce || !document.startViewTransition) return apply(next);
-      var orb;
-      root.classList.add("sweeping");
-      var vt = document.startViewTransition(function () {
-        apply(next);
-        orb = document.createElement("div");
-        orb.className = "sky-orb " + (next === "dark" ? "moon" : "sun");
-        orb.setAttribute("aria-hidden", "true");
-        document.body.appendChild(orb);
-      });
+      root.classList.add("revealing");
+      var vt = document.startViewTransition(function () { apply(next); });
       vt.ready.then(function () {
-        var W = innerWidth, H = innerHeight, R = 32;
-        // The new theme is revealed through a wide, feathered mask that slides left to right.
+        var r = btn.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        var far = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
+        var size = (2 * far) / FEATHER; // big enough that the solid core covers the farthest corner
         root.animate(
-          { maskPosition: ["100% 0", "0% 0"], webkitMaskPosition: ["100% 0", "0% 0"] },
-          { duration: SWEEP_MS, easing: SWEEP_EASE, fill: "both", pseudoElement: "::view-transition-new(root)" }
+          {
+            maskSize: ["0px 0px", size + "px " + size + "px"],
+            webkitMaskSize: ["0px 0px", size + "px " + size + "px"],
+            maskPosition: [cx + "px " + cy + "px", cx - size / 2 + "px " + (cy - size / 2) + "px"],
+            webkitMaskPosition: [cx + "px " + cy + "px", cx - size / 2 + "px " + (cy - size / 2) + "px"],
+          },
+          { duration: REVEAL_MS, easing: REVEAL_EASE, fill: "both", pseudoElement: "::view-transition-new(root)" }
         );
-        // The orb rides just ahead of the soft edge, on an arc that peaks mid-screen.
-        var frames = [];
-        for (var i = 0; i <= 32; i++) {
-          var t = i / 32;
-          var x = (-0.5 + 2 * t) * W + 0.05 * W; // the edge's centre, plus a small lead
-          var u = clamp01(x / W);
-          var y = H * (0.4 - 0.3 * (1 - Math.pow(2 * u - 1, 2)));
-          var fade = clamp01((t - 0.14) / 0.12) * clamp01((0.86 - t) / 0.12);
-          frames.push({ offset: t, opacity: fade, transform: "translate(" + (x - R) + "px, " + (y - R) + "px)" });
-        }
-        root.animate(frames, { duration: SWEEP_MS, easing: SWEEP_EASE, fill: "both", pseudoElement: "::view-transition-group(sky-orb)" });
       });
-      vt.finished.finally(function () {
-        root.classList.remove("sweeping");
-        if (orb) orb.remove();
-      });
+      vt.finished.finally(function () { root.classList.remove("revealing"); });
     });
   });
   // With no saved choice, keep following the device if it changes.
