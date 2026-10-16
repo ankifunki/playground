@@ -16,12 +16,6 @@ const ICONS: Record<LinkIcon | "mail", ReactNode> = {
       <circle cx="8" cy="7.6" r="0.6" fill="currentColor" />
     </>
   ),
-  dribbble: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M5.6 5.7c3.6 3.3 8.3 4.4 14.9 3.9M3.2 13.3c5.4-2.3 11.4-1.8 16.7 1.9M8.7 3.6c3.7 4.4 6.2 10.6 6.6 16.8" />
-    </>
-  ),
   x: <path d="M4.5 4h4.2l10.8 16h-4.2zM19.3 4l-6.4 7.2M4.7 20l6.4-7.2" />,
   instagram: (
     <>
@@ -44,34 +38,23 @@ const Arrow = () => (
   </svg>
 );
 
-// Email and social links as one even list. The Copy button is wired up by public/delight.js (data-copy).
+// Email and social links as one even list: an icon and the platform name, linked.
 export function ContactList() {
+  const rows = [{ label: "Email", icon: "mail" as const, href: `mailto:${profile.email}` }, ...profile.links];
   return (
     <ul className="contact-list">
-      <li>
-        <a className="cl-row" href={`mailto:${profile.email}`}>
-          <Icon name="mail" />
-          <span className="cl-label">Email</span>
-          <span className="cl-handle" id="email-address">{profile.email}</span>
-        </a>
-        <span className="cl-trail">
-          <button type="button" className="copy" data-copy={profile.email} data-copy-target="email-address">
-            Copy
-          </button>
-        </span>
-      </li>
-      {profile.links.map((l) => (
-        <li key={l.label}>
-          <a className="cl-row" href={l.href} target="_blank" rel="noopener noreferrer">
-            <Icon name={l.icon} />
-            <span className="cl-label">{l.label}</span>
-            <span className="cl-handle">{l.handle}</span>
-          </a>
-          <span className="cl-trail" aria-hidden="true">
-            <Arrow />
-          </span>
-        </li>
-      ))}
+      {rows.map((r) => {
+        const external = r.icon !== "mail";
+        return (
+          <li key={r.label}>
+            <a className="cl-row" href={r.href} {...(external && { target: "_blank", rel: "noopener noreferrer" })}>
+              <Icon name={r.icon} />
+              <span className="cl-label">{r.label}</span>
+              <Arrow />
+            </a>
+          </li>
+        );
+      })}
     </ul>
   );
 }
