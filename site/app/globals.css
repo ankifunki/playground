@@ -123,17 +123,27 @@ a { color: inherit; }
 .notes li span:first-child { color: var(--accent); }
 
 
-.email { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2); }
-.email a { font: 500 17px/1.4 var(--body); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
-.email a:hover { border-color: var(--accent); }
+/* Contact: email and links as one even list of rows, each with a line icon.
+   Every row ends in the same trailing slot (Copy for email, an arrow for links) so the handles align. */
+.contact-list { list-style: none; border-top: 1px solid var(--rule); }
+.contact-list li { display: grid; grid-template-columns: minmax(0, 1fr) 44px; align-items: center; column-gap: var(--s2); border-bottom: 1px solid var(--rule); }
+.cl-row {
+  display: grid; grid-template-columns: 18px auto minmax(0, 1fr); align-items: center; gap: var(--s2);
+  padding-block: 12px; text-decoration: none; color: var(--ink); min-width: 0;
+}
+.cl-icon { width: 18px; height: 18px; color: var(--faint); transition: color 0.2s var(--ease), transform 0.35s var(--ease); }
+.cl-label { font: 500 16px/1.3 var(--body); }
+.cl-handle { font: 400 14px/1.3 var(--body); color: var(--faint); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.2s var(--ease); }
+.cl-trail { display: flex; justify-content: flex-end; }
+.cl-arrow { width: 14px; height: 14px; color: var(--faint); opacity: 0; transform: translate(-3px, 3px); transition: opacity 0.2s var(--ease), transform 0.35s var(--ease), color 0.2s var(--ease); }
+.contact-list li:hover .cl-icon, .cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
+.contact-list li:hover .cl-arrow, .contact-list li:has(.cl-row:focus-visible) .cl-arrow { opacity: 1; transform: none; color: var(--accent); }
+.contact-list li:hover .cl-handle, .cl-row:focus-visible .cl-handle { color: var(--grey); }
 .copy {
   font: 400 11px/12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--faint); background: none; border: 0; padding: 4px 0; cursor: pointer;
+  color: var(--faint); background: none; border: 0; padding: 4px 0 4px 4px; cursor: pointer;
 }
 .copy:hover { color: var(--accent); }
-.links { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }
-.links a { color: var(--grey); text-decoration: none; font-size: 15px; }
-.links a:hover { color: var(--accent); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
 

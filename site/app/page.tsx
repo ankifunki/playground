@@ -1,5 +1,5 @@
 import { about, intro, profile, projects } from "@/content/site";
-import { CopyEmail } from "./copy-email";
+import { ContactList } from "./contact-list";
 import { Tiles } from "./tiles";
 import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
@@ -83,16 +83,7 @@ export default function Home() {
 
         <section className="section contact" aria-labelledby="contact">
           <h2 id="contact" className="mono">Contact</h2>
-          <CopyEmail email={profile.email} />
-          <ul className="links">
-            {profile.links.map((l) => (
-              <li key={l.label}>
-                <a href={l.href} target="_blank" rel="noopener noreferrer">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <ContactList />
         </section>
       </div>
 

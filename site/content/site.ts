@@ -36,16 +36,18 @@ export type Project = {
   redactCompany?: boolean;
 };
 
+export type LinkIcon = "linkedin" | "dribbble" | "x" | "instagram";
+
 export const profile = {
   name: "Ankit Joshi",
   title: "Product designer",
   email: "ankit@joshiankit.com",
   links: [
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/joshiankit" },
-    { label: "Dribbble", href: "https://dribbble.com/ankit" },
-    { label: "X", href: "https://x.com/ankifunki" },
-    { label: "Instagram", href: "https://www.instagram.com/ankit" },
-  ],
+    { label: "LinkedIn", handle: "/joshiankit", icon: "linkedin", href: "https://www.linkedin.com/in/joshiankit" },
+    { label: "Dribbble", handle: "/ankit", icon: "dribbble", href: "https://dribbble.com/ankit" },
+    { label: "X", handle: "@ankifunki", icon: "x", href: "https://x.com/ankifunki" },
+    { label: "Instagram", handle: "@ankit", icon: "instagram", href: "https://www.instagram.com/ankit" },
+  ] as { label: string; handle: string; icon: LinkIcon; href: string }[],
 };
 
 // DRAFT copy. Ankit to rewrite in his own words.
