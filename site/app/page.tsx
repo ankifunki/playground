@@ -9,6 +9,22 @@ const LockMark = () => (
   </svg>
 );
 
+// Superscript marks in the About copy become links that light up their note.
+const SUP: Record<string, number> = { "¹": 1, "²": 2, "³": 3 };
+function withFootnotes(text: string) {
+  return text.split(/([¹²³])/).map((part, i) =>
+    part in SUP ? (
+      <sup key={i}>
+        <a href={`#note-${SUP[part]}`} className="fn" data-note={SUP[part]} aria-label={`Note ${SUP[part]}`}>
+          {SUP[part]}
+        </a>
+      </sup>
+    ) : (
+      part
+    ),
+  );
+}
+
 export default function Home() {
   const hasLocked = projects.some((p) => p.access === "password");
   const notes = about.notes.filter((n) => n.mark !== "lock" || hasLocked);
@@ -37,7 +53,9 @@ export default function Home() {
       </h1>
 
       <div id="work" className="work-area">
-        <h2 className="mono">Selected work</h2>
+        <h2 className="mono">
+          Selected work <span className="count">{String(projects.length).padStart(2, "0")}</span>
+        </h2>
         <Tiles projects={projects} />
         <p className="soon">More case studies soon. Some will be password protected; ask and I’ll walk you through them.</p>
       </div>
@@ -47,12 +65,12 @@ export default function Home() {
           <h2 id="about" className="mono">About</h2>
           <div className="prose">
             {about.paragraphs.map((p) => (
-              <p key={p}>{p}</p>
+              <p key={p}>{withFootnotes(p)}</p>
             ))}
           </div>
           <ul className="notes">
             {notes.map((n) => (
-              <li key={n.mark}>
+              <li key={n.mark} id={n.mark in SUP ? `note-${SUP[n.mark]}` : undefined}>
                 <span aria-hidden="true">{n.mark === "lock" ? <LockMark /> : n.mark}</span>
                 <span>{n.text}</span>
               </li>
