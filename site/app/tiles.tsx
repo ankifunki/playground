@@ -34,11 +34,12 @@ function ArtFor({ p }: { p: Project }) {
           <img key={src} className="phone" src={src} alt="" style={{ "--i": i } as React.CSSProperties} />
         ))
       ) : a.kind === "logo" ? (
-        <picture>
-          {a.srcDark && <source srcSet={a.srcDark} media="(prefers-color-scheme: dark)" />}
+        <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="logo" src={a.src} alt="" />
-        </picture>
+          <img className={a.srcDark ? "logo only-light" : "logo"} src={a.src} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {a.srcDark && <img className="logo only-dark" src={a.srcDark} alt="" />}
+        </>
       ) : null}
       {locked && (
         <span className="chip">

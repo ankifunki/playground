@@ -1,6 +1,7 @@
 import { about, intro, profile, projects } from "@/content/site";
 import { CopyEmail } from "./copy-email";
 import { Tiles } from "./tiles";
+import { ThemeToggle } from "./theme-toggle";
 
 const LockMark = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -32,21 +33,23 @@ export default function Home() {
     <main className="page">
       <header className="topbar">
         <a href="/" className="wordmark">{profile.name}</a>
-        <nav aria-label="Sections" className="topnav mono">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
+        <div className="topright">
+          <nav aria-label="Sections" className="topnav mono">
+            <a href="#work">Work</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <ThemeToggle />
+        </div>
       </header>
 
       <h1 className="statement">
         <span className="ink">{intro.lead}</span> {intro.before}{" "}
         <span className="co">
-          <picture>
-            <source srcSet={intro.company.markDark} media="(prefers-color-scheme: dark)" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={intro.company.mark} alt="" />
-          </picture>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="only-light" src={intro.company.mark} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="only-dark" src={intro.company.markDark} alt="" />
           {intro.company.name}
         </span>
         {intro.after}

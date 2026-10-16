@@ -80,6 +80,44 @@
     onScroll();
   }
 
+  // Theme toggle: the new theme spreads out from the button as a circle (View Transitions),
+  // or switches instantly where that isn't supported or motion is reduced.
+  var root = document.documentElement;
+  var dark = matchMedia("(prefers-color-scheme: dark)");
+  var current = function () { return root.dataset.theme || (dark.matches ? "dark" : "light"); };
+  var toggles = document.querySelectorAll("[data-theme-toggle]");
+  var label = function () {
+    var next = current() === "dark" ? "light" : "dark";
+    toggles.forEach(function (b) { b.setAttribute("aria-label", "Switch to " + next + " mode"); });
+  };
+  var apply = function (t) {
+    root.dataset.theme = t;
+    try { localStorage.setItem("theme", t); } catch (e) {}
+    label();
+  };
+  toggles.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      btn.classList.remove("spin");
+      void btn.offsetWidth;
+      btn.classList.add("spin");
+      if (reduce || !document.startViewTransition) return apply(next);
+      var r = btn.getBoundingClientRect();
+      var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      var end = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
+      var vt = document.startViewTransition(function () { apply(next); });
+      vt.ready.then(function () {
+        root.animate(
+          { clipPath: ["circle(0px at " + cx + "px " + cy + "px)", "circle(" + end + "px at " + cx + "px " + cy + "px)"] },
+          { duration: 700, easing: "cubic-bezier(0.22, 0.8, 0.2, 1)", pseudoElement: "::view-transition-new(root)" }
+        );
+      });
+    });
+  });
+  // With no saved choice, keep following the device if it changes.
+  dark.addEventListener("change", label);
+  label();
+
   // For the people who open the console.
   console.log(
     "%cHi, curious one.%c\nYou opened the console on a designer’s site, so we’ll probably get along.\nSay hello: ankit@joshiankit.com",
