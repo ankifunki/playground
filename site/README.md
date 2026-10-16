@@ -17,7 +17,7 @@ npm run build
 
 ## Password-protected work
 
-Set `access: "password"` on a project. On the homepage its company becomes a redaction bar with a "Password" chip, and its cover isn't sent to the browser. Every request under `/work/<slug>/`, the page and its images alike, goes through `middleware.ts` and redirects to `/unlock/<slug>/` until the visitor enters the password.
+Set `access: "password"` on a project. On the homepage its tile shows a "Password" chip and its `lockedMark` logo instead of the screens, which aren't sent to the browser. Add `redactCompany: true` to hide a confidential client's name behind a redaction bar. Every request under `/work/<slug>/`, the page and its images alike, goes through `middleware.ts` and redirects to `/unlock/<slug>/` until the visitor enters the password.
 
 Environment variables (Vercel → Project → Settings → Environment Variables):
 

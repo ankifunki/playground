@@ -30,6 +30,10 @@ export type Project = {
   access: Access;
   art: Art;
   wide?: boolean; // span both columns on desktop
+  // Shown on the tile instead of the art while the project is password protected
+  lockedMark?: { src: string; srcDark?: string };
+  // Hide the company name behind a redaction bar (for confidential clients)
+  redactCompany?: boolean;
 };
 
 export const profile = {
@@ -72,7 +76,8 @@ export const projects: Project[] = [
     line: "A platform shift across every core workflow, from one location to many.",
     company: "Genius AI",
     year: "2025",
-    access: "public",
+    access: "password",
+    lockedMark: { src: "/brand/genius-g-black.svg", srcDark: "/brand/genius-g-light.svg" },
     art: {
       kind: "crop",
       src: "/work/multi-location/img/cal-4.webp",
@@ -89,7 +94,8 @@ export const projects: Project[] = [
     line: "One checkout for every appointment at the counter.",
     company: "Genius AI",
     year: "2026",
-    access: "public",
+    access: "password",
+    lockedMark: { src: "/brand/genius-g-black.svg", srcDark: "/brand/genius-g-light.svg" },
     art: {
       kind: "phones",
       srcs: ["/work/multi-ticket/img/m-1.webp", "/work/multi-ticket/img/sc-6.webp"],

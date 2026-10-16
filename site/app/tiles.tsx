@@ -20,6 +20,14 @@ function ArtFor({ p }: { p: Project }) {
   return (
     <div className="art" style={style}>
       {/* A locked project's screens stay behind the password, so its tile only ever shows a logo. */}
+      {locked && p.lockedMark && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={p.lockedMark.srcDark ? "logo only-light" : "logo"} src={p.lockedMark.src} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {p.lockedMark.srcDark && <img className="logo only-dark" src={p.lockedMark.srcDark} alt="" />}
+        </>
+      )}
       {a.kind === "crop" && !locked ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -66,7 +74,7 @@ export function Tiles({ projects }: { projects: Project[] }) {
                     <b>{p.title}</b>—{p.line}
                   </span>
                   <span className="tile-meta mono">
-                    {locked ? (
+                    {p.redactCompany ? (
                       <span className="redacted" style={{ width: `${p.company.length * 0.62}em` }} aria-label="Company withheld" />
                     ) : (
                       <span>{p.company}</span>
