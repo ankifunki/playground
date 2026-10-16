@@ -254,3 +254,15 @@ a { color: inherit; }
 .toast svg { width: 16px; height: 16px; color: #7ad3a6; flex: none; }
 .toast.on { opacity: 1; translate: -50% 0; }
 @media (prefers-color-scheme: dark) { .toast { background: #eef1f1; color: #1b201f; } .toast svg { color: #16935f; } }
+
+/* Phone screens: two up, the second set lower, both running off the bottom edge */
+.art .phone {
+  position: absolute;
+  width: 31%; height: auto;
+  left: calc(19% + var(--i) * 34%);
+  top: calc(12% + var(--i) * 9%);
+  border-radius: 9% / 4.2%;
+  box-shadow: 0 0 0 1px rgba(14, 16, 17, 0.25), 0 40px 70px -30px rgba(14, 16, 17, 0.55);
+  transition: transform 0.9s var(--ease);
+}
+.tile:hover .phone, .tile:focus-visible .phone { transform: translateY(calc(-2% - var(--i) * 2%)); }

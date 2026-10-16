@@ -28,6 +28,11 @@ function ArtFor({ p }: { p: Project }) {
           alt=""
           style={{ "--w": a.w, "--x": a.x, "--y": a.y } as React.CSSProperties}
         />
+      ) : a.kind === "phones" && !locked ? (
+        a.srcs.map((src, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={src} className="phone" src={src} alt="" style={{ "--i": i } as React.CSSProperties} />
+        ))
       ) : a.kind === "logo" ? (
         <picture>
           {a.srcDark && <source srcSet={a.srcDark} media="(prefers-color-scheme: dark)" />}

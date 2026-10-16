@@ -13,7 +13,13 @@ export type Art =
       x: string; // image left offset
       y: string; // image top offset
     }
-  | { kind: "logo"; src: string; srcDark?: string; bg: string; bgDark?: string };
+  | { kind: "logo"; src: string; srcDark?: string; bg: string; bgDark?: string }
+  | {
+      kind: "phones"; // phone screens standing side by side, running off the bottom edge
+      srcs: string[];
+      bg: string;
+      bgDark?: string;
+    };
 
 export type Project = {
   slug: string; // served at /work/<slug>/
@@ -68,15 +74,28 @@ export const projects: Project[] = [
     company: "Genius AI",
     year: "2025",
     access: "public",
-    wide: true,
     art: {
       kind: "crop",
       src: "/work/multi-location/img/cal-4.webp",
       bg: "#dddcf6",
       bgDark: "#272644",
-      w: "150%",
-      x: "6%",
-      y: "10%",
+      w: "190%",
+      x: "8%",
+      y: "11%",
+    },
+  },
+  {
+    slug: "multi-ticket",
+    title: "Multi Ticket",
+    line: "One checkout for every appointment at the counter.",
+    company: "Genius AI",
+    year: "2026",
+    access: "public",
+    art: {
+      kind: "phones",
+      srcs: ["/work/multi-ticket/img/m-1.webp", "/work/multi-ticket/img/sc-6.webp"],
+      bg: "#f5dfe2",
+      bgDark: "#3a2329",
     },
   },
 ];

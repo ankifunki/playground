@@ -7,7 +7,10 @@ import { fileURLToPath } from "node:url";
 const site = join(dirname(fileURLToPath(import.meta.url)), "..");
 const repo = join(site, "..");
 
-const CASE_STUDIES = [{ slug: "multi-location", from: "case-study", copy: ["img", "assets"] }];
+const CASE_STUDIES = [
+  { slug: "multi-location", from: "case-study", copy: ["img", "assets"] },
+  { slug: "multi-ticket", from: "multi-ticket", copy: ["img"] },
+];
 
 // A quiet way back to the homepage, added to the portfolio copy only.
 const BACK_LINK = `<a href="/" class="pf-back" aria-label="Back to Ankit Joshi’s portfolio">← Ankit Joshi</a>
