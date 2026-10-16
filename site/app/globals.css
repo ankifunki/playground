@@ -163,7 +163,14 @@ a { color: inherit; }
 /* ---------- Top bar and statement ---------- */
 .page { gap: var(--s6); }
 .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); }
-.wordmark { font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
+.aj { width: auto; height: 22px; overflow: visible; }
+.aj path { fill: #ffdc28; stroke: #ffdc28; stroke-width: 0.6; stroke-linejoin: round; }
+@media (prefers-reduced-motion: no-preference) {
+  .aj path { stroke-dasharray: 1; animation: aj-draw 1.4s cubic-bezier(0.45, 0.05, 0.25, 1) both, aj-fill 0.7s var(--ease) 0.9s both; }
+}
+@keyframes aj-draw { from { stroke-dashoffset: 1; stroke: var(--faint); } to { stroke-dashoffset: 0; } }
+@keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
 .topnav { display: flex; gap: var(--s3); }
 .topnav a { text-decoration: none; color: var(--faint); }
 .topnav a:hover { color: var(--accent); }
@@ -199,8 +206,10 @@ a { color: inherit; }
   aspect-ratio: 4 / 3;
   border-radius: 16px;
   background: var(--tile-bg);
-  /* At night each tile glows faintly in its own (daytime) color, as if lit from within */
-  --tile-night: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 26px 80px -34px color-mix(in srgb, var(--tile-bg) 34%, transparent);
+  /* At night each tile glows in its own night colour, lifted and saturated so it reads against the dark */
+  --tile-night-color: var(--tile-bg-dark, var(--tile-bg));
+  --tile-night: 0 0 0 1px color-mix(in oklch, var(--tile-night-color), white 8%),
+    0 30px 90px -36px color-mix(in oklch, var(--tile-night-color) 70%, white 30%);
   box-shadow: var(--tile-shadow);
   transition: box-shadow 0.5s var(--ease);
 }
@@ -322,9 +331,11 @@ a { color: inherit; }
 .tt-star { color: #ffcf6e; }
 .tt-dial, .tt-moon { transform-box: view-box; transform-origin: 12px 30px; }
 .tt-moon { transform: rotate(180deg); } /* parked on the far side of the wheel */
-.tt-dial { transition: transform 0.9s cubic-bezier(0.45, 0.05, 0.25, 1); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tt-dial { transform: rotate(180deg); } }
-:root[data-theme="dark"] .tt-dial { transform: rotate(180deg); }
+/* --turns counts half turns and only ever grows (set by delight.js), so the wheel always turns clockwise.
+   Before the script runs, the theme alone decides which side is up. */
+.tt-dial { transform: rotate(calc(var(--turns, 0) * 180deg)); transition: transform 0.9s cubic-bezier(0.45, 0.05, 0.25, 1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tt-dial { --turns: 1; } }
+:root[data-theme="dark"] .tt-dial { --turns: 1; }
 @media (prefers-reduced-motion: reduce) { .tt-dial { transition: none; } }
 
 /* During the reveal, show the live toggle only (no snapshot pair, no crossfade) */
@@ -343,6 +354,14 @@ html.revealing::view-transition-new(root) {
   -webkit-mask-size: 0 0; mask-size: 0 0;
 }
 
+
+/* Where relative colours are supported, lift and saturate the night glow in the tile's own hue */
+@supports (color: oklch(from red l c h)) {
+  .art {
+    --tile-night: 0 0 0 1px color-mix(in oklch, var(--tile-night-color), white 8%),
+      0 30px 90px -36px oklch(from var(--tile-night-color) calc(l + 0.22) calc(c * 2.2) h / 0.7);
+  }
+}
 
 /* The footnote mark inside the big statement stays small */
 .statement sup { font-size: 0.34em; line-height: 0; vertical-align: 1.35em; margin-left: 2px; }

@@ -2,6 +2,7 @@ import { about, intro, profile, projects } from "@/content/site";
 import { CopyEmail } from "./copy-email";
 import { Tiles } from "./tiles";
 import { ThemeToggle } from "./theme-toggle";
+import { Logo } from "./logo";
 
 const LockMark = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -32,7 +33,10 @@ export default function Home() {
   return (
     <main className="page">
       <header className="topbar">
-        <a href="/" className="wordmark">{profile.name}</a>
+        <a href="/" className="wordmark">
+          <Logo />
+          {profile.name}
+        </a>
         <div className="topright">
           <nav aria-label="Sections" className="topnav mono">
             <a href="#work">Work</a>

@@ -90,6 +90,14 @@
     var next = current() === "dark" ? "light" : "dark";
     toggles.forEach(function (b) { b.setAttribute("aria-label", "Switch to " + next + " mode"); });
   };
+  // The sun/moon wheel only ever turns clockwise: each switch adds another half turn.
+  var dials = document.querySelectorAll(".tt-dial");
+  var turns = current() === "dark" ? 1 : 0;
+  var turn = function () {
+    turns += 1;
+    dials.forEach(function (d) { d.style.setProperty("--turns", turns); });
+  };
+  dials.forEach(function (d) { d.style.setProperty("--turns", turns); });
   var apply = function (t) {
     root.dataset.theme = t;
     try { localStorage.setItem("theme", t); } catch (e) {}
@@ -102,6 +110,7 @@
   toggles.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var next = current() === "dark" ? "light" : "dark";
+      turn();
       if (reduce || !document.startViewTransition) return apply(next);
       root.classList.add("revealing");
       var vt = document.startViewTransition(function () { apply(next); });
@@ -124,7 +133,12 @@
     });
   });
   // With no saved choice, keep following the device if it changes.
-  dark.addEventListener("change", label);
+  dark.addEventListener("change", function () {
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    if (!saved) turn();
+    label();
+  });
   label();
 
   // For the people who open the console.
