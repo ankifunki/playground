@@ -44,6 +44,7 @@ export const profile = {
     { label: "LinkedIn", href: "https://www.linkedin.com/in/joshiankit" },
     { label: "Dribbble", href: "https://dribbble.com/ankit" },
     { label: "X", href: "https://x.com/ankifunki" },
+    { label: "Instagram", href: "https://www.instagram.com/ankit" },
   ],
 };
 

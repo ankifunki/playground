@@ -33,9 +33,8 @@ export default function Home() {
   return (
     <main className="page">
       <header className="topbar">
-        <a href="/" className="wordmark">
+        <a href="/" className="wordmark" aria-label={profile.name}>
           <Logo />
-          <span className="wordmark-name">{profile.name}</span>
         </a>
         <div className="topright">
           <nav aria-label="Sections" className="topnav mono">
