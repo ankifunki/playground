@@ -45,7 +45,7 @@ export const profile = {
 
 // DRAFT copy. Ankit to rewrite in his own words.
 export const intro = {
-  lead: "I’m Ankit, a product designer.",
+  lead: "I’m Ankit, a designer, a listener and a curious being.¹",
   before: "Currently at",
   company: {
     name: "Genius AI",
@@ -57,7 +57,6 @@ export const intro = {
 
 export const about = {
   paragraphs: [
-    "I’m a designer, a listener and a curious being.¹",
     "I like the hard middle of product work: systems that touch every screen, where the job is to make something big feel obvious to the person using it at 9am on a busy Saturday.",
   ],
   notes: [

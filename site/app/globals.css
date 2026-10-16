@@ -10,6 +10,9 @@
   --accent: #6663f4;
   --bar: #1b201f;
   --toast-bg: #1b201f; --toast-ink: #eef1f1; --toast-ok: #7ad3a6;
+  /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
+  --ambient: rgba(255, 206, 128, 0.16);
+  --tile-shadow: 0 1px 2px rgba(60, 48, 30, 0.05), -10px 22px 44px -26px rgba(60, 48, 30, 0.22);
 
   --head: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
   --body: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
@@ -30,6 +33,8 @@
     --accent: #918eff;
     --bar: #eef1f1;
     --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+    /* Night: cool moonlight (tiles glow instead of casting shadows; see .art below) */
+    --ambient: rgba(150, 146, 255, 0.07);
     color-scheme: dark;
   }
 }
@@ -42,17 +47,18 @@
   --accent: #918eff;
   --bar: #eef1f1;
   --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+  --ambient: rgba(150, 146, 255, 0.07);
   color-scheme: dark;
 }
 
 /* Bits that differ by theme but aren't simple colors: tile backgrounds and light/dark logo pairs */
 .only-dark { display: none !important; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .art { background: var(--tile-bg-dark, var(--tile-bg)); }
+  :root:not([data-theme="light"]) .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
   :root:not([data-theme="light"]) .only-dark { display: inline-block !important; }
   :root:not([data-theme="light"]) .only-light { display: none !important; }
 }
-:root[data-theme="dark"] .art { background: var(--tile-bg-dark, var(--tile-bg)); }
+:root[data-theme="dark"] .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
 :root[data-theme="dark"] .only-dark { display: inline-block !important; }
 :root[data-theme="dark"] .only-light { display: none !important; }
 
@@ -60,7 +66,7 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--paper);
+  background: radial-gradient(1100px 680px at 92% -8%, var(--ambient), transparent 62%) var(--paper) no-repeat;
   color: var(--ink);
   font: 400 17px/1.6 var(--body);
   -webkit-font-smoothing: antialiased;
@@ -193,6 +199,10 @@ a { color: inherit; }
   aspect-ratio: 4 / 3;
   border-radius: 16px;
   background: var(--tile-bg);
+  /* At night each tile glows faintly in its own (daytime) color, as if lit from within */
+  --tile-night: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 26px 80px -34px color-mix(in srgb, var(--tile-bg) 34%, transparent);
+  box-shadow: var(--tile-shadow);
+  transition: box-shadow 0.5s var(--ease);
 }
 .wide .art { aspect-ratio: 16 / 9; }
 .art .crop {
@@ -224,11 +234,15 @@ a { color: inherit; }
 .topbar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   margin-block: calc(var(--s3) * -1); padding-block: var(--s3);
+  background: transparent;
+  transition: box-shadow 0.3s var(--ease), background 0.3s var(--ease);
+}
+/* Only once scrolled does the bar get its own frosted background, so at rest it sits in the page's light */
+.topbar.scrolled {
+  box-shadow: 0 1px 0 var(--rule);
   background: color-mix(in srgb, var(--paper) 86%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  transition: box-shadow 0.3s var(--ease);
 }
-.topbar.scrolled { box-shadow: 0 1px 0 var(--rule); }
 
 /* The company mark spins a little, with a spring, when you hover the name */
 .statement .co img { transition: transform 0.7s cubic-bezier(0.3, 1.7, 0.5, 1); transform-origin: 50% 60%; }
@@ -242,9 +256,9 @@ a { color: inherit; }
 }
 .fn:hover, .fn:focus-visible { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .notes li { border-radius: 6px; margin-inline: -8px; padding: 4px 8px; transition: background 0.25s var(--ease), color 0.25s var(--ease); }
-.columns:has(.fn[data-note="1"]:hover) #note-1,
-.columns:has(.fn[data-note="2"]:hover) #note-2,
-.columns:has(.fn[data-note="3"]:hover) #note-3,
+.page:has(.fn[data-note="1"]:hover) #note-1,
+.page:has(.fn[data-note="2"]:hover) #note-2,
+.page:has(.fn[data-note="3"]:hover) #note-3,
 .notes li:target {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--ink);
@@ -329,3 +343,6 @@ html.revealing::view-transition-new(root) {
   -webkit-mask-size: 0 0; mask-size: 0 0;
 }
 
+
+/* The footnote mark inside the big statement stays small */
+.statement sup { font-size: 0.34em; line-height: 0; vertical-align: 1.35em; margin-left: 2px; }

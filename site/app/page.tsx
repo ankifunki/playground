@@ -44,7 +44,7 @@ export default function Home() {
       </header>
 
       <h1 className="statement">
-        <span className="ink">{intro.lead}</span> {intro.before}{" "}
+        <span className="ink">{withFootnotes(intro.lead)}</span> {intro.before}{" "}
         <span className="co">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="only-light" src={intro.company.mark} alt="" />
