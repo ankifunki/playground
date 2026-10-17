@@ -116,25 +116,30 @@ a { color: inherit; }
 
 /* Been at: a ruler of thin ticks with only the start years above. Ticks swell around the pointer (heights are
    set from timeline.tsx as --s); the stretch under it darkens and that team's mark, name and blurb show below. */
-.rl { position: relative; height: 64px; touch-action: pan-y; cursor: crosshair; outline: none; }
+.rl { position: relative; height: 48px; touch-action: pan-y; cursor: crosshair; outline: none; }
 .rl:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); border-radius: 4px; }
 .rl-years { position: absolute; inset: 0 0 auto; height: 14px; }
 .rl-years > span {
   position: absolute; top: 0; transform: translateX(-50%);
-  font: 400 11px/14px var(--mono); letter-spacing: 0.04em; color: var(--faint); transition: color 0.2s var(--ease);
+  font: 400 11px/14px var(--mono); letter-spacing: 0.04em; color: var(--faint);
+  transition: color 0.2s var(--ease), opacity 0.3s var(--ease);
 }
-.rl-years > span:first-child { transform: none; }
 .rl-years > span.on { color: var(--ink); }
-.rl-ticks { position: absolute; inset: auto 0 0; height: 42px; }
+/* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
+.rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
+.rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
 .rl-ticks > span {
-  position: absolute; bottom: 0; width: 1px; height: 9px; margin-left: -0.5px;
-  background: var(--rule); transform-origin: bottom; transform: scaleY(var(--s, 1));
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease);
+  position: absolute; bottom: 0; width: 2px; height: 5px; margin-left: -1px; border-radius: 1px 1px 0 0;
+  background: var(--rule); transform-origin: bottom; transform: scaleY(calc(var(--s, 1) * var(--k, 1)));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
 }
-.rl-ticks > span.maj { height: 15px; background: var(--faint); }
-.rl-ticks > span.in { background: var(--ink); }
+.rl-ticks > span.maj { height: 10px; background: var(--faint); }
+.rl-ticks > span.in { --k: 1.4; background: var(--ink); }
+/* At rest on a stretch, everything else subsides */
+.rl.has-active:not(.moving) .rl-ticks > span:not(.in):not(.rl-now),
+.rl.has-active:not(.moving) .rl-years > span:not(.on) { opacity: 0.3; }
 .rl-ticks > .rl-now {
-  width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent); transform: none;
+  left: 0; width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent); transform: none;
 }
 /* The details sit centred under the ruler on a steady vertical rhythm (mark, name, dates, blurb) in a box of
    fixed height, so nothing below moves as they change. */
@@ -171,7 +176,7 @@ a { color: inherit; }
   .rl-scroll::-webkit-scrollbar { display: none; }
   .rl { width: calc(var(--years) * 84px); cursor: default; }
   .rl-wrap::before {
-    content: ""; position: absolute; left: 50%; top: 70px; width: 5px; height: 5px; margin-left: -2.5px;
+    content: ""; position: absolute; left: 50%; top: 54px; width: 5px; height: 5px; margin-left: -2.5px;
     border-radius: 999px; background: var(--accent); z-index: 1;
   }
   .rl-caption { padding-inline: 24px; }

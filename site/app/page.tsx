@@ -36,7 +36,7 @@ export default function Home() {
 
       <section className="section been" aria-labelledby="been-at">
         <h2 id="been-at" className="mono">Journey so far…</h2>
-        <Timeline items={[...experience].reverse()} />
+        <Timeline items={experience} />
       </section>
 
       <div className="columns">
