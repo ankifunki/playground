@@ -1,4 +1,4 @@
-import { about, intro, profile, projects } from "@/content/site";
+import { about, experience, intro, profile, projects } from "@/content/site";
 import { ContactList } from "./contact-list";
 import { Tiles } from "./tiles";
 import { ThemeToggle } from "./theme-toggle";
@@ -31,6 +31,32 @@ export default function Home() {
       <section id="work" className="work-area" aria-label="Work">
         <Tiles projects={projects} />
         <p className="soon">More case studies soon. Some will be password protected; ask and I’ll walk you through them.</p>
+      </section>
+
+      <section className="section experience" aria-labelledby="experience">
+        <h2 id="experience" className="mono">Experience</h2>
+        <ul className="logos">
+          {experience.map((c) => (
+            <li key={c.name}>
+              {c.logo ? (
+                <span
+                  className="logo"
+                  role="img"
+                  aria-label={c.name}
+                  title={c.name}
+                  style={{ ["--src" as string]: `url(${c.logo.src})`, height: c.logo.h, width: c.logo.h * c.logo.ratio }}
+                />
+              ) : c.mark ? (
+                <span className="logo-type">
+                  <span className="logo" aria-hidden="true" style={{ ["--src" as string]: `url(${c.mark.src})`, height: c.mark.h, width: c.mark.h * c.mark.ratio }} />
+                  {c.name}
+                </span>
+              ) : (
+                <span className="logo-type">{c.name}</span>
+              )}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <div className="columns">

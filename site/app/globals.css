@@ -114,6 +114,18 @@ a { color: inherit; }
 
 .soon { color: var(--faint); font-size: 15px; }
 
+/* Experience: official logos as masks, so every mark takes the same neutral ink */
+.logos { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3) var(--s4); align-items: center; }
+@media (min-width: 720px) { .logos { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: var(--s4); } }
+.logos li { display: flex; align-items: center; height: 32px; color: var(--grey); transition: color 0.25s var(--ease); }
+.logos li:hover { color: var(--ink); }
+.logo {
+  display: block; background: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
+}
+.logo-type { display: inline-flex; align-items: center; gap: 6px; font: 600 19px/1 var(--body); letter-spacing: -0.02em; }
+
+
 /* ---------- About ---------- */
 .prose { display: grid; gap: var(--s3); }
 .prose p { color: var(--grey); text-wrap: pretty; max-width: 62ch; }
