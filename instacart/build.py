@@ -19,6 +19,10 @@ mark = f'<svg class="mark" viewBox="{vb}" role="img" aria-label="Instacart"><pat
 
 CSS = """
 /* ---- Order Issue Reporting additions ---- */
+/* The mockups are shown exactly as drawn in the deck: whole phones on a transparent ground, never cropped,
+   and without the frame box, shadow or rounding the other decks put around flat screens */
+.deck .frame{background:none;box-shadow:none;border-radius:0;overflow:visible}
+.deck .frame.seq img,.deck .frame img{object-fit:contain!important;object-position:center top!important}
 /* Phone-shaped screens (as in Multi Ticket): the frame takes the phone's proportions and a fixed height */
 .tall .frame{width:auto;height:min(50svh,460px);aspect-ratio:var(--r);margin-inline:auto}
 .models.tall,.flowseq.tall{justify-items:start}
@@ -43,7 +47,7 @@ CSS = """
 /* Spend audit: the sheet, with what it showed */
 .audit{display:grid;gap:var(--gap-m)}
 .audit .frame{aspect-ratio:var(--r);cursor:zoom-in}
-.audit .frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.audit .frame img{width:100%;height:100%;display:block}
 .marks{display:grid;gap:var(--gap-s);align-content:start}
 .marks p{display:grid;gap:4px;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink)}
 
@@ -51,7 +55,7 @@ CSS = """
 .lead{display:grid;gap:var(--gap-s);align-content:start}
 .row4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-m) var(--gap-s)}
 .row4 figure{display:grid;gap:8px;align-content:start}
-.row4 .shot{position:relative;aspect-ratio:152/240;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgb(27 32 31 / .1),0 10px 24px -14px rgb(27 32 31 / .45);cursor:zoom-in}
+.row4 .shot{position:relative;display:block;cursor:zoom-in}
 .row4 .shot img{width:100%;display:block}
 .row4 figcaption{font:400 13px/18px var(--body);color:var(--grey)}
 .row4 figcaption b{display:block;font-weight:500;color:var(--no)}
@@ -133,7 +137,6 @@ CSS = """
   .content > .lead .statement,.content > .lead .small{grid-column:auto}
   .content > .row4,.content > .ladder,.content > .tax-new{grid-column:6 / span 7}
   .row4{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:calc(var(--u)*20)}
-  .row4 .shot{border-radius:calc(var(--u)*12)}
   .row4 figcaption{font-size:calc(var(--u)*14);line-height:calc(var(--u)*20)}
   .tri{grid-column:1 / -1;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*60)}
   .ladder li{padding-bottom:calc(var(--u)*22);grid-template-columns:calc(var(--u)*24) minmax(0,1fr)}
@@ -298,7 +301,7 @@ SLIDES = f'''
   </div>
 </div></section>
 
-{tabs_slide("Initial UX direction", "247/537", [
+{tabs_slide("Initial UX direction", "258/542", [
     ("orders", "Option A", "Shopping cart", '<ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul>'),
     ("orders", "Option B", "One &amp; done", '<ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul>'),
 ], "Divergent directions: two prototypes with debatable trade-offs, to bring foundational alignment.", meta="Prototypes")}
@@ -348,18 +351,18 @@ SLIDES = f'''
   </div>
 </div></section>
 
-{tabs_slide("Exploring the UI", "373/686", [
+{tabs_slide("Exploring the UI", "388/689", [
     ("issue-1", "Option a", "Classic radios", "Radio buttons for each issue, with sub-issue chips nested under the one you pick."),
     ("issue-2", "Option b", "Big buttons", "A large row for each issue that opens into its sub-issue chips."),
     ("issue-3", "Selected", "Easy pills", "Sub-issues as pills, then how many you received and optional details, on one screen."),
 ], "Focusing on the details. Existing components didn&rsquo;t feel native, so we refined how picking an issue and sub-issue feels.", meta="Issue and sub-issue")}
 
-{tabs_slide("Resolution selection", "373/483", [
+{tabs_slide("Resolution selection", "388/486", [
     ("res-1", "01", "Radios", ""), ("res-2", "02", "Credit tag", ""), ("res-3", "03", "Credit preference", ""),
     ("res-4", "04", "Cards", ""), ("res-5", "05", "Outlined cards", ""), ("res-6", "06", "Filled card", ""),
 ], "Six takes on choosing how we make it right: instant credit, or just sharing feedback.", kind="flowseq")}
 
-{tabs_slide("Weights &amp; measures", "266/460", [
+{tabs_slide("Weights &amp; measures", "267/457", [
     ("wm-1", "Selected &middot; mild", "More or less", "Tell us whether you received more or less."),
     ("wm-2", "Option b", "Weight stepper", "Step the weight you received, in 0.25 lb increments."),
     ("wm-3", "Option c &middot; wild", "Scan to detect", "Scan the item&rsquo;s barcode to detect what arrived."),

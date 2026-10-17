@@ -216,8 +216,10 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Sequences: stacked screens that crossfade (Add a location steps, switcher models) */
 .flowseq,.models{display:grid;gap:var(--gap-m)}
-.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;transform:scale(1.015);transition:opacity .6s var(--ease),transform 1.2s var(--ease)}
-.frame.seq img.on{opacity:1;transform:none}
+/* Switching variants: no zoom. The new screen fades in on top of the old one, which stays fully visible underneath
+   until the fade is done and then drops away, so the swap reads as one clean dissolve, never a washed-out blend. */
+.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;z-index:0;transition:opacity 0s linear .34s}
+.frame.seq img.on{opacity:1;z-index:1;transition:opacity .34s var(--ease)}
 .steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
 .steps::-webkit-scrollbar{display:none}
 .steps button{flex:1 0 auto;min-width:72px;display:grid;gap:6px;text-align:left;background:none;border:0;border-top:2px solid var(--rule);padding:10px 0 0;cursor:pointer;color:var(--faint);transition:border-color .3s,color .3s}
@@ -368,6 +370,10 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 }
 
 /* ---- Order Issue Reporting additions ---- */
+/* The mockups are shown exactly as drawn in the deck: whole phones on a transparent ground, never cropped,
+   and without the frame box, shadow or rounding the other decks put around flat screens */
+.deck .frame{background:none;box-shadow:none;border-radius:0;overflow:visible}
+.deck .frame.seq img,.deck .frame img{object-fit:contain!important;object-position:center top!important}
 /* Phone-shaped screens (as in Multi Ticket): the frame takes the phone's proportions and a fixed height */
 .tall .frame{width:auto;height:min(50svh,460px);aspect-ratio:var(--r);margin-inline:auto}
 .models.tall,.flowseq.tall{justify-items:start}
@@ -392,7 +398,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 /* Spend audit: the sheet, with what it showed */
 .audit{display:grid;gap:var(--gap-m)}
 .audit .frame{aspect-ratio:var(--r);cursor:zoom-in}
-.audit .frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.audit .frame img{width:100%;height:100%;display:block}
 .marks{display:grid;gap:var(--gap-s);align-content:start}
 .marks p{display:grid;gap:4px;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink)}
 
@@ -400,7 +406,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 .lead{display:grid;gap:var(--gap-s);align-content:start}
 .row4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-m) var(--gap-s)}
 .row4 figure{display:grid;gap:8px;align-content:start}
-.row4 .shot{position:relative;aspect-ratio:152/240;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgb(27 32 31 / .1),0 10px 24px -14px rgb(27 32 31 / .45);cursor:zoom-in}
+.row4 .shot{position:relative;display:block;cursor:zoom-in}
 .row4 .shot img{width:100%;display:block}
 .row4 figcaption{font:400 13px/18px var(--body);color:var(--grey)}
 .row4 figcaption b{display:block;font-weight:500;color:var(--no)}
@@ -482,7 +488,6 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .content > .lead .statement,.content > .lead .small{grid-column:auto}
   .content > .row4,.content > .ladder,.content > .tax-new{grid-column:6 / span 7}
   .row4{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:calc(var(--u)*20)}
-  .row4 .shot{border-radius:calc(var(--u)*12)}
   .row4 figcaption{font-size:calc(var(--u)*14);line-height:calc(var(--u)*20)}
   .tri{grid-column:1 / -1;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*60)}
   .ladder li{padding-bottom:calc(var(--u)*22);grid-template-columns:calc(var(--u)*24) minmax(0,1fr)}
@@ -615,7 +620,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Initial UX direction"><div class="stage">
   <div class="head"><h3 class="title">Initial UX direction</h3><span class="mono">Prototypes</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:247/537"><img src="img/orders.webp" alt="Shopping cart" style="object-position:top left" decoding="async"><img src="img/orders.webp" alt="One &amp; done" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:258/542"><img src="img/orders.webp" alt="Shopping cart" style="object-position:top left" decoding="async"><img src="img/orders.webp" alt="One &amp; done" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps tabs" role="group" aria-label="Initial UX direction options"><button type="button" aria-pressed="true"><span class="mono">Option A</span><b>Shopping cart</b></button><button type="button" aria-pressed="false"><span class="mono">Option B</span><b>One &amp; done</b></button></div>
     <div class="notes"><div class="note on"><ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul></div><div class="note"><ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul></div></div>
     <p class="foot">Divergent directions: two prototypes with debatable trade-offs, to bring foundational alignment.</p>
@@ -670,7 +675,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Exploring the UI"><div class="stage">
   <div class="head"><h3 class="title">Exploring the UI</h3><span class="mono">Issue and sub-issue</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:373/686"><img src="img/issue-1.webp" alt="Classic radios" style="object-position:top left" decoding="async"><img src="img/issue-2.webp" alt="Big buttons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/issue-3.webp" alt="Easy pills" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:388/689"><img src="img/issue-1.webp" alt="Classic radios" style="object-position:top left" decoding="async"><img src="img/issue-2.webp" alt="Big buttons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/issue-3.webp" alt="Easy pills" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps tabs" role="group" aria-label="Exploring the UI options"><button type="button" aria-pressed="true"><span class="mono">Option a</span><b>Classic radios</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Big buttons</b></button><button type="button" aria-pressed="false"><span class="mono">Selected</span><b>Easy pills</b></button></div>
     <div class="notes"><div class="note on">Radio buttons for each issue, with sub-issue chips nested under the one you pick.</div><div class="note">A large row for each issue that opens into its sub-issue chips.</div><div class="note">Sub-issues as pills, then how many you received and optional details, on one screen.</div></div>
     <p class="foot">Focusing on the details. Existing components didn&rsquo;t feel native, so we refined how picking an issue and sub-issue feels.</p>
@@ -680,7 +685,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Resolution selection"><div class="stage">
   <div class="head"><h3 class="title">Resolution selection</h3></div>
   <div class="content"><div class="flowseq tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:373/483"><img src="img/res-1.webp" alt="Radios" style="object-position:top left" decoding="async"><img src="img/res-2.webp" alt="Credit tag" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-3.webp" alt="Credit preference" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-4.webp" alt="Cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-5.webp" alt="Outlined cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-6.webp" alt="Filled card" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:388/486"><img src="img/res-1.webp" alt="Radios" style="object-position:top left" decoding="async"><img src="img/res-2.webp" alt="Credit tag" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-3.webp" alt="Credit preference" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-4.webp" alt="Cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-5.webp" alt="Outlined cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-6.webp" alt="Filled card" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Resolution selection options"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Radios</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Credit tag</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Credit preference</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Cards</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>Outlined cards</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>Filled card</b></button></div>
     
     <p class="foot">Six takes on choosing how we make it right: instant credit, or just sharing feedback.</p>
@@ -690,7 +695,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Weights &amp; measures"><div class="stage">
   <div class="head"><h3 class="title">Weights &amp; measures</h3><span class="mono">Mild to wild</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:266/460"><img src="img/wm-1.webp" alt="More or less" style="object-position:top left" decoding="async"><img src="img/wm-2.webp" alt="Weight stepper" style="object-position:top left" loading="lazy" decoding="async"><img src="img/wm-3.webp" alt="Scan to detect" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:267/457"><img src="img/wm-1.webp" alt="More or less" style="object-position:top left" decoding="async"><img src="img/wm-2.webp" alt="Weight stepper" style="object-position:top left" loading="lazy" decoding="async"><img src="img/wm-3.webp" alt="Scan to detect" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps tabs" role="group" aria-label="Weights &amp; measures options"><button type="button" aria-pressed="true"><span class="mono">Selected &middot; mild</span><b>More or less</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Weight stepper</b></button><button type="button" aria-pressed="false"><span class="mono">Option c &middot; wild</span><b>Scan to detect</b></button></div>
     <div class="notes"><div class="note on">Tell us whether you received more or less.</div><div class="note">Step the weight you received, in 0.25 lb increments.</div><div class="note">Scan the item&rsquo;s barcode to detect what arrived.</div></div>
     <p class="foot">Capturing severity for weight-based items. Some produce and meat is ordered by count but sold by weight, so people need dynamic controls to report it.</p>
