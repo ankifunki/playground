@@ -16,7 +16,7 @@ const CASE_STUDIES = [
 const BACK_LINK = `<a href="/" class="pf-back" aria-label="Back to Ankit Joshi’s portfolio">← Ankit Joshi</a>
 <style>.pf-back{position:fixed;z-index:20;top:calc(14px + env(safe-area-inset-top,0px));left:calc(16px + env(safe-area-inset-left,0px));
 font:400 11px/1 "Geist Mono",ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:#6E7675;text-decoration:none;padding:6px 0}
-.pf-back:hover{color:#6663F4}.pf-back:focus-visible{outline:2px solid #6663F4;outline-offset:3px}</style>`;
+.pf-back:hover{color:#A8379F}.pf-back:focus-visible{outline:2px solid #A8379F;outline-offset:3px}</style>`;
 
 for (const cs of CASE_STUDIES) {
   const src = join(repo, cs.from);
