@@ -66,7 +66,12 @@ export function Tiles({ projects }: { projects: Project[] }) {
         const locked = p.access === "password";
         return (
           <li key={p.slug} className={p.wide ? "wide" : undefined}>
-            <a className="tile" href={`/work/${p.slug}/`} data-cursor={locked ? "Enter password" : "View case study ↗"}>
+            <a
+              className="tile"
+              href={p.href ?? `/work/${p.slug}/`}
+              {...(p.href && { target: "_blank", rel: "noopener noreferrer" })}
+              data-cursor={locked ? "Enter password" : p.href ? "Open the deck ↗" : "View case study ↗"}
+            >
               <ArtFor p={p} />
               <span className="tile-text">
                 <span>

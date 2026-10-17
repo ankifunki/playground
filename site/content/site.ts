@@ -30,6 +30,8 @@ export type Project = {
   access: Access;
   art: Art;
   wide?: boolean; // span both columns on desktop
+  // Lives elsewhere (e.g. a Figma deck): the tile opens this in a new tab instead of /work/<slug>/
+  href?: string;
   // Shown on the tile instead of the art while the project is password protected
   lockedMark?: { src: string; srcDark?: string };
   // Hide the company name behind a redaction bar (for confidential clients)
@@ -115,6 +117,21 @@ export const projects: Project[] = [
       srcs: ["/work/multi-ticket/img/m-1.webp", "/work/multi-ticket/img/sc-6.webp"],
       bg: "#f5dfe2",
       bgDark: "#3a2329",
+    },
+  },
+  {
+    slug: "order-issue-reporting",
+    title: "Order Issue Reporting",
+    line: "A clearer, more specific way to report what went wrong with an order.", // DRAFT
+    company: "Instacart",
+    year: "2021–23",
+    access: "public",
+    href: "https://www.figma.com/proto/9nSAdZ8bY6BurLzjeAwM2u/%F0%9F%A4%8F-Order-Issue-Granularity?page-id=8%3A94578&node-id=512-777&starting-point-node-id=100%3A92519&t=QsvRd5rB0ax5XD0V-1",
+    art: {
+      kind: "phones",
+      srcs: ["/art/order-issue/report-an-issue.webp"],
+      bg: "#f3ecdf",
+      bgDark: "#22281f",
     },
   },
 ];

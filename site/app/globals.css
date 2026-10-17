@@ -397,6 +397,8 @@ a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transfo
   transition: transform 0.9s var(--ease);
 }
 .tile:hover .phone, .tile:focus-visible .phone { transform: translateY(calc(-2% - var(--i) * 2%)); }
+/* A single screen stands centred */
+.art .phone:only-of-type { width: 36%; left: 32%; top: 13%; }
 
 /* ---------- Theme toggle ---------- */
 /* The sun and moon sit on opposite sides of a small wheel whose hub is below the icon.
