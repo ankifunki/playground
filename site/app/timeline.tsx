@@ -49,7 +49,9 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   const [active, setActive] = useState<number | null>(null);
   const [moving, setMoving] = useState(false);
-  const [pin, setPin] = useState<number | "now" | null>(null); // phones: the milestone under the centre marker
+  // Whether a tick is selected (the milestone under the phone marker, or the tick under the pointer). Which one is
+  // kept in pinRef and marked with a class directly, so following the pointer doesn't re-render the scale.
+  const [hasPin, setHasPin] = useState(false);
   // Detail cards: the active team's card slides in from the direction of travel while the last one slides out.
   const [cards, setCards] = useState<{ i: number; dir: number; id: number; out?: boolean }[]>([]);
   const last = useRef<number | null>(null);
@@ -67,10 +69,15 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const ruler = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const tickEls = useRef<(HTMLSpanElement | null)[]>([]);
+  const painted = useRef<string[]>([]);
+  const pinEl = useRef<HTMLSpanElement | null>(null);
   const sw = useRef({ x: 0, tx: 0, amp: 0, target: 0, last: 0, t: 0, raf: 0 });
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Paint the swell: ticks rise around x (px from the scale's left edge) by amp (0–1). While it sinks, the
-  // selected tick (under the pointer, or under the phone marker) keeps its full height.
+  // selected tick (under the pointer, or under the phone marker) keeps its full height. Each tick's --s drives only
+  // its own transform and opacity, and is written only when it changes, so resting ticks far from the swell cost
+  // nothing.
   const paint = useCallback(
     (x: number, amp: number, holdPin: boolean) => {
       const w = ruler.current?.clientWidth ?? 0;
@@ -78,7 +85,8 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
         if (!el) return;
         const d = pos(ticks[i]) * w - x;
         const s = holdPin && i === pinRef.current ? 1 + LIFT : 1 + LIFT * amp * Math.exp(-((d / HALO) ** 2));
-        el.style.setProperty("--s", s.toFixed(3));
+        const v = s.toFixed(2);
+        if (painted.current[i] !== v) el.style.setProperty("--s", (painted.current[i] = v));
       });
     },
     [ticks.length], // eslint-disable-line react-hooks/exhaustive-deps
@@ -111,8 +119,9 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     if (!S.raf && S.amp === 0) S.x = x;
     // Sub-pixel creep (the tail of a phone glide) doesn't count as moving, so the swell starts sinking as soon
     // as the scale looks still instead of holding up until the glide's last fraction of a pixel.
+    // Under reduced motion there's no swell: the selected tick, band and details still follow.
     const real = Math.abs(x - S.tx) > 0.6;
-    if (real) {
+    if (real && !reduced()) {
       S.last = performance.now();
       S.target = 1;
       setMoving(true);
@@ -122,9 +131,18 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     setActive(indexAt(to - (x / w) * span));
     xRef.current = x;
   };
+  const markPin = (p: number | "now" | null) => {
+    pinRef.current = typeof p === "number" ? p : -1;
+    const el = typeof p === "number" ? tickEls.current[p] : null;
+    if (el !== pinEl.current) {
+      pinEl.current?.classList.remove("pin");
+      el?.classList.add("pin");
+      pinEl.current = el;
+    }
+    setHasPin(p !== null);
+  };
   const reset = () => {
-    pinRef.current = -1;
-    setPin(null);
+    markPin(null);
     sw.current.target = 0;
     run();
     setMoving(false);
@@ -136,8 +154,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     const r = ruler.current!.getBoundingClientRect();
     const x = Math.min(Math.max(clientX - r.left, 0), r.width);
     const i = Math.round(((to - from - (x / r.width) * span) * PER_YEAR));
-    pinRef.current = Math.min(Math.max(i, 0), ticks.length - 1);
-    setPin(pinRef.current);
+    markPin(Math.min(Math.max(i, 0), ticks.length - 1));
     moveTo(x, r.width);
   };
 
@@ -162,8 +179,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
       gap = Math.abs(pos(y) * w - cx);
       best = i;
     });
-    pinRef.current = typeof best === "number" ? best : -1;
-    setPin(best);
+    markPin(best);
   };
   // Points on the scale that can sit under the marker: Now, then each year
   const milestones = () => {
@@ -175,7 +191,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const glideTo = (target: number, v = 0) => {
     cancelAnimationFrame(anim.current);
     const x0 = xRef.current, d = target - x0;
-    if (Math.abs(d) < 0.5 || matchMedia("(prefers-reduced-motion: reduce)").matches) return place(target);
+    if (Math.abs(d) < 0.5 || reduced()) return place(target);
     const T = v * d > 0 ? Math.min(Math.max((3 * Math.abs(d)) / Math.abs(v), GLIDE_MIN), GLIDE_MAX) : EASE_MS;
     const t0 = performance.now();
     const step = (t: number) => {
@@ -240,7 +256,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   // One pass of the swell along the scale when it first comes into view
   useEffect(() => {
     const el = ruler.current;
-    if (!el || scrolling() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!el || scrolling() || reduced()) return;
     let raf = 0;
     const io = new IntersectionObserver(
       ([e]) => {
@@ -248,8 +264,8 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
         io.disconnect();
         const t0 = performance.now();
         const run = (t: number) => {
-          const k = Math.min((t - t0) / 1800, 1);
-          const ease = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+          const k = Math.min((t - t0) / 1200, 1);
+          const ease = k < 0.5 ? 8 * k ** 4 : 1 - (-2 * k + 2) ** 4 / 2; // strong ease-in-out (quart)
           if (k < 1) {
             paint(-HALO + ease * (el.clientWidth + 2 * HALO), 1, false);
             raf = requestAnimationFrame(run);
@@ -265,9 +281,13 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   const lo = active === null ? Infinity : items[active].start;
   const hi = active === null ? -Infinity : ends[active];
+  // The band keeps the last team's stretch while it fades out, so it never sweeps in from the full width
+  const bandAt = useRef<number | null>(null);
+  if (active !== null) bandAt.current = active;
+  const band = bandAt.current;
 
   return (
-    <div className={`rl-wrap${pin !== null && !moving ? " pinned" : ""}`} style={{ ["--years" as string]: span }}>
+    <div className={`rl-wrap${hasPin && !moving ? " pinned" : ""}`} style={{ ["--years" as string]: span }}>
       <div
         ref={scroller}
         className="rl-scroll"
@@ -314,19 +334,25 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
             {/* The active team's time, as a soft band behind its stretch of the scale */}
             <div
               className={`rl-band${active === null ? "" : " on"}`}
-              style={active === null ? undefined : { left: `${pos(hi) * 100}%`, width: `${(pos(lo) - pos(hi)) * 100}%` }}
+              style={
+                band === null
+                  ? undefined
+                  : { clipPath: `inset(0 ${(1 - pos(items[band].start)) * 100}% 0 ${pos(ends[band]) * 100}% round 4px 4px 0 0)` }
+              }
             />
-            {ticks.map((y, i) => (
-              <span
-                key={i}
-                ref={(el) => {
-                  tickEls.current[i] = el;
-                }}
-                className={`${i % PER_YEAR === 0 ? "maj" : i % (PER_YEAR / 2) === 0 ? "mid" : ""}${pin === i && !moving ? " pin" : ""}`}
-                style={{ left: `${pos(y) * 100}%` }}
-              />
-            ))}
-            <span className={`rl-now${pin === "now" && !moving ? " pin" : ""}`} />
+            <div className="rl-bars">
+              {ticks.map((y, i) => (
+                <span
+                  key={i}
+                  ref={(el) => {
+                    tickEls.current[i] = el;
+                  }}
+                  className={i % PER_YEAR === 0 ? "maj" : i % (PER_YEAR / 2) === 0 ? "mid" : undefined}
+                  style={{ left: `${pos(y) * 100}%` }}
+                />
+              ))}
+            </div>
+            <span className="rl-now" />
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@
   --faint: #8a9291;
   --rule: #c9cfce;
   --accent: #1f5cff;
+  --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
   --bar: #1b201f;
   --toast-bg: #1b201f; --toast-ink: #eef1f1; --toast-ok: #7ad3a6;
   /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
@@ -31,6 +32,7 @@
     --faint: #737b7a;
     --rule: #262b2a;
     --accent: #5c8dff;
+  --tick-a: 0.11; --tick-maj-a: 0.45;
     --bar: #eef1f1;
     --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
     /* Night: cool moonlight from the top right (tiles glow instead of casting shadows; see .art below) */
@@ -45,6 +47,7 @@
   --faint: #737b7a;
   --rule: #262b2a;
   --accent: #5c8dff;
+  --tick-a: 0.11; --tick-maj-a: 0.45;
   --bar: #eef1f1;
   --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
   --ambient: rgba(190, 206, 255, 0.07);
@@ -131,25 +134,29 @@ a { color: inherit; }
 /* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
 .rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
 .rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
-/* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape. Every tick rises by
-   the same amount on top of its own height (--s runs 1 to 2.1 from timeline.tsx), so the small month ticks
-   follow the curve too, and each darkens toward the ink as it rises so the wave reads clearly. */
-.rl-ticks > span {
-  --h: 3px; --c: var(--rule);
-  position: absolute; z-index: 1; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
-  height: calc(var(--h) + (var(--s, 1) - 1) * 14.5px);
-  background: color-mix(in srgb, var(--ink) calc((var(--s, 1) - 1) * 80%), var(--c));
-  transition: opacity 0.3s var(--ease); /* heights and shade are animated frame by frame in timeline.tsx */
+/* The swell runs on transform and opacity only. Each tick is drawn at its full swollen height and slides up out
+   of the clipped strip below the baseline, so the rounded tips keep their shape: every tick rises by the same
+   amount on top of its own height (--s runs 1 to 2.1 from timeline.tsx, set on the tick itself), so the small
+   month ticks follow the curve too. Ticks are ink at a resting opacity that matches the rule (or faint, for the
+   years) and darken toward the ink as they rise, so the wave reads clearly. */
+.rl-bars { position: absolute; inset: 0; overflow: hidden; contain: layout paint; }
+.rl-bars > span {
+  --h: 3px; --a: var(--tick-a);
+  position: absolute; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
+  height: calc(var(--h) + 15.95px); background: var(--ink);
+  transform: translateY(calc((2.1 - var(--s, 1)) * 14.5px));
+  opacity: calc(var(--a) + (1 - var(--a)) * min((var(--s, 1) - 1) * 0.8, 1));
 }
-.rl-ticks > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
-.rl-ticks > span.maj { --h: 10px; --c: var(--faint); width: 2px; margin-left: -1px; }
-/* Only the selected tick takes the accent */
-.rl-ticks > span.pin { width: 2px; margin-left: -1px; background: var(--accent); transition: background 0.2s var(--ease); }
-/* The active team's time: a soft band behind its stretch */
+.rl-bars > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
+.rl-bars > span.maj { --h: 10px; --a: var(--tick-maj-a); width: 2px; margin-left: -1px; }
+/* Only the selected tick takes the accent, once the scale is still */
+.rl-bars > span.pin { width: 2px; margin-left: -1px; transition: background-color 0.2s var(--ease); }
+.rl:not(.moving) .rl-bars > span.pin { background: var(--accent); opacity: 1; }
+/* The active team's time: a soft band behind its stretch, revealed with a clip so it never relayouts */
 .rl-band {
-  position: absolute; bottom: 0; height: 100%; border-radius: 4px 4px 0 0; opacity: 0; pointer-events: none;
+  position: absolute; inset: 0; opacity: 0; pointer-events: none;
   background: color-mix(in srgb, var(--accent) 9%, transparent);
-  transition: left 0.35s var(--ease), width 0.35s var(--ease), opacity 0.25s var(--ease);
+  transition: clip-path 0.25s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.2s var(--ease);
 }
 .rl-band.on { opacity: 1; }
 .rl-ticks > .rl-now {
@@ -169,7 +176,7 @@ a { color: inherit; }
   margin-top: var(--s2); max-width: 44ch; font-size: 16px; line-height: 24px; text-wrap: balance;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
 }
-.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; animation: rl-fade 0.4s var(--ease) 0.15s both; }
+.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; animation: rl-fade 0.2s var(--ease) both; }
 .rl-hint-coarse { display: none; }
 @media (hover: none) { .rl-hint-fine { display: none; } .rl-hint-coarse { display: inline; } }
 /* Phones: the ruler runs wider than the screen and scrolls sideways under a centre marker. The scroller bleeds to
@@ -187,7 +194,6 @@ a { color: inherit; }
     mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   }
   .rl { width: calc(var(--years) * 84px); cursor: inherit; will-change: transform; }
-  .rl-ticks > span { transition: background 0.2s var(--ease), opacity 0.3s var(--ease); }
   /* The centre marker: a dot on a short needle hanging from the baseline. Neutral while scrolling; when the
      scale settles on a milestone (a year, or Now), the needle, dot and that tick turn accent. */
   .rl-wrap::before, .rl-wrap::after {
@@ -199,14 +205,13 @@ a { color: inherit; }
   .rl-wrap.pinned::before, .rl-wrap.pinned::after { background: var(--accent); }
   /* The milestone tick keeps the full height it had at the top of the swell (timeline.tsx holds its --s at the
      peak when the rest subside), and never animates down in between */
-  .rl-ticks > span.pin { transition: background 0.2s var(--ease); }
   .rl-ticks > .rl-now { display: none; }
   .rl-caption { margin-inline: 24px; }
   .rl-hint { display: none; }
 }
 /* Moving between teams: the new card's parts arrive one after another from the direction of travel, softly
    blurred, while the old card drifts the other way and fades. */
-.rl-card > * { animation: rl-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.rl-card > * { animation: rl-in 0.26s cubic-bezier(0.23, 1, 0.32, 1) both; }
 .rl-card > :nth-child(2) { animation-delay: 0.04s; }
 .rl-card > :nth-child(3) { animation-delay: 0.08s; }
 .rl-card > :nth-child(4) { animation-delay: 0.12s; }
@@ -216,13 +221,10 @@ a { color: inherit; }
   .rl-card > *, .rl-hint { animation: none; }
   .rl-card.out { animation-duration: 1ms; }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .rl-now { animation: rl-now 2.8s ease-in-out infinite; }
-}
 @keyframes rl-in { from { opacity: 0; transform: translate(calc(var(--dir) * 18px), var(--rise)); filter: blur(4px); } }
 @keyframes rl-out { to { opacity: 0; transform: translateX(calc(var(--dir) * -14px)); filter: blur(3px); } }
 @keyframes rl-fade { from { opacity: 0; } }
-@keyframes rl-now { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
 
 
 /* ---------- About ---------- */
