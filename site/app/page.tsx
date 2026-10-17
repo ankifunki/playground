@@ -4,32 +4,7 @@ import { Tiles } from "./tiles";
 import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
 
-const LockMark = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
-    <rect x="1.5" y="4.5" width="7" height="5" rx="1" />
-    <path d="M3 4.5V3a2 2 0 0 1 4 0v1.5" />
-  </svg>
-);
-
-// Superscript marks in the About copy become links that light up their note.
-const SUP: Record<string, number> = { "¹": 1, "²": 2, "³": 3 };
-function withFootnotes(text: string) {
-  return text.split(/([¹²³])/).map((part, i) =>
-    part in SUP ? (
-      <sup key={i}>
-        <a href={`#note-${SUP[part]}`} className="fn" data-note={SUP[part]} aria-label={`Note ${SUP[part]}`}>
-          {SUP[part]}
-        </a>
-      </sup>
-    ) : (
-      part
-    ),
-  );
-}
-
 export default function Home() {
-  const hasLocked = projects.some((p) => p.access === "password");
-  const notes = about.notes.filter((n) => n.mark !== "lock" || hasLocked);
   return (
     <main className="page">
       <header className="topbar">
@@ -47,7 +22,7 @@ export default function Home() {
       </header>
 
       <h1 className="statement">
-        <span className="ink">{withFootnotes(intro.lead)}</span> {intro.before}{" "}
+        <span className="ink">{intro.lead}</span> {intro.before}{" "}
         <span className="co">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="only-light" src={intro.company.mark} alt="" />
@@ -68,17 +43,9 @@ export default function Home() {
           <h2 id="about" className="mono">About</h2>
           <div className="prose">
             {about.paragraphs.map((p) => (
-              <p key={p}>{withFootnotes(p)}</p>
+              <p key={p}>{p}</p>
             ))}
           </div>
-          <ul className="notes">
-            {notes.map((n) => (
-              <li key={n.mark} id={n.mark in SUP ? `note-${SUP[n.mark]}` : undefined}>
-                <span aria-hidden="true">{n.mark === "lock" ? <LockMark /> : n.mark}</span>
-                <span>{n.text}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section className="section contact" aria-labelledby="contact">

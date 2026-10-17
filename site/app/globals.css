@@ -107,8 +107,8 @@ a { color: inherit; }
 .chip {
   display: inline-flex; align-items: center; gap: 5px;
   font: 400 11px/12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid currentColor; border-radius: 999px; padding: 3px 8px 3px 6px;
+  color: var(--grey);
+  border: 1px solid var(--rule); border-radius: 999px; padding: 3px 8px 3px 6px;
 }
 .chip svg { width: 10px; height: 10px; }
 
@@ -118,9 +118,6 @@ a { color: inherit; }
 .prose { display: grid; gap: var(--s3); }
 .prose p { color: var(--grey); text-wrap: pretty; max-width: 62ch; }
 .prose p:first-child { color: var(--ink); font-size: 20px; line-height: 1.5; letter-spacing: -0.01em; }
-.notes { list-style: none; display: grid; gap: var(--s2); border-top: 1px solid var(--rule); padding-top: var(--s3); }
-.notes li { display: grid; grid-template-columns: 18px 1fr; font-size: 14px; line-height: 1.55; color: var(--faint); }
-.notes li span:first-child { color: var(--accent); }
 
 
 /* Contact: email and links as one even list of rows, each a line icon and the platform name. */
@@ -259,21 +256,6 @@ a { color: inherit; }
 .statement .co:hover img { transform: rotate(-16deg) scale(1.08); }
 
 
-/* Footnotes: the mark links to its note, and hovering either lights up the pair */
-.fn {
-  font: 500 0.7em/1 var(--mono); color: var(--accent); text-decoration: none;
-  padding: 0 2px; border-radius: 3px; transition: background 0.2s var(--ease);
-}
-.fn:hover, .fn:focus-visible { background: color-mix(in srgb, var(--accent) 16%, transparent); }
-.notes li { border-radius: 6px; margin-inline: -8px; padding: 4px 8px; transition: background 0.25s var(--ease), color 0.25s var(--ease); }
-.page:has(.fn[data-note="1"]:hover) #note-1,
-.page:has(.fn[data-note="2"]:hover) #note-2,
-.page:has(.fn[data-note="3"]:hover) #note-3,
-.notes li:target {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--ink);
-}
-
 /* Cursor label over project tiles (fine pointers only) */
 .cursor-pill {
   position: fixed; left: 14px; top: 14px; z-index: 30;
@@ -364,5 +346,3 @@ html.revealing::view-transition-new(root) {
   }
 }
 
-/* The footnote mark inside the big statement stays small */
-.statement sup { font-size: 0.34em; line-height: 0; vertical-align: 1.35em; margin-left: 2px; }
