@@ -168,15 +168,18 @@ a { color: inherit; }
 @media (max-width: 560px) {
   .rl-wrap { position: relative; margin-inline: -24px; }
   .rl-scroll {
-    overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none;
-    padding: 0 50vw 12px; touch-action: pan-x pan-y;
+    /* Strictly sideways: a fixed height with nothing to scroll vertically, and only horizontal pans are taken.
+       (Safari can still nudge an overflow-hidden box vertically on a diagonal swipe or focus, so timeline.tsx
+       also pins scrollTop to 0.) */
+    height: 64px; box-sizing: border-box; overflow-x: auto; overflow-y: hidden;
+    overscroll-behavior-x: contain; scrollbar-width: none; padding: 4px 50vw 12px; touch-action: pan-x;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   }
   .rl-scroll::-webkit-scrollbar { display: none; }
   .rl { width: calc(var(--years) * 84px); cursor: default; }
   .rl-wrap::before {
-    content: ""; position: absolute; left: 50%; top: 54px; width: 5px; height: 5px; margin-left: -2.5px;
+    content: ""; position: absolute; left: 50%; top: 58px; width: 5px; height: 5px; margin-left: -2.5px;
     border-radius: 999px; background: var(--accent); z-index: 1;
   }
   .rl-caption { margin-inline: 24px; }

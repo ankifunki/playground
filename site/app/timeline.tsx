@@ -145,7 +145,15 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   return (
     <div className="rl-wrap" style={{ ["--years" as string]: span }}>
-      <div ref={scroller} className="rl-scroll" onScroll={() => scrolling() && fromCentre()}>
+      <div
+        ref={scroller}
+        className="rl-scroll"
+        onScroll={(e) => {
+          if (!scrolling()) return;
+          if (e.currentTarget.scrollTop) e.currentTarget.scrollTop = 0; // sideways only
+          fromCentre();
+        }}
+      >
         <div
           ref={ruler}
           className={`rl${active !== null ? " has-active" : ""}${moving ? " moving" : ""}`}
@@ -156,7 +164,10 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
           onPointerDown={(e) => e.pointerType !== "touch" && !scrolling() && at(e.clientX)}
           onPointerLeave={(e) => e.pointerType === "mouse" && !scrolling() && reset()}
           onClick={(e) => scrolling() && centreOn(e.clientX - ruler.current!.getBoundingClientRect().left)}
-          onFocus={(e) => active === null && e.currentTarget.matches(":focus-visible") && focusOn(0)}
+          onFocus={(e) => {
+            if (scrolling()) scroller.current!.scrollTop = 0;
+            if (active === null && e.currentTarget.matches(":focus-visible")) focusOn(0);
+          }}
           onBlur={() => !scrolling() && reset()}
           onKeyDown={(e) => {
             const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
