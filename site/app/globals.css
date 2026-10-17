@@ -101,6 +101,8 @@ a { color: inherit; }
 .contact { align-content: start; }
 
 .section { display: grid; gap: var(--s3); align-content: start; }
+/* Section headers: the body sans, in ink */
+.sec-title { font: 500 17px/1.3 var(--body); letter-spacing: -0.01em; color: var(--ink); }
 
 /* Locked work: a redaction bar where the company would be, and a password chip */
 .redacted { display: inline-block; height: 11px; background: var(--bar); border-radius: 1px; vertical-align: -1px; }
@@ -129,6 +131,12 @@ a { color: inherit; }
 /* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
 .rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
 .rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
+/* Fine month ticks between the year and half-year marks: tiny and static, just enough to make the scale dense.
+   Now sits on a month boundary at the left edge, so the months line up with the year ticks. */
+.rl-ticks::after {
+  content: ""; position: absolute; inset: auto 0 0; height: 3px; pointer-events: none;
+  background: linear-gradient(90deg, var(--rule) 0 1px, transparent 1px) 0 100% / calc(100% / (var(--years) * 12)) 100% repeat-x;
+}
 /* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape */
 .rl-ticks > span {
   --h: 5px;

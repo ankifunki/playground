@@ -35,7 +35,7 @@ export default function Home() {
       </section>
 
       <section className="section been" aria-labelledby="been-at">
-        <h2 id="been-at" className="mono">Journey so far…</h2>
+        <h2 id="been-at" className="sec-title">Journey so far…</h2>
         <Timeline items={experience} />
       </section>
 
@@ -43,7 +43,7 @@ export default function Home() {
         {/* About is hidden for now; its copy is still in content/site.ts (about). */}
 
         <section className="section contact" aria-labelledby="contact">
-          <h2 id="contact" className="mono">Contact</h2>
+          <h2 id="contact" className="sec-title">Contact</h2>
           <ContactList />
         </section>
       </div>
