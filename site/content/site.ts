@@ -122,11 +122,10 @@ export const projects: Project[] = [
   {
     slug: "order-issue-reporting",
     title: "Order Issue Reporting",
-    line: "A clearer, more specific way to report what went wrong with an order.", // DRAFT
+    line: "Making it simple and specific to report what went wrong with an order.",
     company: "Instacart",
     year: "2021–23",
     access: "public",
-    href: "https://www.figma.com/proto/9nSAdZ8bY6BurLzjeAwM2u/%F0%9F%A4%8F-Order-Issue-Granularity?page-id=8%3A94578&node-id=512-777&starting-point-node-id=100%3A92519&t=QsvRd5rB0ax5XD0V-1",
     art: {
       kind: "phones",
       srcs: ["/art/order-issue/report-an-issue.webp"],

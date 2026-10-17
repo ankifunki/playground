@@ -10,6 +10,7 @@ const repo = join(site, "..");
 const CASE_STUDIES = [
   { slug: "multi-location", from: "case-study", copy: ["img", "assets"] },
   { slug: "multi-ticket", from: "multi-ticket", copy: ["img"] },
+  { slug: "order-issue-reporting", from: "instacart", copy: ["img"] },
 ];
 
 // A quiet way back to the homepage, added to the portfolio copy only.
