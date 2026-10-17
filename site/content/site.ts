@@ -125,12 +125,12 @@ export const projects: Project[] = [
     line: "Making it simple and specific to report what went wrong with an order.",
     company: "Instacart",
     year: "2021–23",
-    access: "public",
-    // Instacart's carrot in one tone, like the Genius AI tiles
+    access: "password",
+    // Instacart's carrot in one tone while locked, like the Genius AI tiles
+    lockedMark: { src: "/brand/instacart-carrot-black.svg", srcDark: "/brand/instacart-carrot-light.svg" },
     art: {
-      kind: "logo",
-      src: "/brand/instacart-carrot-black.svg",
-      srcDark: "/brand/instacart-carrot-light.svg",
+      kind: "phones",
+      srcs: ["/art/order-issue/report-an-issue.webp"],
       bg: "#f3ecdf",
       bgDark: "#22281f",
     },
