@@ -254,7 +254,7 @@ SLIDES = f'''
 
 {chapter(1, "Phase 1")}
 
-{morph("The cart", "cart-before", "cart-after", "393/852", "One provider per sale became a provider per line, so items from every appointment sit in one list, with adding more right below.", ["client card, a single provider, and line items with thumbnails", "client as the title, a provider on each line, and add items inline below"], tall=True)}
+{morph("The cart", "cart-before", "cart-after", "393/852", "One provider per sale became a provider per line, so items from every appointment sit in one list under a single way to add more.", ["client card, a single provider, and line items with thumbnails", "client as the title, add items to cart up top, and a provider on each line"], tall=True)}
 
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
