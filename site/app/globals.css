@@ -140,12 +140,13 @@ a { color: inherit; }
 /* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape */
 .rl-ticks > span {
   --h: 5px;
-  position: absolute; bottom: 0; width: 2px; margin-left: -1px; border-radius: 1px 1px 0 0;
-  height: calc(var(--h) * var(--s, 1) * var(--k, 1)); background: var(--rule);
+  position: absolute; z-index: 1; bottom: 0; width: 2px; margin-left: -1px; border-radius: 1px 1px 0 0;
+  height: calc(var(--h) * var(--s, 1)); background: var(--rule);
   transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
 }
 .rl-ticks > span.maj { --h: 10px; background: var(--faint); }
-.rl-ticks > span.in { --k: 1.4; background: var(--ink); }
+/* The active stretch: same heights as the rest, in the accent, matching its years and the phone marker */
+.rl-ticks > span.in { background: var(--accent); }
 /* At rest on a stretch, everything else subsides */
 .rl.has-active:not(.moving) .rl-ticks > span:not(.in):not(.rl-now) { opacity: 0.3; }
 .rl-ticks > .rl-now {
@@ -183,6 +184,7 @@ a { color: inherit; }
     mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   }
   .rl { width: calc(var(--years) * 84px); cursor: inherit; will-change: transform; }
+  .rl-ticks > span { transition: background 0.2s var(--ease), opacity 0.3s var(--ease); }
   /* The centre marker: a dot on a short needle hanging from the baseline. Neutral while scrolling; when the
      scale settles on a milestone (a year, or Now), the needle, dot and that tick turn accent. */
   .rl-wrap::before, .rl-wrap::after {

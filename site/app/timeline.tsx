@@ -7,6 +7,7 @@ const PER_YEAR = 2; // ticks per year: a major one on the year and one between
 const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
 const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
+const SUBSIDE = 520; // ms for the swell to ease away once the phone scale comes to rest
 // Phone drag physics. The scale moves on a GPU transform (no scroll events). It follows the finger 1:1 with a
 // rubber band past either end. On release it keeps the finger's speed and eases out smoothly onto a year:
 // GLIDE is how far a flick carries (ms' worth of release speed, about iOS's feel), and it always lands on at least
@@ -66,16 +67,18 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const idle = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Swell the ticks around x (px from the scale's left edge); null lets them all settle back.
+  // amp (0–1) scales the swell, so it can ease away instead of switching off. While it subsides, the
+  // milestone under the phone marker keeps its full height.
   const swell = useCallback(
-    (x: number | null) => {
+    (x: number | null, amp = 1) => {
       cancelAnimationFrame(frame.current);
       frame.current = requestAnimationFrame(() => {
         const w = ruler.current?.clientWidth ?? 0;
         tickEls.current.forEach((el, i) => {
           if (!el) return;
-          // When the swell subsides, the milestone under the phone marker keeps its peak height
-          const d = x === null ? (i === pinRef.current ? 0 : Infinity) : pos(ticks[i]) * w - x;
-          el.style.setProperty("--s", (1 + LIFT * Math.exp(-((d / HALO) ** 2))).toFixed(3));
+          const d = x === null ? Infinity : pos(ticks[i]) * w - x;
+          const s = i === pinRef.current && amp < 1 ? 1 + LIFT : 1 + LIFT * amp * Math.exp(-((d / HALO) ** 2));
+          el.style.setProperty("--s", s.toFixed(3));
         });
       });
     },
@@ -88,7 +91,20 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     setMoving(true);
     setActive(indexAt(to - (x / w) * span));
     clearTimeout(idle.current);
-    idle.current = setTimeout(() => (swell(null), setMoving(false)), SETTLE);
+    cancelAnimationFrame(ebb.current);
+    idle.current = setTimeout(scrolling() ? subside : () => (swell(null), setMoving(false)), scrolling() ? 60 : SETTLE);
+  };
+  // Phones: once the scale comes to rest, the swell around the marker eases away over SUBSIDE ms
+  const ebb = useRef(0);
+  const subside = () => {
+    setMoving(false);
+    const t0 = performance.now(), x = xRef.current;
+    const step = (t: number) => {
+      const k = Math.min((t - t0) / SUBSIDE, 1);
+      swell(x, Math.max((1 - k) ** 2, 0.0001));
+      if (k < 1) ebb.current = requestAnimationFrame(step);
+    };
+    ebb.current = requestAnimationFrame(step);
   };
   const reset = () => (clearTimeout(idle.current), swell(null), setMoving(false), setActive(null));
 
@@ -190,7 +206,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   // In scroll mode, start with "now" under the marker
   useEffect(() => {
     if (scrolling()) place(0);
-    return () => (clearTimeout(idle.current), cancelAnimationFrame(anim.current));
+    return () => (clearTimeout(idle.current), cancelAnimationFrame(anim.current), cancelAnimationFrame(ebb.current));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // One pass of the swell along the scale when it first comes into view
@@ -258,7 +274,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
                 return (
                   <span
                     key={y}
-                    className={y >= Math.floor(lo) && y <= hi ? "on" : undefined}
+                    className={y >= lo && y <= hi ? "on" : undefined}
                     style={{ left: `${p * 100}%`, transform: `translateX(${p > 0.97 ? -100 : p < 0.03 ? 0 : -50}%)` }}
                   >
                     {y}
