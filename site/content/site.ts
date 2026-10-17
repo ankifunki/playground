@@ -70,16 +70,17 @@ export const about = {
 // Places Ankit has worked, newest first. Shown as a timeline (oldest on the left): each company's icon, with its
 // name and blurb revealed on hover. Icons are drawn as masks so they all take the same neutral colour.
 // DRAFT blurbs: Ankit to rewrite in his own words.
-export type Employer = { name: string; src: string; blurb: string };
+// start: the year Ankit joined. PLACEHOLDER years until he confirms them.
+export type Employer = { name: string; src: string; start: number; blurb: string };
 export const experience: Employer[] = [
-  { name: "Genius AI", src: "/brand/genius-g-black.svg", blurb: "Where I am now: the platform beauty and wellness businesses run on, from booking to checkout." },
-  { name: "Instacart", src: "/logos/instacart.svg", blurb: "Groceries from the stores you already love, delivered the same day." },
-  { name: "Flexport", src: "/logos/flexport.svg", blurb: "Software and logistics that move global trade, one container at a time." },
-  { name: "UserTesting", src: "/logos/usertesting.svg", blurb: "Watching real people use real products, and helping teams learn from it." },
-  { name: "Stitch Fix", src: "/logos/stitchfix.svg", blurb: "Personal styling, picked by stylists and data, delivered to your door." },
-  { name: "HackerRank", src: "/logos/hackerrank.svg", blurb: "Coding challenges and interviews that help companies hire developers." },
-  { name: "Samsung", src: "/logos/samsung.svg", blurb: "Where a two-day hackathon turned into Smart Hotel, a room that knows you." },
-  { name: "CloudOn", src: "/logos/cloudon.svg", blurb: "Microsoft Office streamed to the iPad before Microsoft shipped it. Later acquired by Dropbox." },
+  { name: "Genius AI", start: 2024, src: "/brand/genius-g-black.svg", blurb: "Where I am now: the platform beauty and wellness businesses run on, from booking to checkout." },
+  { name: "Instacart", start: 2021, src: "/logos/instacart.svg", blurb: "Groceries from the stores you already love, delivered the same day." },
+  { name: "Flexport", start: 2019, src: "/logos/flexport.svg", blurb: "Software and logistics that move global trade, one container at a time." },
+  { name: "UserTesting", start: 2018, src: "/logos/usertesting.svg", blurb: "Watching real people use real products, and helping teams learn from it." },
+  { name: "Stitch Fix", start: 2017, src: "/logos/stitchfix.svg", blurb: "Personal styling, picked by stylists and data, delivered to your door." },
+  { name: "HackerRank", start: 2016, src: "/logos/hackerrank.svg", blurb: "Coding challenges and interviews that help companies hire developers." },
+  { name: "Samsung", start: 2014, src: "/logos/samsung.svg", blurb: "Where a two-day hackathon turned into Smart Hotel, a room that knows you." },
+  { name: "CloudOn", start: 2012, src: "/logos/cloudon.svg", blurb: "Microsoft Office streamed to the iPad before Microsoft shipped it. Later acquired by Dropbox." },
 ];
 
 export const projects: Project[] = [

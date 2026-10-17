@@ -1,87 +1,144 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Employer } from "@/content/site";
 
-// Past employers on one line, oldest on the left and "now" on the right. Marks rest faint; a light sweeps along
-// the line once when it scrolls into view, hinting that each one can be explored. Hover, focus or tap a mark to
-// lift it, show its name above and its blurb below. Arrow keys move along the line.
+const PER_YEAR = 4; // ticks per year: a tall one on the year, three short ones between
+const HALO = 70; // px: how far the swell around the pointer reaches
+const LIFT = 1.6; // extra height at the centre of the swell (1.6 = 2.6× the resting height)
+
+// Past employers as a ruler: thin vertical ticks, with only the start years written above. Moving along it, the
+// ticks swell around the pointer like a halo, the stretch of years under it darkens, and that team's mark, name
+// and blurb appear below. The swell passes along the ruler once when it scrolls into view, as a hint.
 export function Timeline({ items }: { items: Employer[] }) {
-  const [active, setActive] = useState<number | null>(null);
-  const [swept, setSwept] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setSwept(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.6 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const move = (i: number, dir: number) => {
-    const next = (i + dir + items.length) % items.length;
-    buttons.current[next]?.focus();
+  const from = items[0].start;
+  const now = new Date();
+  const to = Math.max(now.getFullYear() + now.getMonth() / 12, items[items.length - 1].start + 1);
+  const span = to - from;
+  const total = Math.floor(span * PER_YEAR) + 1;
+  const ticks = Array.from({ length: total }, (_, i) => from + i / PER_YEAR);
+  const pos = (year: number) => (year - from) / span;
+  const ends = items.map((c, i) => (i + 1 < items.length ? items[i + 1].start : to));
+  const indexAt = (year: number) => {
+    let i = 0;
+    while (i + 1 < items.length && items[i + 1].start <= year) i++;
+    return i;
   };
 
+  const [active, setActive] = useState<number | null>(null);
+  const ruler = useRef<HTMLDivElement>(null);
+  const tickEls = useRef<(HTMLSpanElement | null)[]>([]);
+  const frame = useRef(0);
+
+  // Swell the ticks around x (px from the ruler's left edge); null lets them all settle back.
+  const swell = useCallback((x: number | null) => {
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      const w = ruler.current?.clientWidth ?? 0;
+      tickEls.current.forEach((el, i) => {
+        if (!el) return;
+        const d = x === null ? Infinity : (i / (total - 1)) * w - x;
+        el.style.setProperty("--s", (1 + LIFT * Math.exp(-((d / HALO) ** 2))).toFixed(3));
+      });
+    });
+  }, [total]);
+
+  const at = (clientX: number) => {
+    const r = ruler.current!.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - r.left, 0), r.width);
+    swell(x);
+    setActive(indexAt(from + (x / r.width) * span));
+  };
+
+  const focusOn = (i: number) => {
+    const w = ruler.current?.clientWidth ?? 0;
+    setActive(i);
+    swell(((pos(items[i].start) + pos(ends[i])) / 2) * w);
+  };
+
+  // One pass of the swell along the ruler when it first comes into view
+  useEffect(() => {
+    const el = ruler.current;
+    if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        const t0 = performance.now();
+        const run = (t: number) => {
+          const k = Math.min((t - t0) / 1800, 1);
+          const ease = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+          if (k < 1) {
+            swell(-HALO + ease * (el.clientWidth + 2 * HALO));
+            raf = requestAnimationFrame(run);
+          } else swell(null);
+        };
+        raf = requestAnimationFrame(run);
+      },
+      { threshold: 0.8 },
+    );
+    io.observe(el);
+    return () => (io.disconnect(), cancelAnimationFrame(raf));
+  }, [swell]);
+
   const current = active === null ? null : items[active];
+  const lo = active === null ? -1 : items[active].start;
+  const hi = active === null ? -1 : ends[active];
 
   return (
-    <div
-      ref={ref}
-      className={`tl${swept ? " swept" : ""}${active !== null ? " has-active" : ""}`}
-      style={{ ["--n" as string]: items.length }}
-      onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
-    >
-      <ol className="tl-track">
-        {items.map((c, i) => (
-          <li key={c.name} className={active === i ? "on" : undefined} style={{ ["--i" as string]: i }}>
-            <button
-              ref={(b) => {
-                buttons.current[i] = b;
+    <div className="rl-wrap">
+      <div
+        ref={ruler}
+        className="rl"
+        tabIndex={0}
+        role="group"
+        aria-label="Places I've worked, oldest to newest. Use the arrow keys to move along the timeline."
+        onPointerMove={(e) => at(e.clientX)}
+        onPointerDown={(e) => at(e.clientX)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && (swell(null), setActive(null))}
+        onFocus={(e) => active === null && e.currentTarget.matches(":focus-visible") && focusOn(items.length - 1)}
+        onBlur={() => (swell(null), setActive(null))}
+        onKeyDown={(e) => {
+          const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+          if (!step) return;
+          e.preventDefault();
+          focusOn(Math.min(Math.max((active ?? items.length - 1) + step, 0), items.length - 1));
+        }}
+      >
+        <div className="rl-years" aria-hidden="true">
+          {items.map((c, i) => (
+            <span key={c.name} className={active === i ? "on" : undefined} style={{ left: `${pos(c.start) * 100}%` }}>
+              <span className="rl-y-full">{c.start}</span>
+              <span className="rl-y-short">’{String(c.start).slice(2)}</span>
+            </span>
+          ))}
+        </div>
+        <div className="rl-ticks" aria-hidden="true">
+          {ticks.map((y, i) => (
+            <span
+              key={i}
+              ref={(el) => {
+                tickEls.current[i] = el;
               }}
-              type="button"
-              className="tl-node"
-              aria-label={c.name}
-              aria-pressed={active === i}
-              aria-describedby={active === i ? "tl-blurb" : undefined}
-              onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
-              onFocus={() => setActive(i)}
-              onBlur={() => setActive(null)}
-              onClick={() => setActive(i)}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowRight" || e.key === "ArrowDown") (e.preventDefault(), move(i, 1));
-                if (e.key === "ArrowLeft" || e.key === "ArrowUp") (e.preventDefault(), move(i, -1));
-              }}
-            >
-              <span className="tl-name" aria-hidden="true">{c.name}</span>
-              <span className="tl-mark" aria-hidden="true" style={{ ["--src" as string]: `url(${c.src})` }} />
-            </button>
-          </li>
-        ))}
-      </ol>
-      <div className="tl-ends mono" aria-hidden="true">
-        <span>Then</span>
-        <span>Now</span>
+              className={`${i % PER_YEAR === 0 ? "maj" : ""}${y >= lo && y <= hi ? " in" : ""}`}
+              style={{ left: `${(i / (total - 1)) * 100}%` }}
+            />
+          ))}
+          <span className="rl-now" style={{ left: "100%" }} />
+        </div>
       </div>
-      <p id="tl-blurb" className="tl-blurb" aria-live="polite">
+      <p className="rl-caption" aria-live="polite">
         {current ? (
-          <span key={current.name} className="tl-blurb-in">
-            <b>{current.name}</b> {current.blurb}
+          <span key={current.name} className="rl-caption-in">
+            <span className="rl-mark" aria-hidden="true" style={{ ["--src" as string]: `url(${current.src})` }} />
+            <b>{current.name}</b>
+            <span className="rl-blurb">{current.blurb}</span>
           </span>
         ) : (
-          <span className="tl-hint">
-            <span className="tl-hint-fine">Hover a mark for the story.</span>
-            <span className="tl-hint-coarse">Tap a mark for the story.</span>
+          <span className="rl-hint">
+            <span className="rl-hint-fine">Run your cursor along the years.</span>
+            <span className="rl-hint-coarse">Tap or drag along the years.</span>
           </span>
         )}
       </p>
