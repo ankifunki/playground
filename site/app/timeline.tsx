@@ -35,6 +35,20 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   const [active, setActive] = useState<number | null>(null);
   const [moving, setMoving] = useState(false);
+  // Detail cards: the active team's card slides in from the direction of travel while the last one slides out.
+  const [cards, setCards] = useState<{ i: number; dir: number; id: number; out?: boolean }[]>([]);
+  const last = useRef<number | null>(null);
+  const seq = useRef(0);
+  useEffect(() => {
+    const prev = last.current;
+    if (active === prev) return;
+    last.current = active;
+    const dir = prev === null || active === null ? 0 : Math.sign(active - prev); // +1 = towards older, on the right
+    setCards((cs) => [
+      ...cs.filter((c) => !c.out).map((c) => ({ ...c, out: true, dir })),
+      ...(active === null ? [] : [{ i: active, dir, id: ++seq.current }]),
+    ]);
+  }, [active]);
   const ruler = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const tickEls = useRef<(HTMLSpanElement | null)[]>([]);
@@ -126,7 +140,6 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     return () => (io.disconnect(), cancelAnimationFrame(raf));
   }, [swell]);
 
-  const current = active === null ? null : items[active];
   const lo = active === null ? Infinity : items[active].start;
   const hi = active === null ? -Infinity : ends[active];
 
@@ -184,16 +197,26 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
         </div>
       </div>
       <div className="rl-caption" aria-live="polite">
-        {current ? (
-          <div key={current.name} className="rl-caption-in">
-            <span className="rl-mark" aria-hidden="true" style={{ ["--src" as string]: `url(${current.src})` }} />
-            <b className="rl-name">{current.name}</b>
-            <span className="rl-dates mono">
-              {label(current.from)} – {current.end ? label(current.end) : "Now"}
-            </span>
-            <p className="rl-blurb">{current.blurb}</p>
-          </div>
-        ) : (
+        {cards.map((c) => {
+          const it = items[c.i];
+          return (
+            <div
+              key={c.id}
+              className={`rl-card${c.out ? " out" : ""}`}
+              aria-hidden={c.out || undefined}
+              style={{ ["--dir" as string]: c.dir, ["--rise" as string]: c.dir ? "0px" : "6px" }}
+              onAnimationEnd={(e) => c.out && e.target === e.currentTarget && setCards((cs) => cs.filter((x) => x.id !== c.id))}
+            >
+              <span className="rl-mark" aria-hidden="true" style={{ ["--src" as string]: `url(${it.src})` }} />
+              <b className="rl-name">{it.name}</b>
+              <span className="rl-dates mono">
+                {label(it.from)} – {it.end ? label(it.end) : "Now"}
+              </span>
+              <p className="rl-blurb">{it.blurb}</p>
+            </div>
+          );
+        })}
+        {active === null && (
           <p className="rl-hint">
             <span className="rl-hint-fine">Run your cursor along the years.</span>
             <span className="rl-hint-coarse">Tap or drag along the years.</span>

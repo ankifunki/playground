@@ -116,7 +116,7 @@ a { color: inherit; }
 
 /* Been at: a ruler of thin ticks with only the start years above. Ticks swell around the pointer (heights are
    set from timeline.tsx as --s); the stretch under it darkens and that team's mark, name and blurb show below. */
-.rl { position: relative; height: 48px; touch-action: pan-y; cursor: crosshair; outline: none; }
+.rl { position: relative; height: 48px; cursor: crosshair; outline: none; }
 .rl:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); border-radius: 4px; }
 .rl-years { position: absolute; inset: 0 0 auto; height: 14px; }
 .rl-years > span {
@@ -124,30 +124,29 @@ a { color: inherit; }
   font: 400 11px/14px var(--mono); letter-spacing: 0.04em; color: var(--faint);
   transition: color 0.2s var(--ease), opacity 0.3s var(--ease);
 }
-.rl-years > span.on { color: var(--ink); }
+/* Years spent at the active team light up in the accent; the rest stay neutral */
+.rl-years > span.on { color: var(--accent); }
 /* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
 .rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
 .rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
+/* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape */
 .rl-ticks > span {
-  position: absolute; bottom: 0; width: 2px; height: 5px; margin-left: -1px; border-radius: 1px 1px 0 0;
-  background: var(--rule); transform-origin: bottom; transform: scaleY(calc(var(--s, 1) * var(--k, 1)));
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
+  --h: 5px;
+  position: absolute; bottom: 0; width: 2px; margin-left: -1px; border-radius: 1px 1px 0 0;
+  height: calc(var(--h) * var(--s, 1) * var(--k, 1)); background: var(--rule);
+  transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
 }
-.rl-ticks > span.maj { height: 10px; background: var(--faint); }
+.rl-ticks > span.maj { --h: 10px; background: var(--faint); }
 .rl-ticks > span.in { --k: 1.4; background: var(--ink); }
 /* At rest on a stretch, everything else subsides */
-.rl.has-active:not(.moving) .rl-ticks > span:not(.in):not(.rl-now),
-.rl.has-active:not(.moving) .rl-years > span:not(.on) { opacity: 0.3; }
+.rl.has-active:not(.moving) .rl-ticks > span:not(.in):not(.rl-now) { opacity: 0.3; }
 .rl-ticks > .rl-now {
-  left: 0; width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent); transform: none;
+  left: 0; width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent);
 }
 /* The details sit centred under the ruler on a steady vertical rhythm (mark, name, dates, blurb) in a box of
    fixed height, so nothing below moves as they change. */
-.rl-caption {
-  display: grid; place-items: start center; height: 178px; margin-top: var(--s3);
-  text-align: center; color: var(--grey);
-}
-.rl-caption-in { display: grid; justify-items: center; }
+.rl-caption { position: relative; height: 178px; margin-top: var(--s3); text-align: center; color: var(--grey); }
+.rl-card { position: absolute; inset: 0 0 auto; display: grid; justify-items: center; }
 .rl-mark {
   display: block; width: 28px; height: 28px; background: var(--ink);
   -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
@@ -158,7 +157,7 @@ a { color: inherit; }
   margin-top: var(--s2); max-width: 44ch; font-size: 16px; line-height: 24px; text-wrap: balance;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
 }
-.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; }
+.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; animation: rl-fade 0.4s var(--ease) 0.15s both; }
 .rl-hint-coarse { display: none; }
 @media (hover: none) { .rl-hint-fine { display: none; } .rl-hint-coarse { display: inline; } }
 /* Phones: the ruler runs wider than the screen and scrolls sideways under a centre marker. The scroller bleeds to
@@ -169,7 +168,8 @@ a { color: inherit; }
 @media (max-width: 560px) {
   .rl-wrap { position: relative; margin-inline: -24px; }
   .rl-scroll {
-    overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding-inline: 50vw;
+    overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none;
+    padding: 0 50vw 12px; touch-action: pan-x pan-y;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   }
@@ -179,14 +179,27 @@ a { color: inherit; }
     content: ""; position: absolute; left: 50%; top: 54px; width: 5px; height: 5px; margin-left: -2.5px;
     border-radius: 999px; background: var(--accent); z-index: 1;
   }
-  .rl-caption { padding-inline: 24px; }
+  .rl-caption { margin-inline: 24px; }
   .rl-hint { display: none; }
 }
+/* Moving between teams: the new card's parts arrive one after another from the direction of travel, softly
+   blurred, while the old card drifts the other way and fades. */
+.rl-card > * { animation: rl-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.rl-card > :nth-child(2) { animation-delay: 0.04s; }
+.rl-card > :nth-child(3) { animation-delay: 0.08s; }
+.rl-card > :nth-child(4) { animation-delay: 0.12s; }
+.rl-card.out { animation: rl-out 0.22s var(--ease) both; }
+.rl-card.out > * { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rl-card > *, .rl-hint { animation: none; }
+  .rl-card.out { animation-duration: 1ms; }
+}
 @media (prefers-reduced-motion: no-preference) {
-  .rl-caption-in { animation: rl-in 0.3s var(--ease) both; }
   .rl-now { animation: rl-now 2.8s ease-in-out infinite; }
 }
-@keyframes rl-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes rl-in { from { opacity: 0; transform: translate(calc(var(--dir) * 18px), var(--rise)); filter: blur(4px); } }
+@keyframes rl-out { to { opacity: 0; transform: translateX(calc(var(--dir) * -14px)); filter: blur(3px); } }
+@keyframes rl-fade { from { opacity: 0; } }
 @keyframes rl-now { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 
