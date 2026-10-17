@@ -112,7 +112,8 @@ head = head.replace("\n</style>", "\n" + CSS + "</style>", 1)
 
 def frame(src_list, alt_list, ratio, seq=False):
     imgs = "".join(
-        f'<img src="img/{s}.webp" alt="{a}" style="object-position:top left" {"decoding=\"async\"" if i == 0 else "loading=\"lazy\" decoding=\"async\""}>'
+        (f'<img src="img/{s}-f.webp" data-full="img/{s}.webp"' if (HERE / "img" / f"{s}-f.webp").exists() else f'<img src="img/{s}.webp"')
+        + f' alt="{a}" style="object-position:top left" {"decoding=\"async\"" if i == 0 else "loading=\"lazy\" decoding=\"async\""}>'
         for i, (s, a) in enumerate(zip(src_list, alt_list)))
     return f'<div class="frame{" seq" if seq else ""}" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}</div>'
 
@@ -373,7 +374,7 @@ SLIDES = f'''
 
 {chapter(2, "Web")}
 
-{flow("Line items with add-ons", "1100/1036", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "A busy cart gets long fast. Add-ons travel with their service and stay collapsed until you need them.", tall="dt")}
+{flow("Items with add-ons", "422/692", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "A busy cart gets long fast. Add-ons travel with their service and stay collapsed until you need them.", tall=True)}
 
 {chapter(3, "Phase 2")}
 

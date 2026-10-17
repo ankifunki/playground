@@ -239,6 +239,9 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
+  .models > .frame{aspect-ratio:var(--r);align-self:center}
+  .flowseq > .frame{aspect-ratio:var(--r);width:auto;height:calc(var(--u)*560);max-width:100%;justify-self:start}
+  .content > .flowseq{grid-template-columns:auto minmax(calc(var(--u)*280),1fr);column-gap:calc(var(--u)*64)}
   .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
   .steps button{min-width:0;flex:none;display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
   .steps button b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
@@ -587,10 +590,10 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Web</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Line items with add-ons"><div class="stage">
-  <div class="head"><h3 class="title">Line items with add-ons</h3></div>
-  <div class="content"><div class="flowseq tall dt">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1100/1036"><img src="img/w-1.webp" alt="Step 1: Cart" style="object-position:top left" decoding="async"><img src="img/w-2.webp" alt="Step 2: Add items" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-3.webp" alt="Step 3: Add-ons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-4.webp" alt="Step 4: Grouped" style="object-position:top left" loading="lazy" decoding="async"></div>
+<section class="slide screens" data-name="Items with add-ons"><div class="stage">
+  <div class="head"><h3 class="title">Items with add-ons</h3></div>
+  <div class="content"><div class="flowseq tall">
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:422/692"><img src="img/w-1-f.webp" data-full="img/w-1.webp" alt="Step 1: Cart" style="object-position:top left" decoding="async"><img src="img/w-2-f.webp" data-full="img/w-2.webp" alt="Step 2: Add items" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-3-f.webp" data-full="img/w-3.webp" alt="Step 3: Add-ons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/w-4-f.webp" data-full="img/w-4.webp" alt="Step 4: Grouped" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Cart" aria-pressed="true"><span class="mono">01</span><b>Cart</b></button><button type="button" aria-label="Step 2: Add items" aria-pressed="false"><span class="mono">02</span><b>Add items</b></button><button type="button" aria-label="Step 3: Add-ons" aria-pressed="false"><span class="mono">03</span><b>Add-ons</b></button><button type="button" aria-label="Step 4: Grouped" aria-pressed="false"><span class="mono">04</span><b>Grouped</b></button></div>
     <p class="foot">A busy cart gets long fast. Add-ons travel with their service and stay collapsed until you need them.</p>
   </div></div>
@@ -734,7 +737,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
     if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
-    if(img){var c=document.createElement('img');c.src=img.src;c.alt=img.alt;w.appendChild(c)}
+    if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
     f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});
