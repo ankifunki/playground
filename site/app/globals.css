@@ -125,7 +125,6 @@ a { color: inherit; }
 }
 .rl-years > span:first-child { transform: none; }
 .rl-years > span.on { color: var(--ink); }
-.rl-y-short { display: none; }
 .rl-ticks { position: absolute; inset: auto 0 0; height: 42px; }
 .rl-ticks > span {
   position: absolute; bottom: 0; width: 1px; height: 9px; margin-left: -0.5px;
@@ -137,19 +136,47 @@ a { color: inherit; }
 .rl-ticks > .rl-now {
   width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent); transform: none;
 }
-.rl-caption { display: flex; align-items: baseline; min-height: 3.1em; margin-top: var(--s3); max-width: 64ch; font-size: 16px; line-height: 1.55; color: var(--grey); }
-.rl-caption-in { display: block; }
+/* The details sit centred under the ruler on a steady vertical rhythm (mark, name, dates, blurb) in a box of
+   fixed height, so nothing below moves as they change. */
+.rl-caption {
+  display: grid; place-items: start center; height: 178px; margin-top: var(--s3);
+  text-align: center; color: var(--grey);
+}
+.rl-caption-in { display: grid; justify-items: center; }
 .rl-mark {
-  display: inline-block; width: 16px; height: 16px; margin-right: 8px; vertical-align: -2px; background: var(--ink);
+  display: block; width: 28px; height: 28px; background: var(--ink);
   -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
 }
-.rl-caption b { font-weight: 500; color: var(--ink); margin-right: 8px; }
-.rl-dates { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--faint); margin-right: 10px; white-space: nowrap; }
-.rl-hint { color: var(--faint); font-size: 15px; }
+.rl-name { margin-top: var(--s2); font: 500 20px/24px var(--body); letter-spacing: -0.01em; color: var(--ink); }
+.rl-dates { margin-top: var(--s1); font-size: 11px; line-height: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+.rl-blurb {
+  margin-top: var(--s2); max-width: 44ch; font-size: 16px; line-height: 24px; text-wrap: balance;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; }
 .rl-hint-coarse { display: none; }
 @media (hover: none) { .rl-hint-fine { display: none; } .rl-hint-coarse { display: inline; } }
-/* On phones, years less than a year before the next one stay hidden unless their stretch is active */
-@media (max-width: 560px) { .rl-y-full { display: none; } .rl-y-short { display: inline; } .rl-years > span.tight:not(.on), .rl-years > span.tight.on + span { opacity: 0; } }
+/* Phones: the ruler runs wider than the screen and scrolls sideways under a centre marker. The scroller bleeds to
+   the screen edges, with half a screen of room at each end so the first and last years can reach the marker. */
+.been { grid-template-columns: minmax(0, 1fr); }
+.rl-wrap { min-width: 0; }
+.rl-scroll { position: relative; }
+@media (max-width: 560px) {
+  .rl-wrap { position: relative; margin-inline: -24px; }
+  .rl-scroll {
+    overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding-inline: 50vw;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  }
+  .rl-scroll::-webkit-scrollbar { display: none; }
+  .rl { width: calc(var(--years) * 84px); cursor: default; }
+  .rl-wrap::before {
+    content: ""; position: absolute; left: 50%; top: 70px; width: 5px; height: 5px; margin-left: -2.5px;
+    border-radius: 999px; background: var(--accent); z-index: 1;
+  }
+  .rl-caption { padding-inline: 24px; }
+  .rl-hint { display: none; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .rl-caption-in { animation: rl-in 0.3s var(--ease) both; }
   .rl-now { animation: rl-now 2.8s ease-in-out infinite; }
