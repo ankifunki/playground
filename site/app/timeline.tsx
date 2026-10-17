@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Employer } from "@/content/site";
 
-const PER_YEAR = 2; // ticks per year: a major one on the year and one between
+const PER_YEAR = 12; // ticks per year: one a month, taller at the half year and tallest on the year
 const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
 const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
@@ -90,13 +90,15 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     swell(x);
     setMoving(true);
     setActive(indexAt(to - (x / w) * span));
+    xRef.current = x;
     clearTimeout(idle.current);
     cancelAnimationFrame(ebb.current);
-    idle.current = setTimeout(scrolling() ? subside : () => (swell(null), setMoving(false)), scrolling() ? 60 : SETTLE);
+    idle.current = setTimeout(subside, scrolling() ? 60 : SETTLE);
   };
-  // Phones: once the scale comes to rest, the swell around the marker eases away over SUBSIDE ms
+  // Once the pointer or the scale comes to rest, the swell eases away over SUBSIDE ms; the selected tick stays tall
   const ebb = useRef(0);
   const subside = () => {
+    if (drag.current?.moved) return; // still under the finger: settle once it lets go
     setMoving(false);
     const t0 = performance.now(), x = xRef.current;
     const step = (t: number) => {
@@ -106,11 +108,23 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     };
     ebb.current = requestAnimationFrame(step);
   };
-  const reset = () => (clearTimeout(idle.current), swell(null), setMoving(false), setActive(null));
+  const reset = () => {
+    clearTimeout(idle.current);
+    pinRef.current = -1;
+    setPin(null);
+    swell(null);
+    setMoving(false);
+    setActive(null);
+  };
 
+  // Desktop: the tick under the pointer is the selected one
   const at = (clientX: number) => {
     const r = ruler.current!.getBoundingClientRect();
-    moveTo(Math.min(Math.max(clientX - r.left, 0), r.width), r.width);
+    const x = Math.min(Math.max(clientX - r.left, 0), r.width);
+    const i = Math.round(((to - from - (x / r.width) * span) * PER_YEAR));
+    pinRef.current = Math.min(Math.max(i, 0), ticks.length - 1);
+    setPin(pinRef.current);
+    moveTo(x, r.width);
   };
 
   // Scroll mode (phones): the scale is wider than the screen and slides under a fixed centre marker. x is the
@@ -283,13 +297,18 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
               })}
           </div>
           <div className="rl-ticks" aria-hidden="true">
+            {/* The active team's time, as a soft band behind its stretch of the scale */}
+            <div
+              className={`rl-band${active === null ? "" : " on"}`}
+              style={active === null ? undefined : { left: `${pos(hi) * 100}%`, width: `${(pos(lo) - pos(hi)) * 100}%` }}
+            />
             {ticks.map((y, i) => (
               <span
                 key={i}
                 ref={(el) => {
                   tickEls.current[i] = el;
                 }}
-                className={`${i % PER_YEAR === 0 ? "maj" : ""}${y >= lo && y <= hi ? " in" : ""}${pin === i && !moving ? " pin" : ""}`}
+                className={`${i % PER_YEAR === 0 ? "maj" : i % (PER_YEAR / 2) === 0 ? "mid" : ""}${pin === i && !moving ? " pin" : ""}`}
                 style={{ left: `${pos(y) * 100}%` }}
               />
             ))}

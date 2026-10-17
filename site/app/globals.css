@@ -131,24 +131,24 @@ a { color: inherit; }
 /* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
 .rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
 .rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
-/* Fine month ticks between the year and half-year marks: tiny and static, just enough to make the scale dense.
-   Now sits on a month boundary at the left edge, so the months line up with the year ticks. */
-.rl-ticks::after {
-  content: ""; position: absolute; inset: auto 0 0; height: 3px; pointer-events: none;
-  background: linear-gradient(90deg, var(--rule) 0 1px, transparent 1px) 0 100% / calc(100% / (var(--years) * 12)) 100% repeat-x;
-}
 /* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape */
 .rl-ticks > span {
-  --h: 5px;
-  position: absolute; z-index: 1; bottom: 0; width: 2px; margin-left: -1px; border-radius: 1px 1px 0 0;
+  --h: 3px;
+  position: absolute; z-index: 1; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
   height: calc(var(--h) * var(--s, 1)); background: var(--rule);
   transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
 }
-.rl-ticks > span.maj { --h: 10px; background: var(--faint); }
-/* The active stretch: same heights as the rest, in the accent, matching its years and the phone marker */
-.rl-ticks > span.in { background: var(--accent); }
-/* At rest on a stretch, everything else subsides */
-.rl.has-active:not(.moving) .rl-ticks > span:not(.in):not(.rl-now) { opacity: 0.3; }
+.rl-ticks > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
+.rl-ticks > span.maj { --h: 10px; width: 2px; margin-left: -1px; background: var(--faint); }
+/* Only the selected tick takes the accent */
+.rl-ticks > span.pin { width: 2px; margin-left: -1px; background: var(--accent); }
+/* The active team's time: a soft band behind its stretch */
+.rl-band {
+  position: absolute; bottom: 0; height: 100%; border-radius: 4px 4px 0 0; opacity: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  transition: left 0.35s var(--ease), width 0.35s var(--ease), opacity 0.25s var(--ease);
+}
+.rl-band.on { opacity: 1; }
 .rl-ticks > .rl-now {
   left: 0; width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent);
 }
@@ -193,7 +193,7 @@ a { color: inherit; }
   }
   .rl-wrap::after { top: 52px; width: 2px; height: 16px; margin-left: -1px; border-radius: 0 0 1px 1px; }
   .rl-wrap::before { top: 66px; width: 6px; height: 6px; margin-left: -3px; border-radius: 999px; }
-  .rl-wrap.pinned::before, .rl-wrap.pinned::after, .rl-ticks > span.pin { background: var(--accent); }
+  .rl-wrap.pinned::before, .rl-wrap.pinned::after { background: var(--accent); }
   /* The milestone tick keeps the full height it had at the top of the swell (timeline.tsx holds its --s at the
      peak when the rest subside), and never animates down in between */
   .rl-ticks > span.pin { transition: background 0.2s var(--ease); }
