@@ -8,7 +8,7 @@ const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
 const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
 // Phone drag physics: a flick coasts about FRICTION ms' worth of its release speed, then a spring settles on the
-// nearest year. A slightly underdamped spring gives a small, soft overshoot.
+// next year in that direction (or further, for a strong flick). A slightly underdamped spring gives a small, soft overshoot.
 const FRICTION = 170;
 const SPRING = 210; // stiffness
 const DAMPING = 0.72; // ratio of critical damping
@@ -169,9 +169,14 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     const [t0, x0] = d.samples[0] ?? [e.timeStamp, e.currentTarget.scrollLeft];
     const [t1, x1] = d.samples[d.samples.length - 1] ?? [t0, x0];
     const v = e.type === "pointercancel" || t1 === t0 ? 0 : (x1 - x0) / (t1 - t0);
-    const aim = e.currentTarget.scrollLeft + v * FRICTION;
-    const target = milestones().reduce((a, b) => (Math.abs(b - aim) < Math.abs(a - aim) ? b : a));
-    springTo(target, v);
+    // Always carry on to the next milestone in the direction of the drag (a short drag never springs back);
+    // a stronger flick coasts further and lands on the milestone nearest where it would stop.
+    const cur = e.currentTarget.scrollLeft;
+    const dir = Math.sign(cur - d.s0);
+    const aim = cur + (Math.sign(v) === dir ? v : 0) * FRICTION;
+    const ahead = milestones().filter((m) => (m - d.s0) * dir > 1);
+    if (!ahead.length) return springTo(milestones().reduce((a, b) => (Math.abs(b - cur) < Math.abs(a - cur) ? b : a)), v);
+    springTo(ahead.reduce((a, b) => (Math.abs(b - aim) < Math.abs(a - aim) ? b : a)), v);
   };
 
   const focusOn = (i: number) => {
