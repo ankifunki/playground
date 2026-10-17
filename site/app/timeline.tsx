@@ -7,6 +7,11 @@ const PER_YEAR = 2; // ticks per year: a major one on the year and one between
 const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
 const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
+// Phone drag physics: a flick coasts about FRICTION ms' worth of its release speed, then a spring settles on the
+// nearest year. A slightly underdamped spring gives a small, soft overshoot.
+const FRICTION = 170;
+const SPRING = 210; // stiffness
+const DAMPING = 0.72; // ratio of critical damping
 
 // Past employers as a time scale, newest on the left: a baseline with short, thick ticks and only the years
 // above. While the pointer moves, the ticks swell around it; once it rests, the swell subsides and only the
@@ -107,9 +112,66 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     });
     setPin(best);
   };
+  // Scroll positions that put a milestone (Now, then each year) under the centre marker
+  const milestones = () => {
+    const sc = scroller.current!, r = ruler.current!;
+    const at = (x: number) => r.offsetLeft + x - sc.clientWidth / 2;
+    return [at(0), ...ticks.filter((_, i) => i % PER_YEAR === 0).map((y) => at(pos(y) * r.clientWidth))];
+  };
+  const anim = useRef(0);
+  // Spring the scroller to a position, starting with velocity v (px per ms).
+  const springTo = (target: number, v = 0) => {
+    const sc = scroller.current;
+    if (!sc) return;
+    cancelAnimationFrame(anim.current);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return void (sc.scrollLeft = target);
+    let x = sc.scrollLeft, vel = v * 1000, last = performance.now();
+    const c = 2 * Math.sqrt(SPRING) * DAMPING;
+    const step = (t: number) => {
+      const dt = Math.min((t - last) / 1000, 1 / 30);
+      last = t;
+      vel += (-SPRING * (x - target) - c * vel) * dt;
+      x += vel * dt;
+      if (Math.abs(x - target) < 0.4 && Math.abs(vel) < 8) return void (sc.scrollLeft = target);
+      sc.scrollLeft = x;
+      anim.current = requestAnimationFrame(step);
+    };
+    anim.current = requestAnimationFrame(step);
+  };
   const centreOn = (x: number) => {
     const sc = scroller.current, r = ruler.current;
-    if (sc && r) sc.scrollTo({ left: r.offsetLeft + x - sc.clientWidth / 2, behavior: "smooth" });
+    if (sc && r) springTo(r.offsetLeft + x - sc.clientWidth / 2);
+  };
+
+  // Dragging (scroll mode): follow the finger 1:1, then coast with friction and spring onto the nearest year.
+  const drag = useRef<{ id: number; x0: number; s0: number; samples: [number, number][]; moved: boolean } | null>(null);
+  const onDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!scrolling() || drag.current) return;
+    cancelAnimationFrame(anim.current);
+    drag.current = { id: e.pointerId, x0: e.clientX, s0: e.currentTarget.scrollLeft, samples: [], moved: false };
+  };
+  const onDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x0;
+    if (!d.moved && Math.abs(dx) < 4) return;
+    if (!d.moved) (d.moved = true), e.currentTarget.setPointerCapture(e.pointerId);
+    const sc = e.currentTarget;
+    sc.scrollLeft = Math.min(Math.max(d.s0 - dx, 0), sc.scrollWidth - sc.clientWidth);
+    d.samples.push([e.timeStamp, sc.scrollLeft]);
+    while (d.samples.length > 2 && e.timeStamp - d.samples[0][0] > 90) d.samples.shift();
+  };
+  const onDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    if (!d.moved) return; // a tap does nothing
+    const [t0, x0] = d.samples[0] ?? [e.timeStamp, e.currentTarget.scrollLeft];
+    const [t1, x1] = d.samples[d.samples.length - 1] ?? [t0, x0];
+    const v = e.type === "pointercancel" || t1 === t0 ? 0 : (x1 - x0) / (t1 - t0);
+    const aim = e.currentTarget.scrollLeft + v * FRICTION;
+    const target = milestones().reduce((a, b) => (Math.abs(b - aim) < Math.abs(a - aim) ? b : a));
+    springTo(target, v);
   };
 
   const focusOn = (i: number) => {
@@ -122,7 +184,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   // In scroll mode, start with "now" under the marker
   useEffect(() => {
     if (scrolling()) fromCentre();
-    return () => clearTimeout(idle.current);
+    return () => (clearTimeout(idle.current), cancelAnimationFrame(anim.current));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // One pass of the swell along the scale when it first comes into view
@@ -159,6 +221,10 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
       <div
         ref={scroller}
         className="rl-scroll"
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={onDragEnd}
+        onPointerCancel={onDragEnd}
         onScroll={(e) => {
           if (!scrolling()) return;
           if (e.currentTarget.scrollTop) e.currentTarget.scrollTop = 0; // sideways only
