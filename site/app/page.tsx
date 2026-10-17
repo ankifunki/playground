@@ -1,77 +1,50 @@
-import { about, intro, profile, projects } from "@/content/site";
-import { CopyEmail } from "./copy-email";
+import { experience, intro, profile, projects } from "@/content/site";
+import { ContactList } from "./contact-list";
 import { Tiles } from "./tiles";
-
-const LockMark = () => (
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
-    <rect x="1.5" y="4.5" width="7" height="5" rx="1" />
-    <path d="M3 4.5V3a2 2 0 0 1 4 0v1.5" />
-  </svg>
-);
+import { Timeline } from "./timeline";
+import { ThemeToggle } from "./theme-toggle";
+import { Logo } from "./logo";
 
 export default function Home() {
-  const hasLocked = projects.some((p) => p.access === "password");
-  const notes = about.notes.filter((n) => n.mark !== "lock" || hasLocked);
   return (
     <main className="page">
       <header className="topbar">
-        <a href="/" className="wordmark">{profile.name}</a>
-        <nav aria-label="Sections" className="topnav mono">
-          <a href="#work">Work</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
+        <a href="/" className="wordmark" aria-label={profile.name}>
+          <Logo />
+        </a>
+        <div className="topright">
+          <ThemeToggle />
+        </div>
       </header>
 
       <h1 className="statement">
         <span className="ink">{intro.lead}</span> {intro.before}{" "}
         <span className="co">
-          <picture>
-            <source srcSet={intro.company.markDark} media="(prefers-color-scheme: dark)" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={intro.company.mark} alt="" />
-          </picture>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="only-light" src={intro.company.mark} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="only-dark" src={intro.company.markDark} alt="" />
           {intro.company.name}
         </span>
         {intro.after}
       </h1>
 
-      <div id="work" className="work-area">
-        <h2 className="mono">Selected work</h2>
+      <section id="work" className="work-area" aria-label="Work">
         <Tiles projects={projects} />
         <p className="soon">More case studies soon. Some will be password protected; ask and I’ll walk you through them.</p>
-      </div>
+      </section>
+
+      <section className="section been" aria-labelledby="been-at">
+        <h2 id="been-at" className="sec-title">Journey so far…</h2>
+        <Timeline items={experience} />
+      </section>
 
       <div className="columns">
-        <section className="section" aria-labelledby="about">
-          <h2 id="about" className="mono">About</h2>
-          <div className="prose">
-            {about.paragraphs.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
-          <ul className="notes">
-            {notes.map((n) => (
-              <li key={n.mark}>
-                <span aria-hidden="true">{n.mark === "lock" ? <LockMark /> : n.mark}</span>
-                <span>{n.text}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* About is hidden for now; its copy is still in content/site.ts (about). */}
 
         <section className="section contact" aria-labelledby="contact">
-          <h2 id="contact" className="mono">Contact</h2>
-          <CopyEmail email={profile.email} />
-          <ul className="links">
-            {profile.links.map((l) => (
-              <li key={l.label}>
-                <a href={l.href} target="_blank" rel="noopener noreferrer">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <h2 id="contact" className="sec-title">Contact</h2>
+          <ContactList />
         </section>
       </div>
 

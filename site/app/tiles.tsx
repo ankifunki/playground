@@ -20,6 +20,14 @@ function ArtFor({ p }: { p: Project }) {
   return (
     <div className="art" style={style}>
       {/* A locked project's screens stay behind the password, so its tile only ever shows a logo. */}
+      {locked && p.lockedMark && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={p.lockedMark.srcDark ? "logo only-light" : "logo"} src={p.lockedMark.src} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {p.lockedMark.srcDark && <img className="logo only-dark" src={p.lockedMark.srcDark} alt="" />}
+        </>
+      )}
       {a.kind === "crop" && !locked ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -28,12 +36,18 @@ function ArtFor({ p }: { p: Project }) {
           alt=""
           style={{ "--w": a.w, "--x": a.x, "--y": a.y } as React.CSSProperties}
         />
+      ) : a.kind === "phones" && !locked ? (
+        a.srcs.map((src, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={src} className="phone" src={src} alt="" style={{ "--i": i } as React.CSSProperties} />
+        ))
       ) : a.kind === "logo" ? (
-        <picture>
-          {a.srcDark && <source srcSet={a.srcDark} media="(prefers-color-scheme: dark)" />}
+        <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="logo" src={a.src} alt="" />
-        </picture>
+          <img className={a.srcDark ? "logo only-light" : "logo"} src={a.src} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {a.srcDark && <img className="logo only-dark" src={a.srcDark} alt="" />}
+        </>
       ) : null}
       {locked && (
         <span className="chip">
@@ -52,7 +66,12 @@ export function Tiles({ projects }: { projects: Project[] }) {
         const locked = p.access === "password";
         return (
           <li key={p.slug} className={p.wide ? "wide" : undefined}>
-            <a className="tile" href={`/work/${p.slug}/`}>
+            <a
+              className="tile"
+              href={p.href ?? `/work/${p.slug}/`}
+              {...(p.href && { target: "_blank", rel: "noopener noreferrer" })}
+              data-cursor={locked ? "Enter password" : p.href ? "Open the deck ↗" : "View case study ↗"}
+            >
               <ArtFor p={p} />
               <span className="tile-text">
                 <span>
@@ -60,7 +79,7 @@ export function Tiles({ projects }: { projects: Project[] }) {
                     <b>{p.title}</b>—{p.line}
                   </span>
                   <span className="tile-meta mono">
-                    {locked ? (
+                    {p.redactCompany ? (
                       <span className="redacted" style={{ width: `${p.company.length * 0.62}em` }} aria-label="Company withheld" />
                     ) : (
                       <span>{p.company}</span>

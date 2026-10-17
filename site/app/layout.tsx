@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "@fontsource/funnel-sans/400.css";
@@ -21,10 +22,19 @@ export const viewport: Viewport = {
   ],
 };
 
+const THEME_BOOT = `try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Apply a saved theme before first paint, so there's no flash of the other one. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
+      <body>
+        {children}
+        <Script src="/delight.js" strategy="afterInteractive" />
+      </body>
     </html>
   );
 }

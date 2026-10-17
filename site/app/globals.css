@@ -7,8 +7,13 @@
   --grey: #5f6766;
   --faint: #8a9291;
   --rule: #c9cfce;
-  --accent: #6663f4;
+  --accent: #1f5cff;
+  --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
   --bar: #1b201f;
+  --toast-bg: #1b201f; --toast-ink: #eef1f1; --toast-ok: #7ad3a6;
+  /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
+  --ambient: rgba(255, 206, 128, 0.16);
+  --tile-shadow: 0 1px 2px rgba(60, 48, 30, 0.05), -10px 22px 44px -26px rgba(60, 48, 30, 0.22);
 
   --head: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
   --body: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
@@ -18,24 +23,53 @@
   --s1: 6px; --s2: 12px; --s3: 24px; --s4: 36px; --s5: 48px; --s6: 72px;
   color-scheme: light;
 }
+/* Dark: follows the device unless the visitor picked a theme with the toggle (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #0e1011;
     --ink: #eef1f1;
     --grey: #a3abaa;
     --faint: #737b7a;
     --rule: #262b2a;
-    --accent: #918eff;
+    --accent: #5c8dff;
+  --tick-a: 0.11; --tick-maj-a: 0.45;
     --bar: #eef1f1;
+    --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+    /* Night: cool moonlight from the top right (tiles glow instead of casting shadows; see .art below) */
+    --ambient: rgba(190, 206, 255, 0.07);
     color-scheme: dark;
   }
 }
+:root[data-theme="dark"] {
+  --paper: #0e1011;
+  --ink: #eef1f1;
+  --grey: #a3abaa;
+  --faint: #737b7a;
+  --rule: #262b2a;
+  --accent: #5c8dff;
+  --tick-a: 0.11; --tick-maj-a: 0.45;
+  --bar: #eef1f1;
+  --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+  --ambient: rgba(190, 206, 255, 0.07);
+  color-scheme: dark;
+}
+
+/* Bits that differ by theme but aren't simple colors: tile backgrounds and light/dark logo pairs */
+.only-dark { display: none !important; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
+  :root:not([data-theme="light"]) .only-dark { display: inline-block !important; }
+  :root:not([data-theme="light"]) .only-light { display: none !important; }
+}
+:root[data-theme="dark"] .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
+:root[data-theme="dark"] .only-dark { display: inline-block !important; }
+:root[data-theme="dark"] .only-light { display: none !important; }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--paper);
+  background: radial-gradient(1100px 680px at 92% -8%, var(--ambient), transparent 62%) var(--paper) no-repeat;
   color: var(--ink);
   font: 400 17px/1.6 var(--body);
   -webkit-font-smoothing: antialiased;
@@ -65,44 +99,152 @@ a { color: inherit; }
 .columns { display: grid; gap: var(--s6); }
 .columns > * { min-width: 0; }
 @media (min-width: 900px) {
-  .columns { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: var(--s6); align-items: start; }
+  .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s6); align-items: start; }
 }
 .contact { align-content: start; }
 
 .section { display: grid; gap: var(--s3); align-content: start; }
+/* Section headers: the body sans, in ink */
+.sec-title { font: 500 17px/1.3 var(--body); letter-spacing: -0.01em; color: var(--ink); }
 
 /* Locked work: a redaction bar where the company would be, and a password chip */
 .redacted { display: inline-block; height: 11px; background: var(--bar); border-radius: 1px; vertical-align: -1px; }
 .chip {
   display: inline-flex; align-items: center; gap: 5px;
   font: 400 11px/12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid currentColor; border-radius: 999px; padding: 3px 8px 3px 6px;
+  color: var(--grey);
+  border: 1px solid var(--rule); border-radius: 999px; padding: 3px 8px 3px 6px;
 }
 .chip svg { width: 10px; height: 10px; }
 
 .soon { color: var(--faint); font-size: 15px; }
 
+/* Been at: a ruler of thin ticks with only the start years above. Ticks swell around the pointer (heights are
+   set from timeline.tsx as --s); the stretch under it darkens and that team's mark, name and blurb show below. */
+.rl { position: relative; height: 48px; cursor: crosshair; outline: none; }
+.rl:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); border-radius: 4px; }
+.rl-years { position: absolute; inset: 0 0 auto; height: 14px; }
+.rl-years > span {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font: 400 11px/14px var(--mono); letter-spacing: 0.04em; color: var(--faint);
+  transition: color 0.2s var(--ease), opacity 0.3s var(--ease);
+}
+/* Years spent at the active team light up in the accent; the rest stay neutral */
+.rl-years > span.on { color: var(--accent); }
+/* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
+.rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
+.rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
+/* The swell runs on transform and opacity only. Each tick is drawn at its full swollen height and slides up out
+   of the clipped strip below the baseline, so the rounded tips keep their shape: every tick rises by the same
+   amount on top of its own height (--s runs 1 to 2.1 from timeline.tsx, set on the tick itself), so the small
+   month ticks follow the curve too. Ticks are ink at a resting opacity that matches the rule (or faint, for the
+   years) and darken toward the ink as they rise, so the wave reads clearly. */
+.rl-bars { position: absolute; inset: 0; overflow: hidden; contain: layout paint; }
+.rl-bars > span {
+  --h: 3px; --a: var(--tick-a);
+  position: absolute; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
+  height: calc(var(--h) + 15.95px); background: var(--ink);
+  transform: translateY(calc((2.1 - var(--s, 1)) * 14.5px));
+  opacity: calc(var(--a) + (1 - var(--a)) * min((var(--s, 1) - 1) * 0.8, 1));
+}
+.rl-bars > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
+.rl-bars > span.maj { --h: 10px; --a: var(--tick-maj-a); width: 2px; margin-left: -1px; }
+/* Only the selected tick takes the accent, once the scale is still */
+.rl-bars > span.pin { width: 2px; margin-left: -1px; transition: background-color 0.2s var(--ease); }
+.rl:not(.moving) .rl-bars > span.pin { background: var(--accent); opacity: 1; }
+/* The active team's time: a soft band behind its stretch, revealed with a clip so it never relayouts */
+.rl-band {
+  position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  transition: clip-path 0.25s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.2s var(--ease);
+}
+.rl-band.on { opacity: 1; }
+.rl-ticks > .rl-now {
+  left: 0; width: 5px; height: 5px; margin-left: -2.5px; bottom: -9px; border-radius: 999px; background: var(--accent);
+}
+/* The details sit centred under the ruler on a steady vertical rhythm (mark, name, dates, blurb) in a box of
+   fixed height, so nothing below moves as they change. */
+.rl-caption { position: relative; height: 178px; margin-top: var(--s3); text-align: center; color: var(--grey); }
+.rl-card { position: absolute; inset: 0 0 auto; display: grid; justify-items: center; }
+.rl-mark {
+  display: block; width: 28px; height: 28px; background: var(--ink);
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
+}
+.rl-name { margin-top: var(--s2); font: 500 20px/24px var(--body); letter-spacing: -0.01em; color: var(--ink); }
+.rl-dates { margin-top: var(--s1); font-size: 11px; line-height: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+.rl-blurb {
+  margin-top: var(--s2); max-width: 44ch; font-size: 16px; line-height: 24px; text-wrap: balance;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+.rl-hint { padding-top: 40px; color: var(--faint); font-size: 15px; animation: rl-fade 0.2s var(--ease) both; }
+.rl-hint-coarse { display: none; }
+@media (hover: none) { .rl-hint-fine { display: none; } .rl-hint-coarse { display: inline; } }
+/* Phones: the ruler runs wider than the screen and scrolls sideways under a centre marker. The scroller bleeds to
+   the screen edges, with half a screen of room at each end so the first and last years can reach the marker. */
+.been { grid-template-columns: minmax(0, 1fr); }
+.rl-wrap { min-width: 0; }
+.rl-scroll { position: relative; }
+@media (max-width: 560px) {
+  .rl-wrap { position: relative; margin-inline: -24px; }
+  /* The scale slides on a GPU transform under a fixed centre marker (drag physics in timeline.tsx), so nothing
+     here scrolls at all: horizontal drags are ours and vertical swipes still scroll the page. */
+  .rl-scroll {
+    height: 64px; box-sizing: border-box; padding: 4px 0 12px; overflow: hidden; touch-action: pan-y; cursor: grab;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  }
+  .rl { width: calc(var(--years) * 84px); cursor: inherit; will-change: transform; }
+  /* The centre marker: a dot on a short needle hanging from the baseline. Neutral while scrolling; when the
+     scale settles on a milestone (a year, or Now), the needle, dot and that tick turn accent. */
+  .rl-wrap::before, .rl-wrap::after {
+    content: ""; position: absolute; left: 50%; z-index: 1; background: var(--faint);
+    transition: background 0.25s var(--ease);
+  }
+  .rl-wrap::after { top: 52px; width: 2px; height: 16px; margin-left: -1px; border-radius: 0 0 1px 1px; }
+  .rl-wrap::before { top: 66px; width: 6px; height: 6px; margin-left: -3px; border-radius: 999px; }
+  .rl-wrap.pinned::before, .rl-wrap.pinned::after { background: var(--accent); }
+  /* The milestone tick keeps the full height it had at the top of the swell (timeline.tsx holds its --s at the
+     peak when the rest subside), and never animates down in between */
+  .rl-ticks > .rl-now { display: none; }
+  .rl-caption { margin-inline: 24px; }
+  .rl-hint { display: none; }
+}
+/* Moving between teams: the new card's parts arrive one after another from the direction of travel, softly
+   blurred, while the old card drifts the other way and fades. */
+.rl-card > * { animation: rl-in 0.26s cubic-bezier(0.23, 1, 0.32, 1) both; }
+.rl-card > :nth-child(2) { animation-delay: 0.04s; }
+.rl-card > :nth-child(3) { animation-delay: 0.08s; }
+.rl-card > :nth-child(4) { animation-delay: 0.12s; }
+.rl-card.out { animation: rl-out 0.22s var(--ease) both; }
+.rl-card.out > * { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rl-card > *, .rl-hint { animation: none; }
+  .rl-card.out { animation-duration: 1ms; }
+}
+@keyframes rl-in { from { opacity: 0; transform: translate(calc(var(--dir) * 18px), var(--rise)); filter: blur(4px); } }
+@keyframes rl-out { to { opacity: 0; transform: translateX(calc(var(--dir) * -14px)); filter: blur(3px); } }
+@keyframes rl-fade { from { opacity: 0; } }
+
+
+
 /* ---------- About ---------- */
 .prose { display: grid; gap: var(--s3); }
 .prose p { color: var(--grey); text-wrap: pretty; max-width: 62ch; }
 .prose p:first-child { color: var(--ink); font-size: 20px; line-height: 1.5; letter-spacing: -0.01em; }
-.notes { list-style: none; display: grid; gap: var(--s2); border-top: 1px solid var(--rule); padding-top: var(--s3); }
-.notes li { display: grid; grid-template-columns: 18px 1fr; font-size: 14px; line-height: 1.55; color: var(--faint); }
-.notes li span:first-child { color: var(--accent); }
 
 
-.email { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2); }
-.email a { font: 500 17px/1.4 var(--body); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
-.email a:hover { border-color: var(--accent); }
-.copy {
-  font: 400 11px/12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--faint); background: none; border: 0; padding: 4px 0; cursor: pointer;
+/* Contact: email and links as one even list of rows, each a line icon and the platform name. */
+.contact-list { list-style: none; border-top: 1px solid var(--rule); }
+.contact-list li { border-bottom: 1px solid var(--rule); }
+.cl-row {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr) 14px; align-items: center; gap: var(--s2);
+  padding-block: 12px; text-decoration: none; color: var(--ink);
 }
-.copy:hover { color: var(--accent); }
-.links { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); list-style: none; }
-.links a { color: var(--grey); text-decoration: none; font-size: 15px; }
-.links a:hover { color: var(--accent); }
+.cl-icon { width: 18px; height: 18px; color: var(--faint); transition: color 0.2s var(--ease), transform 0.35s var(--ease); }
+.cl-label { font: 500 16px/1.3 var(--body); }
+.cl-arrow { width: 14px; height: 14px; color: var(--faint); opacity: 0; transform: translate(-3px, 3px); transition: opacity 0.2s var(--ease), transform 0.35s var(--ease), color 0.2s var(--ease); }
+a.cl-row:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
+a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transform: none; color: var(--accent); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
 
@@ -131,11 +273,16 @@ a { color: inherit; }
 
 /* ---------- Top bar and statement ---------- */
 .page { gap: var(--s6); }
-.topbar { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); }
-.wordmark { font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
-.topnav { display: flex; gap: var(--s3); }
-.topnav a { text-decoration: none; color: var(--faint); }
-.topnav a:hover { color: var(--accent); }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
+/* Sized to sit optically with the theme switcher across the bar */
+.aj { width: auto; height: 15px; overflow: visible; display: block; }
+.aj path { fill: var(--ink); stroke: var(--ink); stroke-width: 0.6; stroke-linejoin: round; }
+@media (prefers-reduced-motion: no-preference) {
+  .aj path { stroke-dasharray: 1; animation: aj-draw 1.4s cubic-bezier(0.45, 0.05, 0.25, 1) both, aj-fill 0.7s var(--ease) 0.9s both; }
+}
+@keyframes aj-draw { from { stroke-dashoffset: 1; stroke: var(--faint); } to { stroke-dashoffset: 0; } }
+@keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
 
 .statement {
   font: 400 clamp(30px, 4.6vw, 56px) / 1.12 var(--body);
@@ -153,7 +300,6 @@ a { color: inherit; }
 @keyframes settle { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 .statement .co { white-space: nowrap; color: var(--ink); }
-.statement .co picture, .statement .co img { display: inline-block; }
 .statement .co img { height: 0.78em; width: auto; vertical-align: -0.06em; margin: 0 0.16em 0 0.02em; }
 
 /* ---------- Work: one big tile per project ---------- */
@@ -169,16 +315,22 @@ a { color: inherit; }
   aspect-ratio: 4 / 3;
   border-radius: 16px;
   background: var(--tile-bg);
+  /* At night each tile glows in its own night colour */
+  --tile-night-color: var(--tile-bg-dark, var(--tile-bg));
+  --tile-night: -14px 30px 90px -36px var(--tile-night-color);
+  box-shadow: var(--tile-shadow);
+  transition: box-shadow 0.5s var(--ease);
 }
 .wide .art { aspect-ratio: 16 / 9; }
-@media (prefers-color-scheme: dark) { .art { background: var(--tile-bg-dark, var(--tile-bg)); } }
 .art .crop {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; max-width: none;
   border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(14,16,17,.08), 0 40px 80px -32px rgba(14,16,17,.45);
+  box-shadow: -1px 1px 2px rgba(14,16,17,.08), -14px 40px 80px -32px rgba(14,16,17,.45);
   transition: transform 0.9s var(--ease);
 }
 .art .logo { position: absolute; inset: 0; margin: auto; height: 22%; width: auto; transition: transform 0.9s var(--ease); }
+/* The solid carrot reads heavier than the thin G, so it sits a little smaller to look the same size */
+.art .logo[src*="instacart-carrot"] { height: 17%; }
 .tile:hover .crop, .tile:focus-visible .crop { transform: translate(-1.2%, -1.6%); }
 .tile:hover .logo, .tile:focus-visible .logo { transform: scale(1.04); }
 .art .chip { position: absolute; left: 16px; top: 16px; background: var(--paper); }
@@ -195,3 +347,123 @@ a { color: inherit; }
 .tile:hover .tile-title b, .tile:focus-visible .tile-title b { text-decoration-color: var(--accent); }
 .tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent); transform: translate(3px, -3px); }
 .tile:focus-visible { outline-offset: 6px; border-radius: 16px; }
+
+/* ---------- Small delights ---------- */
+/* Sticky top bar that picks up a hairline once the page scrolls */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  margin-block: calc(var(--s3) * -1); padding-block: var(--s3);
+  background: transparent;
+  transition: box-shadow 0.3s var(--ease), background 0.3s var(--ease);
+}
+/* Only once scrolled does the bar get its own frosted background, so at rest it sits in the page's light */
+.topbar.scrolled {
+  box-shadow: 0 1px 0 var(--rule);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+/* Phones: the bar's background and rule run edge to edge; the padding puts its contents back on the page gutter */
+@media (max-width: 720px) {
+  .topbar {
+    margin-inline: calc(-1 * max(24px, env(safe-area-inset-left, 0px))) calc(-1 * max(24px, env(safe-area-inset-right, 0px)));
+    padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* The company mark spins a little, with a spring, when you hover the name */
+.statement .co img { transition: transform 0.7s cubic-bezier(0.3, 1.7, 0.5, 1); transform-origin: 50% 60%; }
+.statement .co:hover img { transform: rotate(-16deg) scale(1.08); }
+
+
+/* Cursor label over project tiles (fine pointers only) */
+.cursor-pill {
+  position: fixed; left: 14px; top: 14px; z-index: 30;
+  pointer-events: none; white-space: nowrap;
+  font: 500 13px/1 var(--body); color: var(--paper); background: var(--ink);
+  padding: 9px 12px; border-radius: 999px;
+  box-shadow: -4px 8px 24px -8px rgba(14, 16, 17, 0.45);
+  opacity: 0; scale: 0.6; transform-origin: 0 0;
+  transition: opacity 0.2s var(--ease), scale 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.cursor-pill.on { opacity: 1; scale: 1; }
+
+/* Copy confirmation, shaped like the product's own toast */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 40;
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 14px/1 var(--body); color: var(--toast-ink); background: var(--toast-bg);
+  padding: 11px 14px; border-radius: 10px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, -6px 16px 40px -12px rgba(14, 16, 17, 0.5);
+  opacity: 0; translate: -50% 16px; pointer-events: none;
+  transition: opacity 0.25s var(--ease), translate 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.toast svg { width: 16px; height: 16px; color: var(--toast-ok); flex: none; }
+.toast.on { opacity: 1; translate: -50% 0; }
+
+/* Phone screens: two up, the second set lower, both running off the bottom edge */
+.art .phone {
+  position: absolute;
+  width: 31%; height: auto;
+  left: calc(19% + var(--i) * 34%);
+  top: calc(12% + var(--i) * 9%);
+  border-radius: 9% / 4.2%;
+  box-shadow: 0 0 0 1px rgba(14, 16, 17, 0.25), -12px 40px 70px -30px rgba(14, 16, 17, 0.55);
+  transition: transform 0.9s var(--ease);
+}
+.tile:hover .phone, .tile:focus-visible .phone { transform: translateY(calc(-2% - var(--i) * 2%)); }
+/* A single screen stands centred */
+.art .phone:only-of-type { width: 36%; left: 32%; top: 13%; }
+
+/* ---------- Theme toggle ---------- */
+/* The sun and moon sit on opposite sides of a small wheel whose hub is below the icon.
+   Switching turns the wheel half a turn: the sun sets to the right as the moon rises from the left,
+   clipped by the button's circle like a horizon. */
+.topright { display: flex; align-items: center; gap: var(--s3); }
+.theme-toggle {
+  position: relative; display: grid; place-items: center; overflow: hidden;
+  width: 32px; height: 32px; margin: -8px -8px -8px 0;
+  color: var(--ink); background: transparent; border: 0; border-radius: 999px; cursor: pointer;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  /* Kept out of the page snapshot during the theme reveal, so it turns smoothly on top of it */
+  view-transition-name: theme-toggle;
+}
+.theme-toggle:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.theme-toggle:active { transform: scale(0.9); }
+.theme-toggle svg { width: 18px; height: 18px; overflow: visible; }
+.tt-sun { color: #eca729; filter: drop-shadow(0 0 3px rgba(247, 190, 60, 0.5)); }
+.tt-moon { color: #dce3f6; filter: drop-shadow(0 0 4px rgba(190, 206, 255, 0.55)); }
+.tt-star { color: #eef2ff; }
+.tt-dial, .tt-moon { transform-box: view-box; transform-origin: 12px 30px; }
+.tt-moon { transform: rotate(180deg); } /* parked on the far side of the wheel */
+/* --turns counts half turns and only ever grows (set by delight.js), so the wheel always turns clockwise.
+   Before the script runs, the theme alone decides which side is up. */
+.tt-dial { transform: rotate(calc(var(--turns, 0) * 180deg)); transition: transform 0.9s cubic-bezier(0.45, 0.05, 0.25, 1); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tt-dial { --turns: 1; } }
+:root[data-theme="dark"] .tt-dial { --turns: 1; }
+@media (prefers-reduced-motion: reduce) { .tt-dial { transition: none; } }
+
+/* During the reveal, show the live toggle only (no snapshot pair, no crossfade) */
+::view-transition-group(theme-toggle) { animation: none; z-index: 2; }
+::view-transition-old(theme-toggle) { display: none; }
+::view-transition-new(theme-toggle) { animation: none; }
+
+/* Theme reveal: the old page holds still while the new one grows out of the toggle through a
+   radial mask that's solid in the middle and feathers out over the outer half (sized by delight.js). */
+html.revealing::view-transition-old(root) { animation: none; }
+html.revealing::view-transition-new(root) {
+  animation: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 50%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 50%, transparent 100%);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: 0 0; mask-size: 0 0;
+}
+
+
+/* Where relative colours are supported, deepen and saturate the night glow in the tile's own hue
+   (kept dark, never lightened toward white) */
+@supports (color: oklch(from red l c h)) {
+  .art {
+    --tile-night: -14px 30px 90px -36px oklch(from var(--tile-night-color) calc(l + 0.06) calc(c * 3) h / 0.75);
+  }
+}
+

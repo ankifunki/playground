@@ -5,10 +5,13 @@
 //   CASE_COOKIE_SECRET           long random string, signs the unlock cookie
 //   CASE_PASSWORD_<SLUG>         one password per case study, e.g. CASE_PASSWORD_MULTI_LOCATION
 //
-// The cookie value is HMAC(secret, slug + password), so changing a project's
-// password signs everyone out of that project.
+// The cookie value is "<expiry>.<HMAC(secret, slug + password + expiry)>": access lasts ACCESS_MS from
+// unlocking, enforced here rather than trusted to the browser, and changing a project's password signs
+// everyone out of that project.
 
 const enc = new TextEncoder();
+
+export const ACCESS_MS = 24 * 60 * 60 * 1000; // one day
 
 export const cookieName = (slug: string) => `case_${slug.replace(/[^a-z0-9]/gi, "_")}`;
 
@@ -27,17 +30,25 @@ function safeEqual(a: string, b: string) {
   return diff === 0;
 }
 
-/** The cookie value that unlocks `slug`, or null when the project isn't configured (fail closed). */
-export async function tokenFor(slug: string) {
+async function sign(slug: string, expires: number) {
   const secret = process.env.CASE_COOKIE_SECRET;
   const password = passwordFor(slug);
   if (!secret || !password) return null;
-  return hmac(secret, `${slug}\n${password}`);
+  return hmac(secret, `${slug}\n${password}\n${expires}`);
+}
+
+/** A cookie value that unlocks `slug` until `expires` (ms), or null when the project isn't configured (fail closed). */
+export async function tokenFor(slug: string, expires: number) {
+  const sig = await sign(slug, expires);
+  return sig && `${expires}.${sig}`;
 }
 
 export async function hasAccess(slug: string, cookie: string | undefined) {
-  const token = await tokenFor(slug);
-  return !!token && !!cookie && safeEqual(token, cookie);
+  const [exp, sig] = (cookie ?? "").split(".");
+  const expires = Number(exp);
+  if (!sig || !Number.isFinite(expires) || expires <= Date.now()) return false;
+  const expected = await sign(slug, expires);
+  return !!expected && safeEqual(expected, sig);
 }
 
 export async function checkPassword(slug: string, attempt: string) {

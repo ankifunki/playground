@@ -17,7 +17,7 @@ npm run build
 
 ## Password-protected work
 
-Set `access: "password"` on a project. On the homepage its company becomes a redaction bar with a "Password" chip, and its cover isn't sent to the browser. Every request under `/work/<slug>/`, the page and its images alike, goes through `middleware.ts` and redirects to `/unlock/<slug>/` until the visitor enters the password.
+Set `access: "password"` on a project. On the homepage its tile shows a "Password" chip and its `lockedMark` logo instead of the screens, which aren't sent to the browser. Add `redactCompany: true` to hide a confidential client's name behind a redaction bar. Every request under `/work/<slug>/`, the page and its images alike, goes through `middleware.ts` and redirects to `/unlock/<slug>/` until the visitor enters the password.
 
 Environment variables (Vercel → Project → Settings → Environment Variables):
 
@@ -26,7 +26,7 @@ Environment variables (Vercel → Project → Settings → Environment Variables
 | `CASE_COOKIE_SECRET` | A long random string, e.g. from `openssl rand -hex 32` |
 | `CASE_PASSWORD_<SLUG>` | One per locked project, e.g. `CASE_PASSWORD_MULTI_LOCATION` |
 
-A correct password sets an httpOnly cookie scoped to that case study for 30 days. Changing a project's password signs everyone out of it. If either variable is missing, the project stays locked (fails closed).
+A correct password sets an httpOnly cookie scoped to that case study for one day (the expiry is signed into the cookie and checked on every request). Changing a project's password signs everyone out of it. If either variable is missing, the project stays locked (fails closed).
 
 ## Deploying on Vercel
 
