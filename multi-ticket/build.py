@@ -58,6 +58,22 @@ CSS = """
 .chip.k{border-color:var(--accent);color:var(--accent);background:rgb(244 245 255 / .8)}
 .arw{color:var(--faint);font:400 14px/1 var(--mono);opacity:0;transition:opacity .4s var(--ease)}
 .slide.on .chip,.slide.on .arw{opacity:1;translate:0 0}
+/* Annotated screen: leader lines from points on the screen to callouts (laid out and drawn by JS) */
+.anno{position:relative;grid-column:1 / -1;height:min(50svh,420px)}
+.anno .an-ph{position:absolute;left:0;top:0;height:100%;aspect-ratio:var(--r)}
+.anno .an-ph .frame{height:100%!important;width:100%!important;aspect-ratio:auto!important;margin:0}
+.anno .an-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
+.anno svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
+.anno path{fill:none;stroke:var(--accent);stroke-width:1.25;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s var(--ease)}
+.anno circle{fill:var(--accent);stroke:#fff;stroke-width:1.5;scale:0;transform-box:fill-box;transform-origin:center;transition:scale .4s var(--ease)}
+.an-lb{position:absolute;display:grid;gap:2px;opacity:0;translate:0 6px;transition:opacity .45s var(--ease),translate .55s var(--ease)}
+.an-lb b{font:600 13px/17px var(--head);letter-spacing:-.01em;color:var(--ink)}
+.an-lb span{font:400 12px/16px var(--body);color:var(--ink);opacity:.72;text-wrap:pretty}
+.an-lb.l{text-align:right}
+.slide.on .anno path{stroke-dashoffset:0;transition-delay:calc(.35s + var(--i) * .16s)}
+.slide.on .anno circle{scale:1;transition-delay:calc(.3s + var(--i) * .16s)}
+.slide.on .an-lb{opacity:1;translate:0 0;transition-delay:calc(.6s + var(--i) * .16s)}
+@media (prefers-reduced-motion:reduce){.anno path,.anno circle,.an-lb{transition:none!important}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .tall .frame,.proto.tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .morph.tall{grid-column:1 / -1;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*64);align-items:end}
@@ -75,6 +91,10 @@ CSS = """
   .order{grid-column:1 / span 9;gap:calc(var(--u)*48)}
   .chip{height:calc(var(--u)*44);padding:0 calc(var(--u)*20);font-size:calc(var(--u)*18)}
   .arw{font-size:calc(var(--u)*18)}
+  .anno{height:calc(var(--u)*600)}
+  .an-lb{gap:calc(var(--u)*4)}
+  .an-lb b{font-size:calc(var(--u)*19);line-height:calc(var(--u)*24)}
+  .an-lb span{font-size:calc(var(--u)*15);line-height:calc(var(--u)*21)}
 }
 """
 head = head.replace("\n</style>", "\n" + CSS + "</style>", 1)
@@ -111,6 +131,33 @@ def morph(title, before, after, ratio, foot, alts, tall=False, meta=""):
 
 JS = r"""<script>
 (function(){
+  var desk=matchMedia('(min-width:900px) and (min-aspect-ratio:1/1)');
+  document.querySelectorAll('.anno').forEach(function(a){
+    var ph=a.querySelector('.an-ph'),svg=a.querySelector('svg'),lbs=[].slice.call(a.querySelectorAll('.an-lb'));
+    function lay(){
+      var W=a.clientWidth,H=a.clientHeight;if(!W||!H)return;
+      var r=(getComputedStyle(a).getPropertyValue('--r')||'393/852').split('/'),pw=H*r[0]/r[1],d=desk.matches,u=d?W/1336:1,reach=d?56*u:20,gap=d?20*u:12;
+      var px=d?(W-pw)/2:0;ph.style.left=px+'px';ph.style.width=pw+'px';
+      var lw=d?Math.min(300*u,px-reach-8):W-pw-reach;
+      var sides={l:[],r:[]};
+      lbs.forEach(function(l){var s=d?l.dataset.side:'r';l.classList.toggle('l',s==='l');l.style.width=lw+'px';
+        l.style.left=(s==='l'?px-reach-lw:px+pw+reach)+'px';
+        sides[s].push({el:l,ax:px+(+(d?l.dataset.x:l.dataset.xm))*pw,ay:(+l.dataset.y)*H,s:s,i:+l.dataset.i})});
+      var out='';
+      ['l','r'].forEach(function(k){var list=sides[k].sort(function(p,q){return p.ay-q.ay}),bottom=-1e9;
+        list.forEach(function(c){var h=c.el.offsetHeight,t=Math.max(c.ay-10,bottom+gap);t=Math.min(t,H-h);c.t=t;bottom=t+h});
+        for(var j=list.length-2;j>=0;j--){var c=list[j],n=list[j+1];if(c.t+c.el.offsetHeight+gap>n.t)c.t=n.t-gap-c.el.offsetHeight}
+        list.forEach(function(c){c.el.style.top=c.t+'px';var ly=c.t+(d?12*u:9),
+          e=k==='l'?px-12:px+pw+12,lx=k==='l'?px-reach+4:px+pw+reach-4;
+          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+c.ax.toFixed(1)+' '+c.ay.toFixed(1)+'H'+e.toFixed(1)+'L'+lx.toFixed(1)+' '+ly.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+c.ax.toFixed(1)+'" cy="'+c.ay.toFixed(1)+'" r="'+(d?4.5*u:3.5)+'"/>'})});
+      svg.innerHTML=out}
+    lay();addEventListener('resize',lay);if(document.fonts)document.fonts.ready.then(lay);
+    var slide=a.closest('.slide');new MutationObserver(function(){if(slide.classList.contains('on'))lay()}).observe(slide,{attributes:true,attributeFilter:['class']});
+  });
+})();
+</script>
+<script>
+(function(){
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.proto').forEach(function(p){
     var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),i=0,t=[];
@@ -146,6 +193,16 @@ def proto(title, ratio, steps, foot, meta=""):
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}<i class="tap"></i></div>
     <div class="steps" role="group" aria-label="Prototype steps">{btns}</div>
     <p class="foot">{foot}</p>
+  </div></div>
+</div></section>'''
+
+def anno(title, src, ratio, alt, notes):
+    lbs = "".join(f'<div class="an-lb" data-x="{x/100}" data-xm="{xm/100}" data-y="{y/100}" data-side="{side}" data-i="{i}"><b>{t}</b><span>{b}</span></div>' for i, (x, xm, y, side, t, b) in enumerate(notes))
+    return f'''<section class="slide screens" data-name="{title}"><div class="stage">
+  <div class="head"><h3 class="title">{title}</h3></div>
+  <div class="content"><div class="anno" style="--r:{ratio}">
+    <div class="an-ph"><div class="frame" style="--r:{ratio}"><img src="img/{src}.webp" alt="{alt}" decoding="async"></div></div>
+    <svg aria-hidden="true"></svg>{lbs}
   </div></div>
 </div></section>'''
 
@@ -255,6 +312,14 @@ SLIDES = f'''
 {chapter(1, "Phase 1")}
 
 {morph("The cart", "cart-before", "cart-after", "393/852", "One provider per sale became a provider per line, so items from every appointment sit in one list under a single way to add more.", ["client card, a single provider, and line items with thumbnails", "client as the title, add items to cart up top, and a provider on each line"], tall=True)}
+
+{anno("The cart, up close", "cart-after", "393/852", "The new cart: Rachel Green as the title, add items to cart, two line items each with a provider, totals and charge", [
+  (19, 81, 16.7, "l", "Client first", "Name and location lead, so staff always know whose sale they&rsquo;re on."),
+  (91, 91, 30, "r", "One way to add", "Another appointment, product or service joins the same cart in a tap."),
+  (12, 40, 38.3, "l", "A provider on every line", "Each item credits its own provider, so commission and tips split correctly."),
+  (3.5, 97, 78, "l", "One total", "Every appointment rolls into a single amount due."),
+  (95, 95, 91.8, "r", "Charge once", "One payment for the whole visit, with split there when clients share."),
+])}
 
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
