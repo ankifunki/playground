@@ -205,6 +205,9 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Cover */
 .slide.divider{background:var(--divider)}
+/* Slides without a visible title: the mock or the line carries itself; the title stays for screen readers */
+.notitle .head .title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.notitle .statement{font-size:28px;line-height:36px;letter-spacing:-.025em}
 .divider .stage{justify-content:space-between}
 .divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
@@ -349,6 +352,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
+  .notitle .content,.notitle.screens .content,.notitle .content[style]{padding-top:0!important;align-content:center}
+  .notitle .statement{grid-column:1 / span 10;font-size:calc(var(--u)*60);line-height:calc(var(--u)*70);letter-spacing:-.03em}
   .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
   .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
   .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
@@ -454,7 +459,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div>
 </div></section>
 
-<section class="slide" data-name="Making it tangible"><div class="stage">
+<section class="slide notitle" data-name="Making it tangible"><div class="stage">
   <div class="head"><h3 class="title">Making it tangible</h3></div>
   <div class="content"><p class="statement">I prototyped with AI from <b>first-principles user needs</b>, to align the team and put something real in front of users early.</p></div>
 </div></section>
@@ -471,7 +476,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div>
 </div></section>
 
-<section class="slide" data-name="Principle"><div class="stage">
+<section class="slide notitle" data-name="Principle"><div class="stage">
   <div class="head"><h3 class="title">Principle</h3></div>
   <div class="content"><p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p></div>
 </div></section>
@@ -530,7 +535,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Services</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Service menu"><div class="stage">
+<section class="slide screens notitle" data-name="Service menu"><div class="stage">
   <div class="head"><h3 class="title">Service menu</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1488/1013">
@@ -555,7 +560,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Staff</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Staff list"><div class="stage">
+<section class="slide screens notitle" data-name="Staff list"><div class="stage">
   <div class="head"><h3 class="title">Staff list</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1488/1013">
@@ -580,7 +585,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Settings</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Settings home"><div class="stage">
+<section class="slide screens notitle" data-name="Settings home"><div class="stage">
   <div class="head"><h3 class="title">Settings home</h3></div>
   <div class="content"><div class="flowseq">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/set-1.webp" alt="Step 1: All locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/set-2.webp" alt="Step 2: One location" style="object-position:top left" loading="lazy" decoding="async"></div>

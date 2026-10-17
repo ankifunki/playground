@@ -205,6 +205,9 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Cover */
 .slide.divider{background:var(--divider)}
+/* Slides without a visible title: the mock or the line carries itself; the title stays for screen readers */
+.notitle .head .title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.notitle .statement{font-size:28px;line-height:36px;letter-spacing:-.025em}
 .divider .stage{justify-content:space-between}
 .divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
@@ -349,6 +352,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
+  .notitle .content,.notitle.screens .content,.notitle .content[style]{padding-top:0!important;align-content:center}
+  .notitle .statement{grid-column:1 / span 10;font-size:calc(var(--u)*60);line-height:calc(var(--u)*70);letter-spacing:-.03em}
   .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
   .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
   .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
@@ -422,21 +427,25 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 .arw{color:var(--faint);font:400 14px/1 var(--mono);opacity:0;transition:opacity .4s var(--ease)}
 .slide.on .chip,.slide.on .arw{opacity:1;translate:0 0}
 /* Annotated screen: leader lines from points on the screen to callouts (laid out and drawn by JS) */
+.cartmix{grid-column:1 / -1}
+.cartmix .bar{align-items:flex-start}
 .anno{position:relative;grid-column:1 / -1;height:min(50svh,420px)}
 .anno .an-ph{position:absolute;left:0;top:0;height:100%;aspect-ratio:var(--r)}
 .anno .an-ph .frame{height:100%!important;width:100%!important;aspect-ratio:auto!important;margin:0}
 .anno .an-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
 .anno svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
-.anno path{fill:none;stroke:var(--accent);stroke-width:1.25;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s var(--ease)}
-.anno circle{fill:var(--accent);stroke:#fff;stroke-width:1.5;scale:0;transform-box:fill-box;transform-origin:center;transition:scale .4s var(--ease)}
-.an-lb{position:absolute;display:grid;gap:2px;opacity:0;translate:0 6px;transition:opacity .45s var(--ease),translate .55s var(--ease)}
-.an-lb b{font:600 13px/17px var(--head);letter-spacing:-.01em;color:var(--ink)}
-.an-lb span{font:400 12px/16px var(--body);color:var(--ink);opacity:.72;text-wrap:pretty}
-.an-lb.l{text-align:right}
-.slide.on .anno path{stroke-dashoffset:0;transition-delay:calc(.35s + var(--i) * .16s)}
-.slide.on .anno circle{scale:1;transition-delay:calc(.3s + var(--i) * .16s)}
-.slide.on .an-lb{opacity:1;translate:0 0;transition-delay:calc(.6s + var(--i) * .16s)}
-@media (prefers-reduced-motion:reduce){.anno path,.anno circle,.an-lb{transition:none!important}}
+/* Callouts: hairline leaders and small dots in one color. They enter one by one (dot, then the line draws out,
+   then the label settles in from the line's direction) and leave together. */
+.anno path{fill:none;stroke:var(--accent);stroke-width:1;stroke-opacity:.55;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .2s var(--ease)}
+.anno circle{fill:var(--accent);scale:0;transform-box:fill-box;transform-origin:center;transition:scale .2s var(--ease)}
+.an-lb{--dx:-8px;position:absolute;display:grid;gap:1px;opacity:0;translate:var(--dx) 0;filter:blur(3px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
+.an-lb.l{--dx:8px;text-align:right}
+.an-lb b{font:500 12px/16px var(--head);letter-spacing:-.005em;color:var(--ink)}
+.an-lb span{font:400 11.5px/15px var(--body);color:var(--grey);text-wrap:pretty}
+.anno.show circle{scale:1;transition:scale .45s var(--ease) calc(var(--i) * .14s)}
+.anno.show path{stroke-dashoffset:0;transition:stroke-dashoffset .6s var(--ease) calc(.1s + var(--i) * .14s)}
+.anno.show .an-lb{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) calc(.35s + var(--i) * .14s),translate .7s var(--ease) calc(.35s + var(--i) * .14s),filter .5s var(--ease) calc(.35s + var(--i) * .14s)}
+@media (prefers-reduced-motion:reduce){.anno path,.anno circle,.an-lb{transition:none!important;filter:none}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .tall .frame,.proto.tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .morph.tall{grid-column:1 / -1;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*64);align-items:end}
@@ -454,10 +463,12 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .order{grid-column:1 / span 9;gap:calc(var(--u)*48)}
   .chip{height:calc(var(--u)*44);padding:0 calc(var(--u)*20);font-size:calc(var(--u)*18)}
   .arw{font-size:calc(var(--u)*18)}
-  .anno{height:calc(var(--u)*600)}
-  .an-lb{gap:calc(var(--u)*4)}
-  .an-lb b{font-size:calc(var(--u)*19);line-height:calc(var(--u)*24)}
-  .an-lb span{font-size:calc(var(--u)*15);line-height:calc(var(--u)*21)}
+  .anno{height:calc(var(--u)*580)}
+  .cartmix{row-gap:calc(var(--u)*24)}
+  .cartmix .bar{justify-content:center}
+  .an-lb{gap:calc(var(--u)*3)}
+  .an-lb b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*22)}
+  .an-lb span{font-size:calc(var(--u)*14);line-height:calc(var(--u)*20)}
 }
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -541,23 +552,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Phase 1</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="The cart"><div class="stage">
+<section class="slide screens notitle" data-name="The cart"><div class="stage">
   <div class="head"><h3 class="title">The cart</h3></div>
-  <div class="content"><div class="morph tall">
-    <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852">
-      <div class="layer before"><img src="img/cart-before.webp" alt="Before: client card, a single provider, and line items with thumbnails" style="object-position:top left" loading="lazy" decoding="async"></div>
-      <div class="layer after"><img src="img/cart-after.webp" alt="After: client as the title, add items to cart up top, and a provider on each line" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
-    </div>
-    <div class="bar"><p class="foot">One provider per sale became a provider per line, so items from every appointment sit in one list under a single way to add more.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
-  </div></div>
-</div></section>
-
-<section class="slide screens" data-name="The cart, up close"><div class="stage">
-  <div class="head"><h3 class="title">The cart, up close</h3></div>
-  <div class="content"><div class="anno" style="--r:393/852">
-    <div class="an-ph"><div class="frame" style="--r:393/852"><img src="img/cart-after.webp" alt="The new cart: Rachel Green as the title, add items to cart, two line items each with a provider, totals and charge" decoding="async"></div></div>
+  <div class="content"><div class="morph cartmix"><div class="anno" style="--r:393/852">
+    <div class="an-ph"><div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852">
+      <div class="layer before"><img src="img/cart-before.webp" alt="Before: client card, a single provider, and line items with thumbnails" decoding="async"></div>
+      <div class="layer after"><img src="img/cart-after.webp" alt="After: Rachel Green as the title, add items to cart up top, a provider on each line, one total and charge" decoding="async"></div><i class="edge"></i></div></div>
     <svg aria-hidden="true"></svg><div class="an-lb" data-x="0.19" data-xm="0.81" data-y="0.16699999999999998" data-side="l" data-i="0"><b>Client first</b><span>Name and location lead, so staff always know whose sale they&rsquo;re on.</span></div><div class="an-lb" data-x="0.91" data-xm="0.91" data-y="0.3" data-side="r" data-i="1"><b>One way to add</b><span>Another appointment, product or service joins the same cart in a tap.</span></div><div class="an-lb" data-x="0.12" data-xm="0.4" data-y="0.38299999999999995" data-side="l" data-i="2"><b>A provider on every line</b><span>Each item credits its own provider, so commission and tips split correctly.</span></div><div class="an-lb" data-x="0.035" data-xm="0.97" data-y="0.78" data-side="l" data-i="3"><b>One total</b><span>Every appointment rolls into a single amount due.</span></div><div class="an-lb" data-x="0.95" data-xm="0.95" data-y="0.9179999999999999" data-side="r" data-i="4"><b>Charge once</b><span>One payment for the whole visit, with split there when clients share.</span></div>
-  </div></div>
+  </div><div class="bar"><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div></div></div>
 </div></section>
 
 <section class="slide screens" data-name="Tipping on one ticket"><div class="stage">
@@ -610,8 +612,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="One client, played"><div class="stage">
-  <div class="head"><h3 class="title">One client, played</h3><span class="mono">Prototype</span></div>
+<section class="slide screens notitle" data-name="One client, played"><div class="stage">
+  <div class="head"><h3 class="title">One client, played</h3><span class="mono">Prototype · One client</span></div>
   <div class="content"><div class="proto tall">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852"><img src="img/sc-1.webp" alt="Checkout" data-hot="24,216,345,114" data-tr="slide" decoding="async"><img src="img/sc-2.webp" alt="Appointment" data-hot="24,758,166,50" data-tr="slide" decoding="async"><img src="img/sc-3.webp" alt="Select" data-hot="24,198,345,109" data-tr="smart" decoding="async"><img src="img/sc-4.webp" alt="Selected" data-hot="24,755,345,48" data-tr="slide" decoding="async"><img src="img/sc-5.webp" alt="One sale" data-hot="116,756,253,48" data-tr="slide" decoding="async"><img src="img/sc-6.webp" alt="Payment" data-hot="0,467,393,74" data-tr="slide" decoding="async"><img src="img/sc-7.webp" alt="Tip on" data-hot="0,279,393,76" data-tr="slide" decoding="async"><img src="img/sc-8.webp" alt="Tip and sign" data-hot="24,758,345,48" data-tr="slide" decoding="async"><img src="img/sc-9.webp" alt="Done" data-hot="" data-tr="" decoding="async"><i class="press"></i><i class="tap"></i></div>
     <div class="steps" role="group" aria-label="Prototype steps"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Checkout</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Appointment</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Select</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Selected</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>One sale</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>Payment</b></button><button type="button" aria-pressed="false"><span class="mono">07</span><b>Tip on</b></button><button type="button" aria-pressed="false"><span class="mono">08</span><b>Tip and sign</b></button><button type="button" aria-pressed="false"><span class="mono">09</span><b>Done</b></button></div>
@@ -619,8 +621,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div></div>
 </div></section>
 
-<section class="slide screens" data-name="Group checkout, played"><div class="stage">
-  <div class="head"><h3 class="title">Group checkout, played</h3><span class="mono">Prototype</span></div>
+<section class="slide screens notitle" data-name="Group checkout, played"><div class="stage">
+  <div class="head"><h3 class="title">Group checkout, played</h3><span class="mono">Prototype · Group checkout</span></div>
   <div class="content"><div class="proto tall">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:393/852"><img src="img/gc-1.webp" alt="Checkout" data-hot="266,78,40,40" data-tr="smart" data-moves="220,111,291,107;342,103,408,107;456,103,525,107;570,74,642,74" decoding="async"><img src="img/gc-2.webp" alt="Select mode" data-hot="24,290,345,109" data-tr="smart" decoding="async"><img src="img/gc-3.webp" alt="Rachel" data-hot="24,407,345,109" data-tr="smart" decoding="async"><img src="img/gc-4.webp" alt="Ashley" data-hot="24,731,345,48" data-tr="smart" decoding="async"><img src="img/gc-5.webp" alt="One sale" data-hot="116,756,253,48" data-tr="slide" decoding="async"><img src="img/gc-6.webp" alt="Payment" data-hot="0,467,393,74" data-tr="slide" decoding="async"><img src="img/gc-7.webp" alt="Tip on" data-hot="0,279,393,76" data-tr="slide" decoding="async"><img src="img/gc-8.webp" alt="Tip and sign" data-hot="24,758,345,48" data-tr="slide" decoding="async"><img src="img/gc-9.webp" alt="Done" data-hot="" data-tr="" decoding="async"><i class="press"></i><i class="tap"></i></div>
     <div class="steps" role="group" aria-label="Prototype steps"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Checkout</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Select mode</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Rachel</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Ashley</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>One sale</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>Payment</b></button><button type="button" aria-pressed="false"><span class="mono">07</span><b>Tip on</b></button><button type="button" aria-pressed="false"><span class="mono">08</span><b>Tip and sign</b></button><button type="button" aria-pressed="false"><span class="mono">09</span><b>Done</b></button></div>
@@ -780,9 +782,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     var ph=a.querySelector('.an-ph'),svg=a.querySelector('svg'),lbs=[].slice.call(a.querySelectorAll('.an-lb'));
     function lay(){
       var W=a.clientWidth,H=a.clientHeight;if(!W||!H)return;
-      var r=(getComputedStyle(a).getPropertyValue('--r')||'393/852').split('/'),pw=H*r[0]/r[1],d=desk.matches,u=d?W/1336:1,reach=d?56*u:20,gap=d?20*u:12;
+      var r=(getComputedStyle(a).getPropertyValue('--r')||'393/852').split('/'),pw=H*r[0]/r[1],d=desk.matches,u=d?W/1336:1,reach=d?72*u:20,gap=d?18*u:10;
       var px=d?(W-pw)/2:0;ph.style.left=px+'px';ph.style.width=pw+'px';
-      var lw=d?Math.min(300*u,px-reach-8):W-pw-reach;
+      var lw=d?Math.min(260*u,px-reach-8):W-pw-reach;
       var sides={l:[],r:[]};
       lbs.forEach(function(l){var s=d?l.dataset.side:'r';l.classList.toggle('l',s==='l');l.style.width=lw+'px';
         l.style.left=(s==='l'?px-reach-lw:px+pw+reach)+'px';
@@ -791,12 +793,16 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
       ['l','r'].forEach(function(k){var list=sides[k].sort(function(p,q){return p.ay-q.ay}),bottom=-1e9;
         list.forEach(function(c){var h=c.el.offsetHeight,t=Math.max(c.ay-10,bottom+gap);t=Math.min(t,H-h);c.t=t;bottom=t+h});
         for(var j=list.length-2;j>=0;j--){var c=list[j],n=list[j+1];if(c.t+c.el.offsetHeight+gap>n.t)c.t=n.t-gap-c.el.offsetHeight}
-        list.forEach(function(c){c.el.style.top=c.t+'px';var ly=c.t+(d?12*u:9),
+        list.forEach(function(c){c.el.style.top=c.t+'px';var ly=c.t+(d?11*u:8),
           e=k==='l'?px-12:px+pw+12,lx=k==='l'?px-reach+4:px+pw+reach-4;
-          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+c.ax.toFixed(1)+' '+c.ay.toFixed(1)+'H'+e.toFixed(1)+'L'+lx.toFixed(1)+' '+ly.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+c.ax.toFixed(1)+'" cy="'+c.ay.toFixed(1)+'" r="'+(d?4.5*u:3.5)+'"/>'})});
+          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+c.ax.toFixed(1)+' '+c.ay.toFixed(1)+'H'+e.toFixed(1)+'L'+lx.toFixed(1)+' '+ly.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+c.ax.toFixed(1)+'" cy="'+c.ay.toFixed(1)+'" r="'+(d?3*u:2.5)+'"/>'})});
       svg.innerHTML=out}
     lay();addEventListener('resize',lay);if(document.fonts)document.fonts.ready.then(lay);
-    var slide=a.closest('.slide');new MutationObserver(function(){if(slide.classList.contains('on'))lay()}).observe(slide,{attributes:true,attributeFilter:['class']});
+    // Callouts belong to the "after": they come in once the wipe has landed and step out when it goes back.
+    var slide=a.closest('.slide'),m=a.closest('.morph'),was=null;
+    function upd(){var on=slide.classList.contains('on')&&(!m||m.classList.contains('is-after'));if(on===was)return;was=on;clearTimeout(a._s);
+      if(on){lay();a._s=setTimeout(function(){a.classList.add('show')},m?850:350)}else a.classList.remove('show')}
+    [slide,m].forEach(function(el){if(el)new MutationObserver(upd).observe(el,{attributes:true,attributeFilter:['class']})});upd();
   });
 })();
 </script>
