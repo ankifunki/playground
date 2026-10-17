@@ -73,7 +73,8 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
         const w = ruler.current?.clientWidth ?? 0;
         tickEls.current.forEach((el, i) => {
           if (!el) return;
-          const d = x === null ? Infinity : pos(ticks[i]) * w - x;
+          // When the swell subsides, the milestone under the phone marker keeps its peak height
+          const d = x === null ? (i === pinRef.current ? 0 : Infinity) : pos(ticks[i]) * w - x;
           el.style.setProperty("--s", (1 + LIFT * Math.exp(-((d / HALO) ** 2))).toFixed(3));
         });
       });
@@ -100,6 +101,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   // point on the scale under the marker, in px from its left (Now) edge.
   const scrolling = () => typeof window !== "undefined" && matchMedia("(max-width: 560px)").matches;
   const xRef = useRef(0);
+  const pinRef = useRef(-1);
   const anim = useRef(0);
   const place = (x: number) => {
     const sc = scroller.current, r = ruler.current;
@@ -116,6 +118,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
       gap = Math.abs(pos(y) * w - cx);
       best = i;
     });
+    pinRef.current = typeof best === "number" ? best : -1;
     setPin(best);
   };
   // Points on the scale that can sit under the marker: Now, then each year
