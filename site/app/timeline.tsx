@@ -109,11 +109,16 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const moveTo = (x: number, w: number) => {
     const S = sw.current;
     if (!S.raf && S.amp === 0) S.x = x;
+    // Sub-pixel creep (the tail of a phone glide) doesn't count as moving, so the swell starts sinking as soon
+    // as the scale looks still instead of holding up until the glide's last fraction of a pixel.
+    const real = Math.abs(x - S.tx) > 0.6;
+    if (real) {
+      S.last = performance.now();
+      S.target = 1;
+      setMoving(true);
+    }
     S.tx = x;
-    S.target = 1;
-    S.last = performance.now();
     run();
-    setMoving(true);
     setActive(indexAt(to - (x / w) * span));
     xRef.current = x;
   };
