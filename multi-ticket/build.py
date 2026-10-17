@@ -21,9 +21,14 @@ CSS = """
 /* Prototype player: replays a Figma prototype path with taps on the real hotspots */
 .proto{display:grid;gap:var(--gap-m)}
 .proto.tall .frame{height:min(44svh,400px)}
-.proto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transition:transform .55s var(--ease),opacity .45s var(--ease)}
-.proto .frame img.on{opacity:1}
-.tap{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;pointer-events:none;z-index:5;opacity:0}
+.proto .frame{--fig:cubic-bezier(0,0,.58,1);background:#12100b}
+.proto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;z-index:0}
+.proto .frame img.on{opacity:1;z-index:1}
+.proto .frame img.in-slide{z-index:2;box-shadow:-18px 0 32px rgb(0 0 0 / .45)}
+.proto .frame img.in-fade{z-index:2}
+.press{position:absolute;z-index:4;border-radius:12px;background:rgb(255 255 255 / .14);opacity:0;pointer-events:none;transition:opacity .22s var(--fig)}
+.press.on{opacity:1;transition-duration:.08s}
+.tap{position:absolute;left:0;top:0;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;pointer-events:none;z-index:5;opacity:0}
 .tap::before,.tap::after{content:"";position:absolute;inset:0;border-radius:50%}
 .tap::before{background:rgb(255 255 255 / .5);box-shadow:0 0 0 1px rgb(255 255 255 / .6);scale:.45}
 .tap::after{border:1.5px solid rgb(255 255 255 / .8)}
@@ -160,19 +165,42 @@ JS = r"""<script>
 (function(){
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.proto').forEach(function(p){
-    var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),i=0,t=[];
-    function clear(){t.forEach(clearTimeout);t=[]}
+    // Replays a Figma prototype path with its own transitions: Slide in (new screen over a still one) and
+    // Smart animate (in-place change, so a dissolve with the new screen on top), at Figma's 300ms ease-out cubic.
+    var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),press=f.querySelector('.press'),i=0,t=[],busy=null;
+    var DUR=300,EASE='cubic-bezier(0,0,.58,1)';
+    function clear(){t.forEach(clearTimeout);t=[];press.classList.remove('on')}
     function mark(j){btns.forEach(function(b,k){b.setAttribute('aria-pressed',String(k===j));b.classList.toggle('seen',k<j)})}
-    function show(j){imgs.forEach(function(im,k){im.style.transition='none';im.style.transform='';im.style.zIndex='';im.classList.toggle('on',k===j)});void f.offsetWidth;imgs.forEach(function(im){im.style.transition=''});i=j;mark(j)}
-    function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;
-      if(tr==='slide'&&j>i){b.style.transition='none';b.style.transform='translateX(100%)';b.style.zIndex=2;b.classList.add('on');void b.offsetWidth;b.style.transition='';b.style.transform='translateX(0)';a.style.transform='translateX(-28%)';
-        setTimeout(function(){if(b.classList.contains('on')&&imgs[i]!==a)a.classList.remove('on');a.style.transition='none';a.style.transform='';b.style.zIndex='';void a.offsetWidth;a.style.transition=''},600)}
-      else{b.classList.add('on');a.classList.remove('on')}
+    function reset(im){im.style.transition='none';im.style.transform='';im.style.opacity='';im.classList.remove('in-slide','in-fade')}
+    function show(j){if(busy){clearTimeout(busy);busy=null}f.querySelectorAll('.mv').forEach(function(x){x.remove()});imgs.forEach(unmask);imgs.forEach(function(im,k){reset(im);im.classList.toggle('on',k===j)});i=j;mark(j)}
+    function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;reset(b);
+      if(tr==='slide'){b.classList.add('in-slide');b.style.transform='translateX(100%)';b.style.opacity='1';void b.offsetWidth;
+        b.style.transition='transform '+DUR+'ms '+EASE;b.style.transform='translateX(0)'}
+      else{b.classList.add('in-fade');b.style.opacity='0';var mv=moves(a,b);void b.offsetWidth;b.style.transition='opacity '+DUR+'ms '+EASE;b.style.opacity='1';if(mv)mv()}
+      busy=setTimeout(function(){busy=null;a.classList.remove('on');reset(b);unmask(a);unmask(b);f.querySelectorAll('.mv').forEach(function(x){x.remove()});b.classList.add('on')},DUR+40);
       i=j;mark(j)}
-    function tapAt(j){var d=(imgs[j].dataset.tap||'').split(',');if(d.length<2)return;tap.style.left=d[0]+'%';tap.style.top=d[1]+'%';tap.classList.remove('go');void tap.offsetWidth;tap.classList.add('go')}
+    function setMask(im,rects,S){var keep=[],y=0;rects.sort(function(p,q){return p[0]-q[0]}).forEach(function(r){if(r[0]>y)keep.push([y,r[0]-y]);y=Math.max(y,r[0]+r[1])});keep.push([y,852-y]);
+      var img=keep.map(function(){return 'linear-gradient(#000,#000)'}).join(','),pos=keep.map(function(k){return '0 '+k[0]*S+'px'}).join(','),size=keep.map(function(k){return '100% '+k[1]*S+'px'}).join(',');
+      ['mask','webkitMask'].forEach(function(p){im.style[p+'Image']=img;im.style[p+'Position']=pos;im.style[p+'Size']=size;im.style[p+'Repeat']='no-repeat'})}
+    function unmask(im){['mask','webkitMask'].forEach(function(p){im.style[p+'Image']=''})}
+    // Smart animate for elements that move: each listed block glides from its old place to its new one while its
+    // content dissolves, and both screens are masked around the blocks so nothing is seen twice.
+    function moves(a,b){if(!a.dataset.moves)return null;var S=f.clientHeight/852,m=a.dataset.moves.split(';').map(function(x){return x.split(',').map(Number)}),wins=[];
+      setMask(a,m.map(function(x){return [x[0],x[1]]}),S);setMask(b,m.map(function(x){return [x[2],x[3]]}),S);
+      m.forEach(function(x){var w=document.createElement('div');w.className='mv';w.style.cssText='position:absolute;left:0;right:0;overflow:hidden;z-index:3;top:'+x[0]*S+'px;height:'+x[1]*S+'px';
+        var o=new Image(),n=new Image();[o,n].forEach(function(im,k){im.src=k?b.src:a.src;im.alt='';im.style.cssText='position:absolute;left:0;width:100%;height:'+852*S+'px;max-width:none;object-fit:fill;opacity:'+(k?0:1)+';top:'+(-(k?x[2]:x[0])*S)+'px';w.appendChild(im)});
+        f.appendChild(w);wins.push([w,o,n,x])});
+      return function(){wins.forEach(function(v){var tr='top '+DUR+'ms '+EASE+',height '+DUR+'ms '+EASE;v[0].style.transition=tr;v[0].style.top=v[3][2]*S+'px';v[0].style.height=v[3][3]*S+'px';
+        v[1].style.transition=v[2].style.transition='opacity '+DUR+'ms '+EASE;v[1].style.opacity='0';v[2].style.opacity='1'})}}
+    function hot(j){var d=(imgs[j].dataset.hot||'').split(',').map(Number);return d.length===4?d:null}
+    function tapAt(j){var h=hot(j);if(!h)return;var W=393,H=852;
+      press.style.left=h[0]/W*100+'%';press.style.top=h[1]/H*100+'%';press.style.width=h[2]/W*100+'%';press.style.height=h[3]/H*100+'%';
+      tap.style.left=(h[0]+h[2]/2)/W*100+'%';tap.style.top=(h[1]+h[3]/2)/H*100+'%';
+      tap.classList.remove('go');void tap.offsetWidth;tap.classList.add('go');press.classList.add('on')}
     function run(){clear();if(reduce)return;
-      if(i>=imgs.length-1){t.push(setTimeout(function(){show(0);run()},2400));return}
-      t.push(setTimeout(function(){tapAt(i);t.push(setTimeout(function(){go(i+1);run()},420))},1300))}
+      if(i>=imgs.length-1){t.push(setTimeout(function(){show(0);run()},2600));return}
+      t.push(setTimeout(function(){tapAt(i);
+        t.push(setTimeout(function(){press.classList.remove('on');go(i+1);run()},hot(i)?260:0))},1500))}
     btns.forEach(function(b,k){b.addEventListener('click',function(e){e.stopPropagation();clear();show(k);run()})});
     var slide=p.closest('.slide');
     new MutationObserver(function(){if(slide.classList.contains('on')){clear();show(0);t.push(setTimeout(run,500))}else clear()}).observe(slide,{attributes:true,attributeFilter:['class']});
@@ -185,12 +213,12 @@ JS = r"""<script>
 """
 
 def proto(title, ratio, steps, foot, meta=""):
-    imgs = "".join(f'<img src="img/{s}.webp" alt="{l}" data-tap="{tap}" data-tr="{tr}" decoding="async">' for s, l, tap, tr in steps)
-    btns = "".join(f'<button type="button" aria-pressed="{"true" if i == 0 else "false"}"><span class="mono">{i+1:02d}</span><b>{l}</b></button>' for i, (s, l, tap, tr) in enumerate(steps))
+    imgs = "".join(f'<img src="img/{st[0]}.webp" alt="{st[1]}" data-hot="{st[2]}" data-tr="{st[3]}"{f' data-moves="{st[4]}"' if len(st) > 4 else ""} decoding="async">' for st in steps)
+    btns = "".join(f'<button type="button" aria-pressed="{"true" if i == 0 else "false"}"><span class="mono">{i+1:02d}</span><b>{l}</b></button>' for i, (s, l, *_) in enumerate(steps))
     return f'''<section class="slide screens" data-name="{title}"><div class="stage">
   <div class="head"><h3 class="title">{title}</h3>{f'<span class="mono">{meta}</span>' if meta else ""}</div>
   <div class="content"><div class="proto tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}<i class="tap"></i></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}<i class="press"></i><i class="tap"></i></div>
     <div class="steps" role="group" aria-label="Prototype steps">{btns}</div>
     <p class="foot">{foot}</p>
   </div></div>
@@ -323,9 +351,7 @@ SLIDES = f'''
 
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
-{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip"), ("m-7", "Sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
-
-{proto("Checkout, played", "393/852", [("sc-1", "Checkout", "50,32", "slide"), ("sc-2", "Appointment", "50,91.8", "slide"), ("sc-3", "One sale", "61,91.8", "slide"), ("sc-4", "Payment", "50,36.6", "slide"), ("sc-5", "Card reader", "", "slide"), ("sc-6", "Tip and sign", "50,86.8", "slide"), ("sc-7", "Processing", "", "slide"), ("sc-8", "Done", "", "")], "Rachel&rsquo;s three appointments check out as one sale, from the list to a single payment.", meta="Prototype")}
+{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
 
 {chapter(2, "Web")}
 
@@ -335,7 +361,9 @@ SLIDES = f'''
 
 {morph("Group checkout", "list-before", "list-after", "393/852", "Same-day appointments group into one checkout, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
-{proto("Group checkout, played", "393/852", [("gc-1", "Discover", "50,28.9", "fade"), ("gc-2", "Group checkout", "51,23.2", "fade"), ("gc-3", "Select mode", "50,52.8", "fade"), ("gc-4", "Mark", "50,66.4", "fade"), ("gc-5", "Ashley", "50,88.9", "slide"), ("gc-6", "One sale", "58.8,92", "slide"), ("gc-7", "Pay", "50,58.8", "slide"), ("gc-8", "Tip on", "50,36.5", "slide"), ("gc-9", "Tip and sign", "50,87", "slide"), ("gc-10", "Processing", "", "slide"), ("gc-11", "Done", "", "")], "Discover group checkout, pick Mark and Ashley, and settle both in one sale, one payment, one tip.", meta="Prototype")}
+{proto("One client, played", "393/852", [("sc-1", "Checkout", "24,216,345,114", "slide"), ("sc-2", "Appointment", "24,758,166,50", "slide"), ("sc-3", "Select", "24,198,345,109", "smart"), ("sc-4", "Selected", "24,755,345,48", "slide"), ("sc-5", "One sale", "116,756,253,48", "slide"), ("sc-6", "Payment", "0,467,393,74", "slide"), ("sc-7", "Tip on", "0,279,393,76", "slide"), ("sc-8", "Tip and sign", "24,758,345,48", "slide"), ("sc-9", "Done", "", "")], "Open Rachel, pull her other appointment into the sale, and pay once. Every transition is the prototype&rsquo;s own.", meta="Prototype")}
+
+{proto("Group checkout, played", "393/852", [("gc-1", "Checkout", "266,78,40,40", "smart", "220,111,291,107;342,103,408,107;456,103,525,107;570,74,642,74"), ("gc-2", "Select mode", "24,290,345,109", "smart"), ("gc-3", "Rachel", "24,407,345,109", "smart"), ("gc-4", "Ashley", "24,731,345,48", "smart"), ("gc-5", "One sale", "116,756,253,48", "slide"), ("gc-6", "Payment", "0,467,393,74", "slide"), ("gc-7", "Tip on", "0,279,393,76", "slide"), ("gc-8", "Tip and sign", "24,758,345,48", "slide"), ("gc-9", "Done", "", "")], "Pick Rachel and Ashley from the list and settle both in one sale, one payment and one tip.", meta="Prototype")}
 
 <section class="slide divider" data-name="End"><div class="stage">
   <div class="head">
