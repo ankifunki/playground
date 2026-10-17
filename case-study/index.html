@@ -208,18 +208,19 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 /* Slides without a visible title: the mock or the line carries itself; the title stays for screen readers */
 .notitle .head .title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .notitle .statement{font-size:28px;line-height:36px;letter-spacing:-.025em}
-/* Switcher models: mark what changes between the three options, drawn in on each step */
-.swx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
-.swx rect{fill:none;stroke:var(--accent);stroke-width:3;opacity:0;scale:1.06;transform-box:fill-box;transform-origin:center;transition:opacity .2s var(--ease),scale .2s var(--ease)}
-.swx path{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .2s var(--ease)}
-.swx circle{fill:var(--accent);opacity:0;transition:opacity .2s}
-.swl{position:absolute;z-index:3;transform:translateY(-50%);font:500 10px/1.2 var(--body);color:var(--accent);white-space:nowrap;opacity:0;translate:-6px 0;filter:blur(2px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
-.swl.r{translate:6px 0}
-.models[data-step="0"] .o0 rect,.models[data-step="1"] .o1 rect,.models[data-step="2"] .o2 rect{opacity:1;scale:1;transition:opacity .45s var(--ease) calc(.15s + var(--i) * .1s),scale .6s var(--ease) calc(.15s + var(--i) * .1s)}
-.models[data-step="0"] .o0 path,.models[data-step="1"] .o1 path,.models[data-step="2"] .o2 path{stroke-dashoffset:0;transition:stroke-dashoffset .55s var(--ease) .45s}
-.models[data-step="0"] .o0 circle,.models[data-step="1"] .o1 circle,.models[data-step="2"] .o2 circle{opacity:1;transition:opacity .3s .9s}
-.models[data-step="0"] .swl.o0,.models[data-step="1"] .swl.o1,.models[data-step="2"] .swl.o2{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) .85s,translate .7s var(--ease) .85s,filter .5s var(--ease) .85s}
-@media (prefers-reduced-motion:reduce){.swx *,.swl{transition:none!important;filter:none}}
+/* Switcher models: point at what changes, from just outside the mock; the screens stay as they are */
+.swc{position:relative;height:34px;margin-top:calc(var(--gap-m) * -1 + 6px)}
+.swc span{position:absolute;top:0;padding-top:16px;font:500 11px/1.2 var(--body);color:var(--accent);white-space:nowrap;opacity:0;translate:0 -4px;filter:blur(2px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
+.swc span.l{left:var(--x)}
+.swc span.r{right:calc(100% - var(--x));text-align:right}
+.swc span::before{content:"";position:absolute;top:0;width:1px;height:12px;background:var(--accent);transform-origin:top;scale:1 0;transition:scale .2s var(--ease)}
+.swc span.l::before{left:0}.swc span.r::before{right:0}
+.swc span::after{content:"";position:absolute;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--accent);scale:0;transition:scale .2s var(--ease)}
+.swc span.l::after{left:-2px}.swc span.r::after{right:-2px}
+.models[data-step="0"] .swc .o0,.models[data-step="1"] .swc .o1,.models[data-step="2"] .swc .o2{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) .4s,translate .7s var(--ease) .4s,filter .5s var(--ease) .4s}
+.models[data-step="0"] .swc .o0::before,.models[data-step="1"] .swc .o1::before,.models[data-step="2"] .swc .o2::before{scale:1;transition:scale .45s var(--ease) .15s}
+.models[data-step="0"] .swc .o0::after,.models[data-step="1"] .swc .o1::after,.models[data-step="2"] .swc .o2::after{scale:1;transition:scale .35s var(--ease)}
+@media (prefers-reduced-motion:reduce){.swc span,.swc span::before,.swc span::after{transition:none!important;filter:none}}
 .divider .stage{justify-content:space-between}
 .divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
@@ -252,7 +253,9 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
   .models > .frame{aspect-ratio:var(--r);align-self:center}
-  .swl{font-size:calc(var(--u)*15)}
+  .models > .swc{grid-column:1;grid-row:4;height:calc(var(--u)*44);margin-top:calc(var(--u)*-18)}
+  .swc span{font-size:calc(var(--u)*15);padding-top:calc(var(--u)*20)}
+  .swc span::before{height:calc(var(--u)*14)}
   .flowseq > .frame{aspect-ratio:var(--r);width:auto;height:calc(var(--u)*560);max-width:100%;justify-self:start}
   .content > .flowseq{grid-template-columns:auto minmax(calc(var(--u)*280),1fr);column-gap:calc(var(--u)*64)}
   .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
@@ -526,7 +529,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Switching locations"><div class="stage">
   <div class="head"><h3 class="title">Switching locations</h3></div>
   <div class="content"><div class="models">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1536/646"><img src="img/sw-global.webp" alt="Global model mock" style="object-position:top left" decoding="async"><img src="img/sw-hybrid.webp" alt="Hybrid model mock" style="object-position:top left" decoding="async"><img src="img/sw-workflow.webp" alt="Per workflow model mock" style="object-position:top left" decoding="async"><svg class="swx" viewBox="0 0 1536 646" preserveAspectRatio="none" aria-hidden="true"><g class="o0"><rect style="--i:0" x="80" y="32" width="202" height="40" rx="14"/><rect style="--i:1" x="80" y="238" width="202" height="38" rx="14"/><rect style="--i:2" x="98" y="452" width="202" height="38" rx="14"/><path pathLength="1" d="M282 52H560"/><circle cx="560" cy="52" r="4"/></g><g class="o1"><rect style="--i:0" x="1108" y="128" width="184" height="40" rx="14"/><rect style="--i:1" x="1152" y="332" width="182" height="40" rx="14"/><rect style="--i:2" x="1140" y="547" width="166" height="38" rx="14"/><path pathLength="1" d="M1108 148H860"/><circle cx="860" cy="148" r="4"/></g><g class="o2"><rect style="--i:0" x="256" y="128" width="180" height="40" rx="14"/><rect style="--i:1" x="338" y="334" width="182" height="40" rx="14"/><rect style="--i:2" x="294" y="538" width="182" height="40" rx="14"/><path pathLength="1" d="M436 148H700"/><circle cx="700" cy="148" r="4"/></g></svg><span class="swl o0" style="left:37.37%;top:8.05%">Location lives in the top bar</span><span class="swl r o1" style="right:44.92%;top:22.91%">Plus one per page</span><span class="swl o2" style="left:46.48%;top:22.91%">Location in every page title</span></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1536/646"><img src="img/sw-global.webp" alt="Global model mock" style="object-position:top left" decoding="async"><img src="img/sw-hybrid.webp" alt="Hybrid model mock" style="object-position:top left" decoding="async"><img src="img/sw-workflow.webp" alt="Per workflow model mock" style="object-position:top left" decoding="async"></div><div class="swc" aria-hidden="true"><span class="l o0" style="--x:6.2%">Location lives in the top bar</span><span class="r o1" style="--x:83.5%">Plus one per page</span><span class="l o2" style="--x:17.2%">Location in every page title</span></div>
     <div class="steps tabs" role="group" aria-label="Switcher models"><button type="button" aria-pressed="true"><span class="mono">Option a</span><b>Global</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Hybrid</b></button><button type="button" aria-pressed="false"><span class="mono">Selected</span><b>Per workflow</b></button></div>
     <div class="notes"><p class="note on">One switcher for the whole app. Every view is locked to one location, and owners lose the overview.</p><p class="note">A global switcher plus one per workflow. Two switchers with conflicting logic.</p><p class="note">Each workflow carries its own switcher, e.g. Staff at East Village. Works for owners and operators at any scale.</p></div>
   </div></div>
