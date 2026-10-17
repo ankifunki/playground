@@ -34,7 +34,7 @@
     --bar: #eef1f1;
     --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
     /* Night: cool moonlight (tiles glow instead of casting shadows; see .art below) */
-    --ambient: rgba(150, 146, 255, 0.07);
+    --ambient: rgba(238, 143, 220, 0.06);
     color-scheme: dark;
   }
 }
@@ -47,7 +47,7 @@
   --accent: #ee8fdc;
   --bar: #eef1f1;
   --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
-  --ambient: rgba(150, 146, 255, 0.07);
+  --ambient: rgba(238, 143, 220, 0.06);
   color-scheme: dark;
 }
 
@@ -328,7 +328,7 @@ a { color: inherit; }
 .theme-toggle:active { transform: scale(0.9); }
 .theme-toggle svg { width: 18px; height: 18px; overflow: visible; }
 .tt-sun { color: #e8962e; filter: drop-shadow(0 0 3px rgba(245, 166, 58, 0.45)); }
-.tt-moon { color: #9aa2ff; filter: drop-shadow(0 0 3px rgba(154, 162, 255, 0.45)); }
+.tt-moon { color: #ee8fdc; filter: drop-shadow(0 0 3px rgba(238, 143, 220, 0.45)); }
 .tt-star { color: #ffcf6e; }
 .tt-dial, .tt-moon { transform-box: view-box; transform-origin: 12px 30px; }
 .tt-moon { transform: rotate(180deg); } /* parked on the far side of the wheel */
