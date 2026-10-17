@@ -372,11 +372,7 @@ SLIDES = f'''
 
 {flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", tall=True)}
 
-{chapter(2, "Web")}
-
-{flow("Items with add-ons", "422/692", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "A busy cart gets long fast. Add-ons travel with their service and stay collapsed until you need them.", tall=True)}
-
-{chapter(3, "Phase 2")}
+{chapter(2, "Phase 2")}
 
 {morph("Group checkout", "list-before", "list-after", "393/852", "Paying for someone else meant a second checkout. Same-day appointments now group into one, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
