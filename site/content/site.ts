@@ -126,9 +126,11 @@ export const projects: Project[] = [
     company: "Instacart",
     year: "2021–23",
     access: "public",
+    // Instacart's carrot in one tone, like the Genius AI tiles
     art: {
-      kind: "phones",
-      srcs: ["/art/order-issue/report-an-issue.webp"],
+      kind: "logo",
+      src: "/brand/instacart-carrot-black.svg",
+      srcDark: "/brand/instacart-carrot-light.svg",
       bg: "#f3ecdf",
       bgDark: "#22281f",
     },

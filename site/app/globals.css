@@ -324,6 +324,8 @@ a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transfo
   transition: transform 0.9s var(--ease);
 }
 .art .logo { position: absolute; inset: 0; margin: auto; height: 22%; width: auto; transition: transform 0.9s var(--ease); }
+/* The solid carrot reads heavier than the thin G, so it sits a little smaller to look the same size */
+.art .logo[src*="instacart-carrot"] { height: 17%; }
 .tile:hover .crop, .tile:focus-visible .crop { transform: translate(-1.2%, -1.6%); }
 .tile:hover .logo, .tile:focus-visible .logo { transform: scale(1.04); }
 .art .chip { position: absolute; left: 16px; top: 16px; background: var(--paper); }
