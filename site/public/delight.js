@@ -144,7 +144,7 @@
   // For the people who open the console.
   console.log(
     "%cHi, curious one.%c\nYou opened the console on a designer’s site, so we’ll probably get along.\nSay hello: ankit@joshiankit.com",
-    "font: 600 15px system-ui; color: #a8379f",
+    "font: 600 15px system-ui; color: #1f5cff",
     "font: 13px system-ui; color: inherit"
   );
 })();

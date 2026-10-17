@@ -7,7 +7,7 @@
   --grey: #5f6766;
   --faint: #8a9291;
   --rule: #c9cfce;
-  --accent: #a8379f;
+  --accent: #1f5cff;
   --bar: #1b201f;
   --toast-bg: #1b201f; --toast-ink: #eef1f1; --toast-ok: #7ad3a6;
   /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
@@ -30,7 +30,7 @@
     --grey: #a3abaa;
     --faint: #737b7a;
     --rule: #262b2a;
-    --accent: #ee8fdc;
+    --accent: #5c8dff;
     --bar: #eef1f1;
     --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
     /* Night: cool moonlight from the top right (tiles glow instead of casting shadows; see .art below) */
@@ -44,7 +44,7 @@
   --grey: #a3abaa;
   --faint: #737b7a;
   --rule: #262b2a;
-  --accent: #ee8fdc;
+  --accent: #5c8dff;
   --bar: #eef1f1;
   --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
   --ambient: rgba(190, 206, 255, 0.07);
