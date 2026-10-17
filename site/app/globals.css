@@ -184,6 +184,8 @@ a { color: inherit; }
   .rl-wrap::after { top: 52px; width: 2px; height: 16px; margin-left: -1px; border-radius: 0 0 1px 1px; }
   .rl-wrap::before { top: 66px; width: 6px; height: 6px; margin-left: -3px; border-radius: 999px; }
   .rl-wrap.pinned::before, .rl-wrap.pinned::after, .rl-ticks > span.pin { background: var(--accent); }
+  /* The milestone tick keeps the full height it had at the top of the swell (1 + LIFT in timeline.tsx) */
+  .rl-ticks > span.pin { height: calc(var(--h) * 2.1 * var(--k, 1)); }
   .rl-ticks > .rl-now { display: none; }
   .rl-caption { margin-inline: 24px; }
   .rl-hint { display: none; }
