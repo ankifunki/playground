@@ -38,22 +38,13 @@ export default function Home() {
         <ul className="logos">
           {experience.map((c) => (
             <li key={c.name}>
-              {c.logo ? (
-                <span
-                  className="logo"
-                  role="img"
-                  aria-label={c.name}
-                  title={c.name}
-                  style={{ ["--src" as string]: `url(${c.logo.src})`, height: c.logo.h, width: c.logo.h * c.logo.ratio }}
-                />
-              ) : c.mark ? (
-                <span className="logo-type">
-                  <span className="logo" aria-hidden="true" style={{ ["--src" as string]: `url(${c.mark.src})`, height: c.mark.h, width: c.mark.h * c.mark.ratio }} />
-                  {c.name}
-                </span>
-              ) : (
-                <span className="logo-type">{c.name}</span>
-              )}
+              <span
+                className="co-mark"
+                role="img"
+                aria-label={c.name}
+                title={c.name}
+                style={{ ["--src" as string]: `url(${c.src})`, height: c.h, width: c.h * c.ratio }}
+              />
             </li>
           ))}
         </ul>

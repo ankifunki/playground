@@ -67,19 +67,17 @@ export const about = {
   ],
 };
 
-// Places Ankit has worked, newest first. Logos are the companies' official marks, shown in one neutral colour.
-// h is each logo's height in px, tuned by eye so the set reads at an even size. Genius AI's brand is a mark
-// beside the name, so the name is set in type next to it. CloudOn has no surviving logo, so it's type only.
-type Mark = { src: string; ratio: number; h: number };
-export const experience: { name: string; logo?: Mark; mark?: Mark }[] = [
-  { name: "Genius AI", mark: { src: "/brand/genius-g-black.svg", ratio: 45.35 / 64, h: 22 } },
-  { name: "Instacart", logo: { src: "/logos/instacart.svg", ratio: 149.486 / 23.474, h: 17 } },
-  { name: "Flexport", logo: { src: "/logos/flexport.svg", ratio: 238 / 55, h: 20 } },
-  { name: "UserTesting", logo: { src: "/logos/usertesting.svg", ratio: 155.836 / 40, h: 24 } },
-  { name: "Stitch Fix", logo: { src: "/logos/stitchfix.svg", ratio: 297.85 / 48, h: 15 } },
-  { name: "HackerRank", logo: { src: "/logos/hackerrank.svg", ratio: 722 / 77, h: 15 } },
-  { name: "Samsung", logo: { src: "/logos/samsung.svg", ratio: 24 / 3.668, h: 12 } },
-  { name: "CloudOn" },
+// Places Ankit has worked, newest first. Each is the company's official mark (no wordmark), shown in one neutral
+// colour. h is the mark's height in px, tuned by eye so solid tiles and open outlines read at an even size.
+export const experience: { name: string; src: string; ratio: number; h: number }[] = [
+  { name: "Genius AI", src: "/brand/genius-g-black.svg", ratio: 45.35 / 64, h: 30 },
+  { name: "Instacart", src: "/logos/instacart.svg", ratio: 0.7982, h: 28 },
+  { name: "Flexport", src: "/logos/flexport.svg", ratio: 1, h: 25 },
+  { name: "UserTesting", src: "/logos/usertesting.svg", ratio: 0.7792, h: 28 },
+  { name: "Stitch Fix", src: "/logos/stitchfix.svg", ratio: 1.0942, h: 22 },
+  { name: "HackerRank", src: "/logos/hackerrank.svg", ratio: 1, h: 24 },
+  { name: "Samsung", src: "/logos/samsung.svg", ratio: 0.9989, h: 25 },
+  { name: "CloudOn", src: "/logos/cloudon.svg", ratio: 71.42 / 49.75, h: 22 },
 ];
 
 export const projects: Project[] = [
