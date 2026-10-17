@@ -67,20 +67,20 @@ export const about = {
   ],
 };
 
-// Places Ankit has worked, newest first. Shown as a timeline (oldest on the left): each company's icon, with its
-// name and blurb revealed on hover. Icons are drawn as masks so they all take the same neutral colour.
-// DRAFT blurbs: Ankit to rewrite in his own words.
-// start: the year Ankit joined. PLACEHOLDER years until he confirms them.
-export type Employer = { name: string; src: string; start: number; blurb: string };
+// Places Ankit has worked, newest first (from his LinkedIn). Shown as a ruler, oldest on the left: start years
+// above, and each company's icon, name, dates and blurb revealed as the pointer passes over its stretch.
+// start/end are "YYYY-MM"; no end means it's current. Icons are masks so they all take the same neutral colour.
+// DRAFT blurbs, adapted from LinkedIn: Ankit to rewrite in his own words.
+export type Employer = { name: string; src: string; start: string; end?: string; blurb: string };
 export const experience: Employer[] = [
-  { name: "Genius AI", start: 2024, src: "/brand/genius-g-black.svg", blurb: "Where I am now: the platform beauty and wellness businesses run on, from booking to checkout." },
-  { name: "Instacart", start: 2021, src: "/logos/instacart.svg", blurb: "Groceries from the stores you already love, delivered the same day." },
-  { name: "Flexport", start: 2019, src: "/logos/flexport.svg", blurb: "Software and logistics that move global trade, one container at a time." },
-  { name: "UserTesting", start: 2018, src: "/logos/usertesting.svg", blurb: "Watching real people use real products, and helping teams learn from it." },
-  { name: "Stitch Fix", start: 2017, src: "/logos/stitchfix.svg", blurb: "Personal styling, picked by stylists and data, delivered to your door." },
-  { name: "HackerRank", start: 2016, src: "/logos/hackerrank.svg", blurb: "Coding challenges and interviews that help companies hire developers." },
-  { name: "Samsung", start: 2014, src: "/logos/samsung.svg", blurb: "Where a two-day hackathon turned into Smart Hotel, a room that knows you." },
-  { name: "CloudOn", start: 2012, src: "/logos/cloudon.svg", blurb: "Microsoft Office streamed to the iPad before Microsoft shipped it. Later acquired by Dropbox." },
+  { name: "Genius AI", src: "/brand/genius-g-black.svg", start: "2023-10", blurb: "Empowering small businesses: the platform beauty and wellness pros run on, from booking to checkout." },
+  { name: "Instacart", src: "/logos/instacart.svg", start: "2021-02", end: "2023-09", blurb: "Groceries from the stores people already love, delivered the same day." },
+  { name: "Flexport", src: "/logos/flexport.svg", start: "2019-10", end: "2021-01", blurb: "Software and logistics that move global trade, one container at a time." },
+  { name: "UserTesting", src: "/logos/usertesting.svg", start: "2018-06", end: "2019-09", blurb: "Surfacing customer insights right inside the tools teams already use." },
+  { name: "Stitch Fix", src: "/logos/stitchfix.svg", start: "2017-10", end: "2018-04", blurb: "Evolving the customer-facing experience across every digital property, with richer features." },
+  { name: "HackerRank", src: "/logos/hackerrank.svg", start: "2016-04", end: "2017-09", blurb: "A platform for engineers to learn, grow and get hired." },
+  { name: "Samsung", src: "/logos/samsung.svg", start: "2014-04", end: "2016-03", blurb: "Led design for a VR product, after a few Android apps. Also: Smart Hotel, a two-day hackathon idea." },
+  { name: "CloudOn", src: "/logos/cloudon.svg", start: "2012-10", end: "2014-04", blurb: "Led design for a cross-platform productivity product: Office, streamed to the iPad. Later acquired by Dropbox." },
 ];
 
 export const projects: Project[] = [

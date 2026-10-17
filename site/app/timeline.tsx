@@ -10,10 +10,15 @@ const LIFT = 1.6; // extra height at the centre of the swell (1.6 = 2.6× the re
 // Past employers as a ruler: thin vertical ticks, with only the start years written above. Moving along it, the
 // ticks swell around the pointer like a halo, the stretch of years under it darkens, and that team's mark, name
 // and blurb appear below. The swell passes along the ruler once when it scrolls into view, as a hint.
-export function Timeline({ items }: { items: Employer[] }) {
-  const from = items[0].start;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const toYear = (ym: string) => Number(ym.slice(0, 4)) + (Number(ym.slice(5, 7)) - 1) / 12;
+const label = (ym: string) => `${MONTHS[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`;
+
+export function Timeline({ items: employers }: { items: Employer[] }) {
+  const items = employers.map((c) => ({ ...c, start: toYear(c.start), from: c.start }));
+  const from = Math.floor(items[0].start);
   const now = new Date();
-  const to = Math.max(now.getFullYear() + now.getMonth() / 12, items[items.length - 1].start + 1);
+  const to = now.getFullYear() + now.getMonth() / 12;
   const span = to - from;
   const total = Math.floor(span * PER_YEAR) + 1;
   const ticks = Array.from({ length: total }, (_, i) => from + i / PER_YEAR);
@@ -108,9 +113,13 @@ export function Timeline({ items }: { items: Employer[] }) {
       >
         <div className="rl-years" aria-hidden="true">
           {items.map((c, i) => (
-            <span key={c.name} className={active === i ? "on" : undefined} style={{ left: `${pos(c.start) * 100}%` }}>
-              <span className="rl-y-full">{c.start}</span>
-              <span className="rl-y-short">’{String(c.start).slice(2)}</span>
+            <span
+              key={c.name}
+              className={`${active === i ? "on" : ""}${i + 1 < items.length && items[i + 1].start - c.start < 1 ? " tight" : ""}`}
+              style={{ left: `${pos(c.start) * 100}%` }}
+            >
+              <span className="rl-y-full">{c.from.slice(0, 4)}</span>
+              <span className="rl-y-short">’{c.from.slice(2, 4)}</span>
             </span>
           ))}
         </div>
@@ -133,6 +142,9 @@ export function Timeline({ items }: { items: Employer[] }) {
           <span key={current.name} className="rl-caption-in">
             <span className="rl-mark" aria-hidden="true" style={{ ["--src" as string]: `url(${current.src})` }} />
             <b>{current.name}</b>
+            <span className="rl-dates mono">
+              {label(current.from)} – {current.end ? label(current.end) : "Now"}
+            </span>
             <span className="rl-blurb">{current.blurb}</span>
           </span>
         ) : (

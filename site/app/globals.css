@@ -144,10 +144,12 @@ a { color: inherit; }
   -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
 }
 .rl-caption b { font-weight: 500; color: var(--ink); margin-right: 8px; }
+.rl-dates { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--faint); margin-right: 10px; white-space: nowrap; }
 .rl-hint { color: var(--faint); font-size: 15px; }
 .rl-hint-coarse { display: none; }
 @media (hover: none) { .rl-hint-fine { display: none; } .rl-hint-coarse { display: inline; } }
-@media (max-width: 560px) { .rl-y-full { display: none; } .rl-y-short { display: inline; } }
+/* On phones, years less than a year before the next one stay hidden unless their stretch is active */
+@media (max-width: 560px) { .rl-y-full { display: none; } .rl-y-short { display: inline; } .rl-years > span.tight:not(.on), .rl-years > span.tight.on + span { opacity: 0; } }
 @media (prefers-reduced-motion: no-preference) {
   .rl-caption-in { animation: rl-in 0.3s var(--ease) both; }
   .rl-now { animation: rl-now 2.8s ease-in-out infinite; }
