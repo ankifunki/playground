@@ -178,10 +178,18 @@ a { color: inherit; }
   }
   .rl-scroll::-webkit-scrollbar { display: none; }
   .rl { width: calc(var(--years) * 84px); cursor: default; }
-  .rl-wrap::before {
-    content: ""; position: absolute; left: 50%; top: 58px; width: 5px; height: 5px; margin-left: -2.5px;
-    border-radius: 999px; background: var(--accent); z-index: 1;
+  /* The centre marker: a dot on a short needle hanging from the baseline. Neutral while scrolling; when the
+     scale settles on a milestone (it snaps to years and Now), the needle, dot and that tick turn accent. */
+  .rl-scroll { scroll-snap-type: x mandatory; }
+  .rl-ticks > span.maj, .rl-ticks > .rl-now { scroll-snap-align: center; }
+  .rl-wrap::before, .rl-wrap::after {
+    content: ""; position: absolute; left: 50%; z-index: 1; background: var(--faint);
+    transition: background 0.25s var(--ease);
   }
+  .rl-wrap::after { top: 52px; width: 2px; height: 16px; margin-left: -1px; border-radius: 0 0 1px 1px; }
+  .rl-wrap::before { top: 66px; width: 6px; height: 6px; margin-left: -3px; border-radius: 999px; }
+  .rl-wrap.pinned::before, .rl-wrap.pinned::after, .rl-ticks > span.pin { background: var(--accent); }
+  .rl-ticks > .rl-now { bottom: 0; opacity: 0; animation: none; } /* kept as the Now snap point */
   .rl-caption { margin-inline: 24px; }
   .rl-hint { display: none; }
 }

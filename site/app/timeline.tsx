@@ -35,6 +35,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   const [active, setActive] = useState<number | null>(null);
   const [moving, setMoving] = useState(false);
+  const [pin, setPin] = useState<number | "now" | null>(null); // phones: the milestone under the centre marker
   // Detail cards: the active team's card slides in from the direction of travel while the last one slides out.
   const [cards, setCards] = useState<{ i: number; dir: number; id: number; out?: boolean }[]>([]);
   const last = useRef<number | null>(null);
@@ -94,7 +95,17 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const fromCentre = () => {
     const sc = scroller.current, r = ruler.current;
     if (!sc || !r) return;
-    moveTo(Math.min(Math.max(sc.scrollLeft + sc.clientWidth / 2 - r.offsetLeft, 0), r.clientWidth), r.clientWidth);
+    const w = r.clientWidth;
+    const x = Math.min(Math.max(sc.scrollLeft + sc.clientWidth / 2 - r.offsetLeft, 0), w);
+    moveTo(x, w);
+    // The milestone under the marker (a year, or Now): it lights up with the marker once scrolling settles
+    let best: number | "now" = "now", gap = x;
+    ticks.forEach((y, i) => {
+      if (i % PER_YEAR || Math.abs(pos(y) * w - x) >= gap) return;
+      gap = Math.abs(pos(y) * w - x);
+      best = i;
+    });
+    setPin(best);
   };
   const centreOn = (x: number) => {
     const sc = scroller.current, r = ruler.current;
@@ -144,7 +155,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const hi = active === null ? -Infinity : ends[active];
 
   return (
-    <div className="rl-wrap" style={{ ["--years" as string]: span }}>
+    <div className={`rl-wrap${pin !== null && !moving ? " pinned" : ""}`} style={{ ["--years" as string]: span }}>
       <div
         ref={scroller}
         className="rl-scroll"
@@ -163,7 +174,6 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
           onPointerMove={(e) => e.pointerType !== "touch" && !scrolling() && at(e.clientX)}
           onPointerDown={(e) => e.pointerType !== "touch" && !scrolling() && at(e.clientX)}
           onPointerLeave={(e) => e.pointerType === "mouse" && !scrolling() && reset()}
-          onClick={(e) => scrolling() && centreOn(e.clientX - ruler.current!.getBoundingClientRect().left)}
           onFocus={(e) => {
             if (scrolling()) scroller.current!.scrollTop = 0;
             if (active === null && e.currentTarget.matches(":focus-visible")) focusOn(0);
@@ -199,11 +209,11 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
                 ref={(el) => {
                   tickEls.current[i] = el;
                 }}
-                className={`${i % PER_YEAR === 0 ? "maj" : ""}${y >= lo && y <= hi ? " in" : ""}`}
+                className={`${i % PER_YEAR === 0 ? "maj" : ""}${y >= lo && y <= hi ? " in" : ""}${pin === i && !moving ? " pin" : ""}`}
                 style={{ left: `${pos(y) * 100}%` }}
               />
             ))}
-            <span className="rl-now" />
+            <span className={`rl-now${pin === "now" && !moving ? " pin" : ""}`} />
           </div>
         </div>
       </div>
