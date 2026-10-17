@@ -96,7 +96,7 @@ a { color: inherit; }
 .columns { display: grid; gap: var(--s6); }
 .columns > * { min-width: 0; }
 @media (min-width: 900px) {
-  .columns { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); column-gap: var(--s6); align-items: start; }
+  .columns { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s6); align-items: start; }
 }
 .contact { align-content: start; }
 
@@ -114,14 +114,9 @@ a { color: inherit; }
 
 .soon { color: var(--faint); font-size: 15px; }
 
-/* Experience: official marks as masks, so every mark takes the same neutral ink */
-.logos { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s5); }
-.logos li { display: flex; align-items: center; height: 32px; cursor: default; color: var(--grey); transition: color 0.25s var(--ease); }
-.logos li:hover { color: var(--ink); }
-.co-mark {
-  display: block; background: currentColor;
-  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
-}
+/* Company icons in the "Been at" list: masks in the same 18px box and colour as the contact icons */
+.cl-mark { display: block; background: currentColor; -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
+span.cl-row { grid-template-columns: 18px minmax(0, 1fr); }
 
 
 /* ---------- About ---------- */
@@ -140,8 +135,8 @@ a { color: inherit; }
 .cl-icon { width: 18px; height: 18px; color: var(--faint); transition: color 0.2s var(--ease), transform 0.35s var(--ease); }
 .cl-label { font: 500 16px/1.3 var(--body); }
 .cl-arrow { width: 14px; height: 14px; color: var(--faint); opacity: 0; transform: translate(-3px, 3px); transition: opacity 0.2s var(--ease), transform 0.35s var(--ease), color 0.2s var(--ease); }
-.cl-row:hover .cl-icon, .cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
-.cl-row:hover .cl-arrow, .cl-row:focus-visible .cl-arrow { opacity: 1; transform: none; color: var(--accent); }
+a.cl-row:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
+a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transform: none; color: var(--accent); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
 

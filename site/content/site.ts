@@ -67,17 +67,17 @@ export const about = {
   ],
 };
 
-// Places Ankit has worked, newest first. Each is the company's official mark (no wordmark), shown in one neutral
-// colour. h is the mark's height in px, tuned by eye so solid tiles and open outlines read at an even size.
-export const experience: { name: string; src: string; ratio: number; h: number }[] = [
-  { name: "Genius AI", src: "/brand/genius-g-black.svg", ratio: 45.35 / 64, h: 30 },
-  { name: "Instacart", src: "/logos/instacart.svg", ratio: 0.7982, h: 28 },
-  { name: "Flexport", src: "/logos/flexport.svg", ratio: 1, h: 25 },
-  { name: "UserTesting", src: "/logos/usertesting.svg", ratio: 0.7792, h: 28 },
-  { name: "Stitch Fix", src: "/logos/stitchfix.svg", ratio: 1.0942, h: 22 },
-  { name: "HackerRank", src: "/logos/hackerrank.svg", ratio: 1, h: 24 },
-  { name: "Samsung", src: "/logos/samsung.svg", ratio: 0.9989, h: 25 },
-  { name: "CloudOn", src: "/logos/cloudon.svg", ratio: 71.42 / 49.75, h: 22 },
+// Places Ankit has worked, newest first: each company's icon (no wordmark, no tile behind it) and its name,
+// listed like the contact links. Icons are drawn as masks so they all take the same neutral colour.
+export const experience: { name: string; src: string }[] = [
+  { name: "Genius AI", src: "/brand/genius-g-black.svg" },
+  { name: "Instacart", src: "/logos/instacart.svg" },
+  { name: "Flexport", src: "/logos/flexport.svg" },
+  { name: "UserTesting", src: "/logos/usertesting.svg" },
+  { name: "Stitch Fix", src: "/logos/stitchfix.svg" },
+  { name: "HackerRank", src: "/logos/hackerrank.svg" },
+  { name: "Samsung", src: "/logos/samsung.svg" },
+  { name: "CloudOn", src: "/logos/cloudon.svg" },
 ];
 
 export const projects: Project[] = [
