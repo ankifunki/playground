@@ -355,6 +355,13 @@ a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transfo
   background: color-mix(in srgb, var(--paper) 86%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
 }
+/* Phones: the bar's background and rule run edge to edge; the padding puts its contents back on the page gutter */
+@media (max-width: 720px) {
+  .topbar {
+    margin-inline: calc(-1 * max(24px, env(safe-area-inset-left, 0px))) calc(-1 * max(24px, env(safe-area-inset-right, 0px)));
+    padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px));
+  }
+}
 
 /* The company mark spins a little, with a spring, when you hover the name */
 .statement .co img { transition: transform 0.7s cubic-bezier(0.3, 1.7, 0.5, 1); transform-origin: 50% 60%; }
