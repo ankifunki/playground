@@ -355,7 +355,7 @@ SLIDES = f'''
   <div class="content"><div class="order">
     <div class="seq"><span class="mono">GlossGenius</span><div class="chips">{chips(["Checkout", "Tip", "Payment", "Done"], "Tip")}</div></div>
     <div class="seq"><span class="mono">Competitors</span><div class="chips">{chips(["Checkout", "Payment", "Tip", "Done"], "Tip")}</div></div>
-    <p class="foot">Checkout is one of the most sensitive flows for our users, and ours was already longer than competitors&rsquo;. I prototyped both orders, one close to production and one aligned with the industry, to agree on direction before going deep.</p>
+    <p class="foot">Checkout is one of the most sensitive flows, and ours was already longer than competitors&rsquo;. Prototyping both orders, one close to production and one aligned with the industry, settled the direction before going deep.</p>
   </div></div>
 </div></section>
 
@@ -369,21 +369,21 @@ SLIDES = f'''
   (95, 95, 91.8, "r", "Charge once", "One payment for the whole visit, with split there when clients share."),
 ], before="cart-before", alts=("client card, a single provider, and line items with thumbnails", "Rachel Green as the title, add items to cart up top, a provider on each line, one total and charge"))}
 
-{morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
+{morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "Three tickets meant three tip prompts. Now one tip covers the visit, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
-{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
+{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", tall=True)}
 
 {chapter(2, "Web")}
 
-{flow("Line items with add-ons", "1100/1036", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "Add-ons travel with their service, collapsed in the cart until you need them.", tall="dt")}
+{flow("Line items with add-ons", "1100/1036", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "A busy cart gets long fast. Add-ons travel with their service and stay collapsed until you need them.", tall="dt")}
 
 {chapter(3, "Phase 2")}
 
-{morph("Group checkout", "list-before", "list-after", "393/852", "Same-day appointments group into one checkout, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
+{morph("Group checkout", "list-before", "list-after", "393/852", "Paying for someone else meant a second checkout. Same-day appointments now group into one, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
-{proto("One client, played", "393/852", [("sc-1", "Checkout", "24,216,345,114", "slide"), ("sc-2", "Appointment", "24,758,166,50", "slide"), ("sc-3", "Select", "24,198,345,109", "smart"), ("sc-4", "Selected", "24,755,345,48", "slide"), ("sc-5", "One sale", "116,756,253,48", "slide"), ("sc-6", "Payment", "0,467,393,74", "slide"), ("sc-7", "Tip on", "0,279,393,76", "slide"), ("sc-8", "Tip and sign", "24,758,345,48", "slide"), ("sc-9", "Done", "", "")], "Open Rachel, pull her other appointment into the sale, and pay once. Every transition is the prototype&rsquo;s own.", meta="Prototype · One client")}
+{proto("One client, played", "393/852", [("sc-1", "Checkout", "24,216,345,114", "slide"), ("sc-2", "Appointment", "24,758,166,50", "slide"), ("sc-3", "Select", "24,198,345,109", "smart"), ("sc-4", "Selected", "24,755,345,48", "slide"), ("sc-5", "One sale", "116,756,253,48", "slide"), ("sc-6", "Payment", "0,467,393,74", "slide"), ("sc-7", "Tip on", "0,279,393,76", "slide"), ("sc-8", "Tip and sign", "24,758,345,48", "slide"), ("sc-9", "Done", "", "")], "From her appointment, Rachel&rsquo;s other booking joins the same sale, so she pays once. Every transition is the prototype&rsquo;s own.", meta="Prototype · One client")}
 
-{proto("Group checkout, played", "393/852", [("gc-1", "Checkout", "266,78,40,40", "smart", "220,111,291,107;342,103,408,107;456,103,525,107;570,74,642,74"), ("gc-2", "Select mode", "24,290,345,109", "smart"), ("gc-3", "Rachel", "24,407,345,109", "smart"), ("gc-4", "Ashley", "24,731,345,48", "smart"), ("gc-5", "One sale", "116,756,253,48", "slide"), ("gc-6", "Payment", "0,467,393,74", "slide"), ("gc-7", "Tip on", "0,279,393,76", "slide"), ("gc-8", "Tip and sign", "24,758,345,48", "slide"), ("gc-9", "Done", "", "")], "Pick Rachel and Ashley from the list and settle both in one sale, one payment and one tip.", meta="Prototype · Group checkout")}
+{proto("Group checkout, played", "393/852", [("gc-1", "Checkout", "266,78,40,40", "smart", "220,111,291,107;342,103,408,107;456,103,525,107;570,74,642,74"), ("gc-2", "Select mode", "24,290,345,109", "smart"), ("gc-3", "Rachel", "24,407,345,109", "smart"), ("gc-4", "Ashley", "24,731,345,48", "smart"), ("gc-5", "One sale", "116,756,253,48", "slide"), ("gc-6", "Payment", "0,467,393,74", "slide"), ("gc-7", "Tip on", "0,279,393,76", "slide"), ("gc-8", "Tip and sign", "24,758,345,48", "slide"), ("gc-9", "Done", "", "")], "Two clients, picked straight from the list, settle in one sale with one payment and one tip.", meta="Prototype · Group checkout")}
 
 <section class="slide divider" data-name="End"><div class="stage">
   <div class="head">
