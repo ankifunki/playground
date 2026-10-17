@@ -139,12 +139,12 @@ a { color: inherit; }
   position: absolute; z-index: 1; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
   height: calc(var(--h) + (var(--s, 1) - 1) * 14.5px);
   background: color-mix(in srgb, var(--ink) calc((var(--s, 1) - 1) * 80%), var(--c));
-  transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
+  transition: opacity 0.3s var(--ease); /* heights and shade are animated frame by frame in timeline.tsx */
 }
 .rl-ticks > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
 .rl-ticks > span.maj { --h: 10px; --c: var(--faint); width: 2px; margin-left: -1px; }
 /* Only the selected tick takes the accent */
-.rl-ticks > span.pin { width: 2px; margin-left: -1px; background: var(--accent); }
+.rl-ticks > span.pin { width: 2px; margin-left: -1px; background: var(--accent); transition: background 0.2s var(--ease); }
 /* The active team's time: a soft band behind its stretch */
 .rl-band {
   position: absolute; bottom: 0; height: 100%; border-radius: 4px 4px 0 0; opacity: 0; pointer-events: none;

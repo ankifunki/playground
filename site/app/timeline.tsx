@@ -6,8 +6,12 @@ import type { Employer } from "@/content/site";
 const PER_YEAR = 12; // ticks per year: one a month, taller at the half year and tallest on the year
 const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
-const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
-const SUBSIDE = 520; // ms for the swell to ease away once the phone scale comes to rest
+// The swell is one continuous animation: its centre follows the pointer, and its height eases toward 1 while
+// moving and toward 0 once the pointer (or the phone scale) has been still for STILL ms, with no pause or snap.
+const STILL = 90; // ms without movement before the swell starts to sink
+const FOLLOW = 45; // ms time constant for the swell's centre catching up with the pointer (desktop)
+const RISE = 70; // ms time constant for the swell growing
+const SINK = 230; // ms time constant for the swell sinking away
 // Phone drag physics. The scale moves on a GPU transform (no scroll events). It follows the finger 1:1 with a
 // rubber band past either end. On release it keeps the finger's speed and eases out smoothly onto a year:
 // GLIDE is how far a flick carries (ms' worth of release speed, about iOS's feel), and it always lands on at least
@@ -63,56 +67,61 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   const ruler = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const tickEls = useRef<(HTMLSpanElement | null)[]>([]);
-  const frame = useRef(0);
-  const idle = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const sw = useRef({ x: 0, tx: 0, amp: 0, target: 0, last: 0, t: 0, raf: 0 });
 
-  // Swell the ticks around x (px from the scale's left edge); null lets them all settle back.
-  // amp (0–1) scales the swell, so it can ease away instead of switching off. While it subsides, the
-  // milestone under the phone marker keeps its full height.
-  const swell = useCallback(
-    (x: number | null, amp = 1) => {
-      cancelAnimationFrame(frame.current);
-      frame.current = requestAnimationFrame(() => {
-        const w = ruler.current?.clientWidth ?? 0;
-        tickEls.current.forEach((el, i) => {
-          if (!el) return;
-          const d = x === null ? Infinity : pos(ticks[i]) * w - x;
-          const s = i === pinRef.current && amp < 1 ? 1 + LIFT : 1 + LIFT * amp * Math.exp(-((d / HALO) ** 2));
-          el.style.setProperty("--s", s.toFixed(3));
-        });
+  // Paint the swell: ticks rise around x (px from the scale's left edge) by amp (0–1). While it sinks, the
+  // selected tick (under the pointer, or under the phone marker) keeps its full height.
+  const paint = useCallback(
+    (x: number, amp: number, holdPin: boolean) => {
+      const w = ruler.current?.clientWidth ?? 0;
+      tickEls.current.forEach((el, i) => {
+        if (!el) return;
+        const d = pos(ticks[i]) * w - x;
+        const s = holdPin && i === pinRef.current ? 1 + LIFT : 1 + LIFT * amp * Math.exp(-((d / HALO) ** 2));
+        el.style.setProperty("--s", s.toFixed(3));
       });
     },
     [ticks.length], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  // Swell while moving; after a short rest, subside to just the active stretch.
+  // One frame of the swell: follow the pointer, grow while moving, sink smoothly once still.
+  const tick = (t: number) => {
+    const S = sw.current;
+    const dt = Math.min(t - (S.t || t), 50);
+    S.t = t;
+    if (S.target && t - S.last > STILL && !drag.current?.moved) {
+      S.target = 0;
+      setMoving(false);
+    }
+    S.x = scrolling() ? S.tx : S.x + (S.tx - S.x) * (1 - Math.exp(-dt / FOLLOW));
+    S.amp += (S.target - S.amp) * (1 - Math.exp(-dt / (S.target > S.amp ? RISE : SINK)));
+    const done = !S.target && S.amp < 0.003;
+    if (done) S.amp = 0;
+    paint(S.x, S.amp, !S.target);
+    S.raf = done ? 0 : requestAnimationFrame(tick);
+  };
+  const run = () => {
+    const S = sw.current;
+    if (!S.raf) (S.t = 0), (S.raf = requestAnimationFrame(tick));
+  };
+
+  // Moving: point the swell at x, keep it up, and pick the team under it
   const moveTo = (x: number, w: number) => {
-    swell(x);
+    const S = sw.current;
+    if (!S.raf && S.amp === 0) S.x = x;
+    S.tx = x;
+    S.target = 1;
+    S.last = performance.now();
+    run();
     setMoving(true);
     setActive(indexAt(to - (x / w) * span));
     xRef.current = x;
-    clearTimeout(idle.current);
-    cancelAnimationFrame(ebb.current);
-    idle.current = setTimeout(subside, scrolling() ? 60 : SETTLE);
-  };
-  // Once the pointer or the scale comes to rest, the swell eases away over SUBSIDE ms; the selected tick stays tall
-  const ebb = useRef(0);
-  const subside = () => {
-    if (drag.current?.moved) return; // still under the finger: settle once it lets go
-    setMoving(false);
-    const t0 = performance.now(), x = xRef.current;
-    const step = (t: number) => {
-      const k = Math.min((t - t0) / SUBSIDE, 1);
-      swell(x, Math.max((1 - k) ** 2, 0.0001));
-      if (k < 1) ebb.current = requestAnimationFrame(step);
-    };
-    ebb.current = requestAnimationFrame(step);
   };
   const reset = () => {
-    clearTimeout(idle.current);
     pinRef.current = -1;
     setPin(null);
-    swell(null);
+    sw.current.target = 0;
+    run();
     setMoving(false);
     setActive(null);
   };
@@ -220,7 +229,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
   // In scroll mode, start with "now" under the marker
   useEffect(() => {
     if (scrolling()) place(0);
-    return () => (clearTimeout(idle.current), cancelAnimationFrame(anim.current), cancelAnimationFrame(ebb.current));
+    return () => (cancelAnimationFrame(anim.current), cancelAnimationFrame(sw.current.raf));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // One pass of the swell along the scale when it first comes into view
@@ -237,9 +246,9 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
           const k = Math.min((t - t0) / 1800, 1);
           const ease = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
           if (k < 1) {
-            swell(-HALO + ease * (el.clientWidth + 2 * HALO));
+            paint(-HALO + ease * (el.clientWidth + 2 * HALO), 1, false);
             raf = requestAnimationFrame(run);
-          } else swell(null);
+          } else paint(0, 0, false);
         };
         raf = requestAnimationFrame(run);
       },
@@ -247,7 +256,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     );
     io.observe(el);
     return () => (io.disconnect(), cancelAnimationFrame(raf));
-  }, [swell]);
+  }, [paint]);
 
   const lo = active === null ? Infinity : items[active].start;
   const hi = active === null ? -Infinity : ends[active];
