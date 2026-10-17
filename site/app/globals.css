@@ -131,15 +131,18 @@ a { color: inherit; }
 /* The scale: a baseline with short, thick ticks standing on it, a major one on each year */
 .rl-ticks { position: absolute; inset: auto 0 0; height: 26px; }
 .rl-ticks::before { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: var(--rule); }
-/* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape */
+/* Heights (not a scale transform) carry the swell, so the rounded tips keep their shape. Every tick rises by
+   the same amount on top of its own height (--s runs 1 to 2.1 from timeline.tsx), so the small month ticks
+   follow the curve too, and each darkens toward the ink as it rises so the wave reads clearly. */
 .rl-ticks > span {
-  --h: 3px;
+  --h: 3px; --c: var(--rule);
   position: absolute; z-index: 1; bottom: 0; width: 1px; margin-left: -0.5px; border-radius: 1px 1px 0 0;
-  height: calc(var(--h) * var(--s, 1)); background: var(--rule);
+  height: calc(var(--h) + (var(--s, 1) - 1) * 14.5px);
+  background: color-mix(in srgb, var(--ink) calc((var(--s, 1) - 1) * 80%), var(--c));
   transition: height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s var(--ease), opacity 0.3s var(--ease);
 }
 .rl-ticks > span.mid { --h: 6px; width: 2px; margin-left: -1px; }
-.rl-ticks > span.maj { --h: 10px; width: 2px; margin-left: -1px; background: var(--faint); }
+.rl-ticks > span.maj { --h: 10px; --c: var(--faint); width: 2px; margin-left: -1px; }
 /* Only the selected tick takes the accent */
 .rl-ticks > span.pin { width: 2px; margin-left: -1px; background: var(--accent); }
 /* The active team's time: a soft band behind its stretch */
