@@ -162,7 +162,7 @@ a { color: inherit; }
 .page { gap: var(--s6); }
 .topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
-/* Sized to sit optically with the 11px nav links beside it */
+/* Sized to sit optically with the 14px nav links beside it */
 .aj { width: auto; height: 15px; overflow: visible; display: block; }
 .aj path { fill: var(--ink); stroke: var(--ink); stroke-width: 0.6; stroke-linejoin: round; }
 @media (prefers-reduced-motion: no-preference) {
@@ -170,8 +170,8 @@ a { color: inherit; }
 }
 @keyframes aj-draw { from { stroke-dashoffset: 1; stroke: var(--faint); } to { stroke-dashoffset: 0; } }
 @keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
-.topnav { display: flex; gap: var(--s3); }
-.topnav a { text-decoration: none; color: var(--faint); }
+.topnav { display: flex; gap: var(--s3); font: 500 14px/1 var(--body); letter-spacing: -0.005em; }
+.topnav a { text-decoration: none; color: var(--grey); transition: color 0.2s var(--ease); }
 .topnav a:hover { color: var(--accent); }
 
 .statement {

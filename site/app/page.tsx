@@ -12,7 +12,7 @@ export default function Home() {
           <Logo />
         </a>
         <div className="topright">
-          <nav aria-label="Sections" className="topnav mono">
+          <nav aria-label="Sections" className="topnav">
             <a href="#work">Work</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
