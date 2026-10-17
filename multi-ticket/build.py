@@ -66,7 +66,7 @@ CSS = """
 /* Annotated screen: leader lines from points on the screen to callouts (laid out and drawn by JS) */
 .cartmix{grid-column:1 / -1}
 .cartmix .bar{align-items:flex-start}
-.anno{position:relative;grid-column:1 / -1;height:min(50svh,420px)}
+.anno{position:relative;grid-column:1 / -1;height:min(46svh,390px)}
 .anno .an-ph{position:absolute;left:0;top:0;height:100%;aspect-ratio:var(--r)}
 .anno .an-ph .frame{height:100%!important;width:100%!important;aspect-ratio:auto!important;margin:0}
 .anno .an-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
@@ -150,17 +150,18 @@ JS = r"""<script>
       var r=(getComputedStyle(a).getPropertyValue('--r')||'393/852').split('/'),pw=H*r[0]/r[1],d=desk.matches,u=d?W/1336:1,reach=d?72*u:20,gap=d?18*u:10;
       var px=d?(W-pw)/2:0;ph.style.left=px+'px';ph.style.width=pw+'px';
       var lw=d?Math.min(260*u,px-reach-8):W-pw-reach;
-      var sides={l:[],r:[]};
+      var sides={l:[],r:[]},th=d?11*u:8,off=d?10*u:8;
       lbs.forEach(function(l){var s=d?l.dataset.side:'r';l.classList.toggle('l',s==='l');l.style.width=lw+'px';
         l.style.left=(s==='l'?px-reach-lw:px+pw+reach)+'px';
-        sides[s].push({el:l,ax:px+(+(d?l.dataset.x:l.dataset.xm))*pw,ay:(+l.dataset.y)*H,s:s,i:+l.dataset.i})});
+        sides[s].push({el:l,ay:(+(d?l.dataset.y:l.dataset.ym))*H,i:+l.dataset.i})});
+      // Straight leaders only: each starts just off the phone's edge, level with the element it names,
+      // and runs out to the label's first line. Nothing is drawn on the screen itself.
       var out='';
       ['l','r'].forEach(function(k){var list=sides[k].sort(function(p,q){return p.ay-q.ay}),bottom=-1e9;
-        list.forEach(function(c){var h=c.el.offsetHeight,t=Math.max(c.ay-10,bottom+gap);t=Math.min(t,H-h);c.t=t;bottom=t+h});
-        for(var j=list.length-2;j>=0;j--){var c=list[j],n=list[j+1];if(c.t+c.el.offsetHeight+gap>n.t)c.t=n.t-gap-c.el.offsetHeight}
-        list.forEach(function(c){c.el.style.top=c.t+'px';var ly=c.t+(d?11*u:8),
-          e=k==='l'?px-12:px+pw+12,lx=k==='l'?px-reach+4:px+pw+reach-4;
-          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+c.ax.toFixed(1)+' '+c.ay.toFixed(1)+'H'+e.toFixed(1)+'L'+lx.toFixed(1)+' '+ly.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+c.ax.toFixed(1)+'" cy="'+c.ay.toFixed(1)+'" r="'+(d?3*u:2.5)+'"/>'})});
+        list.forEach(function(c){var h=c.el.offsetHeight,t=Math.max(c.ay-th,bottom+gap);t=Math.min(t,H-h);c.t=t;bottom=t+h});
+        list.forEach(function(c){c.el.style.top=c.t+'px';var y=(c.t+th).toFixed(1),
+          x0=k==='l'?px-off:px+pw+off,x1=k==='l'?px-reach+6:px+pw+reach-6;
+          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+x0.toFixed(1)+' '+y+'H'+x1.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+x0.toFixed(1)+'" cy="'+y+'" r="'+(d?3*u:2.5)+'"/>'})});
       svg.innerHTML=out}
     lay();addEventListener('resize',lay);if(document.fonts)document.fonts.ready.then(lay);
     // Callouts belong to the "after": they come in once the wipe has landed and step out when it goes back.
@@ -235,7 +236,7 @@ def proto(title, ratio, steps, foot, meta=""):
 </div></section>'''
 
 def anno(title, src, ratio, alt, notes, before=None, alts=("", "")):
-    lbs = "".join(f'<div class="an-lb" data-x="{x/100}" data-xm="{xm/100}" data-y="{y/100}" data-side="{side}" data-i="{i}"><b>{t}</b><span>{b}</span></div>' for i, (x, xm, y, side, t, b) in enumerate(notes))
+    lbs = "".join(f'<div class="an-lb" data-y="{y/100}" data-ym="{ym/100}" data-side="{side}" data-i="{i}"><b>{t}</b><span>{b}</span></div>' for i, (y, ym, side, t, b) in enumerate(notes))
     if before:
         frame = f'''<div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">
       <div class="layer before"><img src="img/{before}.webp" alt="Before: {alts[0]}" decoding="async"></div>
@@ -362,12 +363,9 @@ SLIDES = f'''
 {chapter(1, "Phase 1")}
 
 {anno("The cart", "cart-after", "393/852", "", [
-  (19, 81, 16.7, "l", "Client first", "Name and location lead, so staff always know whose sale they&rsquo;re on."),
-  (91, 91, 30, "r", "One way to add", "Another appointment, product or service joins the same cart in a tap."),
-  (12, 40, 38.3, "l", "A provider on every line", "Each item credits its own provider, so commission and tips split correctly."),
-  (3.5, 97, 78, "l", "One total", "Every appointment rolls into a single amount due."),
-  (95, 95, 91.8, "r", "Charge once", "One payment for the whole visit, with split there when clients share."),
-], before="cart-before", alts=("client card, a single provider, and line items with thumbnails", "Rachel Green as the title, add items to cart up top, a provider on each line, one total and charge"))}
+  (30, 28, "r", "Add items up top", "Services, products and more, one tap away."),
+  (38.3, 45.2, "l", "Provider on every line", "Commission and tips follow each item."),
+], before="cart-before", alts=("client card, a single provider, and line items with thumbnails", "Rachel Green as the title, add items to cart up top, and a provider on each line"))}
 
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "Three tickets meant three tip prompts. Now one tip covers the visit, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
