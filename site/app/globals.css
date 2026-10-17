@@ -167,19 +167,14 @@ a { color: inherit; }
 .rl-scroll { position: relative; }
 @media (max-width: 560px) {
   .rl-wrap { position: relative; margin-inline: -24px; }
+  /* The scale slides on a GPU transform under a fixed centre marker (drag physics in timeline.tsx), so nothing
+     here scrolls at all: horizontal drags are ours and vertical swipes still scroll the page. */
   .rl-scroll {
-    /* Strictly sideways: a fixed height with nothing to scroll vertically.
-       (Safari can still nudge an overflow-hidden box vertically on a diagonal swipe or focus, so timeline.tsx
-       also pins scrollTop to 0.) */
-    height: 64px; box-sizing: border-box; overflow-x: auto; overflow-y: hidden;
-    overscroll-behavior-x: contain; scrollbar-width: none; padding: 4px 50vw 12px;
-    /* Horizontal movement is ours (drag physics in timeline.tsx); vertical swipes still scroll the page */
-    touch-action: pan-y; cursor: grab;
+    height: 64px; box-sizing: border-box; padding: 4px 0 12px; overflow: hidden; touch-action: pan-y; cursor: grab;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   }
-  .rl-scroll::-webkit-scrollbar { display: none; }
-  .rl { width: calc(var(--years) * 84px); cursor: default; }
+  .rl { width: calc(var(--years) * 84px); cursor: inherit; will-change: transform; }
   /* The centre marker: a dot on a short needle hanging from the baseline. Neutral while scrolling; when the
      scale settles on a milestone (a year, or Now), the needle, dot and that tick turn accent. */
   .rl-wrap::before, .rl-wrap::after {

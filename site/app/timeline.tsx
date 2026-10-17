@@ -7,11 +7,15 @@ const PER_YEAR = 2; // ticks per year: a major one on the year and one between
 const HALO = 64; // px: how far the swell around the pointer reaches
 const LIFT = 1.1; // extra height at the centre of the swell (1.1 = 2.1× the resting height)
 const SETTLE = 260; // ms of stillness before the swell subsides to just the active stretch
-// Phone drag physics: a flick coasts about FRICTION ms' worth of its release speed, then a spring settles on the
-// next year in that direction (or further, for a strong flick). A slightly underdamped spring gives a small, soft overshoot.
-const FRICTION = 170;
-const SPRING = 210; // stiffness
-const DAMPING = 0.72; // ratio of critical damping
+// Phone drag physics. The scale moves on a GPU transform (no scroll events). It follows the finger 1:1 with a
+// rubber band past either end. On release it keeps the finger's speed and eases out smoothly onto a year:
+// GLIDE is how far a flick carries (ms' worth of release speed, about iOS's feel), and it always lands on at least
+// the next year in the direction of the drag. Gentle drags ease the rest of the way.
+const GLIDE = 320;
+const GLIDE_MIN = 300;
+const GLIDE_MAX = 750;
+const EASE_MS = 420;
+const BAND = 0.3; // rubber-band resistance past the ends
 
 // Past employers as a time scale, newest on the left: a baseline with short, thick ticks and only the years
 // above. While the pointer moves, the ticks swell around it; once it rests, the swell subsides and only the
@@ -92,91 +96,85 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
     moveTo(Math.min(Math.max(clientX - r.left, 0), r.width), r.width);
   };
 
-  // Scroll mode (phones): the scale overflows its scroller and the centre of the scroller picks the active stretch.
-  const scrolling = () => {
-    const sc = scroller.current;
-    return !!sc && getComputedStyle(sc).overflowX === "auto";
-  };
-  const fromCentre = () => {
+  // Scroll mode (phones): the scale is wider than the screen and slides under a fixed centre marker. x is the
+  // point on the scale under the marker, in px from its left (Now) edge.
+  const scrolling = () => typeof window !== "undefined" && matchMedia("(max-width: 560px)").matches;
+  const xRef = useRef(0);
+  const anim = useRef(0);
+  const place = (x: number) => {
     const sc = scroller.current, r = ruler.current;
     if (!sc || !r) return;
     const w = r.clientWidth;
-    const x = Math.min(Math.max(sc.scrollLeft + sc.clientWidth / 2 - r.offsetLeft, 0), w);
-    moveTo(x, w);
-    // The milestone under the marker (a year, or Now): it lights up with the marker once scrolling settles
-    let best: number | "now" = "now", gap = x;
+    xRef.current = x;
+    r.style.transform = `translate3d(${sc.clientWidth / 2 - x}px, 0, 0)`;
+    const cx = Math.min(Math.max(x, 0), w);
+    moveTo(cx, w);
+    // The milestone under the marker (a year, or Now): it lights up with the marker once the scale settles
+    let best: number | "now" = "now", gap = cx;
     ticks.forEach((y, i) => {
-      if (i % PER_YEAR || Math.abs(pos(y) * w - x) >= gap) return;
-      gap = Math.abs(pos(y) * w - x);
+      if (i % PER_YEAR || Math.abs(pos(y) * w - cx) >= gap) return;
+      gap = Math.abs(pos(y) * w - cx);
       best = i;
     });
     setPin(best);
   };
-  // Scroll positions that put a milestone (Now, then each year) under the centre marker
+  // Points on the scale that can sit under the marker: Now, then each year
   const milestones = () => {
-    const sc = scroller.current!, r = ruler.current!;
-    const at = (x: number) => r.offsetLeft + x - sc.clientWidth / 2;
-    return [at(0), ...ticks.filter((_, i) => i % PER_YEAR === 0).map((y) => at(pos(y) * r.clientWidth))];
+    const w = ruler.current!.clientWidth;
+    return [0, ...ticks.filter((_, i) => i % PER_YEAR === 0).map((y) => pos(y) * w)].sort((a, b) => a - b);
   };
-  const anim = useRef(0);
-  // Spring the scroller to a position, starting with velocity v (px per ms).
-  const springTo = (target: number, v = 0) => {
-    const sc = scroller.current;
-    if (!sc) return;
+  // Glide from where the scale is to target on an ease-out curve whose opening speed matches the release speed
+  // v (px/ms), so there's no jolt as the finger lifts; the glide lasts 0.3–0.75s.
+  const glideTo = (target: number, v = 0) => {
     cancelAnimationFrame(anim.current);
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return void (sc.scrollLeft = target);
-    let x = sc.scrollLeft, vel = v * 1000, last = performance.now();
-    const c = 2 * Math.sqrt(SPRING) * DAMPING;
+    const x0 = xRef.current, d = target - x0;
+    if (Math.abs(d) < 0.5 || matchMedia("(prefers-reduced-motion: reduce)").matches) return place(target);
+    const T = v * d > 0 ? Math.min(Math.max((3 * Math.abs(d)) / Math.abs(v), GLIDE_MIN), GLIDE_MAX) : EASE_MS;
+    const t0 = performance.now();
     const step = (t: number) => {
-      const dt = Math.min((t - last) / 1000, 1 / 30);
-      last = t;
-      vel += (-SPRING * (x - target) - c * vel) * dt;
-      x += vel * dt;
-      if (Math.abs(x - target) < 0.4 && Math.abs(vel) < 8) return void (sc.scrollLeft = target);
-      sc.scrollLeft = x;
-      anim.current = requestAnimationFrame(step);
+      const k = Math.min((t - t0) / T, 1);
+      place(k < 1 ? x0 + d * (1 - (1 - k) ** 3) : target);
+      if (k < 1) anim.current = requestAnimationFrame(step);
     };
     anim.current = requestAnimationFrame(step);
   };
-  const centreOn = (x: number) => {
-    const sc = scroller.current, r = ruler.current;
-    if (sc && r) springTo(r.offsetLeft + x - sc.clientWidth / 2);
-  };
+  const centreOn = (x: number) => glideTo(x);
 
-  // Dragging (scroll mode): follow the finger 1:1, then coast with friction and spring onto the nearest year.
-  const drag = useRef<{ id: number; x0: number; s0: number; samples: [number, number][]; moved: boolean } | null>(null);
+  // Dragging (scroll mode)
+  const drag = useRef<{ id: number; px: number; x0: number; samples: [number, number][]; moved: boolean } | null>(null);
   const onDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!scrolling() || drag.current) return;
     cancelAnimationFrame(anim.current);
-    drag.current = { id: e.pointerId, x0: e.clientX, s0: e.currentTarget.scrollLeft, samples: [], moved: false };
+    drag.current = { id: e.pointerId, px: e.clientX, x0: xRef.current, samples: [], moved: false };
   };
   const onDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
-    const dx = e.clientX - d.x0;
+    const dx = e.clientX - d.px;
     if (!d.moved && Math.abs(dx) < 4) return;
     if (!d.moved) (d.moved = true), e.currentTarget.setPointerCapture(e.pointerId);
-    const sc = e.currentTarget;
-    sc.scrollLeft = Math.min(Math.max(d.s0 - dx, 0), sc.scrollWidth - sc.clientWidth);
-    d.samples.push([e.timeStamp, sc.scrollLeft]);
-    while (d.samples.length > 2 && e.timeStamp - d.samples[0][0] > 90) d.samples.shift();
+    const w = ruler.current!.clientWidth;
+    let x = d.x0 - dx;
+    if (x < 0) x *= BAND;
+    if (x > w) x = w + (x - w) * BAND;
+    place(x);
+    d.samples.push([e.timeStamp, x]);
+    while (d.samples.length > 2 && e.timeStamp - d.samples[0][0] > 80) d.samples.shift();
   };
   const onDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
     if (!d.moved) return; // a tap does nothing
-    const [t0, x0] = d.samples[0] ?? [e.timeStamp, e.currentTarget.scrollLeft];
-    const [t1, x1] = d.samples[d.samples.length - 1] ?? [t0, x0];
-    const v = e.type === "pointercancel" || t1 === t0 ? 0 : (x1 - x0) / (t1 - t0);
-    // Always carry on to the next milestone in the direction of the drag (a short drag never springs back);
-    // a stronger flick coasts further and lands on the milestone nearest where it would stop.
-    const cur = e.currentTarget.scrollLeft;
-    const dir = Math.sign(cur - d.s0);
-    const aim = cur + (Math.sign(v) === dir ? v : 0) * FRICTION;
-    const ahead = milestones().filter((m) => (m - d.s0) * dir > 1);
-    if (!ahead.length) return springTo(milestones().reduce((a, b) => (Math.abs(b - cur) < Math.abs(a - cur) ? b : a)), v);
-    springTo(ahead.reduce((a, b) => (Math.abs(b - aim) < Math.abs(a - aim) ? b : a)), v);
+    const [t0, a] = d.samples[0] ?? [e.timeStamp, xRef.current];
+    const [t1, b] = d.samples[d.samples.length - 1] ?? [t0, a];
+    const v = e.type === "pointercancel" || t1 === t0 ? 0 : (b - a) / (t1 - t0);
+    const x = xRef.current, dir = Math.sign(x - d.x0);
+    const aim = x + (Math.sign(v) === dir ? v : 0) * GLIDE;
+    const ms = milestones();
+    const ahead = ms.filter((m) => (m - d.x0) * dir > 1);
+    const pool = ahead.length ? ahead : ms;
+    glideTo(pool.reduce((p, m) => (Math.abs(m - aim) < Math.abs(p - aim) ? m : p)), v);
   };
 
   const focusOn = (i: number) => {
@@ -188,7 +186,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
 
   // In scroll mode, start with "now" under the marker
   useEffect(() => {
-    if (scrolling()) fromCentre();
+    if (scrolling()) place(0);
     return () => (clearTimeout(idle.current), cancelAnimationFrame(anim.current));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -230,11 +228,6 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
         onPointerMove={onDragMove}
         onPointerUp={onDragEnd}
         onPointerCancel={onDragEnd}
-        onScroll={(e) => {
-          if (!scrolling()) return;
-          if (e.currentTarget.scrollTop) e.currentTarget.scrollTop = 0; // sideways only
-          fromCentre();
-        }}
       >
         <div
           ref={ruler}
@@ -245,10 +238,7 @@ export function Timeline({ items: employers }: { items: Employer[] }) {
           onPointerMove={(e) => e.pointerType !== "touch" && !scrolling() && at(e.clientX)}
           onPointerDown={(e) => e.pointerType !== "touch" && !scrolling() && at(e.clientX)}
           onPointerLeave={(e) => e.pointerType === "mouse" && !scrolling() && reset()}
-          onFocus={(e) => {
-            if (scrolling()) scroller.current!.scrollTop = 0;
-            if (active === null && e.currentTarget.matches(":focus-visible")) focusOn(0);
-          }}
+          onFocus={(e) => active === null && e.currentTarget.matches(":focus-visible") && focusOn(0)}
           onBlur={() => !scrolling() && reset()}
           onKeyDown={(e) => {
             const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
