@@ -67,17 +67,19 @@ export const about = {
   ],
 };
 
-// Places Ankit has worked, newest first: each company's icon (no wordmark, no tile behind it) and its name,
-// listed like the contact links. Icons are drawn as masks so they all take the same neutral colour.
-export const experience: { name: string; src: string }[] = [
-  { name: "Genius AI", src: "/brand/genius-g-black.svg" },
-  { name: "Instacart", src: "/logos/instacart.svg" },
-  { name: "Flexport", src: "/logos/flexport.svg" },
-  { name: "UserTesting", src: "/logos/usertesting.svg" },
-  { name: "Stitch Fix", src: "/logos/stitchfix.svg" },
-  { name: "HackerRank", src: "/logos/hackerrank.svg" },
-  { name: "Samsung", src: "/logos/samsung.svg" },
-  { name: "CloudOn", src: "/logos/cloudon.svg" },
+// Places Ankit has worked, newest first. Shown as a timeline (oldest on the left): each company's icon, with its
+// name and blurb revealed on hover. Icons are drawn as masks so they all take the same neutral colour.
+// DRAFT blurbs: Ankit to rewrite in his own words.
+export type Employer = { name: string; src: string; blurb: string };
+export const experience: Employer[] = [
+  { name: "Genius AI", src: "/brand/genius-g-black.svg", blurb: "Where I am now: the platform beauty and wellness businesses run on, from booking to checkout." },
+  { name: "Instacart", src: "/logos/instacart.svg", blurb: "Groceries from the stores you already love, delivered the same day." },
+  { name: "Flexport", src: "/logos/flexport.svg", blurb: "Software and logistics that move global trade, one container at a time." },
+  { name: "UserTesting", src: "/logos/usertesting.svg", blurb: "Watching real people use real products, and helping teams learn from it." },
+  { name: "Stitch Fix", src: "/logos/stitchfix.svg", blurb: "Personal styling, picked by stylists and data, delivered to your door." },
+  { name: "HackerRank", src: "/logos/hackerrank.svg", blurb: "Coding challenges and interviews that help companies hire developers." },
+  { name: "Samsung", src: "/logos/samsung.svg", blurb: "Where a two-day hackathon turned into Smart Hotel, a room that knows you." },
+  { name: "CloudOn", src: "/logos/cloudon.svg", blurb: "Microsoft Office streamed to the iPad before Microsoft shipped it. Later acquired by Dropbox." },
 ];
 
 export const projects: Project[] = [

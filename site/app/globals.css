@@ -114,9 +114,62 @@ a { color: inherit; }
 
 .soon { color: var(--faint); font-size: 15px; }
 
-/* Company icons in the "Been at" list: masks in the same 18px box and colour as the contact icons */
-.cl-mark { display: block; background: currentColor; -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
-span.cl-row { grid-template-columns: 18px minmax(0, 1fr); }
+/* Been at: a timeline of company marks, oldest on the left. Names and blurbs appear on hover, focus or tap. */
+.tl-track { list-style: none; display: flex; align-items: center; padding-top: 30px; }
+.tl-track li { position: relative; display: flex; align-items: center; flex: 1 1 0; min-width: 0; }
+.tl-track li:last-child { flex: 0 0 auto; }
+.tl-track li::after { content: ""; flex: 1; height: 1px; margin-inline: 10px; background: var(--rule); }
+.tl-track li:last-child::after { display: none; }
+.tl-node {
+  position: relative; flex: none; display: grid; place-items: center; width: 40px; height: 40px;
+  padding: 0; background: none; border: 0; border-radius: 999px; color: var(--faint); cursor: pointer;
+}
+.tl-node:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+.tl-mark {
+  display: block; width: 22px; height: 22px; background: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat;
+  transition: transform 0.45s cubic-bezier(0.3, 1.6, 0.5, 1), opacity 0.3s var(--ease);
+}
+.tl-node { transition: color 0.25s var(--ease); }
+.tl-name {
+  position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translate(-50%, 6px);
+  font: 500 13px/1 var(--body); color: var(--ink); white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.2s var(--ease), transform 0.35s var(--ease);
+}
+.tl-track li:first-child .tl-name { left: 0; transform: translate(0, 6px); }
+.tl-track li:last-child .tl-name { left: auto; right: 0; transform: translate(0, 6px); }
+.tl-track li.on .tl-node { color: var(--ink); }
+.tl-track li.on .tl-mark { transform: translateY(-2px) scale(1.18); }
+.tl-track li.on .tl-name { opacity: 1; transform: translate(-50%, 0); }
+.tl-track li.on:first-child .tl-name, .tl-track li.on:last-child .tl-name { transform: none; }
+/* Neighbours lean in a little, the rest step back */
+.tl-track li:has(+ li.on) .tl-mark, .tl-track li.on + li .tl-mark { transform: scale(1.06); }
+.tl.has-active .tl-track li:not(.on) .tl-mark { opacity: 0.6; }
+/* "Now" carries a small accent dot */
+.tl-track li:last-child .tl-node::after {
+  content: ""; position: absolute; left: 50%; bottom: -3px; width: 4px; height: 4px; margin-left: -2px;
+  border-radius: 999px; background: var(--accent);
+}
+.tl-ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--faint); }
+.tl-blurb { min-height: 3.1em; margin-top: var(--s2); max-width: 60ch; font-size: 16px; line-height: 1.55; color: var(--grey); text-wrap: pretty; }
+.tl-blurb b { font-weight: 500; color: var(--ink); margin-right: 4px; }
+.tl-hint { color: var(--faint); font-size: 15px; }
+.tl-hint-coarse { display: none; }
+@media (hover: none) { .tl-hint-fine { display: none; } .tl-hint-coarse { display: inline; } }
+@media (max-width: 560px) {
+  .tl-node { width: 32px; height: 32px; }
+  .tl-mark { width: 18px; height: 18px; }
+  .tl-track li::after { margin-inline: 4px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* A light passes along the line once, mark by mark, to show they're there to be explored */
+  .tl.swept .tl-node { animation: tl-glint 1.1s var(--ease) calc(var(--i) * 0.14s + 0.2s) backwards; }
+  .tl-blurb-in { display: inline-block; animation: tl-in 0.35s var(--ease) both; }
+  .tl-track li:last-child .tl-node::after { animation: tl-now 2.8s ease-in-out infinite; }
+}
+@keyframes tl-glint { 0%, 100% { color: var(--faint); } 35% { color: var(--accent); } }
+@keyframes tl-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes tl-now { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.7); } }
 
 
 /* ---------- About ---------- */
