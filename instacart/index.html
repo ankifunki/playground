@@ -384,25 +384,26 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .divider h2{margin-left:calc(var(--u)*-6)}
   .divider .by{max-width:none}
   .mark{height:calc(var(--u)*48)}
-  /* The deck's own controls: a compact pill at the bottom centre showing the count. Hovering (or tabbing into)
-     it opens the rest: previous and next, the slide's name, and a scrubber with one tick per slide to jump
-     anywhere. The pill is drawn at full size and clipped down to the count, so opening it is a clip-path
-     transition, never a relayout. */
+  /* The deck's own controls. At rest only a faint handle at the bottom centre hints they're there; hovering (or
+     tabbing in) grows it into a glass pill with previous and next, the count, and a scrubber with one tick per slide
+     to jump anywhere. The background is one layer clipped from the handle to the full pill, so opening is a
+     clip-path transition, never a relayout. */
   .progress{display:none}
-  .nav{display:grid;grid-template-columns:36px 200px auto 200px 36px;align-items:center;column-gap:8px;
-    position:fixed;left:50%;bottom:20px;z-index:6;translate:-50% 0;height:40px;padding:0 4px;border-radius:999px;
-    background:rgb(238 241 240 / .62);box-shadow:inset 0 0 0 1px rgb(27 32 31 / .06);
-    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--grey);
-    clip-path:inset(0 calc(50% - var(--half,34px)) round 999px);transition:clip-path .3s cubic-bezier(.23,1,.32,1)}
-  .nav:hover,.nav:has(:focus-visible){clip-path:inset(0 0 round 999px)}
-  .nav > :not(.nav-count){opacity:0;transition:opacity .2s var(--ease)}
-  .nav:hover > *,.nav:has(:focus-visible) > *{opacity:1;transition:opacity .25s var(--ease) .06s}
-  .nav button{width:32px;height:32px;margin:0 2px;border:0;border-radius:50%;background:none;color:inherit;cursor:pointer;display:grid;place-items:center;transition:background .2s var(--ease),opacity .2s var(--ease)}
+  .nav{display:grid;grid-template-columns:32px auto 168px 32px;align-items:center;column-gap:6px;
+    position:fixed;left:50%;bottom:16px;z-index:6;translate:-50% 0;height:40px;padding:0 6px;color:var(--grey)}
+  .nav::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:999px;pointer-events:none;
+    background:rgb(27 32 31 / .14);box-shadow:inset 0 0 0 1px transparent;
+    clip-path:inset(calc(50% - 2px) calc(50% - 14px) round 999px);
+    transition:clip-path .3s cubic-bezier(.23,1,.32,1),background-color .25s var(--ease),box-shadow .25s var(--ease)}
+  .nav:hover::before,.nav:has(:focus-visible)::before{clip-path:inset(0 0 round 999px);background:rgb(238 241 240 / .62);box-shadow:inset 0 0 0 1px rgb(27 32 31 / .06);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+  .nav > *{opacity:0;transition:opacity .15s var(--ease)}
+  .nav:hover > *,.nav:has(:focus-visible) > *{opacity:1;transition:opacity .25s var(--ease) .08s}
+  .nav button{width:32px;height:32px;margin:0;border:0;border-radius:50%;background:none;color:inherit;cursor:pointer;display:grid;place-items:center;transition:background .2s var(--ease),opacity .2s var(--ease)}
   .nav button:hover:not(:disabled){background:rgb(27 32 31 / .05);color:var(--ink)}
-  .nav button:disabled{opacity:.3!important;cursor:default}
+  .nav:hover button:disabled,.nav:has(:focus-visible) button:disabled{opacity:.3;cursor:default}
   .nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
-  .nav-name{justify-self:end;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 13px/1 var(--body);color:var(--ink)}
-  .nav-count{padding:0 10px;font:400 11px/1 var(--mono);letter-spacing:.08em;font-variant-numeric:tabular-nums;color:var(--grey);white-space:nowrap}
+  .nav-count{padding:0 6px;font:400 11px/1 var(--mono);letter-spacing:.08em;font-variant-numeric:tabular-nums;color:var(--grey);white-space:nowrap}
   .nav-scrub{display:flex;align-items:center;gap:0;height:100%;min-width:0;overflow:hidden}
   .nav-scrub button{flex:1;width:auto;min-width:0;height:24px;margin:0;padding:0;border-radius:2px;display:grid;place-items:center}
   .nav-scrub button::after{content:"";width:2px;height:10px;border-radius:1px;background:var(--rule);transition:height .2s var(--ease),background .2s var(--ease)}
@@ -410,8 +411,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nav-scrub button.on::after{height:16px;background:var(--ink)}
   .nav-scrub button:hover{background:none!important}.nav-scrub button:hover::after{height:16px;background:var(--grey)}
   /* On the dark chapter slides the pill goes dark glass, just as quiet */
-  .on-dark .nav{background:rgb(238 241 241 / .07);box-shadow:inset 0 0 0 1px rgb(238 241 241 / .06);color:#7F8786}
-  .on-dark .nav-name{color:#C9CFCE}.on-dark .nav-count{color:#7F8786}
+  .on-dark .nav{color:#7F8786}.on-dark .nav::before{background:rgb(238 241 241 / .16)}
+  .on-dark .nav:hover::before,.on-dark .nav:has(:focus-visible)::before{background:rgb(238 241 241 / .07);box-shadow:inset 0 0 0 1px rgb(238 241 241 / .06)}
+  .on-dark .nav-count{color:#7F8786}
   .on-dark .nav button:hover:not(:disabled){background:rgb(238 241 241 / .06);color:#C9CFCE}
   .on-dark .nav-scrub button::after{background:#3A3F3E}.on-dark .nav-scrub button.seen::after{background:#5A6160}
   .on-dark .nav-scrub button.on::after{background:#C9CFCE}
@@ -805,7 +807,6 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <div class="progress" id="progress" aria-hidden="true"></div>
 <nav class="nav" aria-label="Slide controls">
   <button type="button" id="prev" aria-label="Previous slide"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
-  <span class="nav-name" id="nav-name"></span>
   <span class="nav-count" id="nav-count" aria-live="polite"></span>
   <span class="nav-scrub" id="nav-scrub"></span>
   <button type="button" id="next" aria-label="Next slide"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
@@ -818,16 +819,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   var progress=document.getElementById('progress'),dlg=document.getElementById('zoom'),zb=document.getElementById('zoom-body');
   slides.forEach(function(){progress.appendChild(document.createElement('i'))});
   var segs=[].slice.call(progress.children);
-  // The pill: count, the slide's name, and a scrubber tick per slide (hovering a tick previews its name)
-  var navName=document.getElementById('nav-name'),navCount=document.getElementById('nav-count'),scrub=document.getElementById('nav-scrub');
+  // The pill: the count and a scrubber tick per slide
+  var navCount=document.getElementById('nav-count'),scrub=document.getElementById('nav-scrub');
   function label(i){return slides[i].dataset.name||('Slide '+(i+1))}
   function two(x){return (x<10?'0':'')+x}
   var ticks=slides.map(function(s,i){var b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Go to '+label(i));
     b.addEventListener('click',function(e){e.stopPropagation();go(i)});
-    b.addEventListener('mouseenter',function(){navName.textContent=label(i)});
-    b.addEventListener('focus',function(){navName.textContent=label(i)});
+    b.title=label(i);
     scrub.appendChild(b);return b});
-  scrub.addEventListener('mouseleave',function(){navName.textContent=label(cur)});
 
   // Before/after state, with the toggle underline and the wipe edge
   function setMorph(m,after,animate){
@@ -873,8 +872,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     slides.forEach(function(s,i){s.classList.toggle('on',i===n);s.classList.toggle('past',i<n);s.setAttribute('aria-hidden',String(i!==n));s.inert=i!==n;if(i===n)s.scrollTop=0;});
     segs.forEach(function(g,i){g.classList.toggle('done',i<=n)});
     ticks.forEach(function(t,i){t.classList.toggle('on',i===n);t.classList.toggle('seen',i<n);if(i===n)t.setAttribute('aria-current','step');else t.removeAttribute('aria-current')});
-    navName.textContent=label(n);navCount.textContent=two(n+1)+' / '+two(slides.length);
-    document.querySelector('.nav').style.setProperty('--half',(navCount.offsetWidth/2+6)+'px');
+    navCount.textContent=two(n+1)+' / '+two(slides.length);
     document.getElementById('prev').disabled=n===0;document.getElementById('next').disabled=n===slides.length-1;
     document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
     cur=n;

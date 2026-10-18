@@ -52,6 +52,8 @@ for (const cs of CASE_STUDIES) {
   if (!/^\s*<!doctype/i.test(html)) {
     html = `<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${html}`;
   }
+  // The site's favicon (the transparent AJ mark), versioned so browsers drop any older cached icon
+  html = html.replace(/(<meta name="viewport"[^>]*>)/, `$1\n<link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">`);
   html = html.replace(/<meta name="claude:[^>]*>\n?/g, "");
   html = html.replace(/<main/, `${BAR(cs.title)}\n<main`);
   writeFileSync(join(out, "index.html"), html);
