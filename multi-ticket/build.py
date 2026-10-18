@@ -8,10 +8,10 @@ SRC = (HERE.parent / "case-study" / "index.html").read_text()
 head, rest = SRC.split('<main class="deck" id="deck" aria-live="polite">', 1)
 _, tail = rest.split("</main>", 1)
 mark = re.search(r'<svg class="mark".*?</svg>', rest, re.S).group(0)
-head = head.replace("<title>Multi Location at GlossGenius</title>", "<title>Multi Ticket at GlossGenius</title>")
+head = head.replace("<title>Multi Location at GlossGenius</title>", "<title>Flexible Checkout at GlossGenius</title>")
 
 CSS = """
-/* ---- Multi Ticket additions ---- */
+/* ---- Flexible Checkout additions ---- */
 /* Phone-shaped screens: the frame takes the phone's proportions and a fixed height */
 .tall .frame{width:auto;height:min(50svh,460px);aspect-ratio:var(--r);margin-inline:auto}
 .dt .frame{height:auto;width:100%}
@@ -293,11 +293,11 @@ def chips(items, key):
     return "".join(out)
 
 SLIDES = f'''
-<section class="slide divider" data-name="Multi Ticket"><div class="stage">
+<section class="slide divider" data-name="Flexible Checkout"><div class="stage">
   <div class="head">
     {mark}
   </div>
-  <div class="big"><h2>Multi<br>Ticket</h2><p class="by">One checkout for every appointment at the counter.</p></div>
+  <div class="big"><h2>Flexible<br>Checkout</h2><p class="by">One checkout for every appointment at the counter.</p></div>
 </div></section>
 
 <section class="slide" data-name="GlossGenius"><div class="stage">

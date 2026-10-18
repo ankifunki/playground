@@ -106,7 +106,7 @@ export const projects: Project[] = [
   },
   {
     slug: "multi-ticket",
-    title: "Multi Ticket",
+    title: "Flexible Checkout",
     line: "One checkout for every appointment at the counter.",
     company: "Genius AI",
     year: "2026",
