@@ -384,13 +384,38 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .divider h2{margin-left:calc(var(--u)*-6)}
   .divider .by{max-width:none}
   .mark{height:calc(var(--u)*48)}
-  .progress{top:auto;bottom:0;left:0;right:0;gap:2px}
-  .progress i{height:2px;border-radius:0}
-  .nav{display:flex;position:fixed;right:16px;bottom:16px;gap:6px;z-index:6;opacity:0;transition:opacity .4s}
-  body.awake .nav{opacity:1}
-  .nav button{width:36px;height:36px;border-radius:50%;border:1px solid #3A3F3E;background:rgb(14 16 17 / .7);color:#C9CFCE;cursor:pointer;display:grid;place-items:center}
-  .nav button:hover{background:#1E2221;border-color:#5A6160}
+  /* The deck's own controls: a compact pill at the bottom centre showing the count. Hovering (or tabbing into)
+     it opens the rest: previous and next, the slide's name, and a scrubber with one tick per slide to jump
+     anywhere. The pill is drawn at full size and clipped down to the count, so opening it is a clip-path
+     transition, never a relayout. */
+  .progress{display:none}
+  .nav{display:grid;grid-template-columns:36px 200px auto 200px 36px;align-items:center;column-gap:8px;
+    position:fixed;left:50%;bottom:20px;z-index:6;translate:-50% 0;height:40px;padding:0 4px;border-radius:999px;
+    background:rgb(18 21 22 / .86);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .08),0 8px 24px -8px rgb(0 0 0 / .35);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#C9CFCE;
+    clip-path:inset(0 calc(50% - var(--half,34px)) round 999px);transition:clip-path .3s cubic-bezier(.23,1,.32,1)}
+  .nav:hover,.nav:has(:focus-visible){clip-path:inset(0 0 round 999px)}
+  .nav > :not(.nav-count){opacity:0;transition:opacity .2s var(--ease)}
+  .nav:hover > *,.nav:has(:focus-visible) > *{opacity:1;transition:opacity .25s var(--ease) .06s}
+  .nav button{width:32px;height:32px;margin:0 2px;border:0;border-radius:50%;background:none;color:inherit;cursor:pointer;display:grid;place-items:center;transition:background .2s var(--ease),opacity .2s var(--ease)}
+  .nav button:hover:not(:disabled){background:rgb(255 255 255 / .08)}
+  .nav button:disabled{opacity:.3!important;cursor:default}
   .nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+  .nav-name{justify-self:end;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 13px/1 var(--body);color:#EEF1F1}
+  .nav-count{padding:0 10px;font:400 11px/1 var(--mono);letter-spacing:.08em;font-variant-numeric:tabular-nums;color:#EEF1F1;white-space:nowrap}
+  .nav-scrub{display:flex;align-items:center;gap:0;height:100%;min-width:0;overflow:hidden}
+  .nav-scrub button{flex:1;width:auto;min-width:0;height:24px;margin:0;padding:0;border-radius:2px;display:grid;place-items:center}
+  .nav-scrub button::after{content:"";width:2px;height:10px;border-radius:1px;background:#5A6160;transition:height .2s var(--ease),background .2s var(--ease)}
+  .nav-scrub button.seen::after{background:#959C9B}
+  .nav-scrub button.on::after{height:16px;background:#EEF1F1}
+  .nav-scrub button:hover{background:none!important}.nav-scrub button:hover::after{height:16px;background:#EEF1F1}
+  /* Mouse: the left half of the screen goes back, the right half forward, and the cursor says which */
+  @media (hover:hover) and (pointer:fine){
+    .deck[data-side="prev"]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='16' fill='%23121516' fill-opacity='.86' stroke='white' stroke-opacity='.18'/%3E%3Cpath d='M22.5 14.5 17 20l5.5 5.5' fill='none' stroke='white' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 20 20,w-resize}
+    .deck[data-side="next"]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='16' fill='%23121516' fill-opacity='.86' stroke='white' stroke-opacity='.18'/%3E%3Cpath d='M17.5 14.5 23 20l-5.5 5.5' fill='none' stroke='white' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 20 20,e-resize}
+    .deck[data-side] .slide{cursor:inherit}
+    .deck[data-side=""] .slide{cursor:default}
+  }
   dialog{max-width:min(92vw,1600px);overflow:visible}
   dialog .zwrap{padding:0;overflow:visible}
   dialog img,dialog .ph-big{width:100%}
@@ -770,10 +795,13 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <dialog id="zoom" aria-label="Enlarged screen"><form method="dialog"><button>Close</button></form><div id="zoom-body"></div></dialog>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
-<div class="nav" aria-label="Slide controls">
+<nav class="nav" aria-label="Slide controls">
   <button type="button" id="prev" aria-label="Previous slide"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+  <span class="nav-name" id="nav-name"></span>
+  <span class="nav-count" id="nav-count" aria-live="polite"></span>
+  <span class="nav-scrub" id="nav-scrub"></span>
   <button type="button" id="next" aria-label="Next slide"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
-</div>
+</nav>
 
 <script>
 (function(){
@@ -782,6 +810,16 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   var progress=document.getElementById('progress'),dlg=document.getElementById('zoom'),zb=document.getElementById('zoom-body');
   slides.forEach(function(){progress.appendChild(document.createElement('i'))});
   var segs=[].slice.call(progress.children);
+  // The pill: count, the slide's name, and a scrubber tick per slide (hovering a tick previews its name)
+  var navName=document.getElementById('nav-name'),navCount=document.getElementById('nav-count'),scrub=document.getElementById('nav-scrub');
+  function label(i){return slides[i].dataset.name||('Slide '+(i+1))}
+  function two(x){return (x<10?'0':'')+x}
+  var ticks=slides.map(function(s,i){var b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Go to '+label(i));
+    b.addEventListener('click',function(e){e.stopPropagation();go(i)});
+    b.addEventListener('mouseenter',function(){navName.textContent=label(i)});
+    b.addEventListener('focus',function(){navName.textContent=label(i)});
+    scrub.appendChild(b);return b});
+  scrub.addEventListener('mouseleave',function(){navName.textContent=label(cur)});
 
   // Before/after state, with the toggle underline and the wipe edge
   function setMorph(m,after,animate){
@@ -826,6 +864,10 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     timers.forEach(clearTimeout);timers=[];
     slides.forEach(function(s,i){s.classList.toggle('on',i===n);s.classList.toggle('past',i<n);s.setAttribute('aria-hidden',String(i!==n));s.inert=i!==n;if(i===n)s.scrollTop=0;});
     segs.forEach(function(g,i){g.classList.toggle('done',i<=n)});
+    ticks.forEach(function(t,i){t.classList.toggle('on',i===n);t.classList.toggle('seen',i<n);if(i===n)t.setAttribute('aria-current','step');else t.removeAttribute('aria-current')});
+    navName.textContent=label(n);navCount.textContent=two(n+1)+' / '+two(slides.length);
+    document.querySelector('.nav').style.setProperty('--half',(navCount.offsetWidth/2+6)+'px');
+    document.getElementById('prev').disabled=n===0;document.getElementById('next').disabled=n===slides.length-1;
     document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
@@ -840,10 +882,18 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
   document.getElementById('next').addEventListener('click',next);
   document.getElementById('prev').addEventListener('click',prev);
-  // Tap zones: left third goes back, the rest goes forward
-  document.getElementById('deck').addEventListener('click',function(e){
+  // Zones: with a mouse the screen splits in half (left back, right forward, shown by the cursor);
+  // on touch the left third goes back and the rest forward
+  var deck=document.getElementById('deck'),mouse=matchMedia('(hover:hover) and (pointer:fine)'),desk=matchMedia('(min-width:900px) and (min-aspect-ratio:1/1)');
+  function split(){return mouse.matches&&desk.matches}
+  function side(x){return x<innerWidth/2?(cur>0?'prev':''):(cur<slides.length-1||hasMore()?'next':'')}
+  function hasMore(){var r=slides[cur].querySelector('.rel,.story');if(r&&r._i<r.querySelectorAll('.steps button').length-1)return true;var m=slides[cur].querySelector('.morph');return !!(m&&!m.classList.contains('is-after'))}
+  deck.addEventListener('mousemove',function(e){if(!split())return;deck.dataset.side=e.target.closest('button,[data-zoom],a,.toggle')?'':side(e.clientX)});
+  deck.addEventListener('mouseleave',function(){delete deck.dataset.side});
+  deck.addEventListener('click',function(e){
     if(e.target.closest('button,[data-zoom],a'))return;
     if(getSelection&&String(getSelection()).length)return;
+    if(split()){var s=side(e.clientX);if(s==='prev')prev();else if(s==='next')next();deck.dataset.side=side(e.clientX);return}
     var r=slides[cur].getBoundingClientRect();(e.clientX<r.left+r.width/3)?prev():next();
   });
   addEventListener('keydown',function(e){
