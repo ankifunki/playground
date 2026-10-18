@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { profile, type LinkIcon } from "@/content/site";
+import { CopyButton } from "./copy-button";
 
 // Line icons drawn on one 24px grid with the same stroke, so the brand marks sit evenly with the envelope.
 const ICONS: Record<LinkIcon | "mail", ReactNode> = {
@@ -38,20 +39,23 @@ const Arrow = () => (
   </svg>
 );
 
-// Email and social links as one even list: an icon and the platform name, linked.
+// Email and social links as one even list: an icon, the platform and the handle, linked. Email also has a copy
+// button beside the link, for people who'd rather paste it than open a mail app.
 export function ContactList() {
-  const rows = [{ label: "Email", icon: "mail" as const, href: `mailto:${profile.email}` }, ...profile.links];
+  const rows = [{ label: "Email", icon: "mail" as const, href: `mailto:${profile.email}`, handle: profile.email }, ...profile.links];
   return (
     <ul className="contact-list">
       {rows.map((r) => {
-        const external = r.icon !== "mail";
+        const mail = r.icon === "mail";
         return (
           <li key={r.label}>
-            <a className="cl-row" href={r.href} {...(external && { target: "_blank", rel: "noopener noreferrer" })}>
+            <a className="cl-row" href={r.href} {...(!mail && { target: "_blank", rel: "noopener noreferrer" })}>
               <Icon name={r.icon} />
               <span className="cl-label">{r.label}</span>
-              <Arrow />
+              <span className="cl-handle">{r.handle}</span>
+              {!mail && <Arrow />}
             </a>
+            {mail && <CopyButton text={profile.email} />}
           </li>
         );
       })}

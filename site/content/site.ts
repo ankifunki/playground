@@ -45,10 +45,10 @@ export const profile = {
   title: "Product designer",
   email: "ankit@joshiankit.com",
   links: [
-    { label: "LinkedIn", icon: "linkedin", href: "https://www.linkedin.com/in/joshiankit" },
-    { label: "X", icon: "x", href: "https://x.com/ankifunki" },
-    { label: "Instagram", icon: "instagram", href: "https://www.instagram.com/ankit" },
-  ] as { label: string; icon: LinkIcon; href: string }[],
+    { label: "LinkedIn", icon: "linkedin", href: "https://www.linkedin.com/in/joshiankit", handle: "in/joshiankit" },
+    { label: "X", icon: "x", href: "https://x.com/ankifunki", handle: "@ankifunki" },
+    { label: "Instagram", icon: "instagram", href: "https://www.instagram.com/ankit", handle: "@ankit" },
+  ] as { label: string; icon: LinkIcon; href: string; handle: string }[],
 };
 
 // DRAFT copy. Ankit to rewrite in his own words.
