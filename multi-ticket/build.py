@@ -21,9 +21,14 @@ CSS = """
 /* Prototype player: replays a Figma prototype path with taps on the real hotspots */
 .proto{display:grid;gap:var(--gap-m)}
 .proto.tall .frame{height:min(44svh,400px)}
-.proto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transition:transform .55s var(--ease),opacity .45s var(--ease)}
-.proto .frame img.on{opacity:1}
-.tap{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;pointer-events:none;z-index:5;opacity:0}
+.proto .frame{--fig:cubic-bezier(0,0,.58,1);background:#12100b}
+.proto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;z-index:0}
+.proto .frame img.on{opacity:1;z-index:1}
+.proto .frame img.in-slide{z-index:2;box-shadow:-18px 0 32px rgb(0 0 0 / .45)}
+.proto .frame img.in-fade{z-index:2}
+.press{position:absolute;z-index:4;border-radius:12px;background:rgb(255 255 255 / .14);opacity:0;pointer-events:none;transition:opacity .22s var(--fig)}
+.press.on{opacity:1;transition-duration:.08s}
+.tap{position:absolute;left:0;top:0;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;pointer-events:none;z-index:5;opacity:0}
 .tap::before,.tap::after{content:"";position:absolute;inset:0;border-radius:50%}
 .tap::before{background:rgb(255 255 255 / .5);box-shadow:0 0 0 1px rgb(255 255 255 / .6);scale:.45}
 .tap::after{border:1.5px solid rgb(255 255 255 / .8)}
@@ -58,6 +63,26 @@ CSS = """
 .chip.k{border-color:var(--accent);color:var(--accent);background:rgb(244 245 255 / .8)}
 .arw{color:var(--faint);font:400 14px/1 var(--mono);opacity:0;transition:opacity .4s var(--ease)}
 .slide.on .chip,.slide.on .arw{opacity:1;translate:0 0}
+/* Annotated screen: leader lines from points on the screen to callouts (laid out and drawn by JS) */
+.cartmix{grid-column:1 / -1}
+.cartmix .bar{align-items:flex-start}
+.anno{position:relative;grid-column:1 / -1;height:min(46svh,390px)}
+.anno .an-ph{position:absolute;left:0;top:0;height:100%;aspect-ratio:var(--r)}
+.anno .an-ph .frame{height:100%!important;width:100%!important;aspect-ratio:auto!important;margin:0}
+.anno .an-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
+.anno svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
+/* Callouts: hairline leaders and small dots in one color. They enter one by one (dot, then the line draws out,
+   then the label settles in from the line's direction) and leave together. */
+.anno path{fill:none;stroke:var(--accent);stroke-width:1;stroke-opacity:.55;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .2s var(--ease)}
+.anno circle{fill:var(--accent);scale:0;transform-box:fill-box;transform-origin:center;transition:scale .2s var(--ease)}
+.an-lb{--dx:-8px;position:absolute;display:grid;gap:1px;opacity:0;translate:var(--dx) 0;filter:blur(3px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
+.an-lb.l{--dx:8px;text-align:right}
+.an-lb b{font:500 12px/16px var(--head);letter-spacing:-.005em;color:var(--ink)}
+.an-lb span{font:400 11.5px/15px var(--body);color:var(--grey);text-wrap:pretty}
+.anno.show circle{scale:1;transition:scale .45s var(--ease) calc(var(--i) * .14s)}
+.anno.show path{stroke-dashoffset:0;transition:stroke-dashoffset .6s var(--ease) calc(.1s + var(--i) * .14s)}
+.anno.show .an-lb{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) calc(.35s + var(--i) * .14s),translate .7s var(--ease) calc(.35s + var(--i) * .14s),filter .5s var(--ease) calc(.35s + var(--i) * .14s)}
+@media (prefers-reduced-motion:reduce){.anno path,.anno circle,.an-lb{transition:none!important;filter:none}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .tall .frame,.proto.tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .morph.tall{grid-column:1 / -1;grid-template-columns:auto 1fr;column-gap:calc(var(--u)*64);align-items:end}
@@ -75,13 +100,20 @@ CSS = """
   .order{grid-column:1 / span 9;gap:calc(var(--u)*48)}
   .chip{height:calc(var(--u)*44);padding:0 calc(var(--u)*20);font-size:calc(var(--u)*18)}
   .arw{font-size:calc(var(--u)*18)}
+  .anno{height:calc(var(--u)*580)}
+  .cartmix{row-gap:calc(var(--u)*24)}
+  .cartmix .bar{justify-content:center}
+  .an-lb{gap:calc(var(--u)*3)}
+  .an-lb b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*22)}
+  .an-lb span{font-size:calc(var(--u)*14);line-height:calc(var(--u)*20)}
 }
 """
 head = head.replace("\n</style>", "\n" + CSS + "</style>", 1)
 
 def frame(src_list, alt_list, ratio, seq=False):
     imgs = "".join(
-        f'<img src="img/{s}.webp" alt="{a}" style="object-position:top left" {"decoding=\"async\"" if i == 0 else "loading=\"lazy\" decoding=\"async\""}>'
+        (f'<img src="img/{s}-f.webp" data-full="img/{s}.webp"' if (HERE / "img" / f"{s}-f.webp").exists() else f'<img src="img/{s}.webp"')
+        + f' alt="{a}" style="object-position:top left" {"decoding=\"async\"" if i == 0 else "loading=\"lazy\" decoding=\"async\""}>'
         for i, (s, a) in enumerate(zip(src_list, alt_list)))
     return f'<div class="frame{" seq" if seq else ""}" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}</div>'
 
@@ -111,21 +143,76 @@ def morph(title, before, after, ratio, foot, alts, tall=False, meta=""):
 
 JS = r"""<script>
 (function(){
+  var desk=matchMedia('(min-width:900px) and (min-aspect-ratio:1/1)');
+  document.querySelectorAll('.anno').forEach(function(a){
+    var ph=a.querySelector('.an-ph'),svg=a.querySelector('svg'),lbs=[].slice.call(a.querySelectorAll('.an-lb'));
+    function lay(){
+      var W=a.clientWidth,H=a.clientHeight;if(!W||!H)return;
+      var r=(getComputedStyle(a).getPropertyValue('--r')||'393/852').split('/'),pw=H*r[0]/r[1],d=desk.matches,u=d?W/1336:1,reach=d?72*u:20,gap=d?18*u:10;
+      var px=d?(W-pw)/2:0;ph.style.left=px+'px';ph.style.width=pw+'px';
+      var lw=d?Math.min(260*u,px-reach-8):W-pw-reach;
+      var sides={l:[],r:[]},th=d?11*u:8,off=d?10*u:8;
+      lbs.forEach(function(l){var s=d?l.dataset.side:'r';l.classList.toggle('l',s==='l');l.style.width=lw+'px';
+        l.style.left=(s==='l'?px-reach-lw:px+pw+reach)+'px';
+        sides[s].push({el:l,ay:(+(d?l.dataset.y:l.dataset.ym))*H,i:+l.dataset.i})});
+      // Straight leaders only: each starts just off the phone's edge, level with the element it names,
+      // and runs out to the label's first line. Nothing is drawn on the screen itself.
+      var out='';
+      ['l','r'].forEach(function(k){var list=sides[k].sort(function(p,q){return p.ay-q.ay}),bottom=-1e9;
+        list.forEach(function(c){var h=c.el.offsetHeight,t=Math.max(c.ay-th,bottom+gap);t=Math.min(t,H-h);c.t=t;bottom=t+h});
+        list.forEach(function(c){c.el.style.top=c.t+'px';var y=(c.t+th).toFixed(1),
+          x0=k==='l'?px-off:px+pw+off,x1=k==='l'?px-reach+6:px+pw+reach-6;
+          out+='<path style="--i:'+c.i+'" pathLength="1" d="M'+x0.toFixed(1)+' '+y+'H'+x1.toFixed(1)+'"/><circle style="--i:'+c.i+'" cx="'+x0.toFixed(1)+'" cy="'+y+'" r="'+(d?3*u:2.5)+'"/>'})});
+      svg.innerHTML=out}
+    lay();addEventListener('resize',lay);if(document.fonts)document.fonts.ready.then(lay);
+    // Callouts belong to the "after": they come in once the wipe has landed and step out when it goes back.
+    var slide=a.closest('.slide'),m=a.closest('.morph'),was=null;
+    function upd(){var on=slide.classList.contains('on')&&(!m||m.classList.contains('is-after'));if(on===was)return;was=on;clearTimeout(a._s);
+      if(on){lay();a._s=setTimeout(function(){a.classList.add('show')},m?850:350)}else a.classList.remove('show')}
+    [slide,m].forEach(function(el){if(el)new MutationObserver(upd).observe(el,{attributes:true,attributeFilter:['class']})});upd();
+  });
+})();
+</script>
+<script>
+(function(){
   var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.proto').forEach(function(p){
-    var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),i=0,t=[];
-    function clear(){t.forEach(clearTimeout);t=[]}
+    // Replays a Figma prototype path with its own transitions: Slide in (new screen over a still one) and
+    // Smart animate (in-place change, so a dissolve with the new screen on top), at Figma's 300ms ease-out cubic.
+    var f=p.querySelector('.frame'),imgs=[].slice.call(f.querySelectorAll('img')),btns=[].slice.call(p.querySelectorAll('.steps button')),tap=f.querySelector('.tap'),press=f.querySelector('.press'),i=0,t=[],busy=null;
+    var DUR=300,EASE='cubic-bezier(0,0,.58,1)';
+    function clear(){t.forEach(clearTimeout);t=[];press.classList.remove('on')}
     function mark(j){btns.forEach(function(b,k){b.setAttribute('aria-pressed',String(k===j));b.classList.toggle('seen',k<j)})}
-    function show(j){imgs.forEach(function(im,k){im.style.transition='none';im.style.transform='';im.style.zIndex='';im.classList.toggle('on',k===j)});void f.offsetWidth;imgs.forEach(function(im){im.style.transition=''});i=j;mark(j)}
-    function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;
-      if(tr==='slide'&&j>i){b.style.transition='none';b.style.transform='translateX(100%)';b.style.zIndex=2;b.classList.add('on');void b.offsetWidth;b.style.transition='';b.style.transform='translateX(0)';a.style.transform='translateX(-28%)';
-        setTimeout(function(){if(b.classList.contains('on')&&imgs[i]!==a)a.classList.remove('on');a.style.transition='none';a.style.transform='';b.style.zIndex='';void a.offsetWidth;a.style.transition=''},600)}
-      else{b.classList.add('on');a.classList.remove('on')}
+    function reset(im){im.style.transition='none';im.style.transform='';im.style.opacity='';im.classList.remove('in-slide','in-fade')}
+    function show(j){if(busy){clearTimeout(busy);busy=null}f.querySelectorAll('.mv').forEach(function(x){x.remove()});imgs.forEach(unmask);imgs.forEach(function(im,k){reset(im);im.classList.toggle('on',k===j)});i=j;mark(j)}
+    function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;reset(b);
+      if(tr==='slide'){b.classList.add('in-slide');b.style.transform='translateX(100%)';b.style.opacity='1';void b.offsetWidth;
+        b.style.transition='transform '+DUR+'ms '+EASE;b.style.transform='translateX(0)'}
+      else{b.classList.add('in-fade');b.style.opacity='0';var mv=moves(a,b);void b.offsetWidth;b.style.transition='opacity '+DUR+'ms '+EASE;b.style.opacity='1';if(mv)mv()}
+      busy=setTimeout(function(){busy=null;a.classList.remove('on');reset(b);unmask(a);unmask(b);f.querySelectorAll('.mv').forEach(function(x){x.remove()});b.classList.add('on')},DUR+40);
       i=j;mark(j)}
-    function tapAt(j){var d=(imgs[j].dataset.tap||'').split(',');if(d.length<2)return;tap.style.left=d[0]+'%';tap.style.top=d[1]+'%';tap.classList.remove('go');void tap.offsetWidth;tap.classList.add('go')}
+    function setMask(im,rects,S){var keep=[],y=0;rects.sort(function(p,q){return p[0]-q[0]}).forEach(function(r){if(r[0]>y)keep.push([y,r[0]-y]);y=Math.max(y,r[0]+r[1])});keep.push([y,852-y]);
+      var img=keep.map(function(){return 'linear-gradient(#000,#000)'}).join(','),pos=keep.map(function(k){return '0 '+k[0]*S+'px'}).join(','),size=keep.map(function(k){return '100% '+k[1]*S+'px'}).join(',');
+      ['mask','webkitMask'].forEach(function(p){im.style[p+'Image']=img;im.style[p+'Position']=pos;im.style[p+'Size']=size;im.style[p+'Repeat']='no-repeat'})}
+    function unmask(im){['mask','webkitMask'].forEach(function(p){im.style[p+'Image']=''})}
+    // Smart animate for elements that move: each listed block glides from its old place to its new one while its
+    // content dissolves, and both screens are masked around the blocks so nothing is seen twice.
+    function moves(a,b){if(!a.dataset.moves)return null;var S=f.clientHeight/852,m=a.dataset.moves.split(';').map(function(x){return x.split(',').map(Number)}),wins=[];
+      setMask(a,m.map(function(x){return [x[0],x[1]]}),S);setMask(b,m.map(function(x){return [x[2],x[3]]}),S);
+      m.forEach(function(x){var w=document.createElement('div');w.className='mv';w.style.cssText='position:absolute;left:0;right:0;overflow:hidden;z-index:3;top:'+x[0]*S+'px;height:'+x[1]*S+'px';
+        var o=new Image(),n=new Image();[o,n].forEach(function(im,k){im.src=k?b.src:a.src;im.alt='';im.style.cssText='position:absolute;left:0;width:100%;height:'+852*S+'px;max-width:none;object-fit:fill;opacity:'+(k?0:1)+';top:'+(-(k?x[2]:x[0])*S)+'px';w.appendChild(im)});
+        f.appendChild(w);wins.push([w,o,n,x])});
+      return function(){wins.forEach(function(v){var tr='top '+DUR+'ms '+EASE+',height '+DUR+'ms '+EASE;v[0].style.transition=tr;v[0].style.top=v[3][2]*S+'px';v[0].style.height=v[3][3]*S+'px';
+        v[1].style.transition=v[2].style.transition='opacity '+DUR+'ms '+EASE;v[1].style.opacity='0';v[2].style.opacity='1'})}}
+    function hot(j){var d=(imgs[j].dataset.hot||'').split(',').map(Number);return d.length===4?d:null}
+    function tapAt(j){var h=hot(j);if(!h)return;var W=393,H=852;
+      press.style.left=h[0]/W*100+'%';press.style.top=h[1]/H*100+'%';press.style.width=h[2]/W*100+'%';press.style.height=h[3]/H*100+'%';
+      tap.style.left=(h[0]+h[2]/2)/W*100+'%';tap.style.top=(h[1]+h[3]/2)/H*100+'%';
+      tap.classList.remove('go');void tap.offsetWidth;tap.classList.add('go');press.classList.add('on')}
     function run(){clear();if(reduce)return;
-      if(i>=imgs.length-1){t.push(setTimeout(function(){show(0);run()},2400));return}
-      t.push(setTimeout(function(){tapAt(i);t.push(setTimeout(function(){go(i+1);run()},420))},1300))}
+      if(i>=imgs.length-1){t.push(setTimeout(function(){show(0);run()},2600));return}
+      t.push(setTimeout(function(){tapAt(i);
+        t.push(setTimeout(function(){press.classList.remove('on');go(i+1);run()},hot(i)?260:0))},1500))}
     btns.forEach(function(b,k){b.addEventListener('click',function(e){e.stopPropagation();clear();show(k);run()})});
     var slide=p.closest('.slide');
     new MutationObserver(function(){if(slide.classList.contains('on')){clear();show(0);t.push(setTimeout(run,500))}else clear()}).observe(slide,{attributes:true,attributeFilter:['class']});
@@ -138,14 +225,36 @@ JS = r"""<script>
 """
 
 def proto(title, ratio, steps, foot, meta=""):
-    imgs = "".join(f'<img src="img/{s}.webp" alt="{l}" data-tap="{tap}" data-tr="{tr}" decoding="async">' for s, l, tap, tr in steps)
-    btns = "".join(f'<button type="button" aria-pressed="{"true" if i == 0 else "false"}"><span class="mono">{i+1:02d}</span><b>{l}</b></button>' for i, (s, l, tap, tr) in enumerate(steps))
+    imgs = "".join(f'<img src="img/{st[0]}.webp" alt="{st[1]}" data-hot="{st[2]}" data-tr="{st[3]}"{f' data-moves="{st[4]}"' if len(st) > 4 else ""} decoding="async">' for st in steps)
+    btns = "".join(f'<button type="button" aria-pressed="{"true" if i == 0 else "false"}"><span class="mono">{i+1:02d}</span><b>{l}</b></button>' for i, (s, l, *_) in enumerate(steps))
     return f'''<section class="slide screens" data-name="{title}"><div class="stage">
   <div class="head"><h3 class="title">{title}</h3>{f'<span class="mono">{meta}</span>' if meta else ""}</div>
   <div class="content"><div class="proto tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}<i class="tap"></i></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">{imgs}<i class="press"></i><i class="tap"></i></div>
     <div class="steps" role="group" aria-label="Prototype steps">{btns}</div>
     <p class="foot">{foot}</p>
+  </div></div>
+</div></section>'''
+
+def anno(title, src, ratio, alt, notes, before=None, alts=("", "")):
+    lbs = "".join(f'<div class="an-lb" data-y="{y/100}" data-ym="{ym/100}" data-side="{side}" data-i="{i}"><b>{t}</b><span>{b}</span></div>' for i, (y, ym, side, t, b) in enumerate(notes))
+    if before:
+        frame = f'''<div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:{ratio}">
+      <div class="layer before"><img src="img/{before}.webp" alt="Before: {alts[0]}" decoding="async"></div>
+      <div class="layer after"><img src="img/{src}.webp" alt="After: {alts[1]}" decoding="async"></div><i class="edge"></i></div>'''
+        bar = '<div class="bar"><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>'
+        return f'''<section class="slide screens" data-name="{title}"><div class="stage">
+  <div class="head"><h3 class="title">{title}</h3></div>
+  <div class="content"><div class="morph cartmix"><div class="anno" style="--r:{ratio}">
+    <div class="an-ph">{frame}</div>
+    <svg aria-hidden="true"></svg>{lbs}
+  </div>{bar}</div></div>
+</div></section>'''
+    return f'''<section class="slide screens" data-name="{title}"><div class="stage">
+  <div class="head"><h3 class="title">{title}</h3></div>
+  <div class="content"><div class="anno" style="--r:{ratio}">
+    <div class="an-ph"><div class="frame" style="--r:{ratio}"><img src="img/{src}.webp" alt="{alt}" decoding="async"></div></div>
+    <svg aria-hidden="true"></svg>{lbs}
   </div></div>
 </div></section>'''
 
@@ -248,29 +357,28 @@ SLIDES = f'''
   <div class="content"><div class="order">
     <div class="seq"><span class="mono">GlossGenius</span><div class="chips">{chips(["Checkout", "Tip", "Payment", "Done"], "Tip")}</div></div>
     <div class="seq"><span class="mono">Competitors</span><div class="chips">{chips(["Checkout", "Payment", "Tip", "Done"], "Tip")}</div></div>
-    <p class="foot">Checkout is one of the most sensitive flows for our users, and ours was already longer than competitors&rsquo;. I prototyped both orders, one close to production and one aligned with the industry, to agree on direction before going deep.</p>
+    <p class="foot">Checkout is one of the most sensitive flows, and ours was already longer than competitors&rsquo;. Prototyping both orders, one close to production and one aligned with the industry, settled the direction before going deep.</p>
   </div></div>
 </div></section>
 
 {chapter(1, "Phase 1")}
 
-{morph("The cart", "cart-before", "cart-after", "393/852", "Items lead and adding more sits right below them, so a second appointment reads as one more line, not a new sale.", ["add items sits above the items", "items first, with add items inline below"], tall=True)}
+{anno("The cart", "cart-after", "393/852", "", [
+  (30, 28, "r", "Add items up top", "Services, products and more, one tap away."),
+  (38.3, 45.2, "l", "Provider on every line", "Commission and tips follow each item."),
+], before="cart-before", alts=("client card, a single provider, and line items with thumbnails", "Rachel Green as the title, add items to cart up top, and a provider on each line"))}
 
-{morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "One tip for the whole ticket, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
+{morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "Three tickets meant three tip prompts. Now one tip covers the visit, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
-{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip"), ("m-7", "Sign")], "All of Rachel&rsquo;s appointments in one cart, with one tip and one signature.", tall=True)}
+{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", tall=True)}
 
-{proto("Checkout, played", "393/852", [("sc-1", "Checkout", "50,32", "slide"), ("sc-2", "Appointment", "50,91.8", "slide"), ("sc-3", "One sale", "61,91.8", "slide"), ("sc-4", "Payment", "50,36.6", "slide"), ("sc-5", "Card reader", "", "slide"), ("sc-6", "Tip and sign", "50,86.8", "slide"), ("sc-7", "Processing", "", "slide"), ("sc-8", "Done", "", "")], "Rachel&rsquo;s three appointments check out as one sale, from the list to a single payment.", meta="Prototype")}
+{chapter(2, "Phase 2")}
 
-{chapter(2, "Web")}
+{morph("Group checkout", "list-before", "list-after", "393/852", "Paying for someone else meant a second checkout. Same-day appointments now group into one, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
-{flow("Line items with add-ons", "1100/1036", [("w-1", "Cart"), ("w-2", "Add items"), ("w-3", "Add-ons"), ("w-4", "Grouped")], "Add-ons travel with their service, collapsed in the cart until you need them.", tall="dt")}
+{proto("One client, played", "393/852", [("sc-1", "Checkout", "24,216,345,114", "slide"), ("sc-2", "Appointment", "24,758,166,50", "slide"), ("sc-3", "Select", "24,198,345,109", "smart"), ("sc-4", "Selected", "24,755,345,48", "slide"), ("sc-5", "One sale", "116,756,253,48", "slide"), ("sc-6", "Payment", "0,467,393,74", "slide"), ("sc-7", "Tip on", "0,279,393,76", "slide"), ("sc-8", "Tip and sign", "24,758,345,48", "slide"), ("sc-9", "Done", "", "")], "From her appointment, Rachel&rsquo;s other booking joins the same sale, so she pays once. Every transition is the prototype&rsquo;s own.", meta="Prototype · One client")}
 
-{chapter(3, "Phase 2")}
-
-{morph("Group checkout", "list-before", "list-after", "393/852", "Same-day appointments group into one checkout, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
-
-{proto("Group checkout, played", "393/852", [("gc-1", "Discover", "50,28.9", "fade"), ("gc-2", "Group checkout", "51,23.2", "fade"), ("gc-3", "Select mode", "50,52.8", "fade"), ("gc-4", "Mark", "50,66.4", "fade"), ("gc-5", "Ashley", "50,88.9", "slide"), ("gc-6", "One sale", "58.8,92", "slide"), ("gc-7", "Pay", "50,58.8", "slide"), ("gc-8", "Tip on", "50,36.5", "slide"), ("gc-9", "Tip and sign", "50,87", "slide"), ("gc-10", "Processing", "", "slide"), ("gc-11", "Done", "", "")], "Discover group checkout, pick Mark and Ashley, and settle both in one sale, one payment, one tip.", meta="Prototype")}
+{proto("Group checkout, played", "393/852", [("gc-1", "Checkout", "266,78,40,40", "smart", "220,111,291,107;342,103,408,107;456,103,525,107;570,74,642,74"), ("gc-2", "Select mode", "24,290,345,109", "smart"), ("gc-3", "Rachel", "24,407,345,109", "smart"), ("gc-4", "Ashley", "24,731,345,48", "smart"), ("gc-5", "One sale", "116,756,253,48", "slide"), ("gc-6", "Payment", "0,467,393,74", "slide"), ("gc-7", "Tip on", "0,279,393,76", "slide"), ("gc-8", "Tip and sign", "24,758,345,48", "slide"), ("gc-9", "Done", "", "")], "Two clients, picked straight from the list, settle in one sale with one payment and one tip.", meta="Prototype · Group checkout")}
 
 <section class="slide divider" data-name="End"><div class="stage">
   <div class="head">
@@ -281,6 +389,9 @@ SLIDES = f'''
 '''
 
 tail = tail.rstrip() + "\n" + JS
+# Slides where the mock or the line carries itself: the title stays for screen readers only
+NOTITLE = {"The cart", "One client, played", "Group checkout, played"}
+SLIDES = re.sub(r'<section class="slide ([^"]*)" data-name="([^"]+)"', lambda m: f'<section class="slide {m.group(1)}{" notitle" if m.group(2) in NOTITLE else ""}" data-name="{m.group(2)}"', SLIDES)
 out = head + '<main class="deck" id="deck" aria-live="polite">\n' + SLIDES + "\n</main>" + tail
 (HERE / "index.html").write_text(out)
 print("wrote", HERE / "index.html", len(out))

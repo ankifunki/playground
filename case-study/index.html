@@ -205,6 +205,22 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Cover */
 .slide.divider{background:var(--divider)}
+/* Slides without a visible title: the mock or the line carries itself; the title stays for screen readers */
+.notitle .head .title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.notitle .statement{font-size:28px;line-height:36px;letter-spacing:-.025em}
+/* Switcher models: point at what changes, from just outside the mock; the screens stay as they are */
+.swc{position:relative;height:34px;margin-top:calc(var(--gap-m) * -1 + 6px)}
+.swc span{position:absolute;top:0;padding-top:16px;font:500 11px/1.2 var(--body);color:var(--accent);white-space:nowrap;opacity:0;translate:0 -4px;filter:blur(2px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
+.swc span.l{left:var(--x)}
+.swc span.r{right:calc(100% - var(--x));text-align:right}
+.swc span::before{content:"";position:absolute;top:0;width:1px;height:12px;background:var(--accent);transform-origin:top;scale:1 0;transition:scale .2s var(--ease)}
+.swc span.l::before{left:0}.swc span.r::before{right:0}
+.swc span::after{content:"";position:absolute;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--accent);scale:0;transition:scale .2s var(--ease)}
+.swc span.l::after{left:-2px}.swc span.r::after{right:-2px}
+.models[data-step="0"] .swc .o0,.models[data-step="1"] .swc .o1,.models[data-step="2"] .swc .o2{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) .4s,translate .7s var(--ease) .4s,filter .5s var(--ease) .4s}
+.models[data-step="0"] .swc .o0::before,.models[data-step="1"] .swc .o1::before,.models[data-step="2"] .swc .o2::before{scale:1;transition:scale .45s var(--ease) .15s}
+.models[data-step="0"] .swc .o0::after,.models[data-step="1"] .swc .o1::after,.models[data-step="2"] .swc .o2::after{scale:1;transition:scale .35s var(--ease)}
+@media (prefers-reduced-motion:reduce){.swc span,.swc span::before,.swc span::after{transition:none!important;filter:none}}
 .divider .stage{justify-content:space-between}
 .divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
@@ -236,6 +252,12 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
+  .models > .frame{aspect-ratio:var(--r);align-self:center}
+  .models > .swc{grid-column:1;grid-row:4;height:calc(var(--u)*44);margin-top:calc(var(--u)*-18)}
+  .swc span{font-size:calc(var(--u)*15);padding-top:calc(var(--u)*20)}
+  .swc span::before{height:calc(var(--u)*14)}
+  .flowseq > .frame{aspect-ratio:var(--r);width:auto;height:calc(var(--u)*560);max-width:100%;justify-self:start}
+  .content > .flowseq{grid-template-columns:auto minmax(calc(var(--u)*280),1fr);column-gap:calc(var(--u)*64)}
   .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
   .steps button{min-width:0;flex:none;display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
   .steps button b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
@@ -349,6 +371,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
+  .notitle .content,.notitle.screens .content,.notitle .content[style]{padding-top:0!important;align-content:center}
+  .notitle .statement{grid-column:1 / span 10;font-size:calc(var(--u)*60);line-height:calc(var(--u)*70);letter-spacing:-.03em}
   .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
   .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
   .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
@@ -449,14 +473,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="head"><h3 class="title">What made it hard</h3></div>
   <div class="content">
     <div class="cols">
-      <ol class="list hard"><li><span><b>Platform shift</b><i>Cut across every surface. Most workflows had to be rethought.</i></span></li><li><span><b>Every team</b><i>True cross-functional work. I learned each domain to solve it.</i></span></li><li><span><b>Moving target</b><i>A rebrand ran in parallel, so the design system shifted underfoot.</i></span></li><li><span><b>Two platforms</b><i>Desktop and mobile parity, native to each. Mobile was legacy code on an old design system.</i></span></li><li><span><b>No clear shape</b><i>Vague, broad and complex. Everyone had an idea; nothing was tangible.</i></span></li></ol>
+      <ol class="list hard"><li><span><b>Platform shift</b><i>Cut across every surface. Most workflows had to be rethought.</i></span></li><li><span><b>Every team</b><i>Every domain had a stake, and its own edge cases to learn.</i></span></li><li><span><b>Moving target</b><i>A rebrand ran in parallel, so the design system shifted underfoot.</i></span></li><li><span><b>Two platforms</b><i>Desktop and mobile parity, native to each. Mobile was legacy code on an old design system.</i></span></li><li><span><b>No clear shape</b><i>Vague, broad and complex. Everyone had an idea; nothing was tangible.</i></span></li></ol>
     </div>
   </div>
 </div></section>
 
-<section class="slide" data-name="Making it tangible"><div class="stage">
+<section class="slide notitle" data-name="Making it tangible"><div class="stage">
   <div class="head"><h3 class="title">Making it tangible</h3></div>
-  <div class="content"><p class="statement">I prototyped with AI from <b>first-principles user needs</b>, to align the team and put something real in front of users early.</p></div>
+  <div class="content"><p class="statement">Everyone pictured something different. <b>Prototypes built with AI from first-principles needs</b> gave the team one thing to react to, and put it in front of users early.</p></div>
 </div></section>
 
 <section class="slide" data-name="Core needs"><div class="stage">
@@ -471,7 +495,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   </div>
 </div></section>
 
-<section class="slide" data-name="Principle"><div class="stage">
+<section class="slide notitle" data-name="Principle"><div class="stage">
   <div class="head"><h3 class="title">Principle</h3></div>
   <div class="content"><p class="statement">Manage <b>globally</b>. Operate <b>locally</b>.</p></div>
 </div></section>
@@ -505,9 +529,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Switching locations"><div class="stage">
   <div class="head"><h3 class="title">Switching locations</h3></div>
   <div class="content"><div class="models">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/sw-global.webp" alt="Global model mock" style="object-position:top left" decoding="async"><img src="img/sw-hybrid.webp" alt="Hybrid model mock" style="object-position:top left" decoding="async"><img src="img/sw-workflow.webp" alt="Per workflow model mock" style="object-position:top left" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1536/646"><img src="img/sw-global.webp" alt="Global model mock" style="object-position:top left" decoding="async"><img src="img/sw-hybrid.webp" alt="Hybrid model mock" style="object-position:top left" decoding="async"><img src="img/sw-workflow.webp" alt="Per workflow model mock" style="object-position:top left" decoding="async"></div><div class="swc" aria-hidden="true"><span class="l o0" style="--x:6.2%">Location lives in the top bar</span><span class="l o1" style="--x:6.2%">Location in the top bar</span><span class="r o1" style="--x:83.5%">Plus one per page</span><span class="l o2" style="--x:17.2%">Location in every page title</span></div>
     <div class="steps tabs" role="group" aria-label="Switcher models"><button type="button" aria-pressed="true"><span class="mono">Option a</span><b>Global</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Hybrid</b></button><button type="button" aria-pressed="false"><span class="mono">Selected</span><b>Per workflow</b></button></div>
-    <div class="notes"><p class="note on">One switcher for the whole app. Every view is locked to one location, and owners lose the overview.</p><p class="note">A global switcher plus one per workflow. Two switchers with conflicting logic.</p><p class="note">Each workflow carries its own switcher, e.g. Team at Soho. Works for owners and operators at any scale.</p></div>
+    <div class="notes"><p class="note on">One switcher for the whole app. Every view is locked to one location, and owners lose the overview.</p><p class="note">A global switcher plus one per workflow. Two switchers with conflicting logic.</p><p class="note">Each workflow carries its own switcher, e.g. Staff at East Village. Works for owners and operators at any scale.</p></div>
   </div></div>
 </div></section>
 
@@ -519,9 +543,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Add a location"><div class="stage">
   <div class="head"><h3 class="title">Add a location</h3></div>
   <div class="content"><div class="flowseq">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/1072"><img src="img/add-1.webp" alt="Step 1: Basics" style="object-position:top center" decoding="async"><img src="img/add-2.webp" alt="Step 2: Hours" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-3.webp" alt="Step 3: Specialty" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-4.webp" alt="Step 4: Services" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-5.webp" alt="Step 5: Staff" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-6.webp" alt="Step 6: Settings" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-7.webp" alt="Step 7: Plan" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-8.webp" alt="Step 8: Done" style="object-position:top center" loading="lazy" decoding="async"></div>
-    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Basics" aria-pressed="true"><span class="mono">01</span><b>Basics</b></button><button type="button" aria-label="Step 2: Hours" aria-pressed="false"><span class="mono">02</span><b>Hours</b></button><button type="button" aria-label="Step 3: Specialty" aria-pressed="false"><span class="mono">03</span><b>Specialty</b></button><button type="button" aria-label="Step 4: Services" aria-pressed="false"><span class="mono">04</span><b>Services</b></button><button type="button" aria-label="Step 5: Staff" aria-pressed="false"><span class="mono">05</span><b>Staff</b></button><button type="button" aria-label="Step 6: Settings" aria-pressed="false"><span class="mono">06</span><b>Settings</b></button><button type="button" aria-label="Step 7: Plan" aria-pressed="false"><span class="mono">07</span><b>Plan</b></button><button type="button" aria-label="Step 8: Done" aria-pressed="false"><span class="mono">08</span><b>Done</b></button></div>
-    <p class="foot">New locations start from an existing one. Eight steps, most of them prefilled.</p>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/1072"><img src="img/add-1.webp" alt="Step 1: Basics" style="object-position:top center" decoding="async"><img src="img/add-2.webp" alt="Step 2: Hours" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-3.webp" alt="Step 3: Specialty" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-4.webp" alt="Step 4: Services" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-5.webp" alt="Step 5: Staff" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-6.webp" alt="Step 6: Settings" style="object-position:top center" loading="lazy" decoding="async"><img src="img/add-8.webp" alt="Step 7: Done" style="object-position:top center" loading="lazy" decoding="async"></div>
+    <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Basics" aria-pressed="true"><span class="mono">01</span><b>Basics</b></button><button type="button" aria-label="Step 2: Hours" aria-pressed="false"><span class="mono">02</span><b>Hours</b></button><button type="button" aria-label="Step 3: Specialty" aria-pressed="false"><span class="mono">03</span><b>Specialty</b></button><button type="button" aria-label="Step 4: Services" aria-pressed="false"><span class="mono">04</span><b>Services</b></button><button type="button" aria-label="Step 5: Staff" aria-pressed="false"><span class="mono">05</span><b>Staff</b></button><button type="button" aria-label="Step 6: Settings" aria-pressed="false"><span class="mono">06</span><b>Settings</b></button><button type="button" aria-label="Step 7: Done" aria-pressed="false"><span class="mono">07</span><b>Done</b></button></div>
+    <p class="foot">A new location used to mean a new account, rebuilt by hand. Now it starts from an existing one: seven steps, most of them prefilled.</p>
   </div></div>
 </div></section>
 
@@ -530,14 +554,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Services</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Service menu"><div class="stage">
+<section class="slide screens notitle" data-name="Service menu"><div class="stage">
   <div class="head"><h3 class="title">Service menu</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1488/1013">
       <div class="layer before"><img src="img/svclist-before.webp" alt="Before: one services list for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
       <div class="layer after"><img src="img/svclist-after.webp" alt="After: Services at [location], one menu offered per location" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">One service menu, offered per location.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">Menus were copied account to account and drifted. Now one menu is offered per location.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
   </div></div>
 </div></section>
 
@@ -546,7 +570,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="content"><div class="flowseq">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/svc-1.webp" alt="Step 1: Basics" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-2.webp" alt="Step 2: Price & duration" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-3.webp" alt="Step 3: Locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-4.webp" alt="Step 4: Staff" style="object-position:top left" loading="lazy" decoding="async"><img src="img/svc-5.webp" alt="Step 5: Per member" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Basics" aria-pressed="true"><span class="mono">01</span><b>Basics</b></button><button type="button" aria-label="Step 2: Price & duration" aria-pressed="false"><span class="mono">02</span><b>Price & duration</b></button><button type="button" aria-label="Step 3: Locations" aria-pressed="false"><span class="mono">03</span><b>Locations</b></button><button type="button" aria-label="Step 4: Staff" aria-pressed="false"><span class="mono">04</span><b>Staff</b></button><button type="button" aria-label="Step 5: Per member" aria-pressed="false"><span class="mono">05</span><b>Per member</b></button></div>
-    <p class="foot">Set defaults once, switch locations on, then customize per member.</p>
+    <p class="foot">Prices change by neighborhood. Set defaults once, switch locations on, then customize per member.</p>
   </div></div>
 </div></section>
 
@@ -555,14 +579,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Staff</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Staff list"><div class="stage">
+<section class="slide screens notitle" data-name="Staff list"><div class="stage">
   <div class="head"><h3 class="title">Staff list</h3></div>
   <div class="content"><div class="morph">
     <div class="frame" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1488/1013">
       <div class="layer before"><img src="img/team-before.webp" alt="Before: staff list for a single business" style="object-position:top left" loading="lazy" decoding="async"></div>
       <div class="layer after"><img src="img/team-after.webp" alt="After: the same staff list, scoped to all locations, with a Locations column" style="object-position:top left" loading="lazy" decoding="async"></div><i class="edge"></i>
     </div>
-    <div class="bar"><p class="foot">Same list, now scoped to any location, showing where each person works.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
+    <div class="bar"><p class="foot">Stylists split their week across locations. The same list now scopes to any location and shows where each person works.</p><div class="toggle"><button type="button" aria-pressed="true">Before</button><button type="button" aria-pressed="false">After</button><i></i></div></div>
   </div></div>
 </div></section>
 
@@ -571,7 +595,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="content"><div class="flowseq">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/1072"><img src="img/inv-1.webp" alt="Step 1: Add" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-2.webp" alt="Step 2: Roles" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-3.webp" alt="Step 3: Locations" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-4.webp" alt="Step 4: Schedule" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-5.webp" alt="Step 5: Services" style="object-position:top center" loading="lazy" decoding="async"><img src="img/inv-6.webp" alt="Step 6: Done" style="object-position:top center" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Add" aria-pressed="true"><span class="mono">01</span><b>Add</b></button><button type="button" aria-label="Step 2: Roles" aria-pressed="false"><span class="mono">02</span><b>Roles</b></button><button type="button" aria-label="Step 3: Locations" aria-pressed="false"><span class="mono">03</span><b>Locations</b></button><button type="button" aria-label="Step 4: Schedule" aria-pressed="false"><span class="mono">04</span><b>Schedule</b></button><button type="button" aria-label="Step 5: Services" aria-pressed="false"><span class="mono">05</span><b>Services</b></button><button type="button" aria-label="Step 6: Done" aria-pressed="false"><span class="mono">06</span><b>Done</b></button></div>
-    <p class="foot">Locations and schedules set during the invite. Bookable on day one.</p>
+    <p class="foot">Locations and schedules are set during the invite, so new staff are bookable on day one.</p>
   </div></div>
 </div></section>
 
@@ -580,19 +604,19 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="big"><h2>Settings</h2></div>
 </div></section>
 
-<section class="slide screens" data-name="Settings home"><div class="stage">
+<section class="slide screens notitle" data-name="Settings home"><div class="stage">
   <div class="head"><h3 class="title">Settings home</h3></div>
   <div class="content"><div class="flowseq">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/set-1.webp" alt="Step 1: All locations" style="object-position:top left" loading="lazy" decoding="async"><img src="img/set-2.webp" alt="Step 2: One location" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: All locations" aria-pressed="true"><span class="mono">01</span><b>All locations</b></button><button type="button" aria-label="Step 2: One location" aria-pressed="false"><span class="mono">02</span><b>One location</b></button></div>
-    <p class="foot">One settings home, scoped to every location or just one.</p>
+    <p class="foot">Settings were scattered across separate accounts. One settings home now scopes to every location or just one.</p>
   </div></div>
 </div></section>
 
 <section class="slide screens" data-name="Proposed, not shipped"><div class="stage">
   <div class="head"><h3 class="title">Proposed, not shipped</h3></div>
   <div class="content"><div class="flowseq">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1440/950"><img src="img/set-proposal.webp" alt="Proposal: settings split into Global and Business, with Apply to all locations" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1512/982"><img src="img/set-proposal.webp" alt="Proposal: settings split into Global and Business, with Apply to all locations" style="object-position:top left" loading="lazy" decoding="async"></div>
     <p class="foot">A bolder settings home. Global settings follow you across every business; business settings are scoped to one location, with one action to apply them to all.</p>
   </div></div>
 </div></section>
@@ -607,7 +631,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   <div class="content"><div class="flowseq">
     <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:1488/982"><img src="img/cal-1.webp" alt="Step 1: Add" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-2.webp" alt="Step 2: New appointment" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-3.webp" alt="Step 3: Another location" style="object-position:top left" loading="lazy" decoding="async"><img src="img/cal-4.webp" alt="Step 4: Booked" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Flow steps"><button type="button" aria-label="Step 1: Add" aria-pressed="true"><span class="mono">01</span><b>Add</b></button><button type="button" aria-label="Step 2: New appointment" aria-pressed="false"><span class="mono">02</span><b>New appointment</b></button><button type="button" aria-label="Step 3: Another location" aria-pressed="false"><span class="mono">03</span><b>Another location</b></button><button type="button" aria-label="Step 4: Booked" aria-pressed="false"><span class="mono">04</span><b>Booked</b></button></div>
-    <p class="foot">Switch location mid-booking and preview that calendar live.</p>
+    <p class="foot">A client calls Soho to book in East Village. Switch location mid-booking and see that calendar live.</p>
   </div></div>
 </div></section>
 
@@ -715,7 +739,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
     if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
-    if(img){var c=document.createElement('img');c.src=img.src;c.alt=img.alt;w.appendChild(c)}
+    if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
     f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});
