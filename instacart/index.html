@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
 /* Layout: mobile first. Base = full-screen portrait slides, one column, real pixel sizes on a 12px rhythm.
-   Large landscape screens (≥900px wide) switch to a 1504×846 artboard on a 12-column grid, scaled by --u.
+   Large landscape screens (≥900px wide) switch to a 1504×846 artboard on a 12-column grid, scaled by --u to fit
+   the window; the slide itself fills the window edge to edge.
+   --top / --safe-top: room for a host's fixed bar above the deck (the portfolio adds one); 0 when standalone.
    Roles: Geist = titles · Funnel Sans = reading · Geist Mono = meta.
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
 :root{
@@ -18,7 +20,7 @@
   --ease:cubic-bezier(.22,.8,.2,1);
 
   /* Mobile scale (px). Every size and gap sits on the 12px rhythm. */
-  --pad-x:24px; --pad-top:calc(60px + env(safe-area-inset-top,0px)); --pad-bot:calc(36px + env(safe-area-inset-bottom,0px));
+  --pad-x:24px; --pad-top:calc(60px + var(--safe-top,env(safe-area-inset-top,0px))); --pad-bot:calc(36px + env(safe-area-inset-bottom,0px));
   --t-title:32px; --lh-title:36px;
   --t-statement:24px; --lh-statement:36px;
   --t-sub:18px; --lh-sub:24px;
@@ -38,7 +40,7 @@ h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 button{font:inherit;color:inherit}
 
 /* ---------- Deck (mobile base: each slide is the full screen) ---------- */
-.deck{position:fixed;inset:0;display:grid}
+.deck{position:fixed;inset:var(--top,0px) 0 0;display:grid;overflow:clip}
 .slide{grid-area:1/1;background:var(--slide);overflow-y:auto;overscroll-behavior:contain;
   opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s .6s}
 .slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s}
@@ -205,6 +207,22 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 
 /* Cover */
 .slide.divider{background:var(--divider)}
+/* Slides without a visible title: the mock or the line carries itself; the title stays for screen readers */
+.notitle .head .title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.notitle .statement{font-size:28px;line-height:36px;letter-spacing:-.025em}
+/* Switcher models: point at what changes, from just outside the mock; the screens stay as they are */
+.swc{position:relative;height:34px;margin-top:calc(var(--gap-m) * -1 + 6px)}
+.swc span{position:absolute;top:0;padding-top:16px;font:500 11px/1.2 var(--body);color:var(--accent);white-space:nowrap;opacity:0;translate:0 -4px;filter:blur(2px);transition:opacity .2s var(--ease),translate .2s var(--ease),filter .2s var(--ease)}
+.swc span.l{left:var(--x)}
+.swc span.r{right:calc(100% - var(--x));text-align:right}
+.swc span::before{content:"";position:absolute;top:0;width:1px;height:12px;background:var(--accent);transform-origin:top;scale:1 0;transition:scale .2s var(--ease)}
+.swc span.l::before{left:0}.swc span.r::before{right:0}
+.swc span::after{content:"";position:absolute;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--accent);scale:0;transition:scale .2s var(--ease)}
+.swc span.l::after{left:-2px}.swc span.r::after{right:-2px}
+.models[data-step="0"] .swc .o0,.models[data-step="1"] .swc .o1,.models[data-step="2"] .swc .o2{opacity:1;translate:0 0;filter:none;transition:opacity .5s var(--ease) .4s,translate .7s var(--ease) .4s,filter .5s var(--ease) .4s}
+.models[data-step="0"] .swc .o0::before,.models[data-step="1"] .swc .o1::before,.models[data-step="2"] .swc .o2::before{scale:1;transition:scale .45s var(--ease) .15s}
+.models[data-step="0"] .swc .o0::after,.models[data-step="1"] .swc .o1::after,.models[data-step="2"] .swc .o2::after{scale:1;transition:scale .35s var(--ease)}
+@media (prefers-reduced-motion:reduce){.swc span,.swc span::before,.swc span::after{transition:none!important;filter:none}}
 .divider .stage{justify-content:space-between}
 .divider .big{display:grid;gap:var(--gap-m);padding-bottom:var(--gap-xl)}
 .divider h2{font:600 var(--t-cover)/.92 var(--head);letter-spacing:-.045em;color:var(--on-divider)}
@@ -236,6 +254,12 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
+  .models > .frame{aspect-ratio:var(--r);align-self:center}
+  .models > .swc{grid-column:1;grid-row:4;height:calc(var(--u)*44);margin-top:calc(var(--u)*-18)}
+  .swc span{font-size:calc(var(--u)*15);padding-top:calc(var(--u)*20)}
+  .swc span::before{height:calc(var(--u)*14)}
+  .flowseq > .frame{aspect-ratio:var(--r);width:auto;height:calc(var(--u)*560);max-width:100%;justify-self:start}
+  .content > .flowseq{grid-template-columns:auto minmax(calc(var(--u)*280),1fr);column-gap:calc(var(--u)*64)}
   .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
   .steps button{min-width:0;flex:none;display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
   .steps button b{font-size:calc(var(--u)*16);line-height:calc(var(--u)*24)}
@@ -285,7 +309,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .chapter h2{font:600 48px/1 var(--head);letter-spacing:-.04em;color:var(--on-divider)}
 
 /* ---------- Chrome: stories-style progress, tap zones, arrows on large screens ---------- */
-.progress{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
+.progress{position:fixed;top:calc(var(--top,0px) + 12px + var(--safe-top,env(safe-area-inset-top,0px)));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
 .progress i{flex:1;height:2px;border-radius:2px;background:rgb(110 118 117 / .3);position:relative;overflow:hidden}
 .progress i::after{content:"";position:absolute;inset:0;background:var(--grey);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
 .progress i.done::after{transform:none}
@@ -304,16 +328,18 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 /* Short phones: tighten the vertical rhythm */
 @media (max-height:700px){
   .steps button{padding-top:8px;gap:4px}.note{font-size:14px;line-height:20px}.flowseq,.models{gap:16px}
-  :root{--pad-top:calc(48px + env(safe-area-inset-top,0px));--gap-l:24px;--dia-h:108px;--t-statement:22px;--lh-statement:32px}
+  :root{--pad-top:calc(48px + var(--safe-top,env(safe-area-inset-top,0px)));--gap-l:24px;--dia-h:108px;--t-statement:22px;--lh-statement:32px}
 }
 
 /* ---------- Large landscape screens: the 16:9 artboard ---------- */
 @media (min-width:900px) and (min-aspect-ratio:1/1){
-  .deck{place-items:center;padding:16px}
-  .slide{width:min(100%,calc((100dvh - 32px) * 16 / 9));height:auto;overflow:visible;container-type:inline-size;cursor:pointer;transform:translateY(16px) scale(.995)}
-  .slide.on{transform:none}.slide.past{transform:translateY(-16px) scale(.995)}
-  .stage{--u:calc(100cqw / 1504);min-height:0;aspect-ratio:1504/846;display:grid;grid-template-rows:auto 1fr;
-    --pad-x:calc(var(--u)*96);padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);
+  /* Each slide fills the window; the artboard inside scales to fit it and sits centred, so wide or tall windows
+     just get more slide around the content. Slides travel sideways. */
+  .slide{overflow:hidden;container-type:size;cursor:pointer;transform:translateX(32px)}
+  .slide.on{transform:none}.slide.past{transform:translateX(-32px)}
+  .stage{--u:min(100cqw / 1504,100cqh / 846);--ox:calc((100cqw - var(--u)*1504) / 2);--oy:calc((100cqh - var(--u)*846) / 2);
+    min-height:0;height:100%;display:grid;grid-template-rows:auto 1fr;
+    --pad-x:calc(var(--u)*96);padding:calc(var(--oy) + var(--u)*96) calc(var(--ox) + var(--u)*96) calc(var(--oy) + var(--u)*72);
     --t-title:calc(var(--u)*60);--lh-title:calc(var(--u)*60);
     --t-statement:calc(var(--u)*40);--lh-statement:calc(var(--u)*48);
     --t-sub:calc(var(--u)*24);--lh-sub:calc(var(--u)*36);
@@ -349,6 +375,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .nums{grid-column:1 / span 8!important}
   .nums div{grid-template-columns:calc(var(--u)*196) 1fr}
   .nums b{font-size:calc(var(--u)*40)}
+  .notitle .content,.notitle.screens .content,.notitle .content[style]{padding-top:0!important;align-content:center}
+  .notitle .statement{grid-column:1 / span 10;font-size:calc(var(--u)*60);line-height:calc(var(--u)*70);letter-spacing:-.03em}
   .divider .stage,.chapter .stage{display:grid;grid-template-rows:auto 1fr}
   .chapter .big{align-self:end;padding-bottom:calc(var(--u)*60)}
   .chapter h2{font-size:calc(var(--u)*96);margin-left:calc(var(--u)*-4)}
@@ -834,7 +862,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
     if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
-    if(img){var c=document.createElement('img');c.src=img.src;c.alt=img.alt;w.appendChild(c)}
+    if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
     f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});

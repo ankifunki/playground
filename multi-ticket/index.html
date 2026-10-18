@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600&family=Funnel+Sans:wght@400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
 /* Layout: mobile first. Base = full-screen portrait slides, one column, real pixel sizes on a 12px rhythm.
-   Large landscape screens (≥900px wide) switch to a 1504×846 artboard on a 12-column grid, scaled by --u.
+   Large landscape screens (≥900px wide) switch to a 1504×846 artboard on a 12-column grid, scaled by --u to fit
+   the window; the slide itself fills the window edge to edge.
+   --top / --safe-top: room for a host's fixed bar above the deck (the portfolio adds one); 0 when standalone.
    Roles: Geist = titles · Funnel Sans = reading · Geist Mono = meta.
    Single deliberate look: dark canvas, slides in the GlossGenius review-deck greys. */
 :root{
@@ -18,7 +20,7 @@
   --ease:cubic-bezier(.22,.8,.2,1);
 
   /* Mobile scale (px). Every size and gap sits on the 12px rhythm. */
-  --pad-x:24px; --pad-top:calc(60px + env(safe-area-inset-top,0px)); --pad-bot:calc(36px + env(safe-area-inset-bottom,0px));
+  --pad-x:24px; --pad-top:calc(60px + var(--safe-top,env(safe-area-inset-top,0px))); --pad-bot:calc(36px + env(safe-area-inset-bottom,0px));
   --t-title:32px; --lh-title:36px;
   --t-statement:24px; --lh-statement:36px;
   --t-sub:18px; --lh-sub:24px;
@@ -38,7 +40,7 @@ h1,h2,h3,p,ul,ol,figure{margin:0;padding:0;font-weight:inherit}
 button{font:inherit;color:inherit}
 
 /* ---------- Deck (mobile base: each slide is the full screen) ---------- */
-.deck{position:fixed;inset:0;display:grid}
+.deck{position:fixed;inset:var(--top,0px) 0 0;display:grid;overflow:clip}
 .slide{grid-area:1/1;background:var(--slide);overflow-y:auto;overscroll-behavior:contain;
   opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s .6s}
 .slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s}
@@ -307,7 +309,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .chapter h2{font:600 48px/1 var(--head);letter-spacing:-.04em;color:var(--on-divider)}
 
 /* ---------- Chrome: stories-style progress, tap zones, arrows on large screens ---------- */
-.progress{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
+.progress{position:fixed;top:calc(var(--top,0px) + 12px + var(--safe-top,env(safe-area-inset-top,0px)));left:var(--pad-x);right:var(--pad-x);display:flex;gap:4px;z-index:5;pointer-events:none}
 .progress i{flex:1;height:2px;border-radius:2px;background:rgb(110 118 117 / .3);position:relative;overflow:hidden}
 .progress i::after{content:"";position:absolute;inset:0;background:var(--grey);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
 .progress i.done::after{transform:none}
@@ -326,16 +328,18 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 /* Short phones: tighten the vertical rhythm */
 @media (max-height:700px){
   .steps button{padding-top:8px;gap:4px}.note{font-size:14px;line-height:20px}.flowseq,.models{gap:16px}
-  :root{--pad-top:calc(48px + env(safe-area-inset-top,0px));--gap-l:24px;--dia-h:108px;--t-statement:22px;--lh-statement:32px}
+  :root{--pad-top:calc(48px + var(--safe-top,env(safe-area-inset-top,0px)));--gap-l:24px;--dia-h:108px;--t-statement:22px;--lh-statement:32px}
 }
 
 /* ---------- Large landscape screens: the 16:9 artboard ---------- */
 @media (min-width:900px) and (min-aspect-ratio:1/1){
-  .deck{place-items:center;padding:16px}
-  .slide{width:min(100%,calc((100dvh - 32px) * 16 / 9));height:auto;overflow:visible;container-type:inline-size;cursor:pointer;transform:translateY(16px) scale(.995)}
-  .slide.on{transform:none}.slide.past{transform:translateY(-16px) scale(.995)}
-  .stage{--u:calc(100cqw / 1504);min-height:0;aspect-ratio:1504/846;display:grid;grid-template-rows:auto 1fr;
-    --pad-x:calc(var(--u)*96);padding:calc(var(--u)*96) calc(var(--u)*96) calc(var(--u)*72);
+  /* Each slide fills the window; the artboard inside scales to fit it and sits centred, so wide or tall windows
+     just get more slide around the content. Slides travel sideways. */
+  .slide{overflow:hidden;container-type:size;cursor:pointer;transform:translateX(32px)}
+  .slide.on{transform:none}.slide.past{transform:translateX(-32px)}
+  .stage{--u:min(100cqw / 1504,100cqh / 846);--ox:calc((100cqw - var(--u)*1504) / 2);--oy:calc((100cqh - var(--u)*846) / 2);
+    min-height:0;height:100%;display:grid;grid-template-rows:auto 1fr;
+    --pad-x:calc(var(--u)*96);padding:calc(var(--oy) + var(--u)*96) calc(var(--ox) + var(--u)*96) calc(var(--oy) + var(--u)*72);
     --t-title:calc(var(--u)*60);--lh-title:calc(var(--u)*60);
     --t-statement:calc(var(--u)*40);--lh-statement:calc(var(--u)*48);
     --t-sub:calc(var(--u)*24);--lh-sub:calc(var(--u)*36);
