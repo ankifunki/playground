@@ -10,7 +10,7 @@ const repo = join(site, "..");
 const CASE_STUDIES = [
   { slug: "multi-location", title: "Multi Location", from: "case-study", copy: ["img", "assets"] },
   { slug: "multi-ticket", title: "Flexible Checkout", from: "multi-ticket", copy: ["img"] },
-  { slug: "order-issue-reporting", title: "Order Issue Reporting", from: "instacart", copy: ["img"] },
+  { slug: "order-issue-reporting", title: "Order Issue Reporting", from: "instacart", copy: ["img", "vid"] },
 ];
 
 // The portfolio's folio bar, added to the portfolio copy only: Ankit's mark (home) / the case study. It sits above

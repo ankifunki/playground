@@ -236,8 +236,8 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .flowseq,.models{display:grid;gap:var(--gap-m)}
 /* Switching variants: no zoom. The new screen fades in on top of the old one, which stays fully visible underneath
    until the fade is done and then drops away, so the swap reads as one clean dissolve, never a washed-out blend. */
-.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;z-index:0;transition:opacity 0s linear .34s}
-.frame.seq img.on{opacity:1;z-index:1;transition:opacity .34s var(--ease)}
+.frame.seq img,.frame.seq video{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;z-index:0;transition:opacity 0s linear .34s}
+.frame.seq img.on,.frame.seq video.on{opacity:1;z-index:1;transition:opacity .34s var(--ease)}
 .steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
 .steps::-webkit-scrollbar{display:none}
 .steps button{flex:1 0 auto;min-width:72px;display:grid;gap:6px;text-align:left;background:none;border:0;border-top:2px solid var(--rule);padding:10px 0 0;cursor:pointer;color:var(--faint);transition:border-color .3s,color .3s}
@@ -250,7 +250,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .notes{display:grid}
 .note{grid-area:1/1;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink);opacity:0;transition:opacity .4s var(--ease)}
 .note.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.frame.seq img{transition:opacity .2s linear;transform:none}}
+@media (prefers-reduced-motion:reduce){.frame.seq img,.frame.seq video{transition:opacity .2s linear;transform:none}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
@@ -321,6 +321,7 @@ dialog{border:0;padding:0;background:transparent;max-width:none;width:100%;max-h
 dialog::backdrop{background:rgb(8 9 10 / .92)}
 dialog .zwrap{padding:56px 0 24px;overflow-x:auto}
 dialog img,dialog .ph-big{display:block;width:max(100%,900px);border-radius:5px;background:var(--frame)}
+dialog video.zvid{display:block;height:min(86dvh,940px);width:auto;max-width:100%;margin:0 auto;border-radius:5.5% / 2.6%;background:#000}
 dialog .ph-big{aspect-ratio:16/10;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
 dialog form{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:8px}
 dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:14px}
@@ -368,8 +369,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .morph{grid-column:3 / span 8}
   .frame{aspect-ratio:var(--frame-ratio);border-radius:calc(var(--u)*4.5);box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*16) calc(var(--u)*40) calc(var(--u)*-16) rgb(27 32 31 / .3)}
   .hint{display:none}
-  .layer img,.frame.seq img{object-position:top left!important}
-  .layer img[style*="top center"],.frame.seq img[style*="top center"]{object-position:top center!important}
+  .layer img,.frame.seq img,.frame.seq video{object-position:top left!important}
+  .layer img[style*="top center"],.frame.seq img[style*="top center"],.frame.seq video[style*="top center"]{object-position:top center!important}
   .bar{flex-direction:row;justify-content:space-between;align-items:baseline}
   .toggle button{min-height:calc(var(--u)*34);padding:0 calc(var(--u)*16);font-size:max(10px,calc(var(--u)*12))}
   .nums{grid-column:1 / span 8!important}
@@ -442,6 +443,10 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 .models.tall,.flowseq.tall{justify-items:start}
 .models.tall .frame,.flowseq.tall .frame{margin-inline:0}
 .ok{color:#1F8A4C}.no{color:#C2453D}
+/* Recorded walkthroughs of the prototypes: the video's own box, top aligned, with the phone screen's corners */
+.deck .frame.seq video{bottom:auto;height:auto;border-radius:5.6% / 2.6%;background:#fff}
+.vframe{position:relative;width:auto;height:min(60svh,520px);aspect-ratio:600/1316;margin-inline:auto;cursor:zoom-in}
+.vframe video{display:block;width:100%;height:auto;border-radius:5.6% / 2.6%;background:#fff}
 
 /* Two highlight columns */
 .hl{display:grid;gap:0}
@@ -531,6 +536,12 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 .win-n small{display:block;margin-top:8px;font:400 var(--t-mono)/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
 @media (min-width:900px) and (min-aspect-ratio:1/1){
+  /* Final validation: findings on the left, the final prototype playing on the right */
+  .content.fv{padding-top:calc(var(--u)*72)}
+  .fv .statement{grid-column:1 / span 8;font-size:calc(var(--u)*32);line-height:calc(var(--u)*42)}
+  .fv .cols{grid-column:1 / span 8;grid-template-columns:minmax(0,1fr);margin-top:calc(var(--u)*24)}
+  .fv .cols ol.list.hard{grid-column:1 / -1}
+  .fv .vframe{grid-column:10 / span 3;grid-row:1 / span 2;align-self:start;justify-self:end;height:calc(var(--u)*560);margin:0}
   .tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .flowseq.tall,.models.tall{grid-template-columns:auto minmax(0,1fr);column-gap:calc(var(--u)*64);row-gap:calc(var(--u)*24);align-content:start}
   .facts.three .fact:nth-child(1){grid-column:1 / span 3}
@@ -683,7 +694,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Initial UX direction"><div class="stage">
   <div class="head"><h3 class="title">Initial UX direction</h3><span class="mono">Prototypes</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:258/542"><img src="img/orders.webp" alt="Shopping cart" style="object-position:top left" decoding="async"><img src="img/orders.webp" alt="One &amp; done" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:600/1300"><video poster="vid/shopping-cart.jpg" muted playsinline preload="metadata" aria-label="Shopping cart: prototype walkthrough"><source src="vid/shopping-cart.mp4" type="video/mp4"><source src="vid/shopping-cart.webm" type="video/webm"></video><video poster="vid/one-and-done.jpg" muted playsinline preload="metadata" aria-label="One &amp; done: prototype walkthrough"><source src="vid/one-and-done.mp4" type="video/mp4"><source src="vid/one-and-done.webm" type="video/webm"></video></div>
     <div class="steps tabs" role="group" aria-label="Initial UX direction options"><button type="button" aria-pressed="true"><span class="mono">Option A</span><b>Shopping cart</b></button><button type="button" aria-pressed="false"><span class="mono">Option B</span><b>One &amp; done</b></button></div>
     <div class="notes"><div class="note on"><ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul></div><div class="note"><ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul></div></div>
     <p class="foot">Divergent directions: two prototypes with debatable trade-offs, to bring foundational alignment.</p>
@@ -738,7 +749,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Exploring the UI"><div class="stage">
   <div class="head"><h3 class="title">Exploring the UI</h3><span class="mono">Issue and sub-issue</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:388/689"><img src="img/issue-1.webp" alt="Classic radios" style="object-position:top left" decoding="async"><img src="img/issue-2.webp" alt="Big buttons" style="object-position:top left" loading="lazy" decoding="async"><img src="img/issue-3.webp" alt="Easy pills" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:780/1689"><img src="img/issue-1.webp" alt="Classic radios" style="object-position:top left" decoding="async"><video poster="vid/big-buttons.jpg" muted playsinline preload="metadata" aria-label="Big buttons: prototype walkthrough"><source src="vid/big-buttons.mp4" type="video/mp4"><source src="vid/big-buttons.webm" type="video/webm"></video><img src="img/issue-3.webp" alt="Easy pills" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps tabs" role="group" aria-label="Exploring the UI options"><button type="button" aria-pressed="true"><span class="mono">Option a</span><b>Classic radios</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Big buttons</b></button><button type="button" aria-pressed="false"><span class="mono">Selected</span><b>Easy pills</b></button></div>
     <div class="notes"><div class="note on">Radio buttons for each issue, with sub-issue chips nested under the one you pick.</div><div class="note">A large row for each issue that opens into its sub-issue chips.</div><div class="note">Sub-issues as pills, then how many you received and optional details, on one screen.</div></div>
     <p class="foot">Focusing on the details. Existing components didn&rsquo;t feel native, so we refined how picking an issue and sub-issue feels.</p>
@@ -748,7 +759,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Resolution selection"><div class="stage">
   <div class="head"><h3 class="title">Resolution selection</h3></div>
   <div class="content"><div class="flowseq tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:388/486"><img src="img/res-1.webp" alt="Radios" style="object-position:top left" decoding="async"><img src="img/res-2.webp" alt="Credit tag" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-3.webp" alt="Credit preference" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-4.webp" alt="Cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-5.webp" alt="Outlined cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-6.webp" alt="Filled card" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:780/944"><img src="img/res-1.webp" alt="Radios" style="object-position:top left" decoding="async"><img src="img/res-2.webp" alt="Credit tag" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-3.webp" alt="Credit preference" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-4.webp" alt="Cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-5.webp" alt="Outlined cards" style="object-position:top left" loading="lazy" decoding="async"><img src="img/res-6.webp" alt="Filled card" style="object-position:top left" loading="lazy" decoding="async"></div>
     <div class="steps" role="group" aria-label="Resolution selection options"><button type="button" aria-pressed="true"><span class="mono">01</span><b>Radios</b></button><button type="button" aria-pressed="false"><span class="mono">02</span><b>Credit tag</b></button><button type="button" aria-pressed="false"><span class="mono">03</span><b>Credit preference</b></button><button type="button" aria-pressed="false"><span class="mono">04</span><b>Cards</b></button><button type="button" aria-pressed="false"><span class="mono">05</span><b>Outlined cards</b></button><button type="button" aria-pressed="false"><span class="mono">06</span><b>Filled card</b></button></div>
     
     <p class="foot">Six takes on choosing how we make it right: instant credit, or just sharing feedback.</p>
@@ -758,7 +769,7 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 <section class="slide screens" data-name="Weights &amp; measures"><div class="stage">
   <div class="head"><h3 class="title">Weights &amp; measures</h3><span class="mono">Mild to wild</span></div>
   <div class="content"><div class="models tall">
-    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:267/457"><img src="img/wm-1.webp" alt="More or less" style="object-position:top left" decoding="async"><img src="img/wm-2.webp" alt="Weight stepper" style="object-position:top left" loading="lazy" decoding="async"><img src="img/wm-3.webp" alt="Scan to detect" style="object-position:top left" loading="lazy" decoding="async"></div>
+    <div class="frame seq" data-zoom role="button" tabindex="0" aria-label="Enlarge screen" style="--r:600/1316"><img src="img/wm-1.webp" alt="More or less" style="object-position:top left" decoding="async"><img src="img/wm-2.webp" alt="Weight stepper" style="object-position:top left" loading="lazy" decoding="async"><video poster="vid/weights.jpg" muted playsinline preload="metadata" aria-label="Scan to detect: prototype walkthrough"><source src="vid/weights.mp4" type="video/mp4"><source src="vid/weights.webm" type="video/webm"></video></div>
     <div class="steps tabs" role="group" aria-label="Weights &amp; measures options"><button type="button" aria-pressed="true"><span class="mono">Selected &middot; mild</span><b>More or less</b></button><button type="button" aria-pressed="false"><span class="mono">Option b</span><b>Weight stepper</b></button><button type="button" aria-pressed="false"><span class="mono">Option c &middot; wild</span><b>Scan to detect</b></button></div>
     <div class="notes"><div class="note on">Tell us whether you received more or less.</div><div class="note">Step the weight you received, in 0.25 lb increments.</div><div class="note">Scan the item&rsquo;s barcode to detect what arrived.</div></div>
     <p class="foot">Capturing severity for weight-based items. Some produce and meat is ordered by count but sold by weight, so people need dynamic controls to report it.</p>
@@ -767,7 +778,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
 <section class="slide" data-name="Final validation"><div class="stage">
   <div class="head"><h3 class="title">Final validation</h3><span class="mono">14 concept tests &middot; survey n=1,815</span></div>
-  <div class="content">
+  <div class="content fv">
+    <div class="vframe" data-zoom role="button" tabindex="0" aria-label="Enlarge the final prototype"><video poster="vid/final.jpg" muted playsinline loop preload="metadata" data-play aria-label="Final prototype walkthrough"><source src="vid/final.mp4" type="video/mp4"><source src="vid/final.webm" type="video/webm"></video></div>
     <p class="statement">With UXR, we put the final prototype in front of <b>real Instacart customers</b>. They already find reporting easy, so they&rsquo;re excited for the improvements.</p>
     <div class="cols">
       <ol class="list hard"><li><span><b>Most prefer self-serve</b><i>The majority of customers would rather report an issue themselves.</i></span></li><li><span><b>Some issues lean to Care</b><i>Missing items, incorrect items and poor replacements were more likely to prefer Care.</i></span></li><li><span><b>Direct and simple</b><i>Customers are looking for directness and simplicity.</i></span></li><li><span><b>Easy and quick</b><i>The issue-specific flow is very easy to navigate, with a few minor usability tweaks to fix.</i></span></li></ol>
@@ -848,9 +860,11 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
   // Sequences (flow steps, switcher models): crossfade screens, auto-advance once on arrival
   function setStep(q,i){
-    var imgs=q.querySelectorAll('.frame.seq img'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
+    var imgs=q.querySelectorAll('.frame.seq img,.frame.seq video'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
     q._i=i;q.setAttribute('data-step',i);var ro=q.querySelector('[data-readouts]');if(ro){var t=JSON.parse(ro.dataset.readouts)[i];var el=ro.querySelector('[data-readout]');if(el&&t)el.textContent=t;}
-    imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1)im.loading='eager'});
+    imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1&&im.tagName==='IMG')im.loading='eager';
+      // Recorded walkthroughs: the one showing plays from the start, the rest wait
+      if(im.tagName==='VIDEO'){if(j===i&&q.closest('.slide.on')&&!reduce){im.currentTime=0;var pr=im.play();if(pr)pr.catch(function(){})}else im.pause()}});
     btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(j===i));b.classList.toggle('seen',j<i)});
     notes.forEach(function(n,j){n.classList.toggle('on',j===i);n.classList.toggle('past',j<i)});
     var b=btns[i];if(b&&b.scrollIntoView&&b.parentNode.scrollWidth>b.parentNode.clientWidth){b.parentNode.scrollTo({left:b.offsetLeft-24,behavior:reduce?'auto':'smooth'})}
@@ -858,12 +872,24 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel,.story'));
   seqs.forEach(function(q){
     setStep(q,0);
-    q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);setStep(q,j)})});
+    q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);clearTimeout(q._tt);q._auto=false;setStep(q,j)})});
+    // A finished video hands on to the next step; the last one loops (or, when every step is a video, back to the first)
+    q.querySelectorAll('.frame.seq video').forEach(function(v){v.addEventListener('ended',function(){
+      var media=q.querySelectorAll('.frame.seq img,.frame.seq video'),n=media.length;
+      if(q._auto&&q._i<n-1){setStep(q,q._i+1);if(q._tick)q._tick()}
+      else if(q._auto&&n>1&&!q.querySelector('.frame.seq img'))setStep(q,0);
+      else{v.currentTime=0;var pr=v.play();if(pr)pr.catch(function(){})}})});
   });
   function playSeq(q){
-    clearInterval(q._t);setStep(q,0);
+    clearInterval(q._t);q._auto=true;setStep(q,0);
     var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('story')?3400:q.classList.contains('conn')?2800:q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
     if(reduce)return;
+    // With walkthrough videos: a still waits ms, a video plays to its end, then the next step shows
+    if(q.querySelector('.frame.seq video')){
+      q._tick=function(){clearTimeout(q._tt);var m=q.querySelectorAll('.frame.seq img,.frame.seq video')[q._i];
+        if(q._auto&&m&&m.tagName==='IMG'&&q._i<n-1)q._tt=setTimeout(function(){if(q._auto){setStep(q,q._i+1);q._tick()}},ms)};
+      q._tick();return;
+    }
     q._t=setInterval(function(){if(q._i>=n-1){clearInterval(q._t);return}setStep(q,q._i+1)},ms);
   }
   function go(n){
@@ -877,7 +903,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
-    seqs.forEach(function(q){clearInterval(q._t)});
+    seqs.forEach(function(q){clearInterval(q._t);clearTimeout(q._tt)});
+    document.querySelectorAll('video').forEach(function(v){if(!slides[n].contains(v))v.pause()});
+    slides[n].querySelectorAll('video[data-play]').forEach(function(v){if(reduce)return;v.currentTime=0;var pr=v.play();if(pr)pr.catch(function(){})});
     var q=slides[n].querySelector('.flowseq,.models,.rel,.story');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
     var m=slides[n].querySelector('.morph');
     if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1400));}
@@ -917,8 +945,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
-    if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
-    if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
+    if(f.classList.contains('seq')){img=f.querySelector('img.on,video.on')}else if(f.querySelector('video')){img=f.querySelector('video')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
+    if(img&&img.tagName==='VIDEO'){var c=document.createElement('video');c.src=img.currentSrc||img.src;c.muted=true;c.loop=true;c.playsInline=true;c.autoplay=true;c.currentTime=img.currentTime;c.className='zvid';w.appendChild(c)}
+    else if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
     f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});

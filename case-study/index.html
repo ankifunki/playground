@@ -236,8 +236,8 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .flowseq,.models{display:grid;gap:var(--gap-m)}
 /* Switching variants: no zoom. The new screen fades in on top of the old one, which stays fully visible underneath
    until the fade is done and then drops away, so the swap reads as one clean dissolve, never a washed-out blend. */
-.frame.seq img{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;z-index:0;transition:opacity 0s linear .34s}
-.frame.seq img.on{opacity:1;z-index:1;transition:opacity .34s var(--ease)}
+.frame.seq img,.frame.seq video{position:absolute;inset:0;width:100%;height:100%;object-fit:var(--fit);object-position:center!important;opacity:0;z-index:0;transition:opacity 0s linear .34s}
+.frame.seq img.on,.frame.seq video.on{opacity:1;z-index:1;transition:opacity .34s var(--ease)}
 .steps{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
 .steps::-webkit-scrollbar{display:none}
 .steps button{flex:1 0 auto;min-width:72px;display:grid;gap:6px;text-align:left;background:none;border:0;border-top:2px solid var(--rule);padding:10px 0 0;cursor:pointer;color:var(--faint);transition:border-color .3s,color .3s}
@@ -250,7 +250,7 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
 .notes{display:grid}
 .note{grid-area:1/1;font:400 var(--t-small)/var(--lh-small) var(--body);color:var(--ink);opacity:0;transition:opacity .4s var(--ease)}
 .note.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.frame.seq img{transition:opacity .2s linear;transform:none}}
+@media (prefers-reduced-motion:reduce){.frame.seq img,.frame.seq video{transition:opacity .2s linear;transform:none}}
 @media (min-width:900px) and (min-aspect-ratio:1/1){
   .content > .flowseq,.content > .models{grid-column:1 / -1;grid-template-columns:minmax(0,2.75fr) minmax(0,1fr);column-gap:calc(var(--u)*48);row-gap:calc(var(--u)*24);align-items:start;align-content:start}
   .flowseq > .frame,.models > .frame{grid-row:1 / span 3}
@@ -321,6 +321,7 @@ dialog{border:0;padding:0;background:transparent;max-width:none;width:100%;max-h
 dialog::backdrop{background:rgb(8 9 10 / .92)}
 dialog .zwrap{padding:56px 0 24px;overflow-x:auto}
 dialog img,dialog .ph-big{display:block;width:max(100%,900px);border-radius:5px;background:var(--frame)}
+dialog video.zvid{display:block;height:min(86dvh,940px);width:auto;max-width:100%;margin:0 auto;border-radius:5.5% / 2.6%;background:#000}
 dialog .ph-big{aspect-ratio:16/10;display:grid;place-items:center;color:var(--grey);font:400 13px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center}
 dialog form{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:8px}
 dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:14px}
@@ -368,8 +369,8 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   .morph{grid-column:3 / span 8}
   .frame{aspect-ratio:var(--frame-ratio);border-radius:calc(var(--u)*4.5);box-shadow:0 0 0 1px rgb(27 32 31 / .06),0 calc(var(--u)*16) calc(var(--u)*40) calc(var(--u)*-16) rgb(27 32 31 / .3)}
   .hint{display:none}
-  .layer img,.frame.seq img{object-position:top left!important}
-  .layer img[style*="top center"],.frame.seq img[style*="top center"]{object-position:top center!important}
+  .layer img,.frame.seq img,.frame.seq video{object-position:top left!important}
+  .layer img[style*="top center"],.frame.seq img[style*="top center"],.frame.seq video[style*="top center"]{object-position:top center!important}
   .bar{flex-direction:row;justify-content:space-between;align-items:baseline}
   .toggle button{min-height:calc(var(--u)*34);padding:0 calc(var(--u)*16);font-size:max(10px,calc(var(--u)*12))}
   .nums{grid-column:1 / span 8!important}
@@ -729,9 +730,11 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
   // Sequences (flow steps, switcher models): crossfade screens, auto-advance once on arrival
   function setStep(q,i){
-    var imgs=q.querySelectorAll('.frame.seq img'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
+    var imgs=q.querySelectorAll('.frame.seq img,.frame.seq video'),btns=q.querySelectorAll('.steps button'),notes=q.querySelectorAll('.note');
     q._i=i;q.setAttribute('data-step',i);var ro=q.querySelector('[data-readouts]');if(ro){var t=JSON.parse(ro.dataset.readouts)[i];var el=ro.querySelector('[data-readout]');if(el&&t)el.textContent=t;}
-    imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1)im.loading='eager'});
+    imgs.forEach(function(im,j){im.classList.toggle('on',j===i);if(j===i+1&&im.tagName==='IMG')im.loading='eager';
+      // Recorded walkthroughs: the one showing plays from the start, the rest wait
+      if(im.tagName==='VIDEO'){if(j===i&&q.closest('.slide.on')&&!reduce){im.currentTime=0;var pr=im.play();if(pr)pr.catch(function(){})}else im.pause()}});
     btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(j===i));b.classList.toggle('seen',j<i)});
     notes.forEach(function(n,j){n.classList.toggle('on',j===i);n.classList.toggle('past',j<i)});
     var b=btns[i];if(b&&b.scrollIntoView&&b.parentNode.scrollWidth>b.parentNode.clientWidth){b.parentNode.scrollTo({left:b.offsetLeft-24,behavior:reduce?'auto':'smooth'})}
@@ -739,12 +742,24 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   var seqs=[].slice.call(document.querySelectorAll('.flowseq,.models,.rel,.story'));
   seqs.forEach(function(q){
     setStep(q,0);
-    q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);setStep(q,j)})});
+    q.querySelectorAll('.steps button').forEach(function(b,j){b.addEventListener('click',function(e){e.stopPropagation();clearInterval(q._t);clearTimeout(q._tt);q._auto=false;setStep(q,j)})});
+    // A finished video hands on to the next step; the last one loops (or, when every step is a video, back to the first)
+    q.querySelectorAll('.frame.seq video').forEach(function(v){v.addEventListener('ended',function(){
+      var media=q.querySelectorAll('.frame.seq img,.frame.seq video'),n=media.length;
+      if(q._auto&&q._i<n-1){setStep(q,q._i+1);if(q._tick)q._tick()}
+      else if(q._auto&&n>1&&!q.querySelector('.frame.seq img'))setStep(q,0);
+      else{v.currentTime=0;var pr=v.play();if(pr)pr.catch(function(){})}})});
   });
   function playSeq(q){
-    clearInterval(q._t);setStep(q,0);
+    clearInterval(q._t);q._auto=true;setStep(q,0);
     var n=Math.max(q.querySelectorAll('.frame.seq img').length,q.querySelectorAll('.steps button').length),ms=q.classList.contains('story')?3400:q.classList.contains('conn')?2800:q.classList.contains('rel')?3200:q.classList.contains('models')?2600:1700;
     if(reduce)return;
+    // With walkthrough videos: a still waits ms, a video plays to its end, then the next step shows
+    if(q.querySelector('.frame.seq video')){
+      q._tick=function(){clearTimeout(q._tt);var m=q.querySelectorAll('.frame.seq img,.frame.seq video')[q._i];
+        if(q._auto&&m&&m.tagName==='IMG'&&q._i<n-1)q._tt=setTimeout(function(){if(q._auto){setStep(q,q._i+1);q._tick()}},ms)};
+      q._tick();return;
+    }
     q._t=setInterval(function(){if(q._i>=n-1){clearInterval(q._t);return}setStep(q,q._i+1)},ms);
   }
   function go(n){
@@ -758,7 +773,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
     document.body.classList.toggle('on-dark',slides[n].classList.contains('divider')||slides[n].classList.contains('chapter'));
     cur=n;
     try{history.replaceState(null,'','#'+slides[n].id)}catch(e){}
-    seqs.forEach(function(q){clearInterval(q._t)});
+    seqs.forEach(function(q){clearInterval(q._t);clearTimeout(q._tt)});
+    document.querySelectorAll('video').forEach(function(v){if(!slides[n].contains(v))v.pause()});
+    slides[n].querySelectorAll('video[data-play]').forEach(function(v){if(reduce)return;v.currentTime=0;var pr=v.play();if(pr)pr.catch(function(){})});
     var q=slides[n].querySelector('.flowseq,.models,.rel,.story');if(q)timers.push(setTimeout(function(){playSeq(q)},700));
     var m=slides[n].querySelector('.morph');
     if(m){setMorph(m,false,false);timers.push(setTimeout(function(){setMorph(m,true,true)},reduce?600:1400));}
@@ -798,8 +815,9 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
 
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
-    if(f.classList.contains('seq')){img=f.querySelector('img.on')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
-    if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
+    if(f.classList.contains('seq')){img=f.querySelector('img.on,video.on')}else if(f.querySelector('video')){img=f.querySelector('video')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
+    if(img&&img.tagName==='VIDEO'){var c=document.createElement('video');c.src=img.currentSrc||img.src;c.muted=true;c.loop=true;c.playsInline=true;c.autoplay=true;c.currentTime=img.currentTime;c.className='zvid';w.appendChild(c)}
+    else if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
   document.querySelectorAll('[data-zoom]').forEach(function(f){
     f.addEventListener('click',function(e){e.stopPropagation();if(f._held){f._held=false;return}zoom(f)});

@@ -28,6 +28,10 @@ CSS = """
 .models.tall,.flowseq.tall{justify-items:start}
 .models.tall .frame,.flowseq.tall .frame{margin-inline:0}
 .ok{color:#1F8A4C}.no{color:#C2453D}
+/* Recorded walkthroughs of the prototypes: the video's own box, top aligned, with the phone screen's corners */
+.deck .frame.seq video{bottom:auto;height:auto;border-radius:5.6% / 2.6%;background:#fff}
+.vframe{position:relative;width:auto;height:min(60svh,520px);aspect-ratio:600/1316;margin-inline:auto;cursor:zoom-in}
+.vframe video{display:block;width:100%;height:auto;border-radius:5.6% / 2.6%;background:#fff}
 
 /* Two highlight columns */
 .hl{display:grid;gap:0}
@@ -117,6 +121,12 @@ CSS = """
 .win-n small{display:block;margin-top:8px;font:400 var(--t-mono)/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
 @media (min-width:900px) and (min-aspect-ratio:1/1){
+  /* Final validation: findings on the left, the final prototype playing on the right */
+  .content.fv{padding-top:calc(var(--u)*72)}
+  .fv .statement{grid-column:1 / span 8;font-size:calc(var(--u)*32);line-height:calc(var(--u)*42)}
+  .fv .cols{grid-column:1 / span 8;grid-template-columns:minmax(0,1fr);margin-top:calc(var(--u)*24)}
+  .fv .cols ol.list.hard{grid-column:1 / -1}
+  .fv .vframe{grid-column:10 / span 3;grid-row:1 / span 2;align-self:start;justify-self:end;height:calc(var(--u)*560);margin:0}
   .tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .flowseq.tall,.models.tall{grid-template-columns:auto minmax(0,1fr);column-gap:calc(var(--u)*64);row-gap:calc(var(--u)*24);align-content:start}
   .facts.three .fact:nth-child(1){grid-column:1 / span 3}
@@ -167,6 +177,10 @@ head = head.replace("\n</style>", "\n" + CSS + "</style>", 1)
 
 
 def img(name, alt, first=False):
+    """A screen, or with "vid:" a recorded walkthrough of the prototype (taps shown as they happen)."""
+    if name.startswith("vid:"):
+        v = name[4:]
+        return f'<video poster="vid/{v}.jpg" muted playsinline preload="metadata" aria-label="{alt}: prototype walkthrough"><source src="vid/{v}.mp4" type="video/mp4"><source src="vid/{v}.webm" type="video/webm"></video>'
     return f'<img src="img/{name}.webp" alt="{alt}" style="object-position:top left" {"decoding=\"async\"" if first else "loading=\"lazy\" decoding=\"async\""}>'
 
 
@@ -301,9 +315,9 @@ SLIDES = f'''
   </div>
 </div></section>
 
-{tabs_slide("Initial UX direction", "258/542", [
-    ("orders", "Option A", "Shopping cart", '<ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul>'),
-    ("orders", "Option B", "One &amp; done", '<ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul>'),
+{tabs_slide("Initial UX direction", "600/1300", [
+    ("vid:shopping-cart", "Option A", "Shopping cart", '<ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul>'),
+    ("vid:one-and-done", "Option B", "One &amp; done", '<ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul>'),
 ], "Divergent directions: two prototypes with debatable trade-offs, to bring foundational alignment.", meta="Prototypes")}
 
 <section class="slide" data-name="Trade-offs"><div class="stage">
@@ -351,26 +365,27 @@ SLIDES = f'''
   </div>
 </div></section>
 
-{tabs_slide("Exploring the UI", "388/689", [
+{tabs_slide("Exploring the UI", "780/1689", [
     ("issue-1", "Option a", "Classic radios", "Radio buttons for each issue, with sub-issue chips nested under the one you pick."),
-    ("issue-2", "Option b", "Big buttons", "A large row for each issue that opens into its sub-issue chips."),
+    ("vid:big-buttons", "Option b", "Big buttons", "A large row for each issue that opens into its sub-issue chips."),
     ("issue-3", "Selected", "Easy pills", "Sub-issues as pills, then how many you received and optional details, on one screen."),
 ], "Focusing on the details. Existing components didn&rsquo;t feel native, so we refined how picking an issue and sub-issue feels.", meta="Issue and sub-issue")}
 
-{tabs_slide("Resolution selection", "388/486", [
+{tabs_slide("Resolution selection", "780/944", [
     ("res-1", "01", "Radios", ""), ("res-2", "02", "Credit tag", ""), ("res-3", "03", "Credit preference", ""),
     ("res-4", "04", "Cards", ""), ("res-5", "05", "Outlined cards", ""), ("res-6", "06", "Filled card", ""),
 ], "Six takes on choosing how we make it right: instant credit, or just sharing feedback.", kind="flowseq")}
 
-{tabs_slide("Weights &amp; measures", "267/457", [
+{tabs_slide("Weights &amp; measures", "600/1316", [
     ("wm-1", "Selected &middot; mild", "More or less", "Tell us whether you received more or less."),
     ("wm-2", "Option b", "Weight stepper", "Step the weight you received, in 0.25 lb increments."),
-    ("wm-3", "Option c &middot; wild", "Scan to detect", "Scan the item&rsquo;s barcode to detect what arrived."),
+    ("vid:weights", "Option c &middot; wild", "Scan to detect", "Scan the item&rsquo;s barcode to detect what arrived."),
 ], "Capturing severity for weight-based items. Some produce and meat is ordered by count but sold by weight, so people need dynamic controls to report it.", meta="Mild to wild")}
 
 <section class="slide" data-name="Final validation"><div class="stage">
   <div class="head"><h3 class="title">Final validation</h3><span class="mono">14 concept tests &middot; survey n=1,815</span></div>
-  <div class="content">
+  <div class="content fv">
+    <div class="vframe" data-zoom role="button" tabindex="0" aria-label="Enlarge the final prototype"><video poster="vid/final.jpg" muted playsinline loop preload="metadata" data-play aria-label="Final prototype walkthrough"><source src="vid/final.mp4" type="video/mp4"><source src="vid/final.webm" type="video/webm"></video></div>
     <p class="statement">With UXR, we put the final prototype in front of <b>real Instacart customers</b>. They already find reporting easy, so they&rsquo;re excited for the improvements.</p>
     <div class="cols">
       <ol class="list hard"><li><span><b>Most prefer self-serve</b><i>The majority of customers would rather report an issue themselves.</i></span></li><li><span><b>Some issues lean to Care</b><i>Missing items, incorrect items and poor replacements were more likely to prefer Care.</i></span></li><li><span><b>Direct and simple</b><i>Customers are looking for directness and simplicity.</i></span></li><li><span><b>Easy and quick</b><i>The issue-specific flow is very easy to navigate, with a few minor usability tweaks to fix.</i></span></li></ol>
