@@ -87,6 +87,21 @@ export const experience: Employer[] = [
 
 export const projects: Project[] = [
   {
+    slug: "multi-ticket",
+    title: "Flexible Checkout",
+    line: "One checkout for every appointment at the counter.",
+    company: "Genius AI",
+    year: "2026",
+    access: "password",
+    lockedMark: { src: "/brand/genius-g-black.svg", srcDark: "/brand/genius-g-light.svg" },
+    art: {
+      kind: "phones",
+      srcs: ["/work/multi-ticket/img/m-1.webp", "/work/multi-ticket/img/sc-6.webp"],
+      bg: "#f5dfe2",
+      bgDark: "#3a2329",
+    },
+  },
+  {
     slug: "multi-location",
     title: "Multi Location",
     line: "A platform shift across every core workflow, from one location to many.",
@@ -102,21 +117,6 @@ export const projects: Project[] = [
       w: "190%",
       x: "8%",
       y: "11%",
-    },
-  },
-  {
-    slug: "multi-ticket",
-    title: "Flexible Checkout",
-    line: "One checkout for every appointment at the counter.",
-    company: "Genius AI",
-    year: "2026",
-    access: "password",
-    lockedMark: { src: "/brand/genius-g-black.svg", srcDark: "/brand/genius-g-light.svg" },
-    art: {
-      kind: "phones",
-      srcs: ["/work/multi-ticket/img/m-1.webp", "/work/multi-ticket/img/sc-6.webp"],
-      bg: "#f5dfe2",
-      bgDark: "#3a2329",
     },
   },
   {

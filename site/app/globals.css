@@ -57,11 +57,13 @@
 /* Bits that differ by theme but aren't simple colors: tile backgrounds and light/dark logo pairs */
 .only-dark { display: none !important; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
+  :root:not([data-theme="light"]) .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: none; }
+  :root:not([data-theme="light"]) .art::after { box-shadow: var(--tile-edge-night); }
   :root:not([data-theme="light"]) .only-dark { display: inline-block !important; }
   :root:not([data-theme="light"]) .only-light { display: none !important; }
 }
-:root[data-theme="dark"] .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: var(--tile-night); }
+:root[data-theme="dark"] .art { background: var(--tile-bg-dark, var(--tile-bg)); box-shadow: none; }
+:root[data-theme="dark"] .art::after { box-shadow: var(--tile-edge-night); }
 :root[data-theme="dark"] .only-dark { display: inline-block !important; }
 :root[data-theme="dark"] .only-light { display: none !important; }
 
@@ -334,12 +336,13 @@ a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transfo
   aspect-ratio: 4 / 3;
   border-radius: 16px;
   background: var(--tile-bg);
-  /* At night each tile glows in its own night colour */
-  --tile-night-color: var(--tile-bg-dark, var(--tile-bg));
-  --tile-night: -14px 30px 90px -36px var(--tile-night-color);
+  /* At night no glow: just a faint light edge, a touch brighter along the top where the moonlight falls */
+  --tile-edge-night: inset 0 0 0 1px rgb(238 241 241 / 0.07), inset 0 1px 0 rgb(238 241 241 / 0.06);
   box-shadow: var(--tile-shadow);
   transition: box-shadow 0.5s var(--ease);
 }
+/* The edge sits above the tile's art, so screens running to the edge don't cover it */
+.art::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; }
 .wide .art { aspect-ratio: 16 / 9; }
 .art .crop {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; max-width: none;
@@ -478,11 +481,4 @@ html.revealing::view-transition-new(root) {
 }
 
 
-/* Where relative colours are supported, deepen and saturate the night glow in the tile's own hue
-   (kept dark, never lightened toward white) */
-@supports (color: oklch(from red l c h)) {
-  .art {
-    --tile-night: -14px 30px 90px -36px oklch(from var(--tile-night-color) calc(l + 0.06) calc(c * 3) h / 0.75);
-  }
-}
 
