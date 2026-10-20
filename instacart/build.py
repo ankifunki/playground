@@ -28,10 +28,29 @@ CSS = """
 .models.tall,.flowseq.tall{justify-items:start}
 .models.tall .frame,.flowseq.tall .frame{margin-inline:0}
 .ok{color:#1F8A4C}.no{color:#C2453D}
-/* Recorded walkthroughs of the prototypes: the video's own box, top aligned, with the phone screen's corners */
-.deck .frame.seq video{bottom:auto;height:auto;border-radius:5.6% / 2.6%;background:#fff}
-.vframe{position:relative;width:auto;height:min(60svh,520px);aspect-ratio:600/1316;margin-inline:auto;cursor:zoom-in}
-.vframe video{display:block;width:100%;height:auto;border-radius:5.6% / 2.6%;background:#fff}
+/* Screens laid out as in the deck, side by side, each bounded in a card (cropped screens read as screens, not
+   phone silhouettes). Walkthrough videos play in their card while the slide shows. Phones: a swipeable strip. */
+.mocks{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x);scrollbar-width:none}
+.mocks::-webkit-scrollbar{display:none}
+.mocks figure{flex:0 0 66%;display:grid;gap:8px;align-content:start;scroll-snap-align:start}
+.mocks figure > .mono{color:var(--grey)}
+.mock{position:relative;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 0 0 1px rgb(27 32 31 / .08),0 12px 28px -18px rgb(27 32 31 / .35);cursor:zoom-in}
+.mock img,.mock video{display:block;width:100%;height:auto}
+.chip{padding:2px 6px;border:1px solid var(--rule);border-radius:3px;color:var(--faint)}
+.chip.on{color:var(--ink);border-color:var(--ink)}
+@media (max-width:899px),(max-aspect-ratio:1/1){.ux .head .mono{display:none}}
+.opt{display:grid;gap:4px;margin-top:var(--gap-m)}
+.scale{display:flex;align-items:center;gap:10px;margin-bottom:12px;font:400 var(--t-mono)/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.scale i{flex:1;height:1px;background:var(--rule);position:relative}
+.scale i::after{content:"";position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid var(--faint);border-right:1px solid var(--faint);transform:rotate(45deg)}
+.rcard{display:grid;gap:12px;margin-top:var(--gap-m);padding:20px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px rgb(27 32 31 / .06)}
+.rcard .rh{font:600 20px/1.2 var(--head);letter-spacing:-.02em;color:#0B4A35}
+.rcard .rs{font:400 var(--t-small)/1.45 var(--body);color:#0B4A35}
+.rcard ol{list-style:none;counter-reset:k;display:grid}
+.rcard li{counter-increment:k;display:grid;grid-template-columns:28px 1fr;padding-block:8px;border-top:1px solid #EFE3C8;font:500 var(--t-small)/1.4 var(--body);color:var(--ink)}
+.rcard li::before{content:counter(k);color:var(--grey)}
+.winrow{display:grid;gap:var(--gap-l)}
+.steps-ii b{font-weight:500;color:var(--ink)}
 
 /* Two highlight columns */
 .hl{display:grid;gap:0}
@@ -121,12 +140,39 @@ CSS = """
 .win-n small{display:block;margin-top:8px;font:400 var(--t-mono)/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
 @media (min-width:900px) and (min-aspect-ratio:1/1){
-  /* Final validation: findings on the left, the final prototype playing on the right */
-  .content.fv{padding-top:calc(var(--u)*72)}
-  .fv .statement{grid-column:1 / span 8;font-size:calc(var(--u)*32);line-height:calc(var(--u)*42)}
-  .fv .cols{grid-column:1 / span 8;grid-template-columns:minmax(0,1fr);margin-top:calc(var(--u)*24)}
-  .fv .cols ol.list.hard{grid-column:1 / -1}
-  .fv .vframe{grid-column:10 / span 3;grid-row:1 / span 2;align-self:start;justify-self:end;height:calc(var(--u)*560);margin:0}
+  /* Screens beside the story: the statement on the left, the deck's row of screens on the right */
+  .content.side{padding-top:calc(var(--u)*40);grid-template-columns:repeat(12,1fr);align-content:start}
+  .content.side > .lead{grid-column:1 / span 4}
+  .content.side > .lead .statement{font-size:calc(var(--u)*30);line-height:calc(var(--u)*40)}
+  .content.side > .mocks,.content.side > .wmset{grid-column:5 / -1;grid-row:1;justify-self:end}
+  .mocks{overflow:visible;margin:0;padding:0;gap:calc(var(--u)*28);scroll-snap-type:none}
+  .mocks figure{flex:0 0 calc(var(--u) * var(--cw));gap:calc(var(--u)*10)}
+  .mocks.grid3{flex-wrap:wrap;width:calc(var(--u) * (var(--cw) * 3 + 56));row-gap:calc(var(--u)*20)}
+  .mock{border-radius:calc(var(--u)*14)}
+  .scale{margin-bottom:calc(var(--u)*18)}
+  .opt{margin-top:calc(var(--u)*36);gap:calc(var(--u)*6)}
+  .rcard{margin-top:calc(var(--u)*28);padding:calc(var(--u)*24);gap:calc(var(--u)*10);border-radius:calc(var(--u)*14)}
+  .rcard .rh{font-size:calc(var(--u)*22)}
+  .rcard .rs,.rcard li{font-size:calc(var(--u)*14)}
+  .rcard li{padding-block:calc(var(--u)*7);grid-template-columns:calc(var(--u)*28) 1fr}
+  .fv > .lead{grid-column:1 / span 7!important}
+  .content.side.fv > .mocks{grid-column:9 / -1}
+  .fv > .lead .statement{font-size:calc(var(--u)*26)!important;line-height:calc(var(--u)*34)!important}
+  .ux .opt .sub{font-size:calc(var(--u)*24)}
+  /* Taxonomy: old list, the research behind it, the new tree; read left to right as in the deck */
+  .content.taxo-slide{padding-top:calc(var(--u)*40)}
+  .taxo-slide .statement{grid-column:1 / span 9;font-size:calc(var(--u)*30);line-height:calc(var(--u)*40)}
+  .taxo{grid-column:1 / -1;display:grid;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
+  .taxo > div{display:grid;gap:calc(var(--u)*12);align-content:start}
+  .taxo .old{grid-column:1 / span 2}.taxo .q{grid-column:4 / span 5}.taxo .new{grid-column:10 / span 3}
+  .taxo .charts{grid-column:auto;margin:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--u)*12) calc(var(--u)*24)}
+  .taxo .grp{gap:calc(var(--u)*4)}.taxo .bars{gap:calc(var(--u)*3)}
+  .taxo .bar{font-size:calc(var(--u)*11);line-height:1.25;gap:calc(var(--u)*1) calc(var(--u)*8)}.taxo .bar i{height:calc(var(--u)*3)}
+  .taxo .tree{grid-template-columns:minmax(0,1fr);row-gap:calc(var(--u)*12)}
+  .taxo .tree b{font-size:calc(var(--u)*15);line-height:calc(var(--u)*20)}
+  .taxo .tree span,.taxo .oldlist li{font-size:calc(var(--u)*13);line-height:1.5}
+  .winrow{grid-column:1 / -1;grid-template-columns:repeat(12,1fr);column-gap:calc(var(--u)*24);margin-top:calc(var(--u)*48)}
+  .winrow .winbox{grid-column:1 / span 4}.winrow .wins{grid-column:6 / span 7}
   .tall .frame{height:calc(var(--u)*560);aspect-ratio:var(--r)}
   .flowseq.tall,.models.tall{grid-template-columns:auto minmax(0,1fr);column-gap:calc(var(--u)*64);row-gap:calc(var(--u)*24);align-content:start}
   .facts.three .fact:nth-child(1){grid-column:1 / span 3}
@@ -202,6 +248,21 @@ def tabs_slide(title, ratio, items, foot, meta="", kind="models"):
     {body}
   </div></div>
 </div></section>'''
+
+
+def mocks(items, cw=240, cls=""):
+    """Screens side by side, as the deck lays them out, each bounded in a card. Videos play while the slide shows."""
+    figs = []
+    for src, label, alt in items:
+        if src.startswith("vid:"):
+            v = src[4:]
+            m = (f'<video poster="vid/{v}.jpg" muted playsinline loop preload="metadata" data-play aria-label="{alt or label}: prototype walkthrough">'
+                 f'<source src="vid/{v}.mp4" type="video/mp4"><source src="vid/{v}.webm" type="video/webm"></video>')
+        else:
+            m = f'<img src="img/{src}.webp" alt="{alt or label}" loading="lazy" decoding="async">'
+        lab = f'<span class="mono">{label}</span>' if label else ""
+        figs.append(f'<figure>{lab}<div class="mock" data-zoom role="button" tabindex="0" aria-label="Enlarge screen">{m}</div></figure>')
+    return f'<div class="mocks {cls}" style="--cw:{cw}">{"".join(figs)}</div>'
 
 
 def bars(rows, key=None):
@@ -315,10 +376,22 @@ SLIDES = f'''
   </div>
 </div></section>
 
-{tabs_slide("Initial UX direction", "600/1300", [
-    ("vid:shopping-cart", "Option A", "Shopping cart", '<ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul>'),
-    ("vid:one-and-done", "Option B", "One &amp; done", '<ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul>'),
-], "Divergent directions: two prototypes with debatable trade-offs, to bring foundational alignment.", meta="Prototypes")}
+<section class="slide ux" data-name="Initial UX direction: Shopping cart"><div class="stage">
+  <div class="head"><h3 class="title">Initial UX direction</h3><span class="mono">Prototypes &middot; <span class="chip on">Shopping cart</span> <span class="chip">One &amp; done</span></span></div>
+  <div class="content side">
+    <div class="lead"><p class="statement">Divergent direction. We prototyped two distinct UX directions with <b>debatable trade-offs</b>, to bring foundational alignment.</p>
+      <div class="opt"><span class="mono">Option A</span><b class="sub">Shopping cart</b><ul class="pc"><li class="y">Report multiple issues at once</li><li class="y">An aggregated resolution amount is better perceived</li><li class="x">Still prone to gaming the system</li><li class="x">Added engineering complexity</li></ul></div></div>
+    {mocks([("vid:shopping-cart", "", "Shopping cart")], cw=258)}
+  </div>
+</div></section>
+<section class="slide ux" data-name="Initial UX direction: One &amp; done"><div class="stage">
+  <div class="head"><h3 class="title">Initial UX direction</h3><span class="mono">Prototypes &middot; <span class="chip">Shopping cart</span> <span class="chip on">One &amp; done</span></span></div>
+  <div class="content side">
+    <div class="lead"><p class="statement">Divergent direction. We prototyped two distinct UX directions with <b>debatable trade-offs</b>, to bring foundational alignment.</p>
+      <div class="opt"><span class="mono">Option B</span><b class="sub">One &amp; done</b><ul class="pc"><li class="y">A focused flow for one issue</li><li class="x">The resolution amount is relatively small</li><li class="y">A single-item flow makes it abuse-proof</li><li class="y">Straightforward to build</li></ul></div></div>
+    {mocks([("vid:one-and-done", "", "One &amp; done")], cw=258)}
+  </div>
+</div></section>
 
 <section class="slide" data-name="Trade-offs"><div class="stage">
   <div class="head"><h3 class="title">Which flow is right for us?</h3><span class="mono">Trade-offs</span></div>
@@ -337,10 +410,17 @@ SLIDES = f'''
 
 <section class="slide" data-name="Taxonomy update"><div class="stage">
   <div class="head"><h3 class="title">Taxonomy update</h3></div>
-  <div class="content">
-    <p class="statement">Simplifying issue types. With UXR and content, we <b>validated and simplified</b> the issue and sub-issue taxonomy.</p>
-    <div class="tax">
-      <div class="old"><span class="mono">Old taxonomy</span><ul class="oldlist"><li>Missing item</li><li>Damaged item</li><li>Incorrect / wrong item</li><li>Poor replacement</li><li>Expired or spoiled items</li><li>Temp spoilage</li></ul></div>
+  <div class="content taxo-slide">
+    <p class="statement">Simplifying new issue types. With UXR and content, we <b>validated and simplified</b> the issue and sub-issue taxonomy.</p>
+    <div class="taxo">
+      <div class="old"><span class="mono">Old taxonomy &rarr;</span><ul class="oldlist"><li>Missing item</li><li>Damaged item</li><li>Incorrect / wrong item</li><li>Poor replacement</li><li>Expired or spoiled items</li><li>Temp spoilage</li></ul></div>
+      <div class="q"><span class="mono">Quantitative UXR + content polish &rarr;</span><div class="charts">
+      {chart("Main issues", [("Missing item", 33), ("Incorrect item", 20), ("Damaged item", 19), ("Other", 17), ("Poor replacement", 11), ("Don&rsquo;t recall", 1)])}
+      {chart("Missing item", [("Some of them", 87), ("Other", 10), ("All of them", 3)])}
+      {chart("Damaged item", [("Rotten", 38), ("Damaged or unusable", 20), ("Other", 14), ("Damaged packaging", 14), ("Expired", 7), ("Temperature spoilage", 7)])}
+      {chart("Incorrect item", [("Not what I ordered", 61), ("Other", 20), ("Incorrect quantity", 10), ("Doesn&rsquo;t match my preferences", 9)])}
+      {chart("Poor replacement", pr)}
+      </div></div>
       <div class="new"><span class="mono">New taxonomy</span><div class="tree">
         <div><b>Missing item</b><span>All the items</span><span>Some of the items</span></div>
         <div><b>Damaged item</b><span>Damaged packaging</span><span>Damaged item</span><span>Rotten</span><span>Expired</span><span>Melted or thawed</span></div>
@@ -351,63 +431,57 @@ SLIDES = f'''
   </div>
 </div></section>
 
-<section class="slide" data-name="What customers told us"><div class="stage">
-  <div class="head"><h3 class="title">What customers told us</h3><span class="mono">Quantitative UXR</span></div>
-  <div class="content">
-    <p class="statement">Quantitative research on how customers describe each issue, then a <b>content polish</b>, set the new issue types.</p>
-    <div class="charts">
-      {chart("Main issues", [("Missing item", 33), ("Incorrect item", 20), ("Damaged item", 19), ("Other", 17), ("Poor replacement", 11), ("Don&rsquo;t recall", 1)])}
-      {chart("Missing item", [("Some of them", 87), ("Other", 10), ("All of them", 3)])}
-      {chart("Damaged item", [("Rotten", 38), ("Damaged or unusable", 20), ("Other", 14), ("Damaged packaging", 14), ("Expired", 7), ("Temperature spoilage", 7)])}
-      {chart("Incorrect item", [("Not what I ordered", 61), ("Other", 20), ("Incorrect quantity", 10), ("Doesn&rsquo;t match my preferences", 9)])}
-      {chart("Poor replacement", pr)}
-    </div>
+<section class="slide" data-name="Exploring the UI"><div class="stage">
+  <div class="head"><h3 class="title">Exploring the UI</h3><span class="mono">Issue &amp; sub-issue interaction</span></div>
+  <div class="content side">
+    <div class="lead"><p class="statement">Focusing on the details. Existing components didn&rsquo;t feel native, so we used visual enhancements to <b>improve the details</b> of the experience.</p></div>
+    {mocks([("issue-1", "Classic radios", ""), ("vid:big-buttons", "Big buttons", ""), ("issue-3", "&#10003; Easy pills", "")], cw=240)}
   </div>
 </div></section>
 
-{tabs_slide("Exploring the UI", "780/1689", [
-    ("issue-1", "Option a", "Classic radios", "Radio buttons for each issue, with sub-issue chips nested under the one you pick."),
-    ("vid:big-buttons", "Option b", "Big buttons", "A large row for each issue that opens into its sub-issue chips."),
-    ("issue-3", "Selected", "Easy pills", "Sub-issues as pills, then how many you received and optional details, on one screen."),
-], "Focusing on the details. Existing components didn&rsquo;t feel native, so we refined how picking an issue and sub-issue feels.", meta="Issue and sub-issue")}
+<section class="slide" data-name="Exploring the UI: resolution"><div class="stage">
+  <div class="head"><h3 class="title">Exploring the UI</h3><span class="mono">Resolution selection</span></div>
+  <div class="content side">
+    <div class="lead"><p class="statement">Six takes on choosing <b>how we make it right</b>: instant credit, or just sharing feedback.</p></div>
+    {mocks([("res-1", "01 &middot; Radios", ""), ("res-2", "02 &middot; Credit tag", ""), ("res-3", "03 &middot; Credit preference", ""), ("res-4", "04 &middot; Cards", ""), ("res-5", "05 &middot; Outlined cards", ""), ("res-6", "06 &middot; Filled card", "")], cw=190, cls="grid3")}
+  </div>
+</div></section>
 
-{tabs_slide("Resolution selection", "780/944", [
-    ("res-1", "01", "Radios", ""), ("res-2", "02", "Credit tag", ""), ("res-3", "03", "Credit preference", ""),
-    ("res-4", "04", "Cards", ""), ("res-5", "05", "Outlined cards", ""), ("res-6", "06", "Filled card", ""),
-], "Six takes on choosing how we make it right: instant credit, or just sharing feedback.", kind="flowseq")}
-
-{tabs_slide("Weights &amp; measures", "600/1316", [
-    ("wm-1", "Selected &middot; mild", "More or less", "Tell us whether you received more or less."),
-    ("wm-2", "Option b", "Weight stepper", "Step the weight you received, in 0.25 lb increments."),
-    ("vid:weights", "Option c &middot; wild", "Scan to detect", "Scan the item&rsquo;s barcode to detect what arrived."),
-], "Capturing severity for weight-based items. Some produce and meat is ordered by count but sold by weight, so people need dynamic controls to report it.", meta="Mild to wild")}
+<section class="slide" data-name="Weights &amp; measures"><div class="stage">
+  <div class="head"><h3 class="title">Weights &amp; measures</h3></div>
+  <div class="content side">
+    <div class="lead"><p class="statement">Capturing severity for weight-based items. Produce and meat are often ordered by count but sold by weight, so people need <b>dynamic controls</b> to report it.</p></div>
+    <div class="wmset"><div class="scale" aria-hidden="true"><span>Mild</span><i></i><span>Wild</span></div>
+    {mocks([("wm-1", "&#10003; More or less", ""), ("wm-2", "Weight stepper", ""), ("vid:weights", "Scan to detect", "")], cw=236)}</div>
+  </div>
+</div></section>
 
 <section class="slide" data-name="Final validation"><div class="stage">
-  <div class="head"><h3 class="title">Final validation</h3><span class="mono">14 concept tests &middot; survey n=1,815</span></div>
-  <div class="content fv">
-    <div class="vframe" data-zoom role="button" tabindex="0" aria-label="Enlarge the final prototype"><video poster="vid/final.jpg" muted playsinline loop preload="metadata" data-play aria-label="Final prototype walkthrough"><source src="vid/final.mp4" type="video/mp4"><source src="vid/final.webm" type="video/webm"></video></div>
-    <p class="statement">With UXR, we put the final prototype in front of <b>real Instacart customers</b>. They already find reporting easy, so they&rsquo;re excited for the improvements.</p>
-    <div class="cols">
-      <ol class="list hard"><li><span><b>Most prefer self-serve</b><i>The majority of customers would rather report an issue themselves.</i></span></li><li><span><b>Some issues lean to Care</b><i>Missing items, incorrect items and poor replacements were more likely to prefer Care.</i></span></li><li><span><b>Direct and simple</b><i>Customers are looking for directness and simplicity.</i></span></li><li><span><b>Easy and quick</b><i>The issue-specific flow is very easy to navigate, with a few minor usability tweaks to fix.</i></span></li></ol>
-    </div>
+  <div class="head"><h3 class="title">Final validation</h3></div>
+  <div class="content side fv">
+    <div class="lead"><p class="statement">Getting users&rsquo; thoughts. With UXR, we put the final prototype through its paces by <b>asking real Instacart customers</b>.</p>
+    <div class="rcard"><p class="rh">Customers already find reporting easy to use, so they&rsquo;re excited for the new design improvements.</p>
+      <p class="rs">To understand customers&rsquo; needs when reporting item issues, we ran 14 concept tests and a survey (n=1,815) among active customers.</p>
+      <span class="mono">Key insights</span>
+      <ol><li>The majority of customers prefer self-serve.</li><li>Missing item, incorrect item and poor replacement were more likely to prefer Care.</li><li>Customers are seeking directness and simplicity.</li><li>Overall, customers find the issue-specific flow very easy and quick to navigate, with some minor usability tweaks to fix.</li></ol></div></div>
+    {mocks([("vid:final", "", "Final prototype")], cw=258)}
   </div>
 </div></section>
 
 <section class="slide" data-name="Strategic win"><div class="stage">
   <div class="head"><h3 class="title">Strategic win</h3><span class="mono">The outcome</span></div>
   <div class="content">
-    <div class="winbox"><p class="win-n">$0.06<small>Expected Cp win per order &middot; ~$7M annualized</small></p></div>
-    <div class="wins"><span class="mono">Other wins</span><ul class="list small"><li>Transparency and control for people reporting an issue</li><li>Fewer care contacts</li><li>More efficient operations for partner teams like Trust &amp; Safety</li><li>Cleaner, precise data for ML models</li><li>Less human error interpreting issues</li><li>Team ownership of the whole issue funnel, from creation to resolution</li></ul></div>
+    <p class="statement">The project expanded the team&rsquo;s <b>ownership upstream</b>. It <b>solved a foundational issue</b> with how reports are structured in our system, and made the process more efficient.</p>
+    <div class="winrow"><div class="winbox"><span class="mono">Expected Cp win</span><p class="win-n">$0.06<small>per order &middot; ~$7M annualized</small></p></div>
+    <div class="wins"><span class="mono">Other wins &amp; impact</span><ul class="list small"><li>Transparency and control for people reporting an issue</li><li>Fewer care contacts</li><li>More efficient operations for partner teams like Trust &amp; Safety</li><li>Cleaner, precise data for ML models</li><li>Less human error interpreting issues</li><li>Team ownership of the whole issue funnel, from creation to resolution</li></ul></div></div>
   </div>
 </div></section>
 
 <section class="slide" data-name="Next steps"><div class="stage">
   <div class="head"><h3 class="title">Next steps</h3><span class="mono">Milestone II</span></div>
-  <div class="content">
-    <p class="statement">The project moved the team&rsquo;s ownership <b>upstream</b>, fixed a foundational issue in how reports are structured, and made the process more efficient.</p>
-    <div class="cols">
-      <ol class="list hard"><li><span><b>Simplify further with chat</b><i>A conversational interface, powered by ChatGPT.</i></span></li><li><span><b>Photos for more issue types</b><i>Bring photo capture to more issue types.</i></span></li><li><span><b>Smarter weights &amp; measures</b><i>A more sophisticated control for weight-based items.</i></span></li></ol>
-    </div>
+  <div class="content side">
+    <div class="lead"><ul class="list small steps-ii"><li>Simplify the experience even further with a <b>chat interface powered by ChatGPT</b></li><li>Add photo capture to more issue types</li><li>A more sophisticated weights &amp; measures control</li></ul></div>
+    {mocks([("next-1", "Chat", ""), ("next-2", "Photo required", ""), ("next-3", "Weights &amp; measures", "")], cw=210)}
   </div>
 </div></section>
 

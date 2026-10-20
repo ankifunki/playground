@@ -808,14 +808,14 @@ dialog form button{background:none;border:0;color:#C9CFCE;font:400 12px var(--mo
   });
   // Horizontal swipe; vertical drags stay as scrolling inside a tall slide
   var sx=null,sy=null;
-  addEventListener('touchstart',function(e){sx=sy=null;if(dlg.open||e.target.closest('.phones'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+  addEventListener('touchstart',function(e){sx=sy=null;if(dlg.open||e.target.closest('.phones,.mocks'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
   addEventListener('touchend',function(e){if(sx===null||loupeOn){sx=sy=null;return}var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
     if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.5){(dx<0?next:prev)();}sx=sy=null},{passive:true});
   var idle;addEventListener('mousemove',function(){document.body.classList.add('awake');clearTimeout(idle);idle=setTimeout(function(){document.body.classList.remove('awake')},1800)});
 
   // Expand a screen (scrollable sideways on phones)
   function zoom(f){var m=f.closest('.morph'),img;
-    if(f.classList.contains('seq')){img=f.querySelector('img.on,video.on')}else if(f.querySelector('video')){img=f.querySelector('video')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
+    if(f.classList.contains('seq')){img=f.querySelector('img.on,video.on')}else if(f.querySelector('video')){img=f.querySelector('video')}else if(!f.querySelector('.layer')){img=f.querySelector('img')}else{var l=f.querySelector(m&&m.classList.contains('is-after')?'.layer.after':'.layer.before');img=l.querySelector('img')}zb.innerHTML='<div class="zwrap"></div>';var w=zb.firstChild;
     if(img&&img.tagName==='VIDEO'){var c=document.createElement('video');c.src=img.currentSrc||img.src;c.muted=true;c.loop=true;c.playsInline=true;c.autoplay=true;c.currentTime=img.currentTime;c.className='zvid';w.appendChild(c)}
     else if(img){var c=document.createElement('img');c.src=img.dataset.full||img.src;c.alt=img.alt;w.appendChild(c)}
     dlg.showModal();}
