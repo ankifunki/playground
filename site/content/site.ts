@@ -53,14 +53,14 @@ export const profile = {
 
 // DRAFT copy. Ankit to rewrite in his own words.
 export const intro = {
-  lead: "I’m Ankit, a designer, a listener and a curious being.",
-  before: "Currently at",
+  lead: "Hi, I’m Ankit,",
+  before: "designing scale and delight, currently at",
   company: {
     name: "Genius AI",
     mark: "/brand/genius-g-black.svg",
     markDark: "/brand/genius-g-light.svg",
   },
-  after: ".",
+  after: "",
 };
 
 export const about = {
