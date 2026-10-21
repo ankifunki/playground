@@ -113,7 +113,9 @@ a { color: inherit; }
 .page::before {
   content: ""; position: absolute; z-index: -1; pointer-events: none;
   inset: 0 -100vw -100vh;
-  background: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1.4px) 100vw 0 / 24px 24px;
+  /* Each dot is centred on a grid crossing, half a pixel up so the 1px rules that end each 24px row run right through
+     the dots instead of just above them */
+  background: radial-gradient(circle at 12px 12px, var(--dot) 1px, transparent 1.4px) calc(100vw - 12px) -12.5px / 24px 24px;
 }
 .columns { display: grid; gap: var(--s6); }
 .columns > * { min-width: 0; }
