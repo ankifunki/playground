@@ -240,16 +240,15 @@ a { color: inherit; }
 .contact-list li { display: flex; align-items: center; gap: var(--s2); border-bottom: 1px solid var(--rule); }
 .cl-row {
   flex: 1; min-width: 0;
-  display: grid; grid-template-columns: 18px auto minmax(0, 1fr) 68px; align-items: center; gap: var(--s2);
+  display: grid; grid-template-columns: 18px auto minmax(0, 1fr); align-items: center; gap: var(--s2);
   padding-block: 12px; text-decoration: none; color: var(--ink);
 }
-.cl-handle { justify-self: end; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 15px/1.3 var(--body); color: var(--grey); transition: color 0.2s var(--ease); }
-a.cl-row:hover .cl-handle, a.cl-row:focus-visible .cl-handle { color: var(--ink); }
-/* Every row ends in the same 68px slot (the arrow, or email's copy button) so the handles line up on the right */
-.cl-row .cl-arrow { justify-self: end; }
-a.cl-row[href^="mailto:"] { grid-template-columns: 18px auto minmax(0, 1fr); }
+/* Handles sit flush right on every row */
+.cl-handle { justify-self: end; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 15px/1.3 var(--body); color: var(--grey); text-decoration: none; transition: color 0.2s var(--ease); }
+.cl-handle-link { flex: none; max-width: 60%; padding-block: 12px; }
+.contact-list li:hover .cl-handle, a.cl-row:focus-visible .cl-handle { color: var(--ink); }
 .cl-copy {
-  position: relative; display: grid; flex: none; overflow: hidden; width: 68px; height: 26px; padding: 0;
+  position: relative; display: grid; flex: none; overflow: hidden; width: 68px; height: 26px; padding: 0; order: 0;
   font: 400 11px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey);
   background: transparent; border: 1px solid var(--rule); border-radius: 999px; cursor: pointer;
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.12s var(--ease);
@@ -263,9 +262,7 @@ a.cl-row[href^="mailto:"] { grid-template-columns: 18px auto minmax(0, 1fr); }
 @media (hover: hover) and (pointer: fine) { .cl-copy:hover { color: var(--ink); border-color: var(--faint); } }
 .cl-icon { width: 18px; height: 18px; color: var(--faint); transition: color 0.2s var(--ease), transform 0.35s var(--ease); }
 .cl-label { font: 500 16px/1.3 var(--body); }
-.cl-arrow { width: 14px; height: 14px; color: var(--faint); opacity: 0; transform: translate(-3px, 3px); transition: opacity 0.2s var(--ease), transform 0.35s var(--ease), color 0.2s var(--ease); }
-a.cl-row:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
-a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transform: none; color: var(--accent); }
+.contact-list li:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
 

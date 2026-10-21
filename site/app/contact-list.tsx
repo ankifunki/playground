@@ -33,14 +33,8 @@ const Icon = ({ name }: { name: LinkIcon | "mail" }) => (
   </svg>
 );
 
-const Arrow = () => (
-  <svg className="cl-arrow" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M5 13 13 5M6 5h7v7" />
-  </svg>
-);
-
-// Email and social links as one even list: an icon, the platform and the handle, linked. Email also has a copy
-// button beside the link, for people who'd rather paste it than open a mail app.
+// Email and social links as one even list: an icon and the platform on the left, the handle flush right, linked.
+// Email puts a copy button just before its address, for people who'd rather paste it than open a mail app.
 export function ContactList() {
   const rows = [{ label: "Email", icon: "mail" as const, href: `mailto:${profile.email}`, handle: profile.email }, ...profile.links];
   return (
@@ -52,10 +46,17 @@ export function ContactList() {
             <a className="cl-row" href={r.href} {...(!mail && { target: "_blank", rel: "noopener noreferrer" })}>
               <Icon name={r.icon} />
               <span className="cl-label">{r.label}</span>
-              <span className="cl-handle">{r.handle}</span>
-              {!mail && <Arrow />}
+              {!mail && <span className="cl-handle">{r.handle}</span>}
             </a>
-            {mail && <CopyButton text={profile.email} />}
+            {mail && (
+              <>
+                <CopyButton text={profile.email} />
+                {/* The address is part of the same mail link, kept out of the tab order so it isn't announced twice */}
+                <a className="cl-handle cl-handle-link" href={r.href} tabIndex={-1} aria-hidden="true">
+                  {r.handle}
+                </a>
+              </>
+            )}
           </li>
         );
       })}
