@@ -19,7 +19,7 @@ const CASE_STUDIES = [
 const AJ_PATH =
   "M22.2,0.6c2.1-0.7,3.5,0.9,3.5,0.9c0.9,0.9,0.9,1.9,0.9,1.9v15.3c0,3,0,4.9-0.8,6.6c-0.9,2.2-3.4,3.5-5.5,3.5c-1.9,0-4.1-1-4.1-3.3c0-1.6,1.2-2,1.8-2c0.9,0,1.8,0.7,1.8,1.9c0,0.2,0,0.5-0.1,0.7l0,0.5c0,0.5,0,1.2,0.9,1.2c1.6,0,1.6-2.1,1.6-4.1l0-17L9.3,27h2.3l-0.8,1.4H8.5H3.1H1.2L2,27h1.9C6.4,23,17.7,5.6,20.3,2C20.3,2,21.1,0.9,22.2,0.6z";
 const BAR = (title) => `<header class="pf-bar">
-<a href="/" class="pf-home" aria-label="Back home: Ankit Joshi, all work"><span class="pf-ico" aria-hidden="true"><svg class="pf-mark" viewBox="0 0 28 29"><path d="${AJ_PATH}"/></svg><svg class="pf-arrow" viewBox="0 0 16 16"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5"/></svg></span><span class="pf-sep" aria-hidden="true">/</span><span class="pf-txt" aria-hidden="true"><span class="pf-title">${title}</span><span class="pf-back">Back home</span></span></a>
+<a href="/" class="pf-home" aria-label="Back home: Ankit Joshi, all work"><span class="pf-ico" aria-hidden="true"><svg class="pf-mark" viewBox="0 0 28 29"><path d="${AJ_PATH}"/></svg><svg class="pf-arrow" viewBox="0 0 16 16"><path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5"/></svg></span><span class="pf-txt" aria-hidden="true"><span class="pf-title">${title}</span><span class="pf-back">Back home</span></span></a>
 </header>
 <style>
 :root{--top:calc(48px + env(safe-area-inset-top,0px));--safe-top:0px}
@@ -35,7 +35,6 @@ const BAR = (title) => `<header class="pf-bar">
 .pf-ico > *,.pf-txt > *{grid-area:1 / 1;transition:opacity .2s var(--pf-e),transform .28s var(--pf-e),filter .2s var(--pf-e)}
 .pf-mark{display:block;height:15px;width:auto;fill:currentColor}
 .pf-arrow{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:translateX(5px)}
-.pf-sep{color:#3A3F3E}
 .pf-title{color:#959C9B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pf-back{color:#EEF1F1;white-space:nowrap;opacity:0;transform:translateY(7px);filter:blur(2px)}
 @media (hover:hover) and (pointer:fine){
