@@ -370,6 +370,8 @@ SLIDES = f'''
 
 {morph("Tipping on one ticket", "tip-before", "tip-after", "393/852", "Three tickets meant three tip prompts. Now one tip covers the visit, split across providers by service value.", ["tip and signature on a single appointment", "one tip across every provider on the ticket"], tall=True)}
 
+{flow("Customize the tip", "393/852", [("tip-after", "One tip"), ("tip-custom", "Per order"), ("tip-provider", "Per provider")], "Customize the tip per order or per provider.", tall=True)}
+
 {flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", tall=True)}
 
 {chapter(2, "Phase 2")}
