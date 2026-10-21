@@ -188,8 +188,11 @@ JS = r"""<script>
     function go(j){var a=imgs[i],b=imgs[j],tr=a.dataset.tr;reset(b);
       if(tr==='slide'){b.classList.add('in-slide');b.style.transform='translateX(100%)';b.style.opacity='1';void b.offsetWidth;
         b.style.transition='transform '+DUR+'ms '+EASE;b.style.transform='translateX(0)'}
+      else if(tr==='back'){b.classList.add('on');a.classList.add('in-slide');a.style.transform='translateX(0)';void a.offsetWidth;
+        a.style.transition='transform '+DUR+'ms '+EASE;a.style.transform='translateX(100%)'}
+      else if(tr&&tr.indexOf('sheet')===0)sheet(a,b,+tr.split(':')[1],tr.indexOf('sheetdown')===0);
       else{b.classList.add('in-fade');b.style.opacity='0';var mv=moves(a,b);void b.offsetWidth;b.style.transition='opacity '+DUR+'ms '+EASE;b.style.opacity='1';if(mv)mv()}
-      busy=setTimeout(function(){busy=null;a.classList.remove('on');reset(b);unmask(a);unmask(b);f.querySelectorAll('.mv').forEach(function(x){x.remove()});b.classList.add('on')},DUR+40);
+      busy=setTimeout(function(){busy=null;a.classList.remove('on');reset(a);reset(b);unmask(a);unmask(b);f.querySelectorAll('.mv').forEach(function(x){x.remove()});b.classList.add('on')},DUR+40);
       i=j;mark(j)}
     function setMask(im,rects,S){var keep=[],y=0;rects.sort(function(p,q){return p[0]-q[0]}).forEach(function(r){if(r[0]>y)keep.push([y,r[0]-y]);y=Math.max(y,r[0]+r[1])});keep.push([y,852-y]);
       var img=keep.map(function(){return 'linear-gradient(#000,#000)'}).join(','),pos=keep.map(function(k){return '0 '+k[0]*S+'px'}).join(','),size=keep.map(function(k){return '100% '+k[1]*S+'px'}).join(',');
@@ -204,6 +207,15 @@ JS = r"""<script>
         f.appendChild(w);wins.push([w,o,n,x])});
       return function(){wins.forEach(function(v){var tr='top '+DUR+'ms '+EASE+',height '+DUR+'ms '+EASE;v[0].style.transition=tr;v[0].style.top=v[3][2]*S+'px';v[0].style.height=v[3][3]*S+'px';
         v[1].style.transition=v[2].style.transition='opacity '+DUR+'ms '+EASE;v[1].style.opacity='0';v[2].style.opacity='1'})}}
+    // Move in from bottom / move out to bottom for a sheet that starts at y (in the 393x852 frame): the sheet slides
+    // while the dimmed backdrop above it fades, as a Figma overlay does
+    function sheet(a,b,y,down){var S=f.clientHeight/852,sh=(852-y)*S,src=down?a:b,top=document.createElement('img'),bot=document.createElement('img');
+      [top,bot].forEach(function(im){im.src=src.currentSrc||src.src;im.alt='';im.className='mv';im.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:1;z-index:3';f.appendChild(im)});
+      top.style.clipPath='inset(0 0 '+sh+'px 0)';bot.style.clipPath='inset('+y*S+'px 0 0 0)';
+      if(down){b.classList.add('on');a.classList.remove('on')}
+      top.style.opacity=down?'1':'0';bot.style.transform='translateY('+(down?0:sh)+'px)';void top.offsetWidth;
+      var tr2='opacity '+DUR+'ms '+EASE+',transform '+DUR+'ms '+EASE;top.style.transition=bot.style.transition=tr2;
+      top.style.opacity=down?'0':'1';bot.style.transform='translateY('+(down?sh:0)+'px)'}
     function hot(j){var d=(imgs[j].dataset.hot||'').split(',').map(Number);return d.length===4?d:null}
     function tapAt(j){var h=hot(j);if(!h)return;var W=393,H=852;
       press.style.left=h[0]/W*100+'%';press.style.top=h[1]/H*100+'%';press.style.width=h[2]/W*100+'%';press.style.height=h[3]/H*100+'%';
@@ -372,7 +384,7 @@ SLIDES = f'''
 
 {flow("Customize the tip", "393/852", [("tip-after", "One tip"), ("tip-custom", "Per order"), ("tip-provider", "Per provider")], "Customize the tip per order or per provider.", tall=True)}
 
-{flow("One cart, every appointment", "393/852", [("m-1", "Cart"), ("m-2", "Add items"), ("m-3", "Edit item"), ("m-4", "Gift card"), ("m-5", "Collect tip"), ("m-6", "Tip and sign")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", tall=True)}
+{proto("One cart, every appointment", "393/852", [("m-1", "Cart", "24,234,344,44", "sheet:400"), ("m-2", "Add items", "343,422,30,30", "sheetdown:400"), ("m-1", "Cart", "20,350,355,46", "slide"), ("m-3", "Edit item", "24,703,344,48", "back"), ("m-1", "Cart", "20,612,355,34", "slide"), ("m-4", "Discount", "24,758,344,48", "back"), ("m-1", "Cart", "112,758,256,46", "slide"), ("m-5", "Collect tip", "24,288,344,72", "slide"), ("m-6", "Tip and sign", "", "")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", meta="Prototype · One cart")}
 
 {chapter(2, "Phase 2")}
 
