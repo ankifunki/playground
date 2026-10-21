@@ -11,6 +11,14 @@ export default function Home() {
       <header className="topbar">
         <a href="/" className="wordmark" aria-label={profile.name}>
           <Logo />
+          {/* The name writes itself in beside the mark on hover, one letter after another */}
+          <span className="wm-name" aria-hidden="true">
+            {[...profile.name].map((ch, i) => (
+              <span key={i} style={{ ["--i" as string]: i }}>
+                {ch === " " ? "\u00a0" : ch}
+              </span>
+            ))}
+          </span>
         </a>
         <div className="topright">
           <ThemeToggle />
