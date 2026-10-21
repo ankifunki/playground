@@ -308,7 +308,7 @@ a.cl-row:hover .cl-arrow, a.cl-row:focus-visible .cl-arrow { opacity: 1; transfo
 .statement {
   font: 400 clamp(30px, 4.6vw, 56px) / 1.12 var(--body);
   letter-spacing: -0.035em;
-  color: var(--faint);
+  color: var(--ink);
   max-width: 21em;
   text-wrap: pretty;
   margin-top: var(--s4);
