@@ -2,15 +2,16 @@
    then about and contact. Same 12px rhythm and greys as the case studies; one column on phones.
    Roles: Geist = name and titles · Funnel Sans = reading · Geist Mono = meta. */
 :root {
-  --paper: #f3f0ea;
-  --ink: #1e1c19;
-  --grey: #67625b;
-  --faint: #8f897f;
-  --rule: #d6d0c5;
+  --paper: #f6efe3;
+  --ink: #221c15;
+  --grey: #6d6356;
+  --faint: #978b79;
+  --rule: #ddd2c0;
+  --dot: rgb(34 28 21 / 0.09);
   --accent: #1f5cff;
   --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
-  --bar: #1e1c19;
-  --toast-bg: #1e1c19; --toast-ink: #f3f0ea; --toast-ok: #7ad3a6;
+  --bar: #221c15;
+  --toast-bg: #221c15; --toast-ink: #f6efe3; --toast-ok: #7ad3a6;
   /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
   --ambient: rgba(255, 206, 128, 0.16);
   /* Tiles carry no drop shadow: just a faint even edge, the same in day and night */
@@ -27,30 +28,32 @@
 /* Dark: follows the device unless the visitor picked a theme with the toggle (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0c0f14;
-    --ink: #edf0f5;
-    --grey: #a1a8b3;
-    --faint: #717986;
-    --rule: #232a33;
+    --paper: #090e17;
+    --ink: #eaf0f8;
+    --grey: #9ca7b9;
+    --faint: #6c778b;
+    --rule: #1f2836;
+    --dot: rgb(234 240 248 / 0.07);
     --accent: #5c8dff;
   --tick-a: 0.11; --tick-maj-a: 0.45;
-    --bar: #edf0f5;
-    --toast-bg: #edf0f5; --toast-ink: #0c0f14; --toast-ok: #16935f;
+    --bar: #eaf0f8;
+    --toast-bg: #eaf0f8; --toast-ink: #090e17; --toast-ok: #16935f;
     /* Night: cool moonlight from the top right (tiles glow instead of casting shadows; see .art below) */
     --ambient: rgba(190, 206, 255, 0.07);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0c0f14;
-  --ink: #edf0f5;
-  --grey: #a1a8b3;
-  --faint: #717986;
-  --rule: #232a33;
+  --paper: #090e17;
+  --ink: #eaf0f8;
+  --grey: #9ca7b9;
+  --faint: #6c778b;
+  --rule: #1f2836;
+  --dot: rgb(234 240 248 / 0.07);
   --accent: #5c8dff;
   --tick-a: 0.11; --tick-maj-a: 0.45;
-  --bar: #edf0f5;
-  --toast-bg: #edf0f5; --toast-ink: #0c0f14; --toast-ok: #16935f;
+  --bar: #eaf0f8;
+  --toast-bg: #eaf0f8; --toast-ink: #090e17; --toast-ok: #16935f;
   --ambient: rgba(190, 206, 255, 0.07);
   color-scheme: dark;
 }
@@ -72,7 +75,9 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
+  /* The ambient light from the top right, over a faint dotted grid, over the paper */
   background: radial-gradient(1100px 680px at 92% -8%, var(--ambient), transparent 62%) var(--paper) no-repeat;
+  overflow-x: clip;
   color: var(--ink);
   font: 400 17px/1.6 var(--body);
   -webkit-font-smoothing: antialiased;
@@ -91,7 +96,11 @@ a { color: inherit; }
 
 /* ---------- Page ---------- */
 .page {
+  position: relative;
   max-width: 1104px;
+  /* The page's width snaps to the 24px grid, so its column and gutters fall on the dots */
+  width: 100%;
+  width: round(down, 100%, 24px);
   margin: 0 auto;
   padding: calc(var(--s5) + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px))
     calc(var(--s5) + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
@@ -99,6 +108,13 @@ a { color: inherit; }
   gap: var(--s6);
 }
 
+/* The dotted grid: drawn from the page's own top-left corner and run out to both screen edges and well below, so every
+   element laid out on the 24px rhythm inside the page lands on a dot */
+.page::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: 0 -100vw -100vh;
+  background: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1.4px) 100vw 0 / 24px 24px;
+}
 .columns { display: grid; gap: var(--s6); }
 .columns > * { min-width: 0; }
 @media (min-width: 900px) {
@@ -108,7 +124,7 @@ a { color: inherit; }
 
 .section { display: grid; gap: var(--s3); align-content: start; }
 /* Section headers: the body sans, in ink */
-.sec-title { font: 500 17px/1.3 var(--body); letter-spacing: -0.01em; color: var(--ink); }
+.sec-title { font: 500 17px/24px var(--body); letter-spacing: -0.01em; color: var(--ink); }
 
 /* Locked work: a redaction bar where the company would be, and a password chip */
 .redacted { display: inline-block; height: 11px; background: var(--bar); border-radius: 1px; vertical-align: -1px; }
@@ -167,7 +183,7 @@ a { color: inherit; }
 }
 /* The details sit centred under the ruler on a steady vertical rhythm (mark, name, dates, blurb) in a box of
    fixed height, so nothing below moves as they change. */
-.rl-caption { position: relative; height: 178px; margin-top: var(--s3); text-align: center; color: var(--grey); }
+.rl-caption { position: relative; height: 168px; margin-top: var(--s3); text-align: center; color: var(--grey); }
 .rl-card { position: absolute; inset: 0 0 auto; display: grid; justify-items: center; }
 .rl-mark {
   display: block; width: 28px; height: 28px; background: var(--ink);
@@ -237,8 +253,9 @@ a { color: inherit; }
 
 
 /* Contact: email and links as one even list of rows: a line icon, the platform, and the handle on the right. */
-.contact-list { list-style: none; border-top: 1px solid var(--rule); }
-.contact-list li { display: flex; align-items: center; gap: var(--s2); border-bottom: 1px solid var(--rule); }
+.contact-list { list-style: none; box-shadow: 0 -1px 0 var(--rule); }
+/* Each contact row is exactly two grid rows tall, rule included */
+.contact-list li { display: flex; align-items: center; gap: var(--s2); height: 48px; border-bottom: 1px solid var(--rule); }
 .cl-row {
   flex: 1; min-width: 0;
   display: grid; grid-template-columns: 18px auto minmax(0, 1fr); align-items: center; gap: var(--s2);
@@ -292,7 +309,7 @@ a { color: inherit; }
 
 /* ---------- Top bar and statement ---------- */
 .page { gap: var(--s6); }
-.topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); min-height: 24px; }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 600 17px/1 var(--head); letter-spacing: -0.02em; text-decoration: none; }
 /* Sized to sit optically with the theme switcher across the bar */
 .aj { width: auto; height: 15px; overflow: visible; display: block; }
@@ -311,7 +328,7 @@ a { color: inherit; }
   color: var(--ink);
   max-width: 21em;
   text-wrap: pretty;
-  margin-top: var(--s4);
+  margin-top: var(--s5);
 }
 .statement .ink { color: var(--ink); }
 @media (prefers-reduced-motion: no-preference) {
@@ -330,7 +347,7 @@ a { color: inherit; }
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tiles .wide { grid-column: 1 / -1; }
 }
-.tile { display: grid; gap: var(--s3); text-decoration: none; }
+.tile { display: grid; gap: var(--s3); text-decoration: none; container-type: inline-size; }
 .art {
   position: relative; overflow: hidden;
   aspect-ratio: 4 / 3;
@@ -344,6 +361,11 @@ a { color: inherit; }
 /* The edge sits above the tile's art, so screens running to the edge don't cover it */
 .art::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgb(30 28 25 / 0.06); }
 .wide .art { aspect-ratio: 16 / 9; }
+/* Tile artwork keeps its proportions but rounds its height to the grid */
+@supports (height: round(1px, 1px)) {
+  .art { aspect-ratio: auto; height: round(75cqw, 24px); }
+  .wide .art { height: round(56.25cqw, 24px); }
+}
 .art .crop {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; max-width: none;
   border-radius: 10px;

@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f0ea" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0f14" },
+    { media: "(prefers-color-scheme: light)", color: "#f6efe3" },
+    { media: "(prefers-color-scheme: dark)", color: "#090e17" },
   ],
 };
 
@@ -35,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <Script src="/delight.js" strategy="afterInteractive" />
+        <Script src="/grid-snap.js" strategy="afterInteractive" />
       </body>
     </html>
   );
