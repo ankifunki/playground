@@ -58,14 +58,16 @@ const BAR = (title) => `<header class="pf-bar">
   // The blur below is set every frame, so it must not also ease through the shared CSS filter transition
   svg.style.transition='opacity .2s var(--pf-e),transform .28s var(--pf-e)';
   var M=1200,N=240,AJ_D=path.getAttribute('d'),AJ_T='translate(0.75 0.5) scale(0.517)',
-    // The arrow is built from the mark's own J: the J turned so its stem lies along the shaft with the curl at the
-    // left, mirrored across the shaft and unioned, its curls swept back into barbs (scratchpad jarrow.py, variant C).
-    // Same scale and stroke weight as the mark, centred on y=8.
-    ARROW='M14.83 6.86 3.59 6.86 3.15 6.84 2.85 6.8 2.61 6.73 2.5 6.66 2.47 6.62 2.44 6.51 2.44 6.45 2.51 6.31 2.56 6.23 2.73 6.04 2.9 5.88 3.06 5.77 3.21 5.68 3.44 5.6 3.68 5.57 4.07 5.57 4.13 5.6 4.23 5.62 4.54 5.61 4.79 5.57 4.92 5.48 5.09 5.33 5.27 5.14 5.82 4.47 6.05 4.21 6.31 3.97 6.53 3.83 6.51 3.81 6.38 3.77 6.04 3.77 5.73 3.81 5.4 3.9 5.06 4.02 4.55 4.26 4.2 4.45 3.7 4.78 3.21 5.13 2.77 5.51 2.37 5.88 2.11 6.16 1.76 6.58 1.56 6.86 1.31 7.27 1.19 7.53 1.08 7.91 1.08 8.09 1.15 8.34 1.31 8.73 1.47 9 1.76 9.42 2.11 9.84 2.37 10.12 2.77 10.49 3.21 10.87 3.7 11.22 4.03 11.44 4.55 11.74 4.89 11.91 5.23 12.05 5.57 12.15 5.89 12.22 6.29 12.24 6.45 12.21 6.51 12.19 6.53 12.17 6.31 12.03 6.05 11.79 5.82 11.53 5.22 10.81 5.04 10.63 4.88 10.49 4.79 10.43 4.46 10.38 4.2 10.39 4.07 10.43 3.6 10.42 3.4 10.39 3.21 10.32 3.06 10.23 2.9 10.12 2.73 9.96 2.56 9.77 2.51 9.69 2.44 9.55 2.44 9.49 2.47 9.38 2.5 9.34 2.61 9.27 2.85 9.2 3.15 9.16 3.59 9.14 14.83 9.14 14.9 8.87 14.92 8.63 14.89 8.29 14.81 8 14.89 7.71 14.92 7.49 14.9 7.13Z';
-  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16). The J's top becomes the upper
-  // barb, its stem the shaft, and the diagonal the lower (mirrored) barb and tip. The extra pair at the foot of the J's
-  // stem keeps the curl and ball (which wind back on themselves) inside the shaft's right end, so nothing folds.
-  var ANCH=[[22.2,0.6,6.53,3.83],[26.6,18.7,14.83,6.86],[20.3,28.6,14.83,9.14],[22.2,23.7,13.2,9.14],[20.2,7.7,3.59,9.14],[1.2,28.4,6.53,12.17],[10.5,15.5,1.08,8]];
+    // The arrow is built from the mark's own J: turned -90 deg so the stem is the shaft and the curl and ball sit at
+    // the back, mirrored across the shaft and unioned (the two curls are the tails), with a sharp chevron head at the
+    // mark's stroke weight. Same scale and weight as the mark, centred (scratchpad harrow.py, variant H).
+    ARROW='M14.47 8 14.73 7.66 14.95 7.27 15.07 7 15.2 6.58 15.28 6.16 15.29 5.88 15.27 5.51 15.22 5.26 15.11 4.89 15.01 4.67 14.81 4.35 14.65 4.17 14.46 4.02 14.35 3.95 14.12 3.85 13.87 3.78 13.58 3.76 13.39 3.77 13.14 3.83 12.95 3.93 12.8 4.06 12.66 4.26 12.58 4.47 12.55 4.65 12.57 4.86 12.64 5.09 12.77 5.29 12.95 5.45 13.12 5.54 13.31 5.6 13.53 5.62 13.75 5.61 13.89 5.57 14.36 5.58 14.53 5.61 14.67 5.71 14.74 5.84 14.77 5.98 14.77 6.13 14.72 6.31 14.64 6.45 14.52 6.57 14.37 6.66 14.2 6.73 13.78 6.82 13.42 6.85 13.04 6.86 5.06 6.86 6.2 5.73 4.59 4.12 0.71 8 4.59 11.88 6.2 10.27 5.06 9.14 13.04 9.14 13.42 9.15 13.78 9.18 14.2 9.27 14.37 9.34 14.52 9.43 14.64 9.55 14.72 9.69 14.77 9.87 14.77 10.02 14.74 10.16 14.67 10.29 14.53 10.39 14.36 10.42 13.89 10.43 13.75 10.39 13.53 10.38 13.31 10.4 13.12 10.46 12.95 10.55 12.77 10.71 12.64 10.91 12.57 11.14 12.55 11.35 12.58 11.53 12.66 11.74 12.8 11.94 12.95 12.07 13.14 12.17 13.39 12.23 13.58 12.24 13.87 12.22 14.12 12.15 14.35 12.05 14.46 11.98 14.65 11.83 14.81 11.65 15.01 11.33 15.11 11.11 15.22 10.74 15.27 10.49 15.29 10.12 15.28 9.84 15.2 9.42 15.07 9 14.89 8.6 14.73 8.34Z';
+  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16). The diagonal becomes the
+  // head (its foot the lower arm's end, its outer edge the tip and upper arm), the J's right side the shaft's top
+  // edge, and its curl and ball the lower tail. The mirrored upper tail grows out of a short run at the foot of the
+  // J's straight side, and the pair at the foot of the stem keeps the ball's loop on the lower tail, so no stroke
+  // turns inside out.
+  var ANCH=[[22.2,0.6,4.59,4.12],[26.6,16.5,12.65,6.86],[26.6,18.7,15.29,5.88],[20.3,28.6,15.29,10.12],[22.2,23.7,12.65,9.14],[20.2,7.7,5.06,9.14],[1.2,28.4,4.59,11.88],[10.5,15.5,0.71,8]];
   function mapA(x,y){return [0.75+x*0.517,0.5+y*0.517]}
   function sample(d,map){var s=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');p.setAttribute('d',d);s.appendChild(p);
     s.style.cssText='position:absolute;width:0;height:0;visibility:hidden';document.body.appendChild(s);
