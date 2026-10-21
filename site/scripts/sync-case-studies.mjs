@@ -49,25 +49,46 @@ const BAR = (title) => `<header class="pf-bar">
 }
 </style>
 <script>
-// The mark morphs into a back arrow: both outlines are sampled into the same number of points (matched up so
-// the shapes turn the least), and on hover the points glide from one to the other.
+// The mark morphs into a back arrow. Each part maps onto its counterpart (the diagonal folds into the chevron, the
+// J straightens into the shaft): both outlines are cut at matching anchors, each piece is resampled by arc length to
+// the same count, and on hover the points glide from one to the other. The resting states use the real paths.
 (function(){
   var home=document.querySelector('.pf-home'),path=home&&home.querySelector('.pf-morph path');if(!path)return;
-  var N=140,NS='http://www.w3.org/2000/svg',reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function sample(d,map){var svg=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');p.setAttribute('d',d);svg.appendChild(p);
-    svg.style.cssText='position:absolute;width:0;height:0;visibility:hidden';document.body.appendChild(svg);
-    var L=p.getTotalLength(),pts=[];for(var i=0;i<N;i++){var q=p.getPointAtLength(L*i/N);pts.push(map(q.x,q.y))}svg.remove();return pts}
-  function area(P){var a=0;for(var i=0;i<N;i++){var p=P[i],q=P[(i+1)%N];a+=p[0]*q[1]-q[0]*p[1]}return a}
-  var A=sample(path.getAttribute('d'),function(x,y){return [0.75+x*0.517,0.5+y*0.517]});
-  var B=sample('M2.6 8 7.1 3.5 8.3 4.7 5.85 7.15H13.4V8.85H5.85L8.3 11.3 7.1 12.5Z',function(x,y){return [x,y]});
-  if((area(A)>0)!==(area(B)>0))B.reverse();
-  var best=0,bd=1e9;for(var k=0;k<N;k++){var s=0;for(var i=0;i<N;i++){var a=A[i],b=B[(i+k)%N];s+=(a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])}if(s<bd){bd=s;best=k}}
-  B=B.slice(best).concat(B.slice(0,best));
-  function draw(t){var d='';for(var i=0;i<N;i++){var a=A[i],b=B[i];d+=(i?'L':'M')+(a[0]+(b[0]-a[0])*t).toFixed(2)+' '+(a[1]+(b[1]-a[1])*t).toFixed(2)}path.setAttribute('d',d+'Z')}
-  path.removeAttribute('transform');draw(0);
-  var t=0,to=0,raf=0,last=0,DUR=320;
-  function step(now){var dt=Math.min(now-(last||now),40);last=now;var dir=to>t?1:-1;t=Math.max(0,Math.min(1,t+dir*dt/DUR));
-    draw(1-Math.pow(1-t,3));if(t!==to)raf=requestAnimationFrame(step);else{raf=0;last=0}}
+  var svg=path.ownerSVGElement,NS='http://www.w3.org/2000/svg',reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The blur below is set every frame, so it must not also ease through the shared CSS filter transition
+  svg.style.transition='opacity .2s var(--pf-e),transform .28s var(--pf-e)';
+  var M=1200,N=240,AJ_D=path.getAttribute('d'),AJ_T='translate(0.75 0.5) scale(0.517)',
+    // The arrow is drawn in the mark's hand and at its size: a heavy upper stroke (the AJ's "/"), a light lower one,
+    // and a shaft that tapers and curls down into a small ball terminal (the J's hook, which morphs straight into it)
+    ARROW='M0.8 8 6.6 2.2 8.37 3.97 5.09 7.25 13.6 7.5C14.6 7.5 15.2 8.1 15.2 9.1 15.2 10.3 14.4 11 13.4 11 12.7 11 12.2 10.6 12.2 10.1 12.2 9.7 12.5 9.4 12.9 9.4 13.3 9.4 13.6 9.7 13.6 10 13.6 10.2 13.6 10.3 13.7 10.3 13.9 10.3 13.9 9.8 13.9 8.9L4.07 9.15 7.66 12.74 6.6 13.8Z';
+  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16)
+  var ANCH=[[22.2,0.6,6.6,2.2],[26.6,18.7,13.6,7.5],[20.3,28.6,13.4,11],[20.2,7.7,4.07,9.15],[1.2,28.4,6.6,13.8],[10.5,15.5,0.8,8]];
+  function mapA(x,y){return [0.75+x*0.517,0.5+y*0.517]}
+  function sample(d,map){var s=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');p.setAttribute('d',d);s.appendChild(p);
+    s.style.cssText='position:absolute;width:0;height:0;visibility:hidden';document.body.appendChild(s);
+    var L=p.getTotalLength(),pts=[];for(var i=0;i<M;i++){var q=p.getPointAtLength(L*i/M);pts.push(map(q.x,q.y))}s.remove();return {P:pts,L:L}}
+  function snap(P,x,y){var bi=0,bd=1e9;for(var i=0;i<M;i++){var dx=P[i][0]-x,dy=P[i][1]-y,d=dx*dx+dy*dy;if(d<bd){bd=d;bi=i}}return bi}
+  function snapAll(P,col){var r=[];for(var k=0;k<ANCH.length;k++){var q=col?[ANCH[k][2],ANCH[k][3]]:mapA(ANCH[k][0],ANCH[k][1]);r.push(snap(P,q[0],q[1]))}return r}
+  function ordered(I){var prev=0;for(var k=1;k<I.length;k++){var o=(I[k]-I[0]+M)%M;if(o<=prev)return false;prev=o}return true}
+  var SA=sample(AJ_D,mapA),SB=sample(ARROW,function(x,y){return [x,y]}),IA=snapAll(SA.P,0),IB=snapAll(SB.P,1);
+  if(!ordered(IB)){SB.P.reverse();IB=snapAll(SB.P,1)}
+  console.assert(ordered(IA)&&ordered(IB),'folio morph: anchors out of order',IA,IB);
+  // Point at fractional sample index f (samples are evenly spaced, so index is arc length)
+  function at(P,f){f=((f%M)+M)%M;var i=Math.floor(f),u=f-i,a=P[i],b=P[(i+1)%M];return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u]}
+  var A=[],B=[],K=ANCH.length;
+  for(var k=0;k<K;k++){var a0=IA[k],a1=IA[(k+1)%K],b0=IB[k],b1=IB[(k+1)%K],sa=(a1-a0+M)%M,sb=(b1-b0+M)%M,
+    n=Math.max(8,Math.round(N*Math.max(sa/M,sb/M)));
+    for(var j=0;j<n;j++){A.push(at(SA.P,a0+sa*j/n));B.push(at(SB.P,b0+sb*j/n))}}
+  var C=A.length;
+  function draw(e){
+    if(e<=0){path.setAttribute('d',AJ_D);path.setAttribute('transform',AJ_T);return}
+    path.removeAttribute('transform');
+    if(e>=1){path.setAttribute('d',ARROW);return}
+    var d='';for(var i=0;i<C;i++){var a=A[i],b=B[i];d+=(i?'L':'M')+(a[0]+(b[0]-a[0])*e).toFixed(2)+' '+(a[1]+(b[1]-a[1])*e).toFixed(2)}path.setAttribute('d',d+'Z')}
+  var t=0,to=0,raf=0,last=0;
+  function step(now){var dt=Math.min(now-(last||now),40);last=now;var dir=to>t?1:-1;t=Math.max(0,Math.min(1,t+dir*dt/(dir>0?260:200)));
+    var e=1-Math.pow(1-t,4);draw(t>=1?1:t<=0?0:e);
+    if(t!==to){svg.style.filter='blur('+(0.5*Math.sin(Math.PI*e)).toFixed(2)+'px)';raf=requestAnimationFrame(step)}else{svg.style.filter='';raf=0;last=0}}
   function go(v){to=v;if(reduce){t=v;draw(v);return}if(!raf){last=0;raf=requestAnimationFrame(step)}}
   var fine=matchMedia('(hover:hover) and (pointer:fine)');
   home.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'&&fine.matches)go(1)});
