@@ -76,8 +76,9 @@ export function Tiles({ projects }: { projects: Project[] }) {
               <span className="tile-text">
                 <span>
                   <span className="tile-title">
-                    <b>{p.title}</b>—{p.line}
+                    <b>{p.title}</b>
                   </span>
+                  <span className="tile-line">{p.line}</span>
                   <span className="tile-meta mono">
                     {p.redactCompany ? (
                       <span className="redacted" style={{ width: `${p.company.length * 0.62}em` }} aria-label="Company withheld" />

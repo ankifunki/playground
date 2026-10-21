@@ -401,6 +401,16 @@ a { color: inherit; }
   text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
   transition: text-decoration-color 0.25s var(--ease);
 }
+.tile-title { display: block; }
+/* The one-liner sits under the title and comes in on hover (it keeps its space, so nothing below moves). Touch
+   screens have no hover, so there it's always shown. */
+.tile-line { display: block; margin-top: 2px; font: 400 15px/24px var(--body); color: var(--grey); text-wrap: pretty; }
+@media (hover: hover) and (pointer: fine) {
+  .tile-line { opacity: 0; transform: translateY(6px); filter: blur(2px);
+    transition: opacity 0.2s var(--ease), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1), filter 0.2s var(--ease); }
+  .tile:hover .tile-line, .tile:focus-visible .tile-line { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) { .tile-line { transform: none !important; filter: none !important; } }
 .tile-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: center; margin-top: var(--s2); }
 .tile-arrow { width: 18px; height: 18px; margin-top: 6px; color: var(--faint); transition: transform 0.35s var(--ease), color 0.25s var(--ease); }
 .tile:hover .tile-title b, .tile:focus-visible .tile-title b { text-decoration-color: var(--accent); }
