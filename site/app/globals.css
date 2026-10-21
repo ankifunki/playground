@@ -106,13 +106,15 @@ a { color: inherit; }
     calc(var(--s5) + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
   display: grid;
   gap: var(--s6);
+  /* At least a screen tall, so the dots reach the bottom of the window on short pages */
+  min-height: 100lvh; align-content: start;
 }
 
-/* The dotted grid: drawn from the page's own top-left corner and run out to both screen edges and well below, so every
+/* The dotted grid: drawn from the page's own top-left corner and run out to both screen edges, so every
    element laid out on the 24px rhythm inside the page lands on a dot */
 .page::before {
   content: ""; position: absolute; z-index: -1; pointer-events: none;
-  inset: 0 -100vw -100vh;
+  inset: 0 -100vw;
   /* Each dot is centred on a grid crossing, half a pixel up so the 1px rules that end each 24px row run right through
      the dots instead of just above them */
   background: radial-gradient(circle at 12px 12px, var(--dot) 1px, transparent 1.4px) calc(100vw - 12px) -12.5px / 24px 24px;
