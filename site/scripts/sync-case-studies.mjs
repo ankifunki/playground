@@ -58,13 +58,14 @@ const BAR = (title) => `<header class="pf-bar">
   // The blur below is set every frame, so it must not also ease through the shared CSS filter transition
   svg.style.transition='opacity .2s var(--pf-e),transform .28s var(--pf-e)';
   var M=1200,N=240,AJ_D=path.getAttribute('d'),AJ_T='translate(0.75 0.5) scale(0.517)',
-    // The arrow is drawn in the mark's hand and at its size: every stroke is the mark's own even width (2.3, the
-    // diagonal and the J stem measure the same), with sharp corners, a symmetric chevron and a square-ended shaft
-    ARROW='M0.8 8 6.6 2.2 8.43 3.83 5.2 6.85H15.2V9.15H5.2L8.43 12.17 6.6 13.8Z';
-  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16). The extra pair at the foot
-  // of the J's stem keeps the curl and ball (which wind back on themselves) inside the shaft's right end, so the
-  // long stem alone straightens into the shaft and nothing folds inside out.
-  var ANCH=[[22.2,0.6,6.6,2.2],[26.6,18.7,15.2,6.85],[20.3,28.6,15.2,9.15],[22.2,23.7,13.6,9.15],[20.2,7.7,5.2,9.15],[1.2,28.4,6.6,13.8],[10.5,15.5,0.8,8]];
+    // The arrow is built from the mark's own J: the J turned so its stem lies along the shaft with the curl at the
+    // left, mirrored across the shaft and unioned, its curls swept back into barbs (scratchpad jarrow.py, variant C).
+    // Same scale and stroke weight as the mark, centred on y=8.
+    ARROW='M14.83 6.86 3.59 6.86 3.15 6.84 2.85 6.8 2.61 6.73 2.5 6.66 2.47 6.62 2.44 6.51 2.44 6.45 2.51 6.31 2.56 6.23 2.73 6.04 2.9 5.88 3.06 5.77 3.21 5.68 3.44 5.6 3.68 5.57 4.07 5.57 4.13 5.6 4.23 5.62 4.54 5.61 4.79 5.57 4.92 5.48 5.09 5.33 5.27 5.14 5.82 4.47 6.05 4.21 6.31 3.97 6.53 3.83 6.51 3.81 6.38 3.77 6.04 3.77 5.73 3.81 5.4 3.9 5.06 4.02 4.55 4.26 4.2 4.45 3.7 4.78 3.21 5.13 2.77 5.51 2.37 5.88 2.11 6.16 1.76 6.58 1.56 6.86 1.31 7.27 1.19 7.53 1.08 7.91 1.08 8.09 1.15 8.34 1.31 8.73 1.47 9 1.76 9.42 2.11 9.84 2.37 10.12 2.77 10.49 3.21 10.87 3.7 11.22 4.03 11.44 4.55 11.74 4.89 11.91 5.23 12.05 5.57 12.15 5.89 12.22 6.29 12.24 6.45 12.21 6.51 12.19 6.53 12.17 6.31 12.03 6.05 11.79 5.82 11.53 5.22 10.81 5.04 10.63 4.88 10.49 4.79 10.43 4.46 10.38 4.2 10.39 4.07 10.43 3.6 10.42 3.4 10.39 3.21 10.32 3.06 10.23 2.9 10.12 2.73 9.96 2.56 9.77 2.51 9.69 2.44 9.55 2.44 9.49 2.47 9.38 2.5 9.34 2.61 9.27 2.85 9.2 3.15 9.16 3.59 9.14 14.83 9.14 14.9 8.87 14.92 8.63 14.89 8.29 14.81 8 14.89 7.71 14.92 7.49 14.9 7.13Z';
+  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16). The J's top becomes the upper
+  // barb, its stem the shaft, and the diagonal the lower (mirrored) barb and tip. The extra pair at the foot of the J's
+  // stem keeps the curl and ball (which wind back on themselves) inside the shaft's right end, so nothing folds.
+  var ANCH=[[22.2,0.6,6.53,3.83],[26.6,18.7,14.83,6.86],[20.3,28.6,14.83,9.14],[22.2,23.7,13.2,9.14],[20.2,7.7,3.59,9.14],[1.2,28.4,6.53,12.17],[10.5,15.5,1.08,8]];
   function mapA(x,y){return [0.75+x*0.517,0.5+y*0.517]}
   function sample(d,map){var s=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');p.setAttribute('d',d);s.appendChild(p);
     s.style.cssText='position:absolute;width:0;height:0;visibility:hidden';document.body.appendChild(s);
