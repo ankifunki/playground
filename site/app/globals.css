@@ -72,7 +72,8 @@
 :root[data-theme="dark"] .only-light { display: none !important; }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* The dot grid runs out past both screen edges; clipping here (not just on body) stops phones widening the page to fit it */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 body {
   margin: 0;
   /* The ambient light from the top right, over a faint dotted grid, over the paper */
