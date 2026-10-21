@@ -417,17 +417,17 @@ a { color: inherit; }
    the page column) and fades out past the bar's bottom edge, two blur layers deep so the falloff reads as gradual */
 .topbar::before, .topbar::after {
   content: ""; position: absolute; z-index: -1; pointer-events: none;
-  inset: 0 calc(50% - 50vw) calc(var(--s3) * -1);
+  inset: 0 calc(50% - 50vw) calc(var(--s3) * -1.8);
   opacity: 0; transition: opacity 0.3s var(--ease);
 }
 .topbar::before {
-  background: linear-gradient(color-mix(in srgb, var(--paper) 82%, transparent), color-mix(in srgb, var(--paper) 50%, transparent) 55%, transparent);
+  background: linear-gradient(color-mix(in srgb, var(--paper) 82%, transparent), color-mix(in srgb, var(--paper) 55%, transparent) 50%, transparent);
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent);
+  -webkit-mask-image: linear-gradient(#000 50%, transparent); mask-image: linear-gradient(#000 50%, transparent);
 }
 .topbar::after {
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  -webkit-mask-image: linear-gradient(#000 30%, transparent 70%); mask-image: linear-gradient(#000 30%, transparent 70%);
+  -webkit-mask-image: linear-gradient(#000 38%, transparent 78%); mask-image: linear-gradient(#000 38%, transparent 78%);
 }
 .topbar.scrolled::before, .topbar.scrolled::after { opacity: 1; }
 
