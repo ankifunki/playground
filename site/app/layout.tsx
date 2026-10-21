@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "@fontsource/funnel-sans/400.css";
 import "@fontsource/funnel-sans/500.css";
+import "@fontsource-variable/bricolage-grotesque/standard.css";
 import "./globals.css";
 import { profile } from "@/content/site";
 
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#eef1f0" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1011" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f0ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0f14" },
   ],
 };
 

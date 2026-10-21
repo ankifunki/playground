@@ -2,18 +2,19 @@
    then about and contact. Same 12px rhythm and greys as the case studies; one column on phones.
    Roles: Geist = name and titles · Funnel Sans = reading · Geist Mono = meta. */
 :root {
-  --paper: #eef1f0;
-  --ink: #1b201f;
-  --grey: #5f6766;
-  --faint: #8a9291;
-  --rule: #c9cfce;
+  --paper: #f3f0ea;
+  --ink: #1e1c19;
+  --grey: #67625b;
+  --faint: #8f897f;
+  --rule: #d6d0c5;
   --accent: #1f5cff;
   --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
-  --bar: #1b201f;
-  --toast-bg: #1b201f; --toast-ink: #eef1f1; --toast-ok: #7ad3a6;
+  --bar: #1e1c19;
+  --toast-bg: #1e1c19; --toast-ink: #f3f0ea; --toast-ok: #7ad3a6;
   /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
   --ambient: rgba(255, 206, 128, 0.16);
-  --tile-shadow: 0 1px 2px rgba(60, 48, 30, 0.05), -10px 22px 44px -26px rgba(60, 48, 30, 0.22);
+  /* Tiles carry no drop shadow: just a faint even edge, the same in day and night */
+  --tile-shadow: none;
 
   --head: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
   --body: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
@@ -26,30 +27,30 @@
 /* Dark: follows the device unless the visitor picked a theme with the toggle (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0e1011;
-    --ink: #eef1f1;
-    --grey: #a3abaa;
-    --faint: #737b7a;
-    --rule: #262b2a;
+    --paper: #0c0f14;
+    --ink: #edf0f5;
+    --grey: #a1a8b3;
+    --faint: #717986;
+    --rule: #232a33;
     --accent: #5c8dff;
   --tick-a: 0.11; --tick-maj-a: 0.45;
-    --bar: #eef1f1;
-    --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+    --bar: #edf0f5;
+    --toast-bg: #edf0f5; --toast-ink: #0c0f14; --toast-ok: #16935f;
     /* Night: cool moonlight from the top right (tiles glow instead of casting shadows; see .art below) */
     --ambient: rgba(190, 206, 255, 0.07);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0e1011;
-  --ink: #eef1f1;
-  --grey: #a3abaa;
-  --faint: #737b7a;
-  --rule: #262b2a;
+  --paper: #0c0f14;
+  --ink: #edf0f5;
+  --grey: #a1a8b3;
+  --faint: #717986;
+  --rule: #232a33;
   --accent: #5c8dff;
   --tick-a: 0.11; --tick-maj-a: 0.45;
-  --bar: #eef1f1;
-  --toast-bg: #eef1f1; --toast-ink: #1b201f; --toast-ok: #16935f;
+  --bar: #edf0f5;
+  --toast-bg: #edf0f5; --toast-ink: #0c0f14; --toast-ok: #16935f;
   --ambient: rgba(190, 206, 255, 0.07);
   color-scheme: dark;
 }
@@ -303,8 +304,10 @@ a { color: inherit; }
 @keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
 
 .statement {
-  font: 400 clamp(30px, 4.6vw, 56px) / 1.12 var(--body);
-  letter-spacing: -0.035em;
+  /* The intro in Bricolage Grotesque: a lower optical size than its set size keeps its ink traps visible */
+  font: 400 clamp(30px, 4.6vw, 56px) / 1.12 "Bricolage Grotesque Variable", var(--body);
+  font-variation-settings: "opsz" var(--intro-opsz, 14);
+  letter-spacing: -0.03em;
   color: var(--ink);
   max-width: 21em;
   text-wrap: pretty;
@@ -339,7 +342,7 @@ a { color: inherit; }
   transition: box-shadow 0.5s var(--ease);
 }
 /* The edge sits above the tile's art, so screens running to the edge don't cover it */
-.art::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; }
+.art::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgb(30 28 25 / 0.06); }
 .wide .art { aspect-ratio: 16 / 9; }
 .art .crop {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; max-width: none;
