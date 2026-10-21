@@ -414,7 +414,8 @@ a { color: inherit; }
 .tile-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: center; margin-top: var(--s2); }
 .tile-arrow { width: 18px; height: 18px; margin-top: 6px; color: var(--faint); transition: transform 0.35s var(--ease), color 0.25s var(--ease); }
 .tile:hover .tile-title b, .tile:focus-visible .tile-title b { text-decoration-color: var(--accent); }
-.tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent); transform: translate(3px, -3px); }
+.tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent); transform: translateX(3px); }
+.tile:hover .tile-arrow.out, .tile:focus-visible .tile-arrow.out { transform: translate(3px, -3px); }
 .tile:focus-visible { outline-offset: 6px; border-radius: 16px; }
 
 /* ---------- Small delights ---------- */

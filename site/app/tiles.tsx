@@ -1,8 +1,9 @@
 import type { Project } from "@/content/site";
 
-const Arrow = () => (
-  <svg className="tile-arrow" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M5 13 13 5M6 5h7v7" />
+// ↗ only for decks that open in a new tab; case studies on this site get a plain →
+const Arrow = ({ external }: { external: boolean }) => (
+  <svg className={`tile-arrow${external ? " out" : ""}`} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={external ? "M5 13 13 5M6 5h7v7" : "M3.5 9h11M10 4.5 14.5 9 10 13.5"} />
   </svg>
 );
 
@@ -70,7 +71,7 @@ export function Tiles({ projects }: { projects: Project[] }) {
               className="tile"
               href={p.href ?? `/work/${p.slug}/`}
               {...(p.href && { target: "_blank", rel: "noopener noreferrer" })}
-              data-cursor={locked ? "Enter password" : p.href ? "Open the deck ↗" : "View case study ↗"}
+              data-cursor={locked ? "Enter password" : p.href ? "Open the deck ↗" : "View case study →"}
             >
               <ArtFor p={p} />
               <span className="tile-text">
@@ -89,7 +90,7 @@ export function Tiles({ projects }: { projects: Project[] }) {
                     <span>{p.year}</span>
                   </span>
                 </span>
-                <Arrow />
+                <Arrow external={!!p.href} />
               </span>
             </a>
           </li>
