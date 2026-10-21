@@ -398,22 +398,27 @@ a { color: inherit; }
 .tile-title { font: 400 22px/1.35 var(--body); letter-spacing: -0.015em; color: var(--grey); text-wrap: pretty; }
 .tile-title b {
   font: 600 22px/1.35 var(--head); letter-spacing: -0.03em; color: var(--ink);
-  text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
-  transition: text-decoration-color 0.25s var(--ease);
+  /* The underline draws in from the left on hover (and back out to the right), and the name takes the accent */
+  background: linear-gradient(currentColor, currentColor) no-repeat 100% 100% / 0 1.5px; padding-bottom: 2px;
+  transition: color 0.25s var(--ease), background-size 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.tile-title { display: block; }
-/* The one-liner sits under the title and comes in on hover (it keeps its space, so nothing below moves). Touch
-   screens have no hover, so there it's always shown. */
+.tile-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--s2); }
+/* The one-liner sits under the title and comes in on hover word by word, each rising and sharpening a beat after the
+   one before, like the name beside the mark. It keeps its space, so nothing moves. Touch screens have no hover, so
+   there it's always shown. */
 .tile-line { display: block; margin-top: 2px; font: 400 15px/24px var(--body); color: var(--grey); text-wrap: pretty; }
+.tile-line > span { display: inline-block; }
 @media (hover: hover) and (pointer: fine) {
-  .tile-line { opacity: 0; transform: translateY(6px); filter: blur(2px);
-    transition: opacity 0.2s var(--ease), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1), filter 0.2s var(--ease); }
-  .tile:hover .tile-line, .tile:focus-visible .tile-line { opacity: 1; transform: none; filter: none; }
+  .tile-line > span { opacity: 0; transform: translateY(4px); filter: blur(3px);
+    transition: opacity 0.14s var(--ease), transform 0.14s var(--ease), filter 0.14s var(--ease); }
+  .tile:hover .tile-line > span, .tile:focus-visible .tile-line > span { opacity: 1; transform: none; filter: none;
+    transition: opacity 0.26s cubic-bezier(0.23, 1, 0.32, 1), transform 0.32s cubic-bezier(0.23, 1, 0.32, 1), filter 0.26s cubic-bezier(0.23, 1, 0.32, 1);
+    transition-delay: calc(var(--i) * 30ms); }
 }
-@media (prefers-reduced-motion: reduce) { .tile-line { transform: none !important; filter: none !important; } }
-.tile-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: center; margin-top: var(--s2); }
+@media (prefers-reduced-motion: reduce) { .tile-line > span { transform: none !important; filter: none !important; } }
+.tile-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2); align-items: baseline; }
 .tile-arrow { width: 18px; height: 18px; margin-top: 6px; color: var(--faint); transition: transform 0.35s var(--ease), color 0.25s var(--ease); }
-.tile:hover .tile-title b, .tile:focus-visible .tile-title b { text-decoration-color: var(--accent); }
+.tile:hover .tile-title b, .tile:focus-visible .tile-title b { color: var(--accent); background-size: 100% 1.5px; background-position: 0 100%; }
 .tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent); transform: translateX(3px); }
 .tile:hover .tile-arrow.out, .tile:focus-visible .tile-arrow.out { transform: translate(3px, -3px); }
 .tile:focus-visible { outline-offset: 6px; border-radius: 16px; }

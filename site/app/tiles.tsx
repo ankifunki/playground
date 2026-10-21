@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Project } from "@/content/site";
 
 // ↗ only for decks that open in a new tab; case studies on this site get a plain →
@@ -76,18 +77,27 @@ export function Tiles({ projects }: { projects: Project[] }) {
               <ArtFor p={p} />
               <span className="tile-text">
                 <span>
-                  <span className="tile-title">
-                    <b>{p.title}</b>
+                  <span className="tile-head">
+                    <span className="tile-title">
+                      <b>{p.title}</b>
+                    </span>
+                    <span className="tile-meta mono">
+                      {p.redactCompany ? (
+                        <span className="redacted" style={{ width: `${p.company.length * 0.62}em` }} aria-label="Company withheld" />
+                      ) : (
+                        <span>{p.company}</span>
+                      )}
+                      <span aria-hidden="true">·</span>
+                      <span>{p.year}</span>
+                    </span>
                   </span>
-                  <span className="tile-line">{p.line}</span>
-                  <span className="tile-meta mono">
-                    {p.redactCompany ? (
-                      <span className="redacted" style={{ width: `${p.company.length * 0.62}em` }} aria-label="Company withheld" />
-                    ) : (
-                      <span>{p.company}</span>
-                    )}
-                    <span aria-hidden="true">·</span>
-                    <span>{p.year}</span>
+                  <span className="tile-line">
+                    {p.line.split(" ").map((w, i) => (
+                      <Fragment key={i}>
+                        {i > 0 && " "}
+                        <span style={{ ["--i" as string]: i }}>{w}</span>
+                      </Fragment>
+                    ))}
                   </span>
                 </span>
                 <Arrow external={!!p.href} />
