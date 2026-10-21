@@ -58,11 +58,13 @@ const BAR = (title) => `<header class="pf-bar">
   // The blur below is set every frame, so it must not also ease through the shared CSS filter transition
   svg.style.transition='opacity .2s var(--pf-e),transform .28s var(--pf-e)';
   var M=1200,N=240,AJ_D=path.getAttribute('d'),AJ_T='translate(0.75 0.5) scale(0.517)',
-    // The arrow is drawn in the mark's hand and at its size: a heavy upper stroke (the AJ's "/"), a light lower one,
-    // and a shaft that tapers and curls down into a small ball terminal (the J's hook, which morphs straight into it)
-    ARROW='M0.8 8 6.6 2.2 8.37 3.97 5.09 7.25 13.6 7.5C14.6 7.5 15.2 8.1 15.2 9.1 15.2 10.3 14.4 11 13.4 11 12.7 11 12.2 10.6 12.2 10.1 12.2 9.7 12.5 9.4 12.9 9.4 13.3 9.4 13.6 9.7 13.6 10 13.6 10.2 13.6 10.3 13.7 10.3 13.9 10.3 13.9 9.8 13.9 8.9L4.07 9.15 7.66 12.74 6.6 13.8Z';
-  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16)
-  var ANCH=[[22.2,0.6,6.6,2.2],[26.6,18.7,13.6,7.5],[20.3,28.6,13.4,11],[20.2,7.7,4.07,9.15],[1.2,28.4,6.6,13.8],[10.5,15.5,0.8,8]];
+    // The arrow is drawn in the mark's hand and at its size: every stroke is the mark's own even width (2.3, the
+    // diagonal and the J stem measure the same), with sharp corners, a symmetric chevron and a square-ended shaft
+    ARROW='M0.8 8 6.6 2.2 8.43 3.83 5.2 6.85H15.2V9.15H5.2L8.43 12.17 6.6 13.8Z';
+  // Anchor pairs in traversal order: AJ point (28x29 mark space) and arrow point (16x16). The extra pair at the foot
+  // of the J's stem keeps the curl and ball (which wind back on themselves) inside the shaft's right end, so the
+  // long stem alone straightens into the shaft and nothing folds inside out.
+  var ANCH=[[22.2,0.6,6.6,2.2],[26.6,18.7,15.2,6.85],[20.3,28.6,15.2,9.15],[22.2,23.7,13.6,9.15],[20.2,7.7,5.2,9.15],[1.2,28.4,6.6,13.8],[10.5,15.5,0.8,8]];
   function mapA(x,y){return [0.75+x*0.517,0.5+y*0.517]}
   function sample(d,map){var s=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');p.setAttribute('d',d);s.appendChild(p);
     s.style.cssText='position:absolute;width:0;height:0;visibility:hidden';document.body.appendChild(s);
