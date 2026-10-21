@@ -12,6 +12,7 @@ head = head.replace("<title>Multi Location at GlossGenius</title>", "<title>Flex
 
 CSS = """
 /* ---- Flexible Checkout additions ---- */
+.chapter h2 .lead{color:#5A6160}
 /* Phone-shaped screens: the frame takes the phone's proportions and a fixed height */
 .tall .frame{width:auto;height:min(50svh,460px);aspect-ratio:var(--r);margin-inline:auto}
 .dt .frame{height:auto;width:100%}
@@ -271,9 +272,11 @@ def anno(title, src, ratio, alt, notes, before=None, alts=("", "")):
 </div></section>'''
 
 def chapter(n, name, label=None):
-    return f'''<section class="slide chapter" data-name="{name}"><div class="stage">
-  <div class="head"><span class="mono">{label or f"Chapter {n:02d}"}</span></div>
-  <div class="big"><h2>{name}</h2></div>
+    # With a label (e.g. "Phase 2"), the label leads the big title in a lighter tone and the name follows
+    title = f'<span class="lead">{label}</span><br>{name}' if label else name
+    return f'''<section class="slide chapter" data-name="{f"{label}: {name}" if label else name}"><div class="stage">
+  <div class="head">{"" if label else f'<span class="mono">Chapter {n:02d}</span>'}</div>
+  <div class="big"><h2>{title}</h2></div>
 </div></section>'''
 
 # Benchmark: Square, Zenoti, Boulevard, Fresha, Mangomint (March 2026 analysis)
@@ -373,7 +376,7 @@ SLIDES = f'''
   </div></div>
 </div></section>
 
-{chapter(1, "One client, many appointments", "Phase 1")}
+{chapter(1, "One client", "Phase 1")}
 
 {anno("The cart", "cart-after", "393/852", "", [
   (30, 28, "r", "Add items up top", "Services, products and more, one tap away."),
@@ -386,7 +389,7 @@ SLIDES = f'''
 
 {proto("One cart, every appointment", "393/852", [("m-1", "Cart", "24,234,344,44", "sheet:400"), ("m-2", "Add items", "343,422,30,30", "sheetdown:400"), ("m-1", "Cart", "20,350,355,46", "slide"), ("m-3", "Edit item", "24,703,344,48", "back"), ("m-1", "Cart", "20,612,355,34", "slide"), ("m-4", "Discount", "24,758,344,48", "back"), ("m-1", "Cart", "112,758,256,46", "slide"), ("m-5", "Collect tip", "24,288,344,72", "slide"), ("m-6", "Tip and sign", "", "")], "Three tickets at the desk become one checkout: one cart, one tip, one signature.", meta="Prototype · One cart")}
 
-{chapter(2, "Many clients, one checkout", "Phase 2")}
+{chapter(2, "Group checkout", "Phase 2")}
 
 {morph("Group checkout", "list-before", "list-after", "393/852", "Paying for someone else meant a second checkout. Same-day appointments now group into one, with a clear way in.", ["one ticket per appointment", "appointments grouped under a new group checkout"], tall=True, meta="In progress")}
 
