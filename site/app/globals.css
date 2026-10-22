@@ -1,3 +1,10 @@
+/* Cabinet Grotesk, self-hosted from Fontshare (variable, 100–900) */
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("/fonts/cabinet-grotesk-variable.woff2") format("woff2");
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
+
 /* Layout: a statement, then work as big tiles (an artistic crop of a real screen, or a logo on its brand color),
    then about and contact. Same 12px rhythm and greys as the case studies; one column on phones.
    Roles: Geist = name and titles · Funnel Sans = reading · Geist Mono = meta. */
@@ -339,10 +346,9 @@ a { color: inherit; }
 @keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
 
 .statement {
-  /* The intro in Bricolage Grotesque: a lower optical size than its set size keeps its ink traps visible */
-  font: 400 clamp(30px, 4.6vw, 56px) / 1.12 "Bricolage Grotesque Variable", var(--body);
-  font-variation-settings: "opsz" var(--intro-opsz, 14);
-  letter-spacing: -0.03em;
+  /* The intro in Cabinet Grotesk (Fontshare, free under the ITF Free Font License) */
+  font: 500 clamp(30px, 4.6vw, 56px) / 1.12 "Cabinet Grotesk", var(--body);
+  letter-spacing: -0.025em;
   color: var(--ink);
   max-width: 21em;
   text-wrap: pretty;

@@ -4,7 +4,6 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "@fontsource/funnel-sans/400.css";
 import "@fontsource/funnel-sans/500.css";
-import "@fontsource-variable/bricolage-grotesque/standard.css";
 import "./globals.css";
 import { profile } from "@/content/site";
 
