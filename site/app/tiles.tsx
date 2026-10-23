@@ -1,13 +1,6 @@
 import { Fragment } from "react";
 import type { Project } from "@/content/site";
 
-// ↗ only for decks that open in a new tab; case studies on this site get a plain →
-const Arrow = ({ external }: { external: boolean }) => (
-  <svg className={`tile-arrow${external ? " out" : ""}`} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d={external ? "M5 13 13 5M6 5h7v7" : "M3.5 9h11M10 4.5 14.5 9 10 13.5"} />
-  </svg>
-);
-
 const Lock = () => (
   <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true">
     <rect x="1.5" y="4.5" width="7" height="5" rx="1" />
@@ -100,7 +93,6 @@ export function Tiles({ projects }: { projects: Project[] }) {
                     ))}
                   </span>
                 </span>
-                <Arrow external={!!p.href} />
               </span>
             </a>
           </li>
