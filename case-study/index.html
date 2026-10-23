@@ -258,7 +258,9 @@ ol.list.hard li i{font-style:normal;color:var(--grey)}
   .models > .swc{grid-column:1;grid-row:4;height:calc(var(--u)*44);margin-top:calc(var(--u)*-18)}
   .swc span{font-size:calc(var(--u)*15);padding-top:calc(var(--u)*20)}
   .swc span::before{height:calc(var(--u)*14)}
-  .flowseq > .frame{aspect-ratio:var(--r);width:auto;height:calc(var(--u)*560);max-width:100%;justify-self:start}
+  /* Width given outright (height × ratio): Safari sizes an auto grid column to zero when the item's width only
+     comes from aspect-ratio, which hid these mocks */
+  .flowseq > .frame{aspect-ratio:var(--r);width:calc(var(--u)*560*(var(--r)));height:calc(var(--u)*560);justify-self:start}
   .content > .flowseq{grid-template-columns:auto minmax(calc(var(--u)*280),1fr);column-gap:calc(var(--u)*64)}
   .steps{flex-direction:column;gap:0;margin:0;padding:0;overflow:visible}
   .steps button{min-width:0;flex:none;display:flex;align-items:baseline;gap:calc(var(--u)*12);border-top:0;border-left:2px solid var(--rule);padding:calc(var(--u)*7) 0 calc(var(--u)*7) calc(var(--u)*16)}
