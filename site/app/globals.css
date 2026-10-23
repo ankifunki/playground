@@ -9,18 +9,18 @@
    then about and contact. Same 12px rhythm and greys as the case studies; one column on phones.
    Roles: Geist = name and titles · Funnel Sans = reading · Geist Mono = meta. */
 :root {
-  --paper: #f6efe3;
-  --ink: #221c15;
-  --grey: #6d6356;
-  --faint: #978b79;
-  --rule: #ddd2c0;
-  --dot: rgb(34 28 21 / 0.09);
+  --paper: #f5f1ea;
+  --ink: #211d18;
+  --grey: #6b645a;
+  --faint: #948b7e;
+  --rule: #dcd5c9;
+  --dot: rgb(33 29 24 / 0.09);
   --accent: #1f5cff;
   --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
-  --bar: #221c15;
-  --toast-bg: #221c15; --toast-ink: #f6efe3; --toast-ok: #7ad3a6;
+  --bar: #211d18;
+  --toast-bg: #211d18; --toast-ink: #f5f1ea; --toast-ok: #7ad3a6;
   /* Day: warm light from the top right (where the sun sits), soft shadows falling away from it */
-  --ambient: rgba(255, 206, 128, 0.16);
+  --ambient: rgba(255, 206, 128, 0.10);
   /* Tiles carry no drop shadow: just a faint even edge, the same in day and night */
   --tile-shadow: none;
 
