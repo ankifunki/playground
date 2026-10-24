@@ -16,6 +16,7 @@
   --rule: #dcd5c9;
   --dot: rgb(33 29 24 / 0.09);
   --accent: #1f5cff;
+  --engrave: #4b40c8;
   --tick-a: 0.18; --tick-maj-a: 0.47; /* resting tick opacities: ink over paper reads as the rule / faint */
   --bar: #211d18;
   --toast-bg: #211d18; --toast-ink: #f5f1ea; --toast-ok: #7ad3a6;
@@ -42,6 +43,7 @@
     --rule: #1f2836;
     --dot: rgb(234 240 248 / 0.07);
     --accent: #5c8dff;
+  --engrave: #8c86f2;
   --tick-a: 0.11; --tick-maj-a: 0.45;
     --bar: #eaf0f8;
     --toast-bg: #eaf0f8; --toast-ink: #090e17; --toast-ok: #16935f;
@@ -58,6 +60,7 @@
   --rule: #1f2836;
   --dot: rgb(234 240 248 / 0.07);
   --accent: #5c8dff;
+  --engrave: #8c86f2;
   --tick-a: 0.11; --tick-maj-a: 0.45;
   --bar: #eaf0f8;
   --toast-bg: #eaf0f8; --toast-ink: #090e17; --toast-ok: #16935f;
@@ -295,6 +298,11 @@ a { color: inherit; }
 .contact-list li:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+/* The ink drawing of Vadodara: strokes in the engraving colour, shapes filled with paper so nearer trees cover
+   what's behind them. The lake fades out at the bottom into the copyright line. */
+.city { display: block; flex: 1 0 100%; width: 100%; height: auto; overflow: visible;
+  fill: var(--paper); stroke: var(--engrave);
+  -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }
 
 /* ---------- Unlock ---------- */
 .unlock { max-width: 480px; display: grid; gap: var(--s4); }

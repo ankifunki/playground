@@ -57,6 +57,10 @@ export default function Home() {
       </div>
 
       <footer className="foot">
+        {/* Home: Vadodara in ink. Laxmi Vilas Palace among the trees, the Shiva statue standing in Sursagar. */}
+        <svg className="city" viewBox="0 0 1200 440" role="img" aria-label="Vadodara, Gujarat: Laxmi Vilas Palace among trees, the Shiva statue on Sursagar lake">
+          <use href="/vadodara.svg#v" />
+        </svg>
         <span className="mono">© {new Date().getFullYear()} {profile.name}</span>
       </footer>
     </main>
