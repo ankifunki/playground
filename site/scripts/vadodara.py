@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Vadodara in ink: the dome of the Faculty of Arts, MS University (Robert Chisholm, 1880s) among the campus trees.
+"""Vadodara in ink: the dome of the Faculty of Arts, MS University (Robert Chisholm, 1880s).
 
 Writes an SVG of stroke paths in paint order (one <symbol id="v">). scripts/vadodara-raster.mjs then bakes it
 into two masks for the footer: public/vadodara-ink.webp (the lines) and public/vadodara-fill.webp (the
@@ -139,90 +139,6 @@ def pavilion(cx, base, r, h=14, w=.9):
     finial(cx, top - 3 - r * 1.5, 6, .6)
 
 
-# ------------------------------------------------------------------ trees
-def blob(cx, cy, r, shade=1.0, w=.8):
-    n = max(8, int(r / 2.3))
-    pts = []
-    for i in range(n + 1):
-        a = math.pi * 2 * i / n
-        rr = r * rnd.uniform(.82, 1.08)
-        pts.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr * .82))
-    d = f"M{f(pts[0][0])} {f(pts[0][1])}"
-    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        k = rnd.uniform(1.2, 1.42)
-        d += f"Q{f(cx + (mx - cx) * k)} {f(cy + (my - cy) * k)} {f(x2)} {f(y2)}"
-    add(d + "Z", w, True)
-    for _ in range(int(r * r / 7 * shade)):
-        a = rnd.uniform(0, 2 * math.pi)
-        rr = r * math.sqrt(rnd.random()) * .85
-        x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
-        if (x - cx) + (y - cy) < -r * .35 and rnd.random() < .8:
-            continue
-        s = rnd.uniform(2, 3.6)
-        add(f"M{f(x - s)} {f(y)}q{f(s)} {f(-s * .9)} {f(2 * s)} 0", .5)
-    for _ in range(int(r * r / 3.2 * shade)):
-        a = rnd.uniform(-.35, 1.9)
-        rr = r * (.45 + .5 * math.sqrt(rnd.random()))
-        x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
-        s = rnd.uniform(1.5, 3)
-        line(x, y, x - s, y + s * 1.2, .42)
-    # the underside of each crown in close horizontal hatch
-    yy = cy + r * .25
-    while yy < cy + r * .78:
-        half = math.sqrt(max(0, 1 - ((yy - cy) / (r * .82)) ** 2)) * r * .9
-        line(cx - half * .7, yy, cx + half, yy, .4)
-        yy += 1.7
-
-
-def tree_mass(x1, x2, top, bottom, rmin, rmax, shade=1.0):
-    topf = top if callable(top) else (lambda x: top)
-    rows, y = [], bottom
-    lo = min(topf(x) for x in (x1, (x1 + x2) / 2, x2))
-    while y > lo - rmax:
-        rows.append(y)
-        y -= rmax * .8
-    for y in reversed(rows):
-        x = x1 + rnd.uniform(-rmax, 0)
-        while x < x2 + rmax:
-            r = rnd.uniform(rmin, rmax)
-            if y >= topf(x) - r * .3:
-                blob(x, y + rnd.uniform(-5, 5), r, shade)
-            x += r * rnd.uniform(1.1, 1.5)
-
-
-def ashoka(x, base, h):
-    add(f"M{f(x)} {f(base - h)}C{f(x - 8)} {f(base - h * .6)} {f(x - 9)} {f(base - h * .15)} {f(x - 4)} {f(base)}"
-        f"L{f(x + 4)} {f(base)}C{f(x + 9)} {f(base - h * .15)} {f(x + 8)} {f(base - h * .6)} {f(x)} {f(base - h)}Z", .9, True)
-    for k in range(5, int(h) - 4, 4):
-        wv = 7 * math.sin(math.pi * min(1, k / h * 1.3)) + 1
-        line(x - wv * .2, base - k, x + wv, base - k + 2, .45)
-
-
-def palm(x, base, h, lean=0.0):
-    tx, ty = x + lean * h, base - h
-    add(f"M{f(x)} {f(base)}Q{f(x + lean * h * .2)} {f(base - h * .5)} {f(tx)} {f(ty)}", 1.1)
-    add(f"M{f(x + 2.5)} {f(base)}Q{f(x + 2.5 + lean * h * .2)} {f(base - h * .5)} {f(tx + 1.5)} {f(ty + 2)}", .7)
-    for k in range(4, int(h), 5):
-        t = k / h
-        cx = x + lean * h * (t * t * .8 + t * .2)
-        line(cx - 1, base - k, cx + 3.5, base - k + 1, .5)
-    for a in (-160, -130, -100, -70, -40, -15, 15):
-        ra = math.radians(a)
-        L_ = rnd.uniform(18, 26)
-        ex, ey = tx + math.cos(ra) * L_, ty + math.sin(ra) * L_ * .7 + L_ * .35
-        mx, my = tx + math.cos(ra) * L_ * .5, ty + math.sin(ra) * L_ * .5 - 5
-        add(f"M{f(tx)} {f(ty)}Q{f(mx)} {f(my)} {f(ex)} {f(ey)}", .9)
-        for j in range(1, 6):
-            t = j / 6
-            px = (1 - t) ** 2 * tx + 2 * (1 - t) * t * mx + t * t * ex
-            py = (1 - t) ** 2 * ty + 2 * (1 - t) * t * my + t * t * ey
-            line(px, py, px + 1.5, py + 5, .45)
-
-
-# ------------------------------------------------------------------ far trees, behind the building
-tree_mass(0, 1200, lambda x: 300 - 40 * math.sin(math.pi * x / 1200) ** 2, 330, 9, 16, .8)
-
 # ------------------------------------------------------------------ the Faculty of Arts
 CX = 600
 
@@ -340,27 +256,17 @@ for px in (PL - 2, PR + 2):
     small_arch(px - 4, 222, 8, 14, .7)
     pavilion(px, 210, 8, 14, .9)
 
-# ------------------------------------------------------------------ campus trees in front
-tree_mass(0, 270, lambda x: 270 - 60 * math.sin(math.pi * min(1, x / 270) * .9), 380, 10, 22, .9)
-tree_mass(930, 1200, lambda x: 270 - 60 * math.sin(math.pi * min(1, (1200 - x) / 270) * .9), 380, 10, 22, .9)
-for x, h in ((96, 92), (180, 110), (1020, 104), (1110, 88)):
-    ashoka(x, 392, h)
-for x, h, lean in ((236, 120, -.1), (968, 112, .12)):
-    palm(x, 396, h, lean)
-# tall ashokas framing the portico, like the ones on the lawn
-for x, h in ((452, 132), (748, 128)):
-    ashoka(x, 400, h)
-# a low hedge across the front
-tree_mass(0, 1200, 384, 404, 8, 13, .8)
-
 # ------------------------------------------------------------------ the lawn
-line(0, 404, W, 404, .9)
-y, row = 408, 0
+line(150, GROUND, W - 150, GROUND, 1.1)
+y, row = GROUND + 4, 0
 while y < H:
-    x = rnd.uniform(-20, 0)
-    while x < W:
+    # the lawn widens a little toward the viewer and frays out at its ends
+    spread = 440 + row * 9
+    x = CX - spread + rnd.uniform(-20, 0)
+    while x < CX + spread:
         seg = rnd.uniform(8, 30)
-        if rnd.random() < .8:
+        edge = abs(x - CX) / spread
+        if rnd.random() < .8 * (1 - edge ** 3):
             line(x, y, x + seg, y, .45)
         x += seg + rnd.uniform(3, 12)
     y += 2.6 + row * .3
