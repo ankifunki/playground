@@ -54,6 +54,23 @@ def hhatch(x1, x2, y1, y2, gap, w=0.5):
         y += gap
 
 
+def dot(x, y, w=1.1):
+    add(f"M{f(x)} {f(y)}h0", w)
+
+
+def stipple(x1, x2, y1, y2, n, weight, w=(0.8, 1.1)):
+    """Scatter n candidate dots over a box, keeping each with probability weight(x, y) (0..1)."""
+    for _ in range(int(n)):
+        x, y = rnd.uniform(x1, x2), rnd.uniform(y1, y2)
+        p = weight(x, y)
+        if p > 0 and rnd.random() < p:
+            dot(x, y, rnd.choice(w))
+
+
+def tick(x, y, h=3.0, w=.45):
+    add(f"M{f(x)} {f(y)}l{f(rnd.uniform(-.8, .8))} {f(-h)}", w)
+
+
 def bricks(x1, x2, y1, y2, w=0.4, row=4.0, brick=10.0):
     """Coursed brick: short staggered strokes, sparse so it reads as texture, not a grid."""
     y, k = y1 + row / 2, 0
@@ -117,8 +134,14 @@ def big_arch(x, y, w_, h_, w=1.1):
         ox, oy = cx_ + math.cos(a) * (r + 6), cy_ - math.sin(a) * (r + 6) * 1.3
         line(ix, iy, ox, oy, .5)
     # the dark of the opening: vertical hatch, and a lattice screen deep inside
-    vhatch(x + 2, x + w_ - 2, y - r * .9, y + h_, 1.5, .45)
-    hhatch(x + 2, x + w_ - 2, y - r * .3, y + h_, 2.6, .35)
+    vhatch(x + 2, x + w_ - 2, y - r * .9, y + h_, 2.0, .45)
+    # diagonal cross-hatch low in the opening
+    k = x + 2 - h_
+    while k < x + w_:
+        add(f"M{f(max(x + 2, k))} {f(y + h_ - max(0, x + 2 - k))}L{f(min(x + w_ - 2, k + h_ * .6))} {f(y + h_ - (min(x + w_ - 2, k + h_ * .6) - k))}", .3)
+        k += 3.2
+    stipple(x + 2, x + w_ - 2, y - r * 1.3, y + h_ * .25, w_ * r * .9,
+            lambda px, py: .4 if abs(px - x - r) < r * .9 and py > y - r * 1.25 * (1 - ((px - x - r) / r) ** 2) else 0, (0.7, 0.9))
 
 
 def small_arch(x, y, w_, h_, w=.8, dark=True):
@@ -145,8 +168,11 @@ CX = 600
 
 
 def band_wall(x1, x2, y1, y2):
-    """Striped brick: a light course line every few rows over coursed brick."""
+    """Striped brick: a light course line every few rows over coursed brick, dotted shadow on the right."""
     bricks(x1 + 1, x2 - 1, y1 + 1, y2 - 1)
+    span = x2 - x1
+    stipple(x1 + span * .55, x2 - 1, y1 + 1, y2 - 1, span * (y2 - y1) * .09,
+            lambda x, y: ((x - x1 - span * .55) / (span * .45)) ** 1.8 * .6, (0.7, 0.9))
     y = y1 + 9
     while y < y2 - 2:
         line(x1, y, x2, y, .5)
@@ -161,12 +187,23 @@ def dome(cx, base, r, h, n=9, size=6.5, w=1.2, finial_h=14):
     add(f"M{f(cx - r)} {f(base)}C{f(cx - r * 1.16)} {f(base - h * .5)} {f(cx - r * .55)} {f(base - h * .97)} {f(cx)} {f(base - h)}"
         f"C{f(cx + r * .55)} {f(base - h * .97)} {f(cx + r * 1.16)} {f(base - h * .5)} {f(cx + r)} {f(base)}Z", w, True)
     # latitude bands, tighter toward the bottom
-    for k in range(1, 58):
-        t = (k / 58) ** 1.1
+    for k in range(1, 36):
+        t = (k / 36) ** 1.1
         yb = base - h * t * .96
         half = r * (1 + .14 * math.sin(math.pi * min(1, (1 - t) * 1.1))) * math.sqrt(max(0, 1 - t ** 2.4))
         x0 = cx - half * (.92 if k % 3 else .7)
         add(f"M{f(x0)} {f(yb + 1.5)}Q{f(cx + half * .3)} {f(yb - 2.5)} {f(cx + half * .95)} {f(yb + 1)}", .35)
+    # stipple: dense on the shaded right and low on the dome, thinning to nothing on the lit left
+    def inside(x, y):
+        t = (base - y) / h
+        if t < 0 or t > .97:
+            return 0
+        half = r * (1 + .14 * math.sin(math.pi * min(1, (1 - t) * 1.1))) * math.sqrt(max(0, 1 - t ** 2.4))
+        u = (x - cx) / max(half, 1)
+        if abs(u) > .97:
+            return 0
+        return ((u + 1) / 2) ** 1.4 * (.35 + .65 * (1 - t) ** .7) * .55
+    stipple(cx - r * 1.2, cx + r * 1.2, base - h, base, r * h * 1.6, inside, (0.7, 0.9, 1.1))
     # shade on the right flank
     for k in range(0, 26):
         t = 1 - (k / 26) ** 1.4 * .7
@@ -299,8 +336,16 @@ while y < H:
     while x < CX + spread:
         seg = rnd.uniform(8, 30)
         edge = abs(x - CX) / spread
-        if rnd.random() < .8 * (1 - edge ** 3):
+        keep = .8 * (1 - edge ** 3)
+        roll = rnd.random()
+        if roll < keep * .45:
             line(x, y, x + seg, y, .45)
+        elif roll < keep * .8:
+            for gx in range(int(seg / 3)):
+                tick(x + gx * 3 + rnd.uniform(0, 1.5), y + 1, rnd.uniform(1.5, 3.2))
+        elif roll < keep:
+            for gx in range(int(seg / 4)):
+                dot(x + gx * 4 + rnd.uniform(0, 2), y + rnd.uniform(-1, 1), rnd.choice((0.8, 1.1)))
         x += seg + rnd.uniform(3, 12)
     y += 2.6 + row * .3
     row += 1
