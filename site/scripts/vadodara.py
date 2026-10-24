@@ -139,129 +139,162 @@ def pavilion(cx, base, r, h=14, w=.9):
     finial(cx, top - 3 - r * 1.5, 6, .6)
 
 
-# ------------------------------------------------------------------ the Faculty of Arts
+# ------------------------------------------------------------------ the Faculty of Arts, front elevation
+# Five domes ringed with rosettes: the great one over the centre, one on each tower block, one at each end.
 CX = 600
 
-# side wings, two storeys of arched windows in brick
-for wl, wr in ((300, 492), (708, 900)):
-    rect(wl, 262, wr - wl, GROUND - 262, 1.1)
-    line(wl - 3, 262, wr + 3, 262, 1.1)
-    line(wl - 3, 266, wr + 3, 266, .6)
-    x = wl
-    while x < wr - 4:                     # parapet merlons
-        rect(x + 1, 256, 5, 6, .6)
-        x += 8.5
-    bricks(wl + 1, wr - 1, 268, GROUND - 2)
-    for x0 in range(wl + 12, wr - 16, 26):
-        small_arch(x0, 290, 12, 22, .8)
-        small_arch(x0 - 1, 336, 14, 30, .85)
-    line(wl, 322, wr, 322, .8)
-    hhatch(wl + 1, wr - 1, 267, 276, 1.4, .4)
-    hhatch(wl + 1, wr - 1, 323, 329, 1.4, .4)
-    # the far end of each wing steps forward with a gabled bay and a dome
-ends = ((262, 318), (882, 938))
-for el, er in ends:
-    rect(el, 240, er - el, GROUND - 240, 1.2)
-    line(el - 4, 240, er + 4, 240, 1.1)
-    bricks(el + 1, er - 1, 246, GROUND - 2)
-    big_arch(el + 14, 300, er - el - 28, 70, .9)
-    rect(el + 6, 226, er - el - 12, 14, 1.0)
-    onion((el + er) / 2, 226, 26, 44, 1.1, ribs=4)
-    finial((el + er) / 2, 182, 16, .9)
 
-# central block behind the portico, carrying the drum and dome
-rect(470, 228, 260, GROUND - 228, 1.2)
-bricks(471, 729, 234, GROUND - 2)
-
-# the great dome: drum, two rings of rosette windows, faint ribs, lantern and chakra
-DB, DR, DH = 198, 118, 172          # base y, half width, height
-rect(CX - DR - 8, DB, 2 * DR + 16, 228 - DB, 1.2)          # drum
-for x in range(int(CX - DR - 4), int(CX + DR + 6), 7):
-    rect(x, DB + 3, 4, 5, .45)                               # dentils
-line(CX - DR - 10, DB + 12, CX + DR + 10, DB + 12, .7)
-hhatch(CX - DR - 8, CX + DR + 8, DB + 13, 228, 1.6, .4)
-add(f"M{f(CX - DR)} {f(DB)}C{f(CX - DR * 1.17)} {f(DB - DH * .48)} {f(CX - DR * .55)} {f(DB - DH * .97)} {f(CX)} {f(DB - DH)}"
-    f"C{f(CX + DR * .55)} {f(DB - DH * .97)} {f(CX + DR * 1.17)} {f(DB - DH * .48)} {f(CX + DR)} {f(DB)}Z", 1.4, True)
-# ribs (meridians), lighter on the lit side
-for k in range(-4, 5):
-    t = k / 5
-    add(f"M{f(CX + DR * t)} {f(DB)}C{f(CX + DR * 1.14 * t)} {f(DB - DH * .5)} {f(CX + DR * .5 * t)} {f(DB - DH * .95)} {f(CX)} {f(DB - DH)}", .35)
-# latitude hatching: each band follows the dome's curve, closer together lower down and on the right
-for k in range(1, 46):
-    t = k / 46
-    yb = DB - DH * (t ** 1.15) * .97
-    # half width of the dome at this height (sampled from the outline's shape)
-    u = 1 - t
-    half = DR * (1.0 + .17 * math.sin(math.pi * min(1, u * 1.05)) ) * math.sqrt(max(0, 1 - t ** 2.2))
-    x0 = CX - half * (.25 if k % 2 else .55)
-    add(f"M{f(x0)} {f(yb + 2)}Q{f(CX + half * .3)} {f(yb - 3)} {f(CX + half * .96)} {f(yb + 1)}", .35)
-# the horizontal seam a third of the way up
-add(f"M{f(CX - DR * 1.02)} {f(DB - DH * .3)}Q{f(CX)} {f(DB - DH * .24)} {f(CX + DR * 1.02)} {f(DB - DH * .3)}", .7)
-# engraved shade on the right flank
-for k in range(0, 36):
-    t = 1 - (k / 36) ** 1.4 * .7
-    add(f"M{f(CX + DR * t)} {f(DB - 2)}C{f(CX + DR * 1.15 * t)} {f(DB - DH * .48)} {f(CX + DR * .62 * t)} {f(DB - DH * (.78 - k * .006))} {f(CX + DR * .42 * t)} {f(DB - DH * (.86 - k * .008))}", .38)
+def band_wall(x1, x2, y1, y2):
+    """Striped brick: a light course line every few rows over coursed brick."""
+    bricks(x1 + 1, x2 - 1, y1 + 1, y2 - 1)
+    y = y1 + 9
+    while y < y2 - 2:
+        line(x1, y, x2, y, .5)
+        y += 9
 
 
-def rosettes(y, rx_max, count, size):
-    for k in range(count):
-        th = (k - (count - 1) / 2) * (math.pi * .78 / (count - 1)) * 2 * .55
-        x = CX + rx_max * math.sin(th)
-        sx = size * math.cos(th)                             # foreshortened toward the edges
-        ellipse(x, y, sx, size, .9)
-        ellipse(x, y, sx * .72, size * .72, .6)
-        for a in range(0, 360, 40):
+def dome(cx, base, r, h, n=9, size=6.5, w=1.2, finial_h=14):
+    """Bulbous dome on a short drum, a ring of rosette windows low on its face, latitude shading on the right."""
+    rect(cx - r * .92, base, r * 1.84, 7, 1.0)                       # drum
+    for x in range(int(cx - r * .9), int(cx + r * .9), 5):
+        rect(x, base + 2, 3, 3, .4)
+    add(f"M{f(cx - r)} {f(base)}C{f(cx - r * 1.16)} {f(base - h * .5)} {f(cx - r * .55)} {f(base - h * .97)} {f(cx)} {f(base - h)}"
+        f"C{f(cx + r * .55)} {f(base - h * .97)} {f(cx + r * 1.16)} {f(base - h * .5)} {f(cx + r)} {f(base)}Z", w, True)
+    # latitude bands, tighter toward the bottom
+    for k in range(1, 58):
+        t = (k / 58) ** 1.1
+        yb = base - h * t * .96
+        half = r * (1 + .14 * math.sin(math.pi * min(1, (1 - t) * 1.1))) * math.sqrt(max(0, 1 - t ** 2.4))
+        x0 = cx - half * (.92 if k % 3 else .7)
+        add(f"M{f(x0)} {f(yb + 1.5)}Q{f(cx + half * .3)} {f(yb - 2.5)} {f(cx + half * .95)} {f(yb + 1)}", .35)
+    # shade on the right flank
+    for k in range(0, 26):
+        t = 1 - (k / 26) ** 1.4 * .7
+        add(f"M{f(cx + r * t)} {f(base - 1)}C{f(cx + r * 1.14 * t)} {f(base - h * .45)} {f(cx + r * .62 * t)} {f(base - h * (.78 - k * .006))} {f(cx + r * .42 * t)} {f(base - h * (.86 - k * .008))}", .38)
+    # rosette ring
+    for k in range(n):
+        th = (k - (n - 1) / 2) / ((n - 1) / 2) * 1.2
+        x = cx + r * 1.02 * math.sin(th)
+        sx = size * max(.25, math.cos(th))
+        y = base - h * .22
+        ellipse(x, y, sx, size, .8)
+        ellipse(x, y, sx * .66, size * .66, .5)
+        for a in range(0, 360, 45):
             ra = math.radians(a)
-            line(x + math.cos(ra) * sx * .2, y + math.sin(ra) * size * .2, x + math.cos(ra) * sx * .6, y + math.sin(ra) * size * .6, .4)
+            line(x + math.cos(ra) * sx * .2, y + math.sin(ra) * size * .2, x + math.cos(ra) * sx * .6, y + math.sin(ra) * size * .6, .35)
+    rect(cx - r * .12, base - h - 4, r * .24, 4, .9)
+    finial(cx, base - h - 4, finial_h, .9)
 
 
-rosettes(DB - DH * .2, DR * .98, 7, 12)
-rosettes(DB - DH * .63, DR * .78, 7, 7)
-# lantern collar and the chakra finial
-rect(CX - 15, DB - DH - 6, 30, 6, 1.0)
-ellipse(CX, DB - DH - 6, 15, 2.5, .8)
-finial(CX, DB - DH - 6, 24, 1.0, wheel=True)
+def parapet(x1, x2, top, every=0):
+    line(x1 - 3, top, x2 + 3, top, 1.1)
+    line(x1 - 3, top + 4, x2 + 3, top + 4, .6)
+    hhatch(x1, x2, top + 5, top + 12, 1.4, .4)          # shadow under the cornice
+    x = x1
+    while x < x2 - 3:
+        rect(x + 1, top - 6, 5, 6, .55)
+        x += 9
+    if every:
+        x = x1 + every / 2
+        while x < x2:
+            pavilion(x, top - 6, 4, 9, .7)
+            x += every
 
-# four little half domes clustered on the drum's shoulders
-for hx in (CX - 108, CX + 108):
-    hemi(hx, 226, 34, 30, 1.1)
-for hx in (CX - 70, CX + 70):
-    hemi(hx, 232, 30, 24, 1.0)
 
-# the portico: three great arches with a bracketed cornice and corner pavilions
-PL, PR, PT = 500, 700, 248
-rect(PL, PT, PR - PL, GROUND - PT, 1.3)
-line(PL - 6, PT, PR + 6, PT, 1.2)
-line(PL - 6, PT + 4, PR + 6, PT + 4, .7)
-hhatch(PL + 1, PR - 1, PT + 8, PT + 18, 1.3, .4)
-for x in range(PL - 4, PR + 6, 6):           # brackets under the cornice
-    line(x, PT + 4, x, PT + 8, .5)
-x = PL - 6
-while x < PR + 2:                             # crenellated parapet
-    rect(x, PT - 7, 6, 7, .6)
-    x += 10
-bay = (PR - PL - 24) / 3
-for k in range(3):
-    ax = PL + 12 + k * (bay + 0) + 6
-    big_arch(ax, 300, bay - 12, GROUND - 300, 1.1)
-# columns with capitals between the arches
-for k in range(4):
-    cx = PL + 12 + k * bay + 3
-    rect(cx - 6, 296, 12, GROUND - 296, 1.0)
-    rect(cx - 8, 290, 16, 6, .9)
-    vhatch(cx + 1, cx + 6, 297, GROUND, 1.6, .4)
-for px in (PL - 2, PR + 2):
-    rect(px - 11, 210, 22, PT - 210, 1.1)
-    bricks(px - 10, px + 10, 214, PT)
-    small_arch(px - 4, 222, 8, 14, .7)
-    pavilion(px, 210, 8, 14, .9)
+def arcade(x1, x2, y1, y2, bay=24, pair=True):
+    """A row of arched openings on slim columns."""
+    x = x1 + 6
+    while x + bay - 8 <= x2:
+        if pair:
+            small_arch(x, y1 + 8, (bay - 10) / 2, y2 - y1 - 8, .75)
+            small_arch(x + (bay - 10) / 2 + 2, y1 + 8, (bay - 10) / 2, y2 - y1 - 8, .75)
+        else:
+            small_arch(x, y1 + 8, bay - 8, y2 - y1 - 8, .8)
+        x += bay
+
+
+# outer wings: two storeys of paired arches under a pinnacled parapet
+for wl, wr in ((112, 292), (908, 1088)):
+    rect(wl, 292, wr - wl, GROUND - 292, 1.1)
+    band_wall(wl, wr, 304, GROUND)
+    parapet(wl, wr, 292, every=45)
+    arcade(wl, wr, 304, 340, 30)
+    line(wl, 346, wr, 346, .8)
+    hhatch(wl + 1, wr - 1, 347, 351, 1.3, .4)
+    arcade(wl, wr, 352, GROUND - 4, 30)
+
+# end blocks with the outer domes
+for bx in (18, 1088):
+    rect(bx, 270, 94, GROUND - 270, 1.2)
+    band_wall(bx, bx + 94, 282, GROUND)
+    parapet(bx, bx + 94, 270)
+    big_arch(bx + 26, 318, 42, GROUND - 318, .9)
+    small_arch(bx + 12, 290, 10, 16, .7)
+    small_arch(bx + 72, 290, 10, 16, .7)
+    dome(bx + 47, 256, 44, 62, n=7, size=5.5)
+
+# low links between the towers and the centre
+for lx in (394, 742):
+    rect(lx, 284, 64, GROUND - 284, 1.0)
+    band_wall(lx, lx + 64, 296, GROUND)
+    parapet(lx, lx + 64, 284)
+    small_arch(lx + 10, 306, 16, 26, .75)
+    small_arch(lx + 38, 306, 16, 26, .75)
+    arcade(lx, lx + 64, 342, GROUND - 4, 21, pair=False)
+
+# tower blocks: a great arched recess with balconies, crowned by a dome
+for tx in (286, 806):
+    TW = 108
+    rect(tx, 250, TW, GROUND - 250, 1.3)
+    band_wall(tx, tx + TW, 262, GROUND)
+    parapet(tx, tx + TW, 250)
+    for px in (tx + 2, tx + TW - 2):
+        pavilion(px, 244, 5, 11, .8)
+    big_arch(tx + 22, 300, TW - 44, 46, 1.0)
+    rect(tx + 24, 322, TW - 48, 4, .8)                    # balcony rail
+    vhatch(tx + 25, tx + TW - 25, 322, 326, 2.2, .4)
+    for k in range(3):
+        small_arch(tx + 24 + k * 21, 356, 15, GROUND - 356, .85)
+    dome(tx + TW / 2, 236, 52, 74, n=9, size=6)
+
+# the centre: tallest block, three arches under peaked frames, small domes at its shoulders
+CL, CR = 458, 742
+rect(CL, 248, CR - CL, GROUND - 248, 1.4)
+band_wall(CL, CR, 260, GROUND)
+parapet(CL, CR, 248)
+for px in (CL + 2, CR - 2):
+    pavilion(px, 242, 5, 12, .8)
+# side bays: window over a smaller arch
+for bx in (CL + 14, CR - 70):
+    small_arch(bx + 18, 272, 20, 26, .8)
+    big_arch(bx + 6, 330, 44, GROUND - 330, 1.0)
+# the great central arch with its tall grille
+big_arch(CX - 36, 300, 72, GROUND - 300, 1.3)
+hhatch(CX - 34, CX + 34, 300, GROUND, 4, .45)
+# columns between the bays
+for cx in (CX - 46, CX + 46):
+    rect(cx - 5, 296, 10, GROUND - 296, 1.0)
+    rect(cx - 7, 290, 14, 6, .9)
+    vhatch(cx + 1, cx + 5, 297, GROUND, 1.5, .4)
+# the great dome on its tall drum, which rises behind the shoulder domes
+rect(CX - 76, 212, 152, 36, 1.2)
+band_wall(CX - 76, CX + 76, 214, 248)
+for k in range(5):
+    small_arch(CX - 52 + k * 24, 222, 8, 16, .6)
+dome(CX, 206, 80, 112, n=11, size=8, w=1.4, finial_h=22)
+# shoulder domes and domelets
+for hx in (CX - 92, CX + 92):
+    onion(hx, 240, 22, 34, 1.0)
+    finial(hx, 206, 10, .7)
+for hx in (CX - 56, CX + 56):
+    hemi(hx, 244, 18, 18, .9)
 
 # ------------------------------------------------------------------ the lawn
-line(150, GROUND, W - 150, GROUND, 1.1)
+line(0, GROUND, W, GROUND, 1.1)
 y, row = GROUND + 4, 0
 while y < H:
     # the lawn widens a little toward the viewer and frays out at its ends
-    spread = 440 + row * 9
+    spread = 560 + row * 6
     x = CX - spread + rnd.uniform(-20, 0)
     while x < CX + spread:
         seg = rnd.uniform(8, 30)
