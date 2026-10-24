@@ -55,7 +55,6 @@ export const profile = {
 export const intro = {
   lead: "Hi, I’m Ankit,",
   before: "I",
-  // Set with rising weight, light to heavy: the idea taking shape, then going out the door
   verbs: ["design", "build", "ship"],
   after: "my full intent.",
 };

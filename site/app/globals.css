@@ -355,12 +355,8 @@ a { color: inherit; }
   margin-top: var(--s5);
 }
 .statement .ink { color: var(--ink); }
-/* design, build, ship: each verb a step heavier and darker than the last. On arrival they swell into their weights one after
-   another, as if being built, then rest. */
-.statement .verb { font-weight: var(--w); }
-.statement .v1 { --w: 200; color: var(--faint); }
-.statement .v2 { --w: 620; color: var(--grey); }
-.statement .v3 { --w: 900; color: var(--ink); }
+/* design, build, ship: set like the rest of the line. On arrival they firm up from hairline one after another,
+   then rest at the same weight and colour as everything around them. */
 @media (prefers-reduced-motion: no-preference) {
   .statement .verb { animation: verb-build 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; }
   .statement .v1 { animation-delay: 0.35s; }
