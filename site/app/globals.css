@@ -347,11 +347,12 @@ a { color: inherit; }
 @keyframes aj-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
 
 .statement {
-  /* The intro in Cabinet Grotesk (Fontshare, free under the ITF Free Font License) */
-  font: 500 clamp(30px, 4.6vw, 56px) / 1.12 "Cabinet Grotesk", var(--body);
+  /* The intro in Cabinet Grotesk (Fontshare, free under the ITF Free Font License). Sized from the page's
+     content width (window less gutters), so the sentence fills the same share of the line on any screen; below
+     about 720px it rests at 30px and wraps. */
+  font: 500 max(30px, calc((100vw - 2 * var(--gutter)) * 0.048)) / 1.12 "Cabinet Grotesk", var(--body);
   letter-spacing: -0.025em;
   color: var(--ink);
-  max-width: 21em;
   text-wrap: pretty;
   margin-top: var(--s5);
 }
