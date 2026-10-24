@@ -32,10 +32,16 @@ export default function Home() {
           <span key={v}>
             <span className={`verb v${i + 1}`}>
               <span className="vh">{v}</span>
-              <span aria-hidden="true">
-                {/* "build" is laid and "ship" goes out letter by letter, so each letter is its own piece */}
-                {i > 0 ? [...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>) : v}
+              {/* "ship" goes out letter by letter, so each of its letters is its own piece */}
+              <span className="glyphs" aria-hidden="true">
+                {i === 2 ? [...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>) : v}
               </span>
+              {/* "build" is first typed out as code, then resolves into the word */}
+              {i === 1 && (
+                <span className="code" aria-hidden="true">
+                  {[...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>)}
+                </span>
+              )}
             </span>
             {/* the words after each verb wait for its motion to finish */}
             <span className={`then t${i + 1}`}>

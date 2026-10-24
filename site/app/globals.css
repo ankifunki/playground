@@ -359,7 +359,7 @@ a { color: inherit; }
 .statement .ink { color: var(--ink); }
 /* design, build, ship: set like the rest of the line, but on arrival each plays its own step, in turn.
    design: an outline inside a faint selection box, then the ink fills and the box lets go.
-   build:  a baseline is laid, the letters stack onto it one by one, then the line is struck.
+   build:  typed out as code, letter by letter behind a caret, then it compiles: the code blurs away as the word resolves.
    ship:   the letters go out one after another, each sliding in from the left with a little motion blur.
    Each step finishes before the next begins, and the words after a verb wait for it, so the sentence unfolds
    in order over five seconds, then rests exactly like any other text. */
@@ -367,7 +367,7 @@ a { color: inherit; }
 .statement .verb { position: relative; display: inline-block; }
 @media (prefers-reduced-motion: no-preference) {
   /* design */
-  .statement .v1 > span { animation: v-fill 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.9s both; }
+  .statement .v1 .glyphs { animation: v-fill 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.9s both; }
   .statement .v1::after {
     content: ""; position: absolute; inset: 0.08em -0.1em 0.02em; pointer-events: none;
     border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
@@ -381,13 +381,16 @@ a { color: inherit; }
     opacity: 0; animation: v-select 1.6s cubic-bezier(0.23, 1, 0.32, 1) 0.4s both;
   }
   /* build */
-  .statement .v2 > span[aria-hidden] > span { display: inline-block; animation: v-lay 0.6s cubic-bezier(0.23, 1, 0.32, 1) both; animation-delay: calc(2.2s + var(--k) * 130ms); }
-  .statement .v2::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: 0.12em; height: 1px; background: var(--faint);
-    transform-origin: left; transform: scaleX(0); animation: v-scaffold 1.6s cubic-bezier(0.23, 1, 0.32, 1) 2s both;
+  .statement .v2 .glyphs { display: inline-block; animation: v-resolve 0.55s cubic-bezier(0.23, 1, 0.32, 1) 3s both; }
+  .statement .v2 .code {
+    position: absolute; left: 0; bottom: 0.2em; display: flex; align-items: center; white-space: nowrap;
+    font: 400 0.62em/1 var(--mono); letter-spacing: 0; color: var(--grey); pointer-events: none;
+    animation: v-compile 0.55s cubic-bezier(0.23, 1, 0.32, 1) 3s both;
   }
+  .statement .v2 .code > span { display: inline-block; overflow: hidden; max-width: 0; animation: v-type 0.01s linear both; animation-delay: calc(2.05s + var(--k) * 150ms); }
+  .statement .v2 .code::after { content: ""; width: 0.09em; height: 1.1em; margin-left: 0.08em; background: var(--accent); animation: v-caret 0.42s steps(1) 2s 4 both; }
   /* ship */
-  .statement .v3 > span[aria-hidden] > span { display: inline-block; animation: v-ship 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; animation-delay: calc(3.6s + var(--k) * 130ms); }
+  .statement .v3 .glyphs > span { display: inline-block; animation: v-ship 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; animation-delay: calc(3.6s + var(--k) * 130ms); }
   /* the words that follow each verb */
   .statement .then { animation: v-then 0.3s ease-out both; }
   .statement .t1 { animation-delay: 2s; }
@@ -395,10 +398,11 @@ a { color: inherit; }
   .statement .t3 { animation-delay: 4.7s; }
   /* replay on hover (verb-replay.tsx): the same motions, minus the opening delays */
   .statement .verb.replay.v1::after { animation-delay: 0s; }
-  .statement .verb.replay.v1 > span { animation-delay: 0.5s; }
-  .statement .verb.replay.v2::after { animation-delay: 0s; }
-  .statement .verb.replay.v2 > span[aria-hidden] > span { animation-delay: calc(0.2s + var(--k) * 130ms); }
-  .statement .verb.replay.v3 > span[aria-hidden] > span { animation-delay: calc(var(--k) * 130ms); }
+  .statement .verb.replay.v1 .glyphs { animation-delay: 0.5s; }
+  .statement .verb.replay.v2 .glyphs, .statement .verb.replay.v2 .code { animation-delay: 1s; }
+  .statement .verb.replay.v2 .code > span { animation-delay: calc(0.05s + var(--k) * 150ms); }
+  .statement .verb.replay.v2 .code::after { animation-delay: 0s; }
+  .statement .verb.replay.v3 .glyphs > span { animation-delay: calc(var(--k) * 130ms); }
   .statement .verb.reset, .statement .verb.reset::after, .statement .verb.reset * { animation: none !important; }
 }
 @keyframes v-then { from { opacity: 0; } }
@@ -408,12 +412,10 @@ a { color: inherit; }
   25%, 70% { opacity: 1; transform: none; }
   100% { opacity: 0; transform: none; }
 }
-@keyframes v-lay { from { opacity: 0; transform: translateY(0.35em); } }
-@keyframes v-scaffold {
-  0% { transform: scaleX(0); opacity: 1; }
-  30%, 75% { transform: scaleX(1); opacity: 1; }
-  100% { transform: scaleX(1); opacity: 0; }
-}
+@keyframes v-type { from { max-width: 0; } to { max-width: 1ch; } }
+@keyframes v-caret { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes v-compile { to { opacity: 0; filter: blur(4px); transform: translateY(-0.15em); } }
+@keyframes v-resolve { from { opacity: 0; filter: blur(4px); } }
 @keyframes v-ship {
   0% { opacity: 0; transform: translateX(-0.45em); filter: blur(5px); }
   65% { opacity: 1; transform: translateX(0.04em); filter: blur(0); }
