@@ -4,6 +4,7 @@ import { Tiles } from "./tiles";
 import { Timeline } from "./timeline";
 import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
+import { VerbReplay } from "./verb-replay";
 
 export default function Home() {
   return (
@@ -41,6 +42,7 @@ export default function Home() {
         ))}
         {intro.after}
       </h1>
+      <VerbReplay />
 
       <section id="work" className="work-area" aria-label="Work">
         <Tiles projects={projects} />

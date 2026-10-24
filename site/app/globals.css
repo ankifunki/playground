@@ -387,6 +387,13 @@ a { color: inherit; }
   }
   /* ship */
   .statement .v3 > span[aria-hidden] > span { display: inline-block; animation: v-ship 0.7s cubic-bezier(0.23, 1, 0.32, 1) both; animation-delay: calc(3.9s + var(--k) * 130ms); }
+  /* replay on hover (verb-replay.tsx): the same motions, minus the opening delays */
+  .statement .verb.replay.v1::after { animation-delay: 0s; }
+  .statement .verb.replay.v1 > span { animation-delay: 0.9s; }
+  .statement .verb.replay.v2::after { animation-delay: 0s; }
+  .statement .verb.replay.v2 > span[aria-hidden] > span { animation-delay: calc(0.3s + var(--k) * 130ms); }
+  .statement .verb.replay.v3 > span[aria-hidden] > span { animation-delay: calc(var(--k) * 130ms); }
+  .statement .verb.reset, .statement .verb.reset::after, .statement .verb.reset * { animation: none !important; }
 }
 @keyframes v-fill { from { color: transparent; -webkit-text-stroke: 1px var(--ink); } }
 @keyframes v-select {
