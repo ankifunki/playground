@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Vadodara in ink: Laxmi Vilas Palace among trees, the Shiva statue on Sursagar, the lake in front.
-Writes a single-colour, stroke-only SVG (used as a CSS mask, so the site picks the ink colour)."""
+"""Vadodara in ink: the dome of the Faculty of Arts, MS University (Robert Chisholm, 1880s) among the campus trees.
+
+Writes public/vadodara.svg: one <symbol id="v"> of stroke paths in paint order. The page draws it with
+<use href="/vadodara.svg#v">, filling shapes with the paper colour (so nearer things cover farther ones) and
+stroking in the ink colour, which keeps it in step with light and dark mode.
+
+    python3 scripts/vadodara.py public/vadodara.svg
+"""
 import math, random, sys
 
-W, H = 1200, 440
-GROUND = 300          # palace base line
-SHORE = 332           # water starts
-rnd = random.Random(7)
-P = []                # (d, stroke width)
-
-
+W, H = 1200, 460
+GROUND = 392
+rnd = random.Random(11)
+P = []          # (d, stroke width, occludes, transform)
 TF = [None]
 
 
@@ -26,135 +29,117 @@ def line(x1, y1, x2, y2, w=1.0):
 
 
 def poly(pts, w=1.0, close=False):
-    d = "M" + "L".join(f"{f(x)} {f(y)}" for x, y in pts)
-    add(d + ("Z" if close else ""), w, close)
+    add("M" + "L".join(f"{f(x)} {f(y)}" for x, y in pts) + ("Z" if close else ""), w, close)
 
 
 def rect(x, y, w_, h_, w=1.0):
     poly([(x, y), (x + w_, y), (x + w_, y + h_), (x, y + h_)], w, True)
 
 
-def arch(x, y, w_, h_, w=0.9):
-    """Pointed (Indo-Saracenic) arch: opening from x to x+w_, springing at y, foot at y+h_."""
-    r = w_ / 2
-    add(f"M{f(x)} {f(y + h_)}L{f(x)} {f(y)}Q{f(x)} {f(y - r * 1.1)} {f(x + r)} {f(y - r * 1.25)}"
-        f"Q{f(x + w_)} {f(y - r * 1.1)} {f(x + w_)} {f(y)}L{f(x + w_)} {f(y + h_)}", w)
+def ellipse(cx, cy, rx, ry, w=1.0, occ=True):
+    add(f"M{f(cx - rx)} {f(cy)}a{f(rx)} {f(ry)} 0 1 0 {f(2 * rx)} 0a{f(rx)} {f(ry)} 0 1 0 {f(-2 * rx)} 0Z", w, occ)
 
 
-def vhatch(x1, x2, y1, y2, gap, w=0.55, jitter=0.0):
+def vhatch(x1, x2, y1, y2, gap, w=0.5):
     x = x1 + gap / 2
     while x < x2:
-        j = rnd.uniform(-jitter, jitter)
-        line(x, y1 + j, x, y2, w)
+        line(x, y1, x, y2, w)
         x += gap
 
 
-def hhatch(x1, x2, y1, y2, gap, w=0.55):
+def hhatch(x1, x2, y1, y2, gap, w=0.5):
     y = y1 + gap / 2
     while y < y2:
         line(x1, y, x2, y, w)
         y += gap
 
 
-def dome(cx, base, r, h, w=1.1, finial=10, hatch=True):
-    """Onion dome sitting on a drum at y=base."""
-    add(f"M{f(cx - r)} {f(base)}C{f(cx - r * 1.25)} {f(base - h * .55)} {f(cx - r * .35)} {f(base - h * .8)} {f(cx)} {f(base - h)}"
-        f"C{f(cx + r * .35)} {f(base - h * .8)} {f(cx + r * 1.25)} {f(base - h * .55)} {f(cx + r)} {f(base)}Z", w, True)
-    line(cx, base - h, cx, base - h - finial, w * .8)
-    add(f"M{f(cx - 2)} {f(base - h - finial * .45)}a2 2 0 1 0 4 0a2 2 0 1 0 -4 0", w * .7)
-    if hatch:  # shade the right flank with short curved strokes
-        for k in range(1, 5):
-            t = k / 5
-            x = cx + r * t * .95
-            add(f"M{f(x)} {f(base - 1)}Q{f(x + r * .12)} {f(base - h * .45)} {f(cx + r * t * .3)} {f(base - h * (.75 + .1 * t))}", .5)
+def bricks(x1, x2, y1, y2, w=0.4, row=6.5, brick=12.0):
+    """Coursed brick: short staggered strokes, sparse so it reads as texture, not a grid."""
+    y, k = y1 + row / 2, 0
+    while y < y2:
+        x = x1 + (brick / 2 if k % 2 else 0) + rnd.uniform(0, 3)
+        while x < x2 - 3:
+            if rnd.random() < .32:
+                line(x, y, min(x + brick * rnd.uniform(.5, .8), x2), y, w)
+            x += brick
+        y += row
+        k += 1
 
 
-def chhatri(cx, base, r, pillar=12, w=1.0):
-    """Little pavilion: four posts and a dome."""
+def finial(cx, top, h=14, w=.9, wheel=False):
+    line(cx, top, cx, top - h, w)
+    for t, r in ((.25, 2.6), (.5, 1.8), (.72, 1.4)):
+        ellipse(cx, top - h * t, r, r * .8, w * .7)
+    if wheel:  # the chakra that crowns the big dome
+        ellipse(cx, top - h - 4, 4, 4, w * .8)
+        for a in range(0, 180, 45):
+            ra = math.radians(a)
+            line(cx - 4 * math.cos(ra), top - h - 4 - 4 * math.sin(ra), cx + 4 * math.cos(ra), top - h - 4 + 4 * math.sin(ra), .5)
+
+
+def onion(cx, base, r, h, w=1.0, ribs=0, shade=True):
+    """A bulbous dome: swells past its base, then rises to a point."""
+    add(f"M{f(cx - r)} {f(base)}C{f(cx - r * 1.22)} {f(base - h * .45)} {f(cx - r * .5)} {f(base - h * .92)} {f(cx)} {f(base - h)}"
+        f"C{f(cx + r * .5)} {f(base - h * .92)} {f(cx + r * 1.22)} {f(base - h * .45)} {f(cx + r)} {f(base)}Z", w, True)
+    for k in range(1, ribs + 1):
+        t = k / (ribs + 1) * 2 - 1           # -1..1 across the face
+        x0 = cx + r * t
+        add(f"M{f(x0)} {f(base)}C{f(cx + r * 1.15 * t)} {f(base - h * .45)} {f(cx + r * .45 * t)} {f(base - h * .9)} {f(cx)} {f(base - h)}", .45)
+    if shade:
+        for k in range(1, 7):
+            t = .45 + k * .08
+            add(f"M{f(cx + r * t)} {f(base - 1)}C{f(cx + r * 1.15 * t)} {f(base - h * .42)} {f(cx + r * .48 * t)} {f(base - h * .85)} {f(cx + r * .12)} {f(base - h * .97)}", .45)
+
+
+def hemi(cx, base, r, h, w=1.0):
+    """A low half dome."""
+    add(f"M{f(cx - r)} {f(base)}C{f(cx - r)} {f(base - h * 1.3)} {f(cx + r)} {f(base - h * 1.3)} {f(cx + r)} {f(base)}Z", w, True)
+    for k in range(1, 6):
+        t = .4 + k * .1
+        add(f"M{f(cx + r * t)} {f(base - 1)}C{f(cx + r * t)} {f(base - h * (1.3 - t * .6))} {f(cx + r * t * .5)} {f(base - h * (1.1 - t * .2))} {f(cx + r * .1)} {f(base - h * .98)}", .42)
+
+
+def big_arch(x, y, w_, h_, w=1.1):
+    """Horseshoe-pointed arch with a banded outer ring, as on the portico."""
+    r = w_ / 2
+    def ring(o, ww):
+        add(f"M{f(x - o)} {f(y + h_)}L{f(x - o)} {f(y)}C{f(x - o)} {f(y - r * 1.25 - o)} {f(x + r)} {f(y - r * 1.45 - o)} {f(x + r)} {f(y - r * 1.45 - o)}"
+            f"C{f(x + r)} {f(y - r * 1.45 - o)} {f(x + w_ + o)} {f(y - r * 1.25 - o)} {f(x + w_ + o)} {f(y)}L{f(x + w_ + o)} {f(y + h_)}", ww)
+    ring(0, w)
+    ring(6, .8)
+    # voussoir bands between the rings
+    for k in range(0, 15):
+        t = k / 14
+        a = math.pi * (1 - t)
+        cx_, cy_ = x + r, y
+        ix, iy = cx_ + math.cos(a) * r, cy_ - math.sin(a) * r * 1.3
+        ox, oy = cx_ + math.cos(a) * (r + 6), cy_ - math.sin(a) * (r + 6) * 1.3
+        line(ix, iy, ox, oy, .5)
+    # the dark of the opening: vertical hatch, and a lattice screen deep inside
+    vhatch(x + 2, x + w_ - 2, y - r * .9, y + h_, 2.2, .45)
+
+
+def small_arch(x, y, w_, h_, w=.8, dark=True):
+    r = w_ / 2
+    add(f"M{f(x)} {f(y + h_)}L{f(x)} {f(y)}Q{f(x)} {f(y - r * 1.15)} {f(x + r)} {f(y - r * 1.3)}Q{f(x + w_)} {f(y - r * 1.15)} {f(x + w_)} {f(y)}L{f(x + w_)} {f(y + h_)}Z", w, True)
+    if dark:
+        vhatch(x + 1, x + w_ - 1, y - r * .6, y + h_, 1.8, .4)
+
+
+def pavilion(cx, base, r, h=14, w=.9):
+    """Corner chhatri: a square turret top, posts, a little dome."""
     rect(cx - r - 2, base - 3, 2 * r + 4, 3, w)
-    for px in (cx - r, cx - r / 3, cx + r / 3, cx + r):
-        line(px, base - 3, px, base - 3 - pillar, w * .8)
-    top = base - 3 - pillar
+    for px in (cx - r, cx, cx + r):
+        line(px, base - 3, px, base - 3 - h, w * .8)
+    top = base - 3 - h
     rect(cx - r - 3, top - 3, 2 * r + 6, 3, w)
-    dome(cx, top - 3, r, r * 1.5, w, finial=6)
+    onion(cx, top - 3, r, r * 1.5, w, shade=False)
+    finial(cx, top - 3 - r * 1.5, 6, .6)
 
 
-# ---------------------------------------------------------------- palace
-L, R = 318, 882
-roof = 236
-# main block, ground and upper storeys
-rect(L, roof, R - L, GROUND - roof, 1.2)
-line(L - 4, roof, R + 4, roof, 1.2)
-line(L - 4, roof - 3, R + 4, roof - 3, 0.9)
-line(L, 268, R, 268, 1.0)
-line(L, 271, R, 271, 0.6)
-# parapet merlons
-x = L
-while x < R:
-    rect(x + 1, roof - 8, 5, 5, .7)
-    x += 9
-# arcades: upper storey and ground storey
-for x0 in range(L + 8, R - 14, 22):
-    arch(x0, 248, 13, 16, .8)
-    arch(x0 - 1, 282, 15, 18, .9)
-    line(x0 + 6.5, 240, x0 + 6.5, 236, .4)
-# wall shading: fine vertical hatch, tighter under the cornices
-vhatch(L, R, roof + 1, roof + 9, 2.4, .45)
-vhatch(L, R, 272, 279, 2.4, .45)
-
-# end wings: taller blocks with big domes
-for wl in (L - 34, R - 20):
-    rect(wl, 206, 54, GROUND - 206, 1.2)
-    line(wl - 4, 206, wl + 58, 206, 1.1)
-    for k in range(3):
-        arch(wl + 8 + k * 14, 220, 9, 14, .8)
-        arch(wl + 8 + k * 14, 248, 9, 14, .8)
-        arch(wl + 7 + k * 14, 280, 11, 20, .9)
-    vhatch(wl + 36, wl + 54, 207, GROUND, 2.2, .45)
-    rect(wl + 10, 194, 34, 12, 1.0)
-    dome(wl + 27, 194, 17, 30, 1.2, finial=12)
-    chhatri(wl + 6, 206, 4, 9, .8)
-    chhatri(wl + 48, 206, 4, 9, .8)
-
-# roofline chhatris along the main block
-for i, cx in enumerate(range(352, 860, 36)):
-    if abs(cx - 600) < 50:
-        continue
-    big = i % 3 == 1
-    chhatri(cx, roof - 8, 7.5 if big else 5, 14 if big else 9, .9)
-
-# central clock tower
-TX, TW = 600, 34
-tl = TX - TW / 2
-rect(tl, 112, TW, roof - 112, 1.3)
-for y in (150, 176, 204):
-    line(tl - 3, y, tl + TW + 3, y, 1.0)
-arch(tl + 9, 186, 16, 14, .9)      # window
-arch(tl + 10, 158, 14, 13, .9)
-add(f"M{f(TX - 9)} 132a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", 1.0)  # clock face
-line(TX, 132, TX, 125.5, .8)
-line(TX, 132, TX + 4.5, 134, .8)
-vhatch(TX + 4, tl + TW, 113, roof, 2.0, .45)
-# open belvedere, then the big dome
-rect(tl - 4, 106, TW + 8, 6, 1.1)
-for px in (tl - 2, tl + 10, tl + TW - 10, tl + TW + 2):
-    line(px, 106, px, 86, .9)
-    arch(px + 1, 92, 7, 14, .5) if px < tl + TW else None
-rect(tl - 6, 81, TW + 12, 5, 1.1)
-dome(TX, 81, 22, 40, 1.3, finial=16)
-chhatri(tl - 2, 106, 3.5, 8, .7)
-chhatri(tl + TW + 2, 106, 3.5, 8, .7)
-
-# portico in front of the tower
-rect(TX - 34, 262, 68, GROUND - 262, 1.1)
-for k in range(3):
-    arch(TX - 26 + k * 18, 274, 14, 26, 1.0)
-line(TX - 38, 262, TX + 38, 262, 1.1)
-dome(TX, 262, 12, 18, 1.0, finial=8)
-
-# ---------------------------------------------------------------- trees
+# ------------------------------------------------------------------ trees
 def blob(cx, cy, r, shade=1.0, w=.8):
-    """A tree crown: a ring of scallops with leafy strokes inside, heavier toward the lower right."""
     n = max(8, int(r / 2.3))
     pts = []
     for i in range(n + 1):
@@ -164,21 +149,18 @@ def blob(cx, cy, r, shade=1.0, w=.8):
     d = f"M{f(pts[0][0])} {f(pts[0][1])}"
     for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        ox, oy = mx - cx, my - cy
         k = rnd.uniform(1.2, 1.42)
-        d += f"Q{f(cx + ox * k)} {f(cy + oy * k)} {f(x2)} {f(y2)}"
+        d += f"Q{f(cx + (mx - cx) * k)} {f(cy + (my - cy) * k)} {f(x2)} {f(y2)}"
     add(d + "Z", w, True)
-    for _ in range(int(r * r / 13 * shade)):
+    for _ in range(int(r * r / 16 * shade)):
         a = rnd.uniform(0, 2 * math.pi)
         rr = r * math.sqrt(rnd.random()) * .85
         x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
-        # keep the upper left lit
         if (x - cx) + (y - cy) < -r * .35 and rnd.random() < .8:
             continue
         s = rnd.uniform(2, 3.6)
         add(f"M{f(x - s)} {f(y)}q{f(s)} {f(-s * .9)} {f(2 * s)} 0", .5)
-    # engraved shade: short diagonal strokes packed into the lower right of the crown
-    for _ in range(int(r * r / 8.5 * shade)):
+    for _ in range(int(r * r / 11 * shade)):
         a = rnd.uniform(-.35, 1.9)
         rr = r * (.45 + .5 * math.sqrt(rnd.random()))
         x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
@@ -187,11 +169,10 @@ def blob(cx, cy, r, shade=1.0, w=.8):
 
 
 def tree_mass(x1, x2, top, bottom, rmin, rmax, shade=1.0):
-    """Rows of crowns from the top down, so each row overlaps the one behind it. top may be a function of x."""
     topf = top if callable(top) else (lambda x: top)
-    rows = []
-    y = bottom
-    while y > min(topf(x1), topf(x2), topf((x1 + x2) / 2)) - rmax:
+    rows, y = [], bottom
+    lo = min(topf(x) for x in (x1, (x1 + x2) / 2, x2))
+    while y > lo - rmax:
         rows.append(y)
         y -= rmax * .8
     for y in reversed(rows):
@@ -201,6 +182,14 @@ def tree_mass(x1, x2, top, bottom, rmin, rmax, shade=1.0):
             if y >= topf(x) - r * .3:
                 blob(x, y + rnd.uniform(-5, 5), r, shade)
             x += r * rnd.uniform(1.1, 1.5)
+
+
+def ashoka(x, base, h):
+    add(f"M{f(x)} {f(base - h)}C{f(x - 8)} {f(base - h * .6)} {f(x - 9)} {f(base - h * .15)} {f(x - 4)} {f(base)}"
+        f"L{f(x + 4)} {f(base)}C{f(x + 9)} {f(base - h * .15)} {f(x + 8)} {f(base - h * .6)} {f(x)} {f(base - h)}Z", .9, True)
+    for k in range(5, int(h) - 4, 4):
+        wv = 7 * math.sin(math.pi * min(1, k / h * 1.3)) + 1
+        line(x - wv * .2, base - k, x + wv, base - k + 2, .45)
 
 
 def palm(x, base, h, lean=0.0):
@@ -217,110 +206,162 @@ def palm(x, base, h, lean=0.0):
         ex, ey = tx + math.cos(ra) * L_, ty + math.sin(ra) * L_ * .7 + L_ * .35
         mx, my = tx + math.cos(ra) * L_ * .5, ty + math.sin(ra) * L_ * .5 - 5
         add(f"M{f(tx)} {f(ty)}Q{f(mx)} {f(my)} {f(ex)} {f(ey)}", .9)
-        for j in range(1, 6):  # leaflets
+        for j in range(1, 6):
             t = j / 6
             px = (1 - t) ** 2 * tx + 2 * (1 - t) * t * mx + t * t * ex
             py = (1 - t) ** 2 * ty + 2 * (1 - t) * t * my + t * t * ey
             line(px, py, px + 1.5, py + 5, .45)
 
 
-# tall cypress-like ashoka trees (Polyalthia), very Vadodara
-def ashoka(x, base, h):
-    add(f"M{f(x)} {f(base - h)}C{f(x - 7)} {f(base - h * .6)} {f(x - 8)} {f(base - h * .15)} {f(x - 4)} {f(base)}"
-        f"L{f(x + 4)} {f(base)}C{f(x + 8)} {f(base - h * .15)} {f(x + 7)} {f(base - h * .6)} {f(x)} {f(base - h)}Z", .9, True)
-    for k in range(5, int(h) - 4, 4):
-        wv = 6 * math.sin(math.pi * min(1, k / h * 1.3)) + 1
-        line(x - wv * .2, base - k, x + wv, base - k + 2, .45)
+# ------------------------------------------------------------------ far trees, behind the building
+tree_mass(0, 1200, lambda x: 300 - 40 * math.sin(math.pi * x / 1200) ** 2, 330, 9, 16, .45)
+
+# ------------------------------------------------------------------ the Faculty of Arts
+CX = 600
+
+# side wings, two storeys of arched windows in brick
+for wl, wr in ((300, 492), (708, 900)):
+    rect(wl, 262, wr - wl, GROUND - 262, 1.1)
+    line(wl - 3, 262, wr + 3, 262, 1.1)
+    line(wl - 3, 266, wr + 3, 266, .6)
+    x = wl
+    while x < wr - 4:                     # parapet merlons
+        rect(x + 1, 256, 5, 6, .6)
+        x += 8.5
+    bricks(wl + 1, wr - 1, 268, GROUND - 2)
+    for x0 in range(wl + 12, wr - 16, 26):
+        small_arch(x0, 290, 12, 22, .8)
+        small_arch(x0 - 1, 336, 14, 30, .85)
+    line(wl, 322, wr, 322, .8)
+    # the far end of each wing steps forward with a gabled bay and a dome
+ends = ((262, 318), (882, 938))
+for el, er in ends:
+    rect(el, 240, er - el, GROUND - 240, 1.2)
+    line(el - 4, 240, er + 4, 240, 1.1)
+    bricks(el + 1, er - 1, 246, GROUND - 2)
+    big_arch(el + 14, 300, er - el - 28, 70, .9)
+    rect(el + 6, 226, er - el - 12, 14, 1.0)
+    onion((el + er) / 2, 226, 26, 44, 1.1, ribs=4)
+    finial((el + er) / 2, 182, 16, .9)
+
+# central block behind the portico, carrying the drum and dome
+rect(470, 228, 260, GROUND - 228, 1.2)
+bricks(471, 729, 234, GROUND - 2)
+
+# the great dome: drum, two rings of rosette windows, faint ribs, lantern and chakra
+DB, DR, DH = 198, 118, 172          # base y, half width, height
+rect(CX - DR - 8, DB, 2 * DR + 16, 228 - DB, 1.2)          # drum
+for x in range(int(CX - DR - 4), int(CX + DR + 6), 7):
+    rect(x, DB + 3, 4, 5, .45)                               # dentils
+line(CX - DR - 10, DB + 12, CX + DR + 10, DB + 12, .7)
+add(f"M{f(CX - DR)} {f(DB)}C{f(CX - DR * 1.17)} {f(DB - DH * .48)} {f(CX - DR * .55)} {f(DB - DH * .97)} {f(CX)} {f(DB - DH)}"
+    f"C{f(CX + DR * .55)} {f(DB - DH * .97)} {f(CX + DR * 1.17)} {f(DB - DH * .48)} {f(CX + DR)} {f(DB)}Z", 1.4, True)
+# ribs (meridians), lighter on the lit side
+for k in range(-4, 5):
+    t = k / 5
+    add(f"M{f(CX + DR * t)} {f(DB)}C{f(CX + DR * 1.14 * t)} {f(DB - DH * .5)} {f(CX + DR * .5 * t)} {f(DB - DH * .95)} {f(CX)} {f(DB - DH)}", .35)
+# the horizontal seam a third of the way up
+add(f"M{f(CX - DR * 1.02)} {f(DB - DH * .3)}Q{f(CX)} {f(DB - DH * .24)} {f(CX + DR * 1.02)} {f(DB - DH * .3)}", .7)
+# engraved shade on the right flank
+for k in range(0, 22):
+    t = 1 - (k / 22) ** 1.6 * .62
+    add(f"M{f(CX + DR * t)} {f(DB - 2)}C{f(CX + DR * 1.15 * t)} {f(DB - DH * .48)} {f(CX + DR * .62 * t)} {f(DB - DH * (.78 - k * .006))} {f(CX + DR * .42 * t)} {f(DB - DH * (.86 - k * .008))}", .38)
 
 
-# background crowns behind the palace sides, then foreground masses
-tree_mass(0, L - 30, lambda x: 262 - 56 * math.sin(math.pi * min(1, max(0, x / (L - 30))) * .92), 300, 10, 22, .9)
-tree_mass(R + 30, 1200, lambda x: 262 - 56 * math.sin(math.pi * min(1, max(0, (1200 - x) / (1200 - R - 30))) * .92), 300, 10, 22, .9)
-for x in (70, 150, 236, 1000, 1080, 1150):
-    ashoka(x, 300, rnd.uniform(70, 96))
-for x, h, lean in ((262, 96, -.12), (296, 80, .1), (918, 92, .14), (954, 74, -.08)):
-    palm(x, 312, h, lean)
-# low hedge of crowns along the palace front
-tree_mass(L - 50, R + 50, 292, 314, 8, 13, .8)
-tree_mass(0, 1200, 306, 326, 9, 16, 1.0)
-
-# ---------------------------------------------------------------- Sursagar's Shiva
-SX, SB = 1060, 372
+def rosettes(y, rx_max, count, size):
+    for k in range(count):
+        th = (k - (count - 1) / 2) * (math.pi * .78 / (count - 1)) * 2 * .55
+        x = CX + rx_max * math.sin(th)
+        sx = size * math.cos(th)                             # foreshortened toward the edges
+        ellipse(x, y, sx, size, .9)
+        ellipse(x, y, sx * .72, size * .72, .6)
+        for a in range(0, 360, 40):
+            ra = math.radians(a)
+            line(x + math.cos(ra) * sx * .2, y + math.sin(ra) * size * .2, x + math.cos(ra) * sx * .6, y + math.sin(ra) * size * .6, .4)
 
 
-def shiva():
-    # stepped plinth on the water
-    rect(SX - 26, SB - 6, 52, 6, 1.1)
-    rect(SX - 20, SB - 26, 40, 20, 1.1)
-    rect(SX - 23, SB - 30, 46, 4, 1.0)
-    vhatch(SX + 4, SX + 20, SB - 26, SB - 6, 2.0, .45)
-    base = SB - 30
-    # lotus
-    add(f"M{f(SX - 16)} {f(base)}Q{f(SX - 12)} {f(base - 9)} {f(SX - 6)} {f(base - 4)}Q{f(SX)} {f(base - 12)} {f(SX + 6)} {f(base - 4)}"
-        f"Q{f(SX + 12)} {f(base - 9)} {f(SX + 16)} {f(base)}", .9)
-    b = base - 6
-    # standing figure: dhoti flaring slightly to the feet, a narrow waist, broad shoulders
-    add(f"M{f(SX - 9)} {f(b)}C{f(SX - 10)} {f(b - 20)} {f(SX - 8)} {f(b - 40)} {f(SX - 9)} {f(b - 54)}"
-        f"L{f(SX + 9)} {f(b - 54)}C{f(SX + 8)} {f(b - 40)} {f(SX + 10)} {f(b - 20)} {f(SX + 9)} {f(b)}Z", 1.0, True)
-    for k in (-4, 0, 4):
-        add(f"M{f(SX + k)} {f(b - 52)}Q{f(SX + k * 1.3 + 1)} {f(b - 28)} {f(SX + k * 1.5)} {f(b - 3)}", .45)
-    vhatch(SX + 3, SX + 9, b - 52, b - 2, 1.8, .4)
-    line(SX - 10, b - 54, SX + 10, b - 54, 1.1)  # sash
-    add(f"M{f(SX - 9)} {f(b - 55)}C{f(SX - 8)} {f(b - 64)} {f(SX - 14)} {f(b - 76)} {f(SX - 13)} {f(b - 84)}"
-        f"Q{f(SX)} {f(b - 88)} {f(SX + 13)} {f(b - 84)}C{f(SX + 14)} {f(b - 76)} {f(SX + 8)} {f(b - 64)} {f(SX + 9)} {f(b - 55)}Z", 1.0, True)
-    vhatch(SX + 3, SX + 12, b - 82, b - 57, 1.8, .4)
-    # serpent garland
-    add(f"M{f(SX - 9)} {f(b - 84)}Q{f(SX)} {f(b - 70)} {f(SX + 9)} {f(b - 84)}", .7)
-    # head with jata bun and crescent
-    add(f"M{f(SX - 5.5)} {f(b - 92)}a5.5 6.5 0 1 0 11 0a5.5 6.5 0 1 0 -11 0Z", 1.0, True)
-    add(f"M{f(SX - 4)} {f(b - 98)}Q{f(SX)} {f(b - 110)} {f(SX + 4)} {f(b - 98)}", 1.0)
-    add(f"M{f(SX + 1)} {f(b - 106)}a3 3 0 0 1 4 2", .7)
-    # right arm in blessing, left arm holding the trident
-    poly([(SX + 12, b - 82), (SX + 19, b - 68), (SX + 21, b - 80)], .9)
-    add(f"M{f(SX + 21)} {f(b - 80)}l-2 -6m2 6l2 -6m-2 6l4 -3", .6)
-    poly([(SX - 12, b - 82), (SX - 19, b - 66), (SX - 24, b - 70)], .9)
-    tx = SX - 25
-    line(tx, b + 2, tx, b - 124, 1.1)
-    add(f"M{f(tx - 7)} {f(b - 114)}Q{f(tx - 7)} {f(b - 106)} {f(tx)} {f(b - 106)}Q{f(tx + 7)} {f(b - 106)} {f(tx + 7)} {f(b - 114)}", 1.0)
-    line(tx, b - 106, tx, b - 128, 1.0)
-    add(f"M{f(tx - 2)} {f(b - 98)}a2 2.6 0 1 0 4 0a2 2.6 0 1 0 -4 0", .7)  # damaru
+rosettes(DB - DH * .2, DR * .98, 7, 12)
+rosettes(DB - DH * .63, DR * .78, 7, 7)
+# lantern collar and the chakra finial
+rect(CX - 15, DB - DH - 6, 30, 6, 1.0)
+ellipse(CX, DB - DH - 6, 15, 2.5, .8)
+finial(CX, DB - DH - 6, 24, 1.0, wheel=True)
 
+# four little half domes clustered on the drum's shoulders
+for hx in (CX - 108, CX + 108):
+    hemi(hx, 226, 34, 30, 1.1)
+for hx in (CX - 70, CX + 70):
+    hemi(hx, 232, 30, 24, 1.0)
 
+# the portico: three great arches with a bracketed cornice and corner pavilions
+PL, PR, PT = 500, 700, 248
+rect(PL, PT, PR - PL, GROUND - PT, 1.3)
+line(PL - 6, PT, PR + 6, PT, 1.2)
+line(PL - 6, PT + 4, PR + 6, PT + 4, .7)
+for x in range(PL - 4, PR + 6, 6):           # brackets under the cornice
+    line(x, PT + 4, x, PT + 8, .5)
+x = PL - 6
+while x < PR + 2:                             # crenellated parapet
+    rect(x, PT - 7, 6, 7, .6)
+    x += 10
+bay = (PR - PL - 24) / 3
+for k in range(3):
+    ax = PL + 12 + k * (bay + 0) + 6
+    big_arch(ax, 300, bay - 12, GROUND - 300, 1.1)
+# columns with capitals between the arches
+for k in range(4):
+    cx = PL + 12 + k * bay + 3
+    rect(cx - 6, 296, 12, GROUND - 296, 1.0)
+    rect(cx - 8, 290, 16, 6, .9)
+    vhatch(cx + 1, cx + 6, 297, GROUND, 1.6, .4)
+for px in (PL - 2, PR + 2):
+    rect(px - 11, 210, 22, PT - 210, 1.1)
+    bricks(px - 10, px + 10, 214, PT)
+    small_arch(px - 4, 222, 8, 14, .7)
+    pavilion(px, 210, 8, 14, .9)
 
-# ---------------------------------------------------------------- the lake
-line(0, SHORE, W, SHORE, 1.0)
-y = SHORE + 5
-row = 0
+# ------------------------------------------------------------------ campus trees in front
+tree_mass(0, 270, lambda x: 270 - 60 * math.sin(math.pi * min(1, x / 270) * .9), 380, 10, 22, .9)
+tree_mass(930, 1200, lambda x: 270 - 60 * math.sin(math.pi * min(1, (1200 - x) / 270) * .9), 380, 10, 22, .9)
+for x, h in ((96, 92), (180, 110), (1020, 104), (1110, 88)):
+    ashoka(x, 392, h)
+for x, h, lean in ((236, 120, -.1), (968, 112, .12)):
+    palm(x, 396, h, lean)
+# tall ashokas framing the portico, like the ones on the lawn
+for x, h in ((452, 132), (748, 128)):
+    ashoka(x, 400, h)
+# a low hedge across the front
+tree_mass(0, 1200, 384, 404, 8, 13, .8)
+
+# ------------------------------------------------------------------ the lawn
+line(0, 404, W, 404, .9)
+y, row = 408, 0
 while y < H:
-    gap = 3.2 + row * .22
     x = rnd.uniform(-20, 0)
     while x < W:
-        seg = rnd.uniform(14, 60)
-        # reflections: under the palace and the statue the strokes break up into short dashes
-        under = (L - 40 < x < R + 40) or (SX - 44 < x < SX + 44)
-        if under:
-            seg = rnd.uniform(4, 12)
-        if rnd.random() < (0.72 if under else 0.82):
-            line(x, y, x + seg, y + rnd.uniform(-.3, .3), .55 if row > 3 else .7)
-        x += seg + rnd.uniform(3, 10 if under else 16)
-    y += gap
+        seg = rnd.uniform(8, 30)
+        if rnd.random() < .6:
+            line(x, y, x + seg, y, .5)
+        x += seg + rnd.uniform(6, 22)
+    y += 4 + row * .5
     row += 1
 
-TF[0] = f"translate({SX} {SB}) scale(1.45) translate({-SX} {-SB})"
-shiva()
-TF[0] = None
-
+# ------------------------------------------------------------------ write
 out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}"><symbol id="v" viewBox="0 0 {W} {H}" stroke-linecap="round" stroke-linejoin="round">']
-cur, cw = [], None
+cur, cw, ctf = [], None, None
+
+
 def flush():
     if cur:
         t = f' transform="{ctf}"' if ctf else ""
         out.append(f'<path stroke-width="{cw}"{t} d="{"".join(cur)}"/>')
-ctf = None
+
+
 for d, w, occ, tf in P:
     w = round(w, 2)
     if occ or w != cw or tf != ctf:
-        flush(); cur, cw, ctf = [], w, tf
+        flush()
+        cur, cw, ctf = [], w, tf
     cur.append(d)
 flush()
 out.append("</symbol></svg>")
