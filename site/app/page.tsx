@@ -32,8 +32,8 @@ export default function Home() {
             <span className={`verb v${i + 1}`}>
               <span className="vh">{v}</span>
               <span aria-hidden="true">
-                {/* "build" is laid letter by letter, so each letter is its own piece */}
-                {i === 1 ? [...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>) : v}
+                {/* "build" is laid and "ship" goes out letter by letter, so each letter is its own piece */}
+                {i > 0 ? [...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>) : v}
               </span>
             </span>
             {i < intro.verbs.length - 2 ? ", " : i === intro.verbs.length - 2 ? " and " : " "}
