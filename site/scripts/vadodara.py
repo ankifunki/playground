@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Vadodara in ink: the dome of the Faculty of Arts, MS University (Robert Chisholm, 1880s) among the campus trees.
 
-Writes public/vadodara.svg: one <symbol id="v"> of stroke paths in paint order. The page draws it with
-<use href="/vadodara.svg#v">, filling shapes with the paper colour (so nearer things cover farther ones) and
-stroking in the ink colour, which keeps it in step with light and dark mode.
+Writes an SVG of stroke paths in paint order (one <symbol id="v">). scripts/vadodara-raster.mjs then bakes it
+into two masks for the footer: public/vadodara-ink.webp (the lines) and public/vadodara-fill.webp (the
+silhouette), which CSS colours with the paper and footer colours so it follows light and dark mode.
 
-    python3 scripts/vadodara.py public/vadodara.svg
+    python3 scripts/vadodara.py /tmp/v.svg && node scripts/vadodara-raster.mjs /tmp/v.svg /tmp  (then convert, see that file)
 """
 import math, random, sys
 
@@ -54,13 +54,13 @@ def hhatch(x1, x2, y1, y2, gap, w=0.5):
         y += gap
 
 
-def bricks(x1, x2, y1, y2, w=0.4, row=6.5, brick=12.0):
+def bricks(x1, x2, y1, y2, w=0.4, row=4.0, brick=10.0):
     """Coursed brick: short staggered strokes, sparse so it reads as texture, not a grid."""
     y, k = y1 + row / 2, 0
     while y < y2:
         x = x1 + (brick / 2 if k % 2 else 0) + rnd.uniform(0, 3)
         while x < x2 - 3:
-            if rnd.random() < .32:
+            if rnd.random() < .7:
                 line(x, y, min(x + brick * rnd.uniform(.5, .8), x2), y, w)
             x += brick
         y += row
@@ -87,16 +87,16 @@ def onion(cx, base, r, h, w=1.0, ribs=0, shade=True):
         x0 = cx + r * t
         add(f"M{f(x0)} {f(base)}C{f(cx + r * 1.15 * t)} {f(base - h * .45)} {f(cx + r * .45 * t)} {f(base - h * .9)} {f(cx)} {f(base - h)}", .45)
     if shade:
-        for k in range(1, 7):
-            t = .45 + k * .08
+        for k in range(1, 12):
+            t = .25 + k * .065
             add(f"M{f(cx + r * t)} {f(base - 1)}C{f(cx + r * 1.15 * t)} {f(base - h * .42)} {f(cx + r * .48 * t)} {f(base - h * .85)} {f(cx + r * .12)} {f(base - h * .97)}", .45)
 
 
 def hemi(cx, base, r, h, w=1.0):
     """A low half dome."""
     add(f"M{f(cx - r)} {f(base)}C{f(cx - r)} {f(base - h * 1.3)} {f(cx + r)} {f(base - h * 1.3)} {f(cx + r)} {f(base)}Z", w, True)
-    for k in range(1, 6):
-        t = .4 + k * .1
+    for k in range(1, 12):
+        t = .2 + k * .07
         add(f"M{f(cx + r * t)} {f(base - 1)}C{f(cx + r * t)} {f(base - h * (1.3 - t * .6))} {f(cx + r * t * .5)} {f(base - h * (1.1 - t * .2))} {f(cx + r * .1)} {f(base - h * .98)}", .42)
 
 
@@ -117,14 +117,15 @@ def big_arch(x, y, w_, h_, w=1.1):
         ox, oy = cx_ + math.cos(a) * (r + 6), cy_ - math.sin(a) * (r + 6) * 1.3
         line(ix, iy, ox, oy, .5)
     # the dark of the opening: vertical hatch, and a lattice screen deep inside
-    vhatch(x + 2, x + w_ - 2, y - r * .9, y + h_, 2.2, .45)
+    vhatch(x + 2, x + w_ - 2, y - r * .9, y + h_, 1.5, .45)
+    hhatch(x + 2, x + w_ - 2, y - r * .3, y + h_, 2.6, .35)
 
 
 def small_arch(x, y, w_, h_, w=.8, dark=True):
     r = w_ / 2
     add(f"M{f(x)} {f(y + h_)}L{f(x)} {f(y)}Q{f(x)} {f(y - r * 1.15)} {f(x + r)} {f(y - r * 1.3)}Q{f(x + w_)} {f(y - r * 1.15)} {f(x + w_)} {f(y)}L{f(x + w_)} {f(y + h_)}Z", w, True)
     if dark:
-        vhatch(x + 1, x + w_ - 1, y - r * .6, y + h_, 1.8, .4)
+        vhatch(x + 1, x + w_ - 1, y - r * .6, y + h_, 1.3, .4)
 
 
 def pavilion(cx, base, r, h=14, w=.9):
@@ -152,7 +153,7 @@ def blob(cx, cy, r, shade=1.0, w=.8):
         k = rnd.uniform(1.2, 1.42)
         d += f"Q{f(cx + (mx - cx) * k)} {f(cy + (my - cy) * k)} {f(x2)} {f(y2)}"
     add(d + "Z", w, True)
-    for _ in range(int(r * r / 16 * shade)):
+    for _ in range(int(r * r / 7 * shade)):
         a = rnd.uniform(0, 2 * math.pi)
         rr = r * math.sqrt(rnd.random()) * .85
         x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
@@ -160,12 +161,18 @@ def blob(cx, cy, r, shade=1.0, w=.8):
             continue
         s = rnd.uniform(2, 3.6)
         add(f"M{f(x - s)} {f(y)}q{f(s)} {f(-s * .9)} {f(2 * s)} 0", .5)
-    for _ in range(int(r * r / 11 * shade)):
+    for _ in range(int(r * r / 3.2 * shade)):
         a = rnd.uniform(-.35, 1.9)
         rr = r * (.45 + .5 * math.sqrt(rnd.random()))
         x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr * .8
         s = rnd.uniform(1.5, 3)
-        line(x, y, x - s, y + s * 1.2, .45)
+        line(x, y, x - s, y + s * 1.2, .42)
+    # the underside of each crown in close horizontal hatch
+    yy = cy + r * .25
+    while yy < cy + r * .78:
+        half = math.sqrt(max(0, 1 - ((yy - cy) / (r * .82)) ** 2)) * r * .9
+        line(cx - half * .7, yy, cx + half, yy, .4)
+        yy += 1.7
 
 
 def tree_mass(x1, x2, top, bottom, rmin, rmax, shade=1.0):
@@ -214,7 +221,7 @@ def palm(x, base, h, lean=0.0):
 
 
 # ------------------------------------------------------------------ far trees, behind the building
-tree_mass(0, 1200, lambda x: 300 - 40 * math.sin(math.pi * x / 1200) ** 2, 330, 9, 16, .45)
+tree_mass(0, 1200, lambda x: 300 - 40 * math.sin(math.pi * x / 1200) ** 2, 330, 9, 16, .8)
 
 # ------------------------------------------------------------------ the Faculty of Arts
 CX = 600
@@ -233,6 +240,8 @@ for wl, wr in ((300, 492), (708, 900)):
         small_arch(x0, 290, 12, 22, .8)
         small_arch(x0 - 1, 336, 14, 30, .85)
     line(wl, 322, wr, 322, .8)
+    hhatch(wl + 1, wr - 1, 267, 276, 1.4, .4)
+    hhatch(wl + 1, wr - 1, 323, 329, 1.4, .4)
     # the far end of each wing steps forward with a gabled bay and a dome
 ends = ((262, 318), (882, 938))
 for el, er in ends:
@@ -254,17 +263,27 @@ rect(CX - DR - 8, DB, 2 * DR + 16, 228 - DB, 1.2)          # drum
 for x in range(int(CX - DR - 4), int(CX + DR + 6), 7):
     rect(x, DB + 3, 4, 5, .45)                               # dentils
 line(CX - DR - 10, DB + 12, CX + DR + 10, DB + 12, .7)
+hhatch(CX - DR - 8, CX + DR + 8, DB + 13, 228, 1.6, .4)
 add(f"M{f(CX - DR)} {f(DB)}C{f(CX - DR * 1.17)} {f(DB - DH * .48)} {f(CX - DR * .55)} {f(DB - DH * .97)} {f(CX)} {f(DB - DH)}"
     f"C{f(CX + DR * .55)} {f(DB - DH * .97)} {f(CX + DR * 1.17)} {f(DB - DH * .48)} {f(CX + DR)} {f(DB)}Z", 1.4, True)
 # ribs (meridians), lighter on the lit side
 for k in range(-4, 5):
     t = k / 5
     add(f"M{f(CX + DR * t)} {f(DB)}C{f(CX + DR * 1.14 * t)} {f(DB - DH * .5)} {f(CX + DR * .5 * t)} {f(DB - DH * .95)} {f(CX)} {f(DB - DH)}", .35)
+# latitude hatching: each band follows the dome's curve, closer together lower down and on the right
+for k in range(1, 46):
+    t = k / 46
+    yb = DB - DH * (t ** 1.15) * .97
+    # half width of the dome at this height (sampled from the outline's shape)
+    u = 1 - t
+    half = DR * (1.0 + .17 * math.sin(math.pi * min(1, u * 1.05)) ) * math.sqrt(max(0, 1 - t ** 2.2))
+    x0 = CX - half * (.25 if k % 2 else .55)
+    add(f"M{f(x0)} {f(yb + 2)}Q{f(CX + half * .3)} {f(yb - 3)} {f(CX + half * .96)} {f(yb + 1)}", .35)
 # the horizontal seam a third of the way up
 add(f"M{f(CX - DR * 1.02)} {f(DB - DH * .3)}Q{f(CX)} {f(DB - DH * .24)} {f(CX + DR * 1.02)} {f(DB - DH * .3)}", .7)
 # engraved shade on the right flank
-for k in range(0, 22):
-    t = 1 - (k / 22) ** 1.6 * .62
+for k in range(0, 36):
+    t = 1 - (k / 36) ** 1.4 * .7
     add(f"M{f(CX + DR * t)} {f(DB - 2)}C{f(CX + DR * 1.15 * t)} {f(DB - DH * .48)} {f(CX + DR * .62 * t)} {f(DB - DH * (.78 - k * .006))} {f(CX + DR * .42 * t)} {f(DB - DH * (.86 - k * .008))}", .38)
 
 
@@ -298,6 +317,7 @@ PL, PR, PT = 500, 700, 248
 rect(PL, PT, PR - PL, GROUND - PT, 1.3)
 line(PL - 6, PT, PR + 6, PT, 1.2)
 line(PL - 6, PT + 4, PR + 6, PT + 4, .7)
+hhatch(PL + 1, PR - 1, PT + 8, PT + 18, 1.3, .4)
 for x in range(PL - 4, PR + 6, 6):           # brackets under the cornice
     line(x, PT + 4, x, PT + 8, .5)
 x = PL - 6
@@ -340,10 +360,10 @@ while y < H:
     x = rnd.uniform(-20, 0)
     while x < W:
         seg = rnd.uniform(8, 30)
-        if rnd.random() < .6:
-            line(x, y, x + seg, y, .5)
-        x += seg + rnd.uniform(6, 22)
-    y += 4 + row * .5
+        if rnd.random() < .8:
+            line(x, y, x + seg, y, .45)
+        x += seg + rnd.uniform(3, 12)
+    y += 2.6 + row * .3
     row += 1
 
 # ------------------------------------------------------------------ write

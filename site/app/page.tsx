@@ -58,9 +58,7 @@ export default function Home() {
 
       <footer className="foot">
         {/* Home: Vadodara in ink, the great dome of the MS University Faculty of Arts among the campus trees */}
-        <svg className="city" viewBox="0 0 1200 460" role="img" aria-label="Vadodara, Gujarat: the dome of the Faculty of Arts, MS University, among trees">
-          <use href="/vadodara.svg#v" />
-        </svg>
+<div className="city" role="img" aria-label="Vadodara, Gujarat: the dome of the Faculty of Arts, MS University, among trees" />
         <span className="mono">© {new Date().getFullYear()} {profile.name}</span>
       </footer>
     </main>
