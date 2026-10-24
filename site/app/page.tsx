@@ -27,13 +27,12 @@ export default function Home() {
 
       <h1 className="statement">
         <span className="ink">{intro.lead}</span> {intro.before}{" "}
-        <span className="co">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="only-light" src={intro.company.mark} alt="" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="only-dark" src={intro.company.markDark} alt="" />
-          {intro.company.name}
-        </span>
+        {intro.verbs.map((v, i) => (
+          <span key={v}>
+            <span className={`verb v${i + 1}`}>{v}</span>
+            {i < intro.verbs.length - 2 ? ", " : i === intro.verbs.length - 2 ? " and " : " "}
+          </span>
+        ))}
         {intro.after}
       </h1>
 

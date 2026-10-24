@@ -54,13 +54,10 @@ export const profile = {
 // DRAFT copy. Ankit to rewrite in his own words.
 export const intro = {
   lead: "Hi, I’m Ankit,",
-  before: "designing scale and delight, currently at",
-  company: {
-    name: "Genius AI",
-    mark: "/brand/genius-g-black.svg",
-    markDark: "/brand/genius-g-light.svg",
-  },
-  after: "",
+  before: "I",
+  // Set with rising weight, light to heavy: the idea taking shape, then going out the door
+  verbs: ["design", "build", "ship"],
+  after: "my full intent.",
 };
 
 export const about = {
