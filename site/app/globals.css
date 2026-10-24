@@ -105,13 +105,14 @@ a { color: inherit; }
 /* ---------- Page ---------- */
 .page {
   position: relative;
-  max-width: 1104px;
-  /* The page's width snaps to the 24px grid, so its column and gutters fall on the dots */
+  /* Full width, with gutters that grow with the window. Width and gutters both snap to the 24px grid, so the
+     column and its edges fall on the dots at every size. */
+  --gutter: 24px;
   width: 100%;
   width: round(down, 100%, 24px);
   margin: 0 auto;
-  padding: calc(var(--s5) + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px))
-    calc(var(--s5) + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+  padding: calc(var(--s5) + env(safe-area-inset-top, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px))
+    calc(var(--s5) + env(safe-area-inset-bottom, 0px)) max(var(--gutter), env(safe-area-inset-left, 0px));
   display: grid;
   gap: var(--s6);
   /* At least a screen tall, so the dots reach the bottom of the window on short pages */
@@ -373,12 +374,22 @@ a { color: inherit; }
 .statement .co { white-space: nowrap; color: var(--ink); }
 .statement .co img { height: 0.78em; width: auto; vertical-align: -0.06em; margin: 0 0.16em 0 0.02em; }
 
+@media (min-width: 720px) { .page { --gutter: 48px; } }
+@media (min-width: 1200px) { .page { --gutter: 72px; } }
+@media (min-width: 1680px) { .page { --gutter: 96px; } }
+
 /* ---------- Work: one big tile per project ---------- */
 .work-area { display: grid; gap: var(--s3); }
 .tiles { list-style: none; display: grid; gap: var(--s5) var(--s3); }
 @media (min-width: 900px) {
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tiles .wide { grid-column: 1 / -1; }
+}
+/* Very wide windows: every project side by side, so no tile grows enormous */
+@media (min-width: 1680px) {
+  .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tiles .wide { grid-column: auto; }
+  .tiles .wide .art { aspect-ratio: 4 / 3; height: round(75cqw, 24px); }
 }
 .tile { display: grid; gap: var(--s3); text-decoration: none; container-type: inline-size; }
 .art {
