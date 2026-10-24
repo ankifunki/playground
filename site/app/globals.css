@@ -296,6 +296,15 @@ a { color: inherit; }
 .contact-list li:hover .cl-icon, a.cl-row:focus-visible .cl-icon { color: var(--accent); transform: scale(1.08); }
 
 .foot { display: flex; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+/* The ink drawing of Vadodara, in the footer's own colour. Two masks of the same drawing: the paper-coloured
+   silhouette hides the dot grid behind the building and trees, and the ink lines sit on top. The lawn fades out
+   into the copyright line. Drawn by scripts/vadodara.py, baked to masks by scripts/vadodara-raster.mjs. */
+.city { position: relative; flex: 1 0 100%; aspect-ratio: 1200 / 460;
+  -webkit-mask-image: linear-gradient(#000 72%, transparent); mask-image: linear-gradient(#000 72%, transparent); }
+.city::before, .city::after { content: ""; position: absolute; inset: 0;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.city::before { background: var(--paper); -webkit-mask-image: url(/vadodara-fill.webp); mask-image: url(/vadodara-fill.webp); }
+.city::after { background: var(--faint); -webkit-mask-image: url(/vadodara-ink.webp); mask-image: url(/vadodara-ink.webp); }
 
 /* ---------- Unlock ---------- */
 .unlock { max-width: 480px; display: grid; gap: var(--s4); }

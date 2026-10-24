@@ -56,6 +56,8 @@ export default function Home() {
       </div>
 
       <footer className="foot">
+        {/* Home: Vadodara in ink, the great dome of the MS University Faculty of Arts among the campus trees */}
+<div className="city" role="img" aria-label="Vadodara, Gujarat: the five-domed Faculty of Arts, MS University" />
         <span className="mono">© {new Date().getFullYear()} {profile.name}</span>
       </footer>
     </main>
