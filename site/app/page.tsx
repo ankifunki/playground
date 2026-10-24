@@ -37,10 +37,13 @@ export default function Home() {
                 {i > 0 ? [...v].map((ch, k) => <span key={k} style={{ ["--k" as string]: k }}>{ch}</span>) : v}
               </span>
             </span>
-            {i < intro.verbs.length - 2 ? ", " : i === intro.verbs.length - 2 ? " and " : " "}
+            {/* the words after each verb wait for its motion to finish */}
+            <span className={`then t${i + 1}`}>
+              {i < intro.verbs.length - 2 ? ", " : i === intro.verbs.length - 2 ? " and " : " "}
+              {i === intro.verbs.length - 1 && intro.after}
+            </span>
           </span>
         ))}
-        {intro.after}
       </h1>
       <VerbReplay />
 

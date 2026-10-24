@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 // How long each verb's motion runs when replayed (ms), and when the opening sequence is over
-const RUN = [3050, 3200, 1100];
+const RUN = [1600, 1600, 1100];
 const INTRO_DONE = 5000;
 
 // Hovering design, build or ship replays that word's motion. Clearing its animations for a frame and putting them
