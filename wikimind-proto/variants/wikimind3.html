@@ -816,8 +816,8 @@ document.addEventListener('click',function(e){
  else if(a==='attach')$('file').click();
  else if(a==='unattach'){var f=CH.files.splice(+b.dataset.i,1)[0];renderDock()}
  else if(a==='showchat'){$('toast').classList.remove('on');S.newQs.forEach(function(x){x.unseen=false});CH.open=true;renderChat()}
- else if(a==='hidechat'){CH.open=false;renderChat();$('cin').focus()}
- else if(a==='newchat'){CH.last=CH.msgs;CH.msgs=[];CH.open=false;askSeq++;renderChat();toast('Conversation cleared.','undonew','Undo');$('cin').focus()}
+ else if(a==='hidechat'){CH.open=false;renderChat()}
+ else if(a==='newchat'){CH.last=CH.msgs;CH.msgs=[];CH.open=false;askSeq++;renderChat();toast('Conversation cleared.','undonew','Undo')}
  else if(a==='undonew'){if(CH.last){CH.msgs=CH.last.concat(CH.msgs);CH.last=null;CH.open=true;renderChat()}}
  else if(a==='area'){toast(v==='Sales Cloud'?'Opening the featured Sales Cloud article.':'Prototype: only Opportunity approvals has a full page.');if(v==='Sales Cloud')go('page')}
  else if(a==='loopstep'){var li=document.querySelectorAll('#lsteps li');li.forEach(function(x,i){x.classList.toggle('on',i==b.dataset.i)})}
