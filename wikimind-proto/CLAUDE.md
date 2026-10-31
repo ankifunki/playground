@@ -19,6 +19,12 @@ Open a single variant directly (`variants/wikimind3.html`) when iterating on it.
 
 Local only. Do not deploy (no Vercel or other hosting). Open `dist/index.html` in a browser, or a single variant from `variants/`. Run `python3 build.py` after editing a variant to refresh the bundle.
 
+## Demo controls (Wikimind 3)
+
+- `L`: Maria answers the flat-renewals question. Asoka rewrites the card (old sentence struck, new one written in). Also reachable via "Simulate her reply" in Questions. There is no automatic timer.
+- `A`: the person Asoka is asking answers the visitor's newest open question immediately. Otherwise they answer 15 seconds after the visitor taps "Ask".
+- Unknown questions offer "Ask <name>" or "Not now". Undo is available for 5 seconds after asking. Asoka never contacts anyone without the visitor's tap.
+
 ## Variants
 
 | Key | File | Idea |

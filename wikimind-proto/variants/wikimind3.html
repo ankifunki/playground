@@ -132,6 +132,12 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .obs .ok2::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
 .obs.done .ok2{color:var(--ok)}
 .obs p{margin:0}
+.obs .was{font-size:14px;line-height:1.5;color:var(--ink2);margin:2px 0 6px}
+.obs .was del{text-decoration:none;background:linear-gradient(var(--del),var(--del)) no-repeat 0 58%/100% 1.5px}
+.obs .was.anim del{animation:strike .5s var(--eo) .3s both}
+@keyframes strike{from{background-size:0 1.5px}to{background-size:100% 1.5px}}
+.obs p.write{animation:write 1.1s var(--eo) .9s both}
+@keyframes write{from{clip-path:inset(0 100% 0 0);opacity:.35}to{clip-path:inset(0 0 0 0);opacity:1}}
 .dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
 .dots i{width:10px;height:10px;border-radius:50%;display:block;background:var(--warn)}
 .dots i.n{background:none;box-shadow:inset 0 0 0 1.5px var(--ink2);opacity:.6}
@@ -266,14 +272,15 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .sugg button{border:0;background:var(--soft2);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer}
 #toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 72px);transform:translate(-50%,-8px);background:var(--ink);color:var(--panel);padding:10px 18px;border-radius:999px;font-size:14.5px;max-width:calc(100% - 32px);opacity:0;pointer-events:none;transition:opacity .18s var(--eo),transform .24s var(--eo);z-index:70;white-space:nowrap;box-shadow:var(--sh2)}
-#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.tact{border:0;background:none;color:inherit;font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0 0 0 6px}
 @media (max-width:420px){#toast{white-space:normal;text-align:center;border-radius:16px}}
 .enter{animation:fade .35s var(--eo) both}
 .flyq{position:fixed;z-index:60;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--warnb);color:var(--warn);font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;box-shadow:var(--sh);pointer-events:none}
 @keyframes bmp{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
 .bump{animation:bmp .45s var(--eo);display:inline-block}
 #asking li.in{animation:rise .35s var(--eo) both,fresh 1.6s ease-out}
-@media (prefers-reduced-motion:reduce){.bump,#asking li.in,.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
+@media (prefers-reduced-motion:reduce){.obs .was.anim del,.obs p.write,.bump,#asking li.in,.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
 .hlive{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--ink2)}
 .page{padding-bottom:calc(var(--dockh,130px) + 48px)}
 #dock{position:fixed;left:0;right:0;bottom:0;z-index:45;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(to top,var(--bg) 28%,transparent 56%);pointer-events:none}
@@ -287,6 +294,8 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .dchip{flex:none;white-space:nowrap;border:0;background:var(--panel);box-shadow:var(--sh);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:transform .16s var(--eo),background-color .2s}
 .dchip:active{transform:scale(.97)}
 .dchip.scope{background:var(--linkb);color:var(--link);font-weight:600;box-shadow:none}
+.dchip.news{background:var(--okb);color:var(--ok);font-weight:600;box-shadow:none}
+.dchip.news .pdot{width:7px;height:7px}
 .dchip.conv{background:var(--ink);color:var(--panel);font-weight:600}
 .composer{background:var(--panel);box-shadow:var(--sh2);border-radius:26px;padding:6px}
 .datt{display:flex;gap:6px;flex-wrap:wrap;padding:0 6px}
@@ -310,6 +319,15 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 @keyframes wv{0%,100%{height:5px}50%{height:18px}}
 .listening .wave{display:inline-flex}
 .chat{position:fixed;left:0;right:0;bottom:var(--dockh,130px);z-index:44;padding:0 12px 8px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .22s var(--eo),transform .28s var(--eo)}
+.qacts{display:flex;gap:8px;margin-top:10px}
+.qbtn{border:0;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;cursor:pointer;background:var(--soft);color:var(--ink)}
+.qbtn.pri{background:var(--ink);color:var(--panel)}
+.src.qst{color:var(--warn);font-weight:600}
+.ba.res .av{flex:none}
+.rwho{font-size:13.5px;font-weight:700;color:var(--ok);display:flex;gap:8px;align-items:baseline}
+.rwho small{color:var(--ink2);font-weight:500}
+.rq{font-size:13.5px;color:var(--ink2);margin:2px 0 4px}
+.ba.res{animation:rise .35s var(--eo) both}
 .chat.open{opacity:1;transform:none;pointer-events:auto}
 .cw{max-width:720px;margin:0 auto;background:var(--panel);box-shadow:var(--sh2);border-radius:24px;max-height:min(56vh,520px);display:flex;flex-direction:column;overflow:hidden}
 .chd{display:flex;align-items:center;gap:8px;padding:12px 12px 10px 16px;border-bottom:1px solid var(--hair);font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -345,7 +363,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 var $=function(id){return document.getElementById(id)};
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},3200)}
+function toast(m,act,label){var t=$('toast');t.innerHTML=esc(m)+(act?' <button class="tact" data-act="'+act+'">'+esc(label)+'</button>':'');t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},act?6000:3200)}
 
 /* ---------- references: every sentence is tied to the observations behind it ---------- */
 var KIND={doc:'Policy document',sf:'Salesforce change',jira:'Jira ticket',slack:'Slack',meet:'Meeting recording',watch:'Watched in practice',talk:'Interview'};
@@ -408,7 +426,7 @@ function rpPlay(){
 
 /* ---------- article ---------- */
 function renewalHtml(){
- if(S.learned)return '<div class="obs done'+(S.justLearned?' upd':'')+'" id="renewal"><div class="ok2">Confirmed by RevOps just now</div><p>Renewals with no price change skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.'+rf([11,14])+'</p></div>';
+ if(S.learned)return '<div class="obs done'+(S.diffPlay?' upd':'')+'" id="renewal"><div class="ok2">Confirmed by RevOps just now</div><p class="was'+(S.diffPlay?' anim':'')+'"><del>Renewals with no price change skip approval, even over $100,000, but no rule explains it.</del></p><p class="'+(S.diffPlay?'write':'')+'">Renewals with no price change skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.'+rf([11,14])+'</p></div>';
  return '<div class="obs" id="renewal"><div class="ok2">Open question. Asoka is asking Maria Okafor why</div><p>Renewals with no price change skip approval, even over $100,000, but no rule explains it.'+rf([11])+'</p><div class="dots" aria-hidden="true">'+'<i></i>'.repeat(14)+'</div><div class="dl">14 of 14 flat renewals last quarter skipped approval.</div></div>';
 }
 var SECS=[['lead','Summary'],['how','How it works'],['rules','Rules'],['practice','In practice'],['touches','What touches this'],['hist','History'],['see','Related'],['refs','Sources']];
@@ -438,7 +456,7 @@ function articleHtml(){
 function whoStr(x){return x.who+(/^Asoka/.test(x.team)?', '+x.team:' in '+x.team)}
 function talkHtml(){
  var h='<p style="color:var(--ink2);font-size:15.5px;margin:20px 0">Where Asoka works out what it doesn’t know yet. When something looks inconsistent or missing, it asks the person most likely to know.</p>';
- S.newQs.filter(function(x){return x.page}).forEach(function(x){h+='<div class="thread"><div class="th"><b>'+esc(x.q)+'</b><span class="st w">Asking</span></div><div class="msg"><span class="av a">A</span><div><div class="who">Asoka<small>Just now</small></div><p>Someone asked this and I don’t know yet. @'+esc(x.who)+', can you help? I’ll update the page when you answer.</p></div></div></div>'});
+ S.newQs.filter(function(x){return x.page}).forEach(function(x){h+='<div class="thread"><div class="th"><b>'+esc(x.q)+'</b><span class="st '+(x.resolved?'o':'w')+'">'+(x.resolved?'Resolved':'Asking')+'</span></div><div class="msg"><span class="av a">A</span><div><div class="who">Asoka<small>Just now</small></div><p>Someone asked this and I don’t know yet. @'+esc(x.who)+', can you help? I’ll update the page when you answer.</p></div></div>'+(x.resolved?'<div class="msg in"><span class="av h">'+initials(x.who)+'</span><div><div class="who">'+esc(x.who)+'<small>Just now</small></div><p>'+esc(x.ans)+'</p></div></div>':'')+'</div>'});
  h+='<div class="thread"><div class="th"><b>Do flat renewals skip approval on purpose?</b><span class="st '+(S.learned?'o':'w')+'">'+(S.learned?'Resolved':'Waiting')+'</span></div>';
  h+='<div class="msg"><span class="av a">A</span><div><div class="who">Asoka<small>Oct 27</small></div><p>I saw 14 flat renewals skip approval last quarter, but no rule explains it. @Maria Okafor, is this intentional?</p></div></div>';
  if(S.talkTyping&&!S.learned)h+='<div class="msg"><span class="av h">MO</span><div><div class="who">Maria Okafor<small>typing</small></div><span class="typing"><i></i><i></i><i></i></span></div></div>';
@@ -466,7 +484,7 @@ function histHtml(){
  return h;
 }
 /* ---------- page shell ---------- */
-function qCount(){return (S.learned?1:2)+S.newQs.filter(function(x){return x.page}).length}
+function qCount(){return (S.learned?1:2)+S.newQs.filter(function(x){return x.page&&!x.resolved}).length}
 function pageHtml(){
  var h='<div class="page art"><nav class="toc" aria-label="Contents"><h4>On this page</h4>'+SECS.map(function(s){return '<button class="'+(S.toc===s[0]?'on':'')+'" data-act="toc" data-v="'+s[0]+'">'+s[1]+'</button>'}).join('')+'</nav><div>';
  h+='<div class="tabs" role="tablist"><button class="'+(S.tab==='read'?'on':'')+'" data-act="tab" data-v="read" role="tab">Overview</button><button class="'+(S.tab==='talk'?'on':'')+'" data-act="tab" data-v="talk" role="tab">Questions <span class="cnt" id="qcnt">'+qCount()+'</span></button><button class="'+(S.tab==='history'?'on':'')+'" data-act="tab" data-v="history" role="tab">Changes</button></div>';
@@ -504,7 +522,7 @@ function homeHtml(){
  h+='</div><div>';
  h+='<section class="box"><h2>What changed</h2><div class="bb"><ul class="news"><li><button class="wl" data-act="open" data-v="hist">Discounts over 35% now go straight to the CRO</button><small>It was 40% until Oct 28. 4 pages updated.</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">CPQ quote sync is failing for multi-currency deals</button><small>Since Oct 29. Asoka asked Integrations why.</small></li><li><button class="wl" data-act="prev" data-v="Deal Desk">Priya Shah now leads Deal Desk</button><small>From the org chart and #announcements.</small></li></ul></div></section>';
  h+='<section class="box"><h2><span class="pdot"></span>Learning right now</h2><div class="bb"><ul class="feed" id="feed">'+feedHtml(false)+'</ul></div></section>';
- h+='<section class="box"><h2>Asoka is asking</h2><div class="bb"><ul class="news" id="asking">'+S.newQs.map(function(x){return '<li><button class="wl" data-act="'+(x.page?'talk':'focusq')+'">'+esc(x.q)+'</button><small>Asking '+esc(whoStr(x))+', just now.</small></li>'}).join('')+'<li><button class="wl" data-act="talk">Do flat renewals skip approval on purpose?</button><small>'+(S.learned?'Answered by Maria Okafor just now.':'Asked Maria Okafor in RevOps, Oct 27.')+'</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">Why do multi-currency quotes fail to sync?</button><small>Asked Ben Ito in Integrations, 2 days ago.</small></li><li><button class="wl" data-act="talk">Do EMEA deals really go to Sofia first?</button><small>Watching the next EMEA approval.</small></li></ul></div></section>';
+ h+='<section class="box"><h2>Asoka is asking</h2><div class="bb"><ul class="news" id="asking">'+askingItems()+'</ul></div></section>';
  h+='</div></div></div>';
  return h;
 }
@@ -555,6 +573,8 @@ function fsize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.
 function attHtml(f,i,removable){var k=f.kind;return '<span class="att">'+(k==='img'?'<img src="'+f.url+'" alt="">':'<span class="fi">'+({sheet:'CSV',doc:'DOC',file:'FILE'}[k])+'</span>')+'<span><span class="an">'+esc(f.name)+'</span><small>'+fsize(f.size)+'</small></span>'+(removable?'<button data-act="unattach" data-i="'+i+'" aria-label="Remove '+esc(f.name)+'">×</button>':'')+'</span>'}
 function chips(){
  var onPage=S.view==='page',c=[];
+ if(S.learned&&!S.learnSeen)c.push('<button class="dchip news" data-act="goRenewal"><span class="pdot"></span>Maria answered: flat renewals</button>');
+ S.newQs.filter(function(x){return x.resolved&&x.unseen}).forEach(function(x){c.push('<button class="dchip news" data-act="showchat"><span class="pdot"></span>'+esc(x.who.split(' ')[0])+' answered your question</button>')});
  if(CH.msgs.length&&!CH.open)c.push('<button class="dchip conv" data-act="showchat">Conversation ('+CH.msgs.filter(function(m){return m.role==='u'}).length+')</button>');
  if(onPage)c.push('<button class="dchip scope" data-act="scope" aria-pressed="'+(CH.scope==='page')+'">'+(CH.scope==='page'?'Asking about this page':'Asking about all of Northwind')+' ⇄</button>');
  var asked=CH.msgs.filter(function(m){return m.role==='u'}).map(function(m){return m.t});
@@ -569,11 +589,20 @@ function renderDock(){
  $('cin').placeholder=CH.listening?'Listening…':CH.files.length?(CH.files.length===1?'Ask about this file':'Ask about these files'):(S.view==='page'&&CH.scope==='page'?'Ask about this page':'Ask anything about Northwind');
  requestAnimationFrame(function(){document.documentElement.style.setProperty('--dockh',$('dock').offsetHeight+'px')});
 }
-function msgHtml(m){
+function initials(n){return n.split(' ').map(function(w){return w[0]}).join('').slice(0,2)}
+function msgHtml(m,i){
+ if(m.resolved){var it=m.resolved;return '<div class="ba res"><span class="av h">'+initials(it.who)+'</span><div><div class="rwho">'+esc(it.who)+' answered your question<small>Just now</small></div><div class="rq">“'+esc(it.q)+'”</div><p>'+esc(it.ans)+'</p><div class="src">Asoka added this to what it knows and will answer it directly from now on.</div></div></div>'}
  if(m.role==='u')return '<div class="bu">'+(m.files.length?'<div class="atts">'+m.files.map(function(f){return f.kind==='img'?'<img src="'+f.url+'" alt="'+esc(f.name)+'">':'<span>'+esc(f.name)+'</span>'}).join('')+'</div>':'')+esc(m.t||'')+'</div>';
- var b='<div class="ba"><span class="av a">A</span><div>';
+ var b='<div class="ba" data-mi="'+i+'"><span class="av a">A</span><div>';
  if(!m.t&&!m.unknown)b+='<span class="dots3" aria-label="Asoka is thinking"><i></i><i></i><i></i></span>';
- else if(m.unknown)b+='<p>I don’t know that yet, and I won’t guess.</p><div class="src">Added to open questions. I’m asking '+esc(whoStr(m.who))+' and will update the page when they answer.'+(m.who.page&&!(S.view==='page'&&S.tab==='talk')?' <button class="wl" data-act="tab" data-v="talk">See it in Questions</button>':'')+'</div>';
+ else if(m.unknown){var w=m.who,fn=w.who.split(' ')[0];b+='<p>I don’t know that yet, and I won’t guess.</p>';
+  if(m.qs==='offer')b+='<div class="src">'+esc(whoStr(w))+' would know.</div><div class="qacts"><button class="qbtn pri press" data-act="askperson" data-i="'+i+'">Ask '+esc(fn)+'</button><button class="qbtn press" data-act="notnow" data-i="'+i+'">Not now</button></div>';
+  else if(m.qs==='asking')b+='<div class="src qst">Asking '+esc(w.who)+'. <button class="wl" data-act="undoask" data-i="'+i+'">Undo</button></div>';
+  else if(m.qs==='asked')b+='<div class="src qst">Asking '+esc(whoStr(w))+'. I’ll tell you here when they answer.'+(w.page&&!(S.view==='page'&&S.tab==='talk')?' <button class="wl" data-act="tab" data-v="talk">See it in Questions</button>':'')+'</div>';
+  else if(m.qs==='dup')b+='<div class="src qst">Asoka is already asking '+esc(whoStr(w))+'.</div>';
+  else if(m.qs==='answered')b+='<div class="src">'+esc(w.who)+' answered. See below.</div>';
+  else b+='<div class="src">Okay. I won’t ask anyone.</div>';
+ }
  else b+='<p>'+esc(m.t)+(m.n&&m.n.length?rf(m.n):'')+'</p>'+(m.note?'<div class="note">'+esc(m.note)+'</div>':'')+'<div class="src">'+(m.pending?'Checking all of its sources…':m.src==='asoka'?'Answered by Asoka from its sources. Tap a number to see one.':m.n&&m.n.length?'From the page’s sources. Tap a number to see one.':'')+'</div>';
  return b+'</div></div>';
 }
@@ -581,20 +610,56 @@ var ROUTE=[[/park|office|desk|building|badge|wifi|lunch|travel|expense/,'Leo Par
 function markUnknown(m,q){
  if(m.unknown)return;m.unknown=true;
  var l=q.toLowerCase(),r=null;ROUTE.forEach(function(x){if(!r&&x[0].test(l))r=x});
- var it={q:q.replace(/\s+/g,' ').trim(),who:r?r[1]:'Dana Ruiz',team:r?r[2]:'Asoka’s sysadmin',page:S.view==='page'&&CH.scope==='page'&&(!r||r[2]==='RevOps')};
- m.who=it;
- if(!S.newQs.some(function(x){return x.q.toLowerCase()===it.q.toLowerCase()})){S.newQs.unshift(it);S.asks++;S.pendingFly=it}
+ var nq=q.replace(/\s+/g,' ').trim(),ex=S.newQs.filter(function(x){return !x.resolved&&x.q.toLowerCase()===nq.toLowerCase()})[0];
+ if(ex){m.who=ex;m.qs='dup';return}
+ m.who={q:nq,who:r?r[1]:'Dana Ruiz',team:r?r[2]:'Asoka’s sysadmin',page:S.view==='page'&&CH.scope==='page'&&(!r||r[2]==='RevOps')};m.qs='offer';
+}
+var DOCS={Facilities:'office handbook',People:'people handbook',Security:'IT security guide',Integrations:'integrations runbook',RevOps:'RevOps playbook'};
+function answerFor(it){var l=it.q.toLowerCase();
+ if(/park/.test(l))return 'Parking is first come, first served in the garage on level B2. Visitors get a pass at reception.';
+ if(/vpn|password/.test(l))return 'Reset it at id.northwind.com, then reconnect to the VPN. If MFA fails, file an IT ticket and Security resets it within the hour.';
+ if(/vacation|pto|leave|holiday/.test(l))return 'Request time off in Workday. Your manager approves it, usually within a day.';
+ if(/sla/.test(l))return 'Deal Desk does. Priya Shah reviews any approval that has waited more than 24 hours.';
+ return DOCS[it.team]?'It’s covered in the '+DOCS[it.team]+'. I’ve sent Asoka the current version.':'I’ve pointed Asoka to the team that owns this. It will have a page on it shortly.';
+}
+function commitAsk(i){
+ var m=CH.msgs[i];if(!m||m.qs!=='offer')return;var it=m.who;
+ it.m=m;it.mi=i;it.resolved=false;S.newQs.unshift(it);S.asks++;m.qs='asking';S.pendingFly=it;renderChat();
+ m.undoT=setTimeout(function(){if(m.qs==='asking'){m.qs='asked';renderChat()}},5000);
+ it.ansT=setTimeout(function(){resolveQ(it)},15000);
+}
+function undoAsk(i){
+ var m=CH.msgs[i];if(!m||m.qs!=='asking')return;var it=m.who;
+ clearTimeout(m.undoT);clearTimeout(it.ansT);S.newQs=S.newQs.filter(function(x){return x!==it});S.asks=Math.max(0,S.asks-1);m.qs='offer';
+ syncCounts();renderChat();
+}
+function resolveQ(it){
+ if(!it||it.resolved||S.newQs.indexOf(it)<0)return;
+ clearTimeout(it.ansT);if(it.m)clearTimeout(it.m.undoT);
+ it.resolved=true;it.ans=answerFor(it);it.unseen=!CH.open;S.asks=Math.max(0,S.asks-1);
+ if(it.m&&CH.msgs.indexOf(it.m)>=0)it.m.qs='answered';
+ CH.msgs.push({role:'a',resolved:it});
+ syncCounts();renderChat();
+ if(!CH.open)toast(it.who+' answered your question.','showchat','Open');
+}
+function askingItems(){
+ return S.newQs.map(function(x){return '<li'+(x.fresh?' class="in"':'')+'><button class="wl" data-act="'+(x.page?'talk':'showchat')+'">'+esc(x.q)+'</button><small>'+(x.resolved?'Answered by '+esc(x.who)+' just now.':'Asking '+esc(whoStr(x))+', just now.')+'</small></li>'}).join('')
+ +'<li><button class="wl" data-act="talk">Do flat renewals skip approval on purpose?</button><small>'+(S.learned?'Answered by Maria Okafor just now.':'Asked Maria Okafor in RevOps, Oct 27.')+'</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">Why do multi-currency quotes fail to sync?</button><small>Asked Ben Ito in Integrations, 2 days ago.</small></li><li><button class="wl" data-act="talk">Do EMEA deals really go to Sofia first?</button><small>Watching the next EMEA approval.</small></li>';
+}
+function syncCounts(fresh){
+ var c=$('qcnt');if(c)c.textContent=qCount();
+ ['n-asks','lc-asks'].forEach(function(k){var e=$(k);if(e)e.textContent=S.asks.toLocaleString()});
+ var as=$('asking');if(as){if(fresh)fresh.fresh=true;as.innerHTML=askingItems();if(fresh)fresh.fresh=false}
+ if(S.view==='page'&&S.tab==='talk')render();
 }
 function bump(el){if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
 function inView(el){if(!el)return false;var r=el.getBoundingClientRect(),d=$('dock').getBoundingClientRect().top;return r.width>0&&r.top>=0&&r.bottom<=d}
 function flyQ(it){
- var c=$('qcnt');if(c)c.textContent=qCount();
- ['n-asks','lc-asks'].forEach(function(k){var e=$(k);if(e)e.textContent=S.asks.toLocaleString()});
- var as=$('asking');if(as&&S.view==='home'){var li=document.createElement('li');li.className='in';li.innerHTML='<button class="wl" data-act="focusq">'+esc(it.q)+'</button><small>Asking '+esc(whoStr(it))+', just now.</small>';as.insertBefore(li,as.firstChild)}
- if(S.view==='page'&&S.tab==='talk'){render();return}
+ syncCounts(it);if(S.view==='page'&&S.tab==='talk')return;
+ var c=$('qcnt');
  var to=it.page?c:$('n-asks');
- var from=document.querySelector('#cms .ba:last-child p');
- if(!inView(to)){toast('Added to open questions. Asking '+it.who+'.');return}
+ var from=document.querySelector('[data-mi="'+it.mi+'"] p');
+ if(!inView(to))return;
  if(RM||!from||!from.animate){bump(to);return}
  var a=from.getBoundingClientRect(),b=to.getBoundingClientRect(),f=document.createElement('div');
  f.className='flyq';f.textContent=it.q;f.style.left=a.left+'px';f.style.top=a.top+'px';document.body.appendChild(f);
@@ -603,7 +668,7 @@ function flyQ(it){
 }
 function renderChat(){
  var c=$('chat');
- c.innerHTML=CH.msgs.length?'<div class="cw"><div class="chd"><span class="pdot"></span>Asoka<span class="sp2"></span><button data-act="newchat">New</button><button data-act="hidechat">Hide</button></div><div class="cms" id="cms">'+CH.msgs.map(msgHtml).join('')+'</div></div>':'';
+ c.innerHTML=CH.msgs.length?'<div class="cw"><div class="chd"><span class="pdot"></span>Asoka<span class="sp2"></span><button data-act="newchat">New</button><button data-act="hidechat">Hide</button></div><div class="cms" id="cms">'+CH.msgs.map(function(m,i){return msgHtml(m,i)}).join('')+'</div></div>':'';
  c.classList.toggle('open',CH.open&&CH.msgs.length>0);
  if(S.pendingFly){var it=S.pendingFly;S.pendingFly=false;setTimeout(function(){flyQ(it)},260)}
  var ms=$('cms');if(ms)ms.scrollTop=ms.scrollHeight;
@@ -678,10 +743,19 @@ function closePop(){$('pop').classList.remove('on');$('scrim').classList.remove(
 /* ---------- the learning moment ---------- */
 function learn(){
  if(S.learned)return;S.talkTyping=true;if(S.view==='page'&&S.tab==='talk')render();
- setTimeout(function(){S.talkTyping=false;S.learned=true;S.justLearned=true;S.asks=Math.max(0,S.asks-1);S.edits++;
-  if(S.view==='page'){render();toast('Maria answered. Asoka updated the page.')}
-  setTimeout(function(){S.justLearned=false},3200);
+ setTimeout(function(){S.talkTyping=false;S.learned=true;S.justLearned=true;S.asks=Math.max(0,S.asks-1);S.edits++;S.learnSeen=false;
+  if(S.view==='page'&&S.tab==='read'&&inView($('renewal'))){S.diffPlay=true;S.learnSeen=true}
+  if(S.view==='page')render();else syncCounts();
+  renderDock();
+  if(!S.learnSeen)toast('Maria answered. Asoka updated the page.','goRenewal','See the change');
+  setTimeout(function(){S.justLearned=false;S.diffPlay=false},3200);
  },RM?300:1800);
+}
+function showRenewal(){
+ S.learnSeen=true;closePop();$('toast').classList.remove('on');CH.open=false;renderChat();
+ S.view='page';S.tab='read';S.diffPlay=false;render();
+ setTimeout(function(){var el=$('renewal');if(el)el.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'})},60);
+ setTimeout(function(){S.diffPlay=true;var el=$('renewal');if(el)el.outerHTML=renewalHtml();setTimeout(function(){S.diffPlay=false},3200)},RM?60:520);
 }
 
 /* ---------- render ---------- */
@@ -702,10 +776,10 @@ function go(v,o){
  if(RP.t){clearInterval(RP.t);RP.t=null}
  render();
  if(o.sec){setTimeout(function(){var e=$('s-'+o.sec)||$(o.sec);if(e)e.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})},60)}else window.scrollTo(0,0);
- clearTimeout(S.learnT);if(v==='page'&&!S.learned)S.learnT=setTimeout(learn,20000);
+ 
 }
 document.addEventListener('click',function(e){
- var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
+ var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;if(b.closest('#toast'))$('toast').classList.remove('on');
  if(a==='home')go('home');
  else if(a==='open')go('page',{sec:v||null});
  else if(a==='talk')go('page',{tab:'talk'});
@@ -717,7 +791,10 @@ document.addEventListener('click',function(e){
  else if(a==='tohist'){closePop();S.tab='history';S.openRev=S.learned?'r6':'r5';S.hlRev=S.openRev;render();window.scrollTo(0,0);setTimeout(function(){S.hlRev=null},2500)}
  else if(a==='rev'){S.openRev=S.openRev===v?null:v;render()}
  else if(a==='learn')learn();
- else if(a==='goRenewal'){S.tab='read';render();setTimeout(function(){var el=$('renewal');if(el){el.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});el.classList.remove('upd');void el.offsetWidth;el.classList.add('upd')}},60)}
+ else if(a==='askperson')commitAsk(+b.dataset.i);
+ else if(a==='undoask')undoAsk(+b.dataset.i);
+ else if(a==='notnow'){var nm=CH.msgs[+b.dataset.i];if(nm&&nm.qs==='offer'){nm.qs='dismissed';renderChat()}}
+ else if(a==='goRenewal')showRenewal();
  else if(a==='rpplay')rpPlay();
  else if(a==='focusq'){$('cin').focus()}
  else if(a==='sug')chatAsk(v,[]);
@@ -725,7 +802,7 @@ document.addEventListener('click',function(e){
  else if(a==='mic')toggleMic();
  else if(a==='attach')$('file').click();
  else if(a==='unattach'){var f=CH.files.splice(+b.dataset.i,1)[0];renderDock()}
- else if(a==='showchat'){CH.open=true;renderChat()}
+ else if(a==='showchat'){$('toast').classList.remove('on');S.newQs.forEach(function(x){x.unseen=false});CH.open=true;renderChat()}
  else if(a==='hidechat'){CH.open=false;renderChat()}
  else if(a==='newchat'){CH.msgs=[];CH.open=false;askSeq++;renderChat()}
  else if(a==='scope'){CH.scope=CH.scope==='page'?'all':'page';renderDock()}
@@ -740,9 +817,14 @@ window.addEventListener('scroll',function(){var y=window.scrollY,hd=document.que
  if(CH.open||document.activeElement===$('cin'))setLean(false);else if(y>160&&y>lastY+6)setLean(true);else if(y<lastY-6||y<=160)setLean(false);
  if(Math.abs(y-lastY)>6)lastY=y},{passive:true});
 $('cin').addEventListener('focus',function(){setLean(false)});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop();if((e.key==='Enter'||e.key===' ')&&e.target.tagName==='g'){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+document.addEventListener('keydown',function(e){
+ var tg=e.target.tagName;if(!e.metaKey&&!e.ctrlKey&&!e.altKey&&tg!=='INPUT'&&tg!=='TEXTAREA'){
+  if(e.key==='l'||e.key==='L')learn();
+  else if(e.key==='a'||e.key==='A'){var pend=S.newQs.filter(function(x){return !x.resolved});if(pend.length)resolveQ(pend[pend.length-1])}
+ }
+ if(e.key==='Escape')closePop();if((e.key==='Enter'||e.key===' ')&&e.target.tagName==='g'){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 var h0=location.hash.slice(1),m0=h0.match(/^approvals(?:-(talk|history))?$/);
-if(m0){S.view='page';S.tab=m0[1]||'read';render();S.learnT=setTimeout(learn,20000)}else render();
+if(m0){S.view='page';S.tab=m0[1]||'read';render()}else render();
 if(S.view==='page'&&S.tab==='read'&&!RM)setTimeout(function(){if(!RP.t&&$('rp'))rpPlay()},1200);
 renderDock();window.addEventListener('resize',renderDock);
 })();
