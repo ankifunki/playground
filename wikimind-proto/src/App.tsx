@@ -9,7 +9,7 @@ const legacy = (file: string, title: string): ComponentType => {
 }
 
 export const VARIANTS: Variant[] = [
-  { key: 'b', name: 'Team + brain', desc: 'Fleet, brain map, dials, traces', Component: legacy('warden-team', 'Team + brain') },
+  { key: 'b', name: 'Team + brain', desc: 'Fleet, brain map, dials, traces', Component: lazy(() => import('./variants/warden-team')) },
   { key: 'c', name: 'Decision classes', desc: 'Delegate, spot-check, correct', Component: lazy(() => import('./variants/warden-v2')) },
   { key: 'd', name: 'Wikimind', desc: 'Pages with trust and actions', Component: lazy(() => import('./variants/wikimind')) },
   { key: 'e', name: 'Wikimind 2', desc: 'Ask, zoom map, claims', Component: lazy(() => import('./variants/wikimind2')) },
