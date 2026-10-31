@@ -1,23 +1,30 @@
 # Wikimind prototypes
 
-Front-end-only prototypes for **Wikimind**: a read-only surface that exposes the knowledge inside Asoka (a "digital human" sysadmin agent) to customers. Everything is faked in the browser. No backend, no build tooling beyond `build.py`.
+Front-end-only React prototypes for **Wikimind**: a read-only surface that exposes the knowledge inside Asoka (a "digital human" sysadmin agent) to customers. Everything is faked in the browser. No backend. Vite + React + TypeScript, run locally.
 
 Brief: https://docs.google.com/document/d/1hVtsbMiSN-4_3rn8jfR_p6HhGTC3foUkvRIHkwXpc3c (Asoka design on-site, "How do you expose everything in a digital human's brain?").
 
 ## Layout
 
 ```
-variants/          one self-contained HTML file per variant (edit these)
-shell.html         the tab switcher template
-build.py           bundles variants into dist/index.html
-dist/index.html    open this in a browser to switch between variants
+src/App.tsx                 variant switcher (?v=b..f), loads one variant at a time
+src/useVariantCss.ts        mounts a variant's stylesheet only while it is on screen
+src/fonts.css               Figtree, DM Mono (@fontsource) and Geist Serif (geist package), bundled locally
+src/variants/<name>/        one folder per variant: index.tsx, store.tsx (state + actions), components, styles.css
+legacy/                     original single-file HTML for variants not yet ported (shown in an iframe)
 ```
 
-Open a single variant directly (`variants/wikimind3.html`) when iterating on it. Run `python3 build.py` to refresh the bundle.
+Each variant's CSS is the original stylesheet, loaded with `?inline` and injected while the variant is mounted, so generic class names in different variants never collide.
 
 ## Running it
 
-Local only. Do not deploy (no Vercel or other hosting). Open `dist/index.html` in a browser, or a single variant from `variants/`. Run `python3 build.py` after editing a variant to refresh the bundle.
+Local only. Do not deploy (no Vercel or other hosting).
+
+```
+npm install
+npm run dev        # http://localhost:5173/?v=f  (f = Wikimind 3)
+npm run build      # type-check and production build into dist/
+```
 
 ## Demo controls (Wikimind 3)
 

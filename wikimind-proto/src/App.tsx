@@ -1,0 +1,55 @@
+import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react'
+import LegacyFrame from './LegacyFrame'
+
+type Variant = { key: string; name: string; desc: string; Component: ComponentType }
+
+const legacy = (file: string, title: string): ComponentType => {
+  const load = () => import(`../legacy/${file}.html?raw`)
+  return function Legacy() { return <LegacyFrame load={load} title={title} /> }
+}
+
+export const VARIANTS: Variant[] = [
+  { key: 'b', name: 'Team + brain', desc: 'Fleet, brain map, dials, traces', Component: legacy('warden-team', 'Team + brain') },
+  { key: 'c', name: 'Decision classes', desc: 'Delegate, spot-check, correct', Component: legacy('warden-v2', 'Decision classes') },
+  { key: 'd', name: 'Wikimind', desc: 'Pages with trust and actions', Component: legacy('wikimind', 'Wikimind') },
+  { key: 'e', name: 'Wikimind 2', desc: 'Ask, zoom map, claims', Component: legacy('wikimind2', 'Wikimind 2') },
+  { key: 'f', name: 'Wikimind 3', desc: 'Cited, always learning', Component: lazy(() => import('./variants/wikimind3')) },
+]
+const DEFAULT = 'f'
+
+function readKey() {
+  const k = new URLSearchParams(location.search).get('v') || (() => { try { return localStorage.getItem('wikimind-variant') } catch { return null } })()
+  return VARIANTS.some((v) => v.key === k) ? (k as string) : DEFAULT
+}
+
+export default function App() {
+  const [key, setKey] = useState(readKey)
+  useEffect(() => {
+    const u = new URL(location.href)
+    if (u.searchParams.get('v') !== key) { u.searchParams.set('v', key); history.replaceState(null, '', u) }
+    try { localStorage.setItem('wikimind-variant', key) } catch { /* private mode */ }
+  }, [key])
+  const pick = (k: string) => {
+    if (k === key) return
+    const u = new URL(location.href); u.hash = ''; u.searchParams.set('v', k); history.replaceState(null, '', u)
+    setKey(k); window.scrollTo(0, 0)
+  }
+  const V = VARIANTS.find((v) => v.key === key)!
+  return (
+    <>
+      <div className="vs-bar">
+        <span className="vs-lbl">Variant</span>
+        <div className="vs-seg" role="tablist" aria-label="Prototype variant">
+          {VARIANTS.map((v) => (
+            <button key={v.key} role="tab" aria-selected={v.key === key} onClick={() => pick(v.key)}>
+              <b>{v.name}</b><span>{v.desc}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <Suspense fallback={<div className="vs-loading">Loading…</div>}>
+        <V.Component key={V.key} />
+      </Suspense>
+    </>
+  )
+}
