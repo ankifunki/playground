@@ -334,6 +334,33 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .chd{display:flex;align-items:center;gap:8px;padding:12px 12px 10px 16px;border-bottom:1px solid var(--hair);font-size:13.5px;font-weight:600;color:var(--ink2)}
 .chd .sp2{flex:1}
 .chd button{border:0;background:var(--soft);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.ibtn,.chd .ibtn{width:34px;height:34px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--ink2);display:inline-grid;place-items:center;cursor:pointer;flex:none;transition:background-color .2s var(--eo),color .2s var(--eo),transform .16s var(--eo)}
+.ibtn.sm{width:30px;height:30px;color:var(--link)}
+.ibtn:active,.px:active{transform:scale(.94)}
+.ic{display:block;overflow:visible}
+.ic *{transform-box:fill-box;transform-origin:center}
+.px{display:grid;place-items:center;color:var(--ink2)}
+.att button{display:grid;place-items:center;color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){
+ .ibtn:hover{background:var(--soft);color:var(--ink)}
+ .px:hover{color:var(--ink)}
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .ibtn .ic,.px .ic,.att button .ic,.cbtn svg{transition:transform .32s var(--eo)}
+ .px:hover .ic-x,.att button:hover .ic-x{transform:rotate(90deg)}
+ .ibtn:hover .ic-chevron-down{animation:icNudge .5s var(--eo)}
+ .ibtn:hover .ic-square-pen .pen{animation:icScribble .55s var(--eo);transform-origin:20% 80%}
+ .ibtn:hover .ic-rotate-ccw{transform:rotate(-360deg);transition:transform .7s var(--eo)}
+ .ibtn:hover .ic-pause rect{animation:icPulse .5s var(--eo)}
+ .ibtn:hover .ic-pause rect:last-child{animation-delay:.06s}
+ .cbtn[data-act=attach]:hover svg{transform:rotate(90deg)}
+ .cbtn.mic:not(.on):hover svg{animation:icNudge .5s var(--eo) reverse}
+ .cbtn.send:hover svg{animation:icLift .45s var(--eo)}
+}
+@keyframes icNudge{0%,100%{transform:translateY(0)}45%{transform:translateY(3px)}}
+@keyframes icLift{0%,100%{transform:translateY(0)}45%{transform:translateY(-3px)}}
+@keyframes icScribble{0%,100%{transform:rotate(0)}30%{transform:rotate(-14deg)}65%{transform:rotate(8deg)}}
+@keyframes icPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.7)}}
 .cms{overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain}
 .bu{align-self:flex-end;max-width:85%;background:var(--linkb);border-radius:18px 18px 6px 18px;padding:9px 13px;font-size:15.5px;animation:rise .25s var(--eo) both}
 .bu .atts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
@@ -362,6 +389,9 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 (function(){
 'use strict';
 var $=function(id){return document.getElementById(id)};
+/* Icons: Lucide (lucide.dev, ISC licence), inlined. Hover motion modelled on lucide-animated. */
+var IC={x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>','chevron-down':'<path d="m6 9 6 6 6-6"/>','square-pen':'<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path class="pen" d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>','rotate-ccw':'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',pause:'<rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/>'};
+function ico(n,sz){sz=sz||18;return '<svg class="ic ic-'+n+'" viewBox="0 0 24 24" width="'+sz+'" height="'+sz+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function toast(m,act,label){var t=$('toast');t.innerHTML=esc(m)+(act?' <button class="tact" data-act="'+act+'">'+esc(label)+'</button>':'');t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},act?6000:3200)}
@@ -409,7 +439,7 @@ var RSTEPS=[
  {path:3,btn:0,lock:0,ap:[1,1,0],c:[78,46],cap:'Unlocked. The deal moves to Negotiation.'}
 ];
 function rpHtml(){
- return '<div class="rp" id="rp"><div class="cursor" id="rpc"></div><div class="rh"><b>Helios expansion</b><span>$240,000, 28% off</span></div><div class="path" id="rpp"><span>Qualify</span><span>Proposal</span><span>Approval</span><span>Negotiation</span></div><div class="rprow"><span class="rpbtn" id="rpb">Submit for approval</span><span class="lock" id="rpl">🔒 Locked while in approval</span></div><div class="apprs" id="rpa"><span>Sales manager</span><span>Finance</span><span>CRO, not needed</span></div><div class="rpfoot"><span id="rpcap">'+RSTEPS[0].cap+'</span><button class="wl" data-act="rpplay" id="rpplay">'+(RP.t?'Pause':'Replay')+'</button></div></div>';
+ return '<div class="rp" id="rp"><div class="cursor" id="rpc"></div><div class="rh"><b>Helios expansion</b><span>$240,000, 28% off</span></div><div class="path" id="rpp"><span>Qualify</span><span>Proposal</span><span>Approval</span><span>Negotiation</span></div><div class="rprow"><span class="rpbtn" id="rpb">Submit for approval</span><span class="lock" id="rpl">🔒 Locked while in approval</span></div><div class="apprs" id="rpa"><span>Sales manager</span><span>Finance</span><span>CRO, not needed</span></div><div class="rpfoot"><span id="rpcap">'+RSTEPS[0].cap+'</span><button class="ibtn sm" data-act="rpplay" id="rpplay" aria-label="'+(RP.t?'Pause':'Replay')+'" title="'+(RP.t?'Pause':'Replay')+'">'+ico(RP.t?'pause':'rotate-ccw',16)+'</button></div></div>';
 }
 function rpApply(){
  var st=RSTEPS[RP.i],p=$('rpp');if(!p)return;
@@ -420,8 +450,8 @@ function rpApply(){
  var c=$('rpc'),rp=$('rp');if(c&&rp&&!RM){c.style.opacity=st.btn?1:0;c.style.left=(st.btn?110:rp.clientWidth*.7)+'px';c.style.top=(st.btn?st.c[1]:st.c[0])+'px'}
 }
 function rpPlay(){
- if(RP.t){clearInterval(RP.t);RP.t=null;var b=$('rpplay');if(b)b.textContent='Replay';return}
- RP.i=0;rpApply();var b2=$('rpplay');if(b2)b2.textContent='Pause';
+ if(RP.t){clearInterval(RP.t);RP.t=null;var b=$('rpplay');if(b){b.innerHTML=ico('rotate-ccw',16);b.setAttribute('aria-label','Replay');b.title='Replay'}return}
+ RP.i=0;rpApply();var b2=$('rpplay');if(b2){b2.innerHTML=ico('pause',16);b2.setAttribute('aria-label','Pause');b2.title='Pause'}
  RP.t=setInterval(function(){if(!$('rp')){clearInterval(RP.t);RP.t=null;return}RP.i=(RP.i+1)%RSTEPS.length;rpApply()},RM?2600:1500);
 }
 
@@ -571,7 +601,7 @@ var sampleP=CLAUDE?CLAUDE.use('sample').catch(function(){return null}):Promise.r
 var CH={open:false,msgs:[],files:[],listening:false,rec:null};
 function fileKind(f){var n=f.name.toLowerCase();return /^image\//.test(f.type)?'img':/\.(csv|xlsx?|tsv)$/.test(n)?'sheet':/\.(pdf|docx?)$/.test(n)?'doc':'file'}
 function fsize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
-function attHtml(f,i,removable){var k=f.kind;return '<span class="att">'+(k==='img'?'<img src="'+f.url+'" alt="">':'<span class="fi">'+({sheet:'CSV',doc:'DOC',file:'FILE'}[k])+'</span>')+'<span><span class="an">'+esc(f.name)+'</span><small>'+fsize(f.size)+'</small></span>'+(removable?'<button data-act="unattach" data-i="'+i+'" aria-label="Remove '+esc(f.name)+'">×</button>':'')+'</span>'}
+function attHtml(f,i,removable){var k=f.kind;return '<span class="att">'+(k==='img'?'<img src="'+f.url+'" alt="">':'<span class="fi">'+({sheet:'CSV',doc:'DOC',file:'FILE'}[k])+'</span>')+'<span><span class="an">'+esc(f.name)+'</span><small>'+fsize(f.size)+'</small></span>'+(removable?'<button data-act="unattach" data-i="'+i+'" aria-label="Remove '+esc(f.name)+'" title="Remove">'+ico('x',14)+'</button>':'')+'</span>'}
 function chips(){
  var onPage=S.view==='page',c=[];
  if(S.learned&&!S.learnSeen)c.push('<button class="dchip news" data-act="goRenewal"><span class="pdot"></span>Maria answered: flat renewals</button>');
@@ -668,7 +698,7 @@ function flyQ(it){
 }
 function renderChat(){
  var c=$('chat');
- c.innerHTML=CH.msgs.length?'<div class="cw"><div class="chd"><span class="pdot"></span>Asoka<span class="sp2"></span><button data-act="newchat">New</button><button data-act="hidechat">Hide</button></div><div class="cms" id="cms">'+CH.msgs.map(function(m,i){return msgHtml(m,i)}).join('')+'</div></div>':'';
+ c.innerHTML=CH.msgs.length?'<div class="cw"><div class="chd"><span class="pdot"></span>Asoka<span class="sp2"></span><button class="ibtn" data-act="newchat" aria-label="New conversation" title="New conversation">'+ico('square-pen')+'</button><button class="ibtn" data-act="hidechat" aria-label="Hide conversation" title="Hide">'+ico('chevron-down',20)+'</button></div><div class="cms" id="cms">'+CH.msgs.map(function(m,i){return msgHtml(m,i)}).join('')+'</div></div>':'';
  c.classList.toggle('open',CH.open&&CH.msgs.length>0);
  if(S.pendingFly){var it=S.pendingFly;S.pendingFly=false;setTimeout(function(){flyQ(it)},260)}
  var ms=$('cms');if(ms)ms.scrollTop=ms.scrollHeight;
@@ -734,11 +764,11 @@ function openRef(n,away){
  var r=n==14?{k:'talk',src:'Maria Okafor, on the Talk tab',d:'Just now',q:'Yes, on purpose since 2023. Flat renewals don’t change revenue risk.',u:'A process owner answered Asoka’s question. The article was rewritten and cited this answer.',v:null}:REFS[n];
  var ver=!!r.v,chk=r.check;
  var chain='<div class="chain" aria-label="How Asoka learned this"><span class="y">Observed</span><i>›</i><span class="y">Reflected</span><i>›</i><span class="y">Written</span><i>›</i><span class="'+(ver?'y':'n')+'">'+(ver?'Verified':'Not verified yet')+'</span></div>';
- $('pop').innerHTML='<div class="pc"><div class="pk">Source '+n+': '+KIND[r.k]+', '+esc(r.src)+', '+esc(r.d)+(chk?'. <span style="color:var(--warn)">'+esc(chk)+'</span>':'')+'</div><div class="pq">“'+esc(r.q)+'”</div><div class="pu">'+esc(r.u)+'</div>'+chain+(ver?'<div style="font-size:13px;color:var(--ok);font-weight:600;margin-bottom:8px">✓ Verified by '+esc(r.v)+'</div>':'')+(away?'<button class="wl" data-act="showsrc" data-n="'+n+'" style="margin-right:18px">Show on page</button>':'')+'<button class="wl" data-act="tohist">See it in Changes</button><button class="px press" data-act="unpop" aria-label="Close">×</button></div>';
+ $('pop').innerHTML='<div class="pc"><div class="pk">Source '+n+': '+KIND[r.k]+', '+esc(r.src)+', '+esc(r.d)+(chk?'. <span style="color:var(--warn)">'+esc(chk)+'</span>':'')+'</div><div class="pq">“'+esc(r.q)+'”</div><div class="pu">'+esc(r.u)+'</div>'+chain+(ver?'<div style="font-size:13px;color:var(--ok);font-weight:600;margin-bottom:8px">✓ Verified by '+esc(r.v)+'</div>':'')+(away?'<button class="wl" data-act="showsrc" data-n="'+n+'" style="margin-right:18px">Show on page</button>':'')+'<button class="wl" data-act="tohist">See it in Changes</button><button class="px press" data-act="unpop" aria-label="Close" title="Close">'+ico('x',16)+'</button></div>';
  $('pop').classList.add('on');$('scrim').classList.add('on');
  setTimeout(function(){var x=$('pop').querySelector('.px');if(x)x.focus({preventScroll:true})},30);
 }
-function openPrev(name){var p=PREV[name]||['Article',name+'.'];$('pop').innerHTML='<div class="pc"><div class="pk">'+p[0]+'</div><div class="pq" style="font-weight:500">'+esc(name)+'</div><div class="pu">'+esc(p[1])+'</div><div style="font-size:13px;color:var(--ink2)">Prototype: only Opportunity approvals has a full page.</div><button class="px press" data-act="unpop" aria-label="Close">×</button></div>';$('pop').classList.add('on');$('scrim').classList.add('on')}
+function openPrev(name){var p=PREV[name]||['Article',name+'.'];$('pop').innerHTML='<div class="pc"><div class="pk">'+p[0]+'</div><div class="pq" style="font-weight:500">'+esc(name)+'</div><div class="pu">'+esc(p[1])+'</div><div style="font-size:13px;color:var(--ink2)">Prototype: only Opportunity approvals has a full page.</div><button class="px press" data-act="unpop" aria-label="Close" title="Close">'+ico('x',16)+'</button></div>';$('pop').classList.add('on');$('scrim').classList.add('on')}
 function closePop(){var was=$('pop').classList.contains('on');$('pop').classList.remove('on');$('scrim').classList.remove('on');if(was&&popFrom&&document.body.contains(popFrom))popFrom.focus();popFrom=null}
 var popFrom=null;
 function showSrc(n){
