@@ -23,6 +23,7 @@ Local only. Do not deploy (no Vercel or other hosting). Open `dist/index.html` i
 
 - `L`: Maria answers the flat-renewals question. Asoka rewrites the card (old sentence struck, new one written in). Also reachable via "Simulate her reply" in Questions. There is no automatic timer.
 - `A`: the person Asoka is asking answers the visitor's newest open question immediately. Otherwise they answer 15 seconds after the visitor taps "Ask".
+- `/` focuses the ask box. Esc closes the source sheet, then the conversation.
 - Unknown questions offer "Ask <name>" or "Not now". Undo is available for 5 seconds after asking. Asoka never contacts anyone without the visitor's tap.
 
 ## Variants

@@ -72,6 +72,8 @@ sup.rf button:active{transform:scale(.9)}
 sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .uns{text-decoration:underline dotted var(--warn);text-decoration-thickness:2px;text-underline-offset:5px}
 .upd{animation:fresh 3s ease-out}
+@keyframes hls{0%,30%{background:var(--linkb);box-shadow:0 0 0 6px var(--linkb)}100%{background:transparent;box-shadow:0 0 0 6px transparent}}
+.hlsent{animation:hls 2.4s ease-out;border-radius:6px}
 /* at a glance */
 .ibox{background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:16px 18px;font-size:14.5px;margin:4px 0 22px;display:flow-root}
 @media (min-width:760px){.ibox{float:right;width:310px;margin:8px 0 18px 28px}}
@@ -280,7 +282,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 @keyframes bmp{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
 .bump{animation:bmp .45s var(--eo);display:inline-block}
 #asking li.in{animation:rise .35s var(--eo) both,fresh 1.6s ease-out}
-@media (prefers-reduced-motion:reduce){.obs .was.anim del,.obs p.write,.bump,#asking li.in,.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
+@media (prefers-reduced-motion:reduce){.hlsent{animation:none;background:var(--linkb)}.obs .was.anim del,.obs p.write,.bump,#asking li.in,.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
 .hlive{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--ink2)}
 .page{padding-bottom:calc(var(--dockh,130px) + 48px)}
 #dock{position:fixed;left:0;right:0;bottom:0;z-index:45;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(to top,var(--bg) 28%,transparent 56%);pointer-events:none}
@@ -293,7 +295,6 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .dchips::-webkit-scrollbar{display:none}
 .dchip{flex:none;white-space:nowrap;border:0;background:var(--panel);box-shadow:var(--sh);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:transform .16s var(--eo),background-color .2s}
 .dchip:active{transform:scale(.97)}
-.dchip.scope{background:var(--linkb);color:var(--link);font-weight:600;box-shadow:none}
 .dchip.news{background:var(--okb);color:var(--ok);font-weight:600;box-shadow:none}
 .dchip.news .pdot{width:7px;height:7px}
 .dchip.conv{background:var(--ink);color:var(--panel);font-weight:600}
@@ -355,7 +356,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 <div class="chat" id="chat" aria-live="polite"></div>
 <div id="dock"><div class="dw"><div class="dchips" id="dchips"></div><div class="composer" id="composer"><div class="datt" id="datt"></div><div class="crow2"><button class="cbtn" data-act="attach" aria-label="Add attachment"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><input id="cin" type="text" placeholder="Ask anything about Northwind" aria-label="Ask Asoka" autocomplete="off"><span class="wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><button class="cbtn mic" id="mic" data-act="mic" aria-label="Speak your question"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="cbtn send" data-act="send" aria-label="Send"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div></div><input type="file" id="file" multiple accept="image/*,.pdf,.csv,.xlsx,.xls,.doc,.docx,.txt" hidden></div></div>
 <div class="scrim" id="scrim" data-act="unpop"></div>
-<div class="pop" id="pop" role="dialog" aria-label="Reference"></div>
+<div class="pop" id="pop" role="dialog" aria-modal="true" aria-label="Source"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
 (function(){
@@ -567,7 +568,7 @@ function localAns(q){
 }
 var CLAUDE=(function(){try{if(window.claude&&window.claude.use)return window.claude}catch(e){}try{if(window.parent&&window.parent!==window&&window.parent.claude&&window.parent.claude.use)return window.parent.claude}catch(e){}return null})();
 var sampleP=CLAUDE?CLAUDE.use('sample').catch(function(){return null}):Promise.resolve(null),askSeq=0;
-var CH={open:false,msgs:[],files:[],scope:'page',listening:false,rec:null};
+var CH={open:false,msgs:[],files:[],listening:false,rec:null};
 function fileKind(f){var n=f.name.toLowerCase();return /^image\//.test(f.type)?'img':/\.(csv|xlsx?|tsv)$/.test(n)?'sheet':/\.(pdf|docx?)$/.test(n)?'doc':'file'}
 function fsize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
 function attHtml(f,i,removable){var k=f.kind;return '<span class="att">'+(k==='img'?'<img src="'+f.url+'" alt="">':'<span class="fi">'+({sheet:'CSV',doc:'DOC',file:'FILE'}[k])+'</span>')+'<span><span class="an">'+esc(f.name)+'</span><small>'+fsize(f.size)+'</small></span>'+(removable?'<button data-act="unattach" data-i="'+i+'" aria-label="Remove '+esc(f.name)+'">×</button>':'')+'</span>'}
@@ -576,7 +577,6 @@ function chips(){
  if(S.learned&&!S.learnSeen)c.push('<button class="dchip news" data-act="goRenewal"><span class="pdot"></span>Maria answered: flat renewals</button>');
  S.newQs.filter(function(x){return x.resolved&&x.unseen}).forEach(function(x){c.push('<button class="dchip news" data-act="showchat"><span class="pdot"></span>'+esc(x.who.split(' ')[0])+' answered your question</button>')});
  if(CH.msgs.length&&!CH.open)c.push('<button class="dchip conv" data-act="showchat">Conversation ('+CH.msgs.filter(function(m){return m.role==='u'}).length+')</button>');
- if(onPage)c.push('<button class="dchip scope" data-act="scope" aria-pressed="'+(CH.scope==='page')+'">'+(CH.scope==='page'?'Asking about this page':'Asking about all of Northwind')+' ⇄</button>');
  var asked=CH.msgs.filter(function(m){return m.role==='u'}).map(function(m){return m.t});
  (onPage?['Who approves a 30% discount?','What happens at quarter end?','Do flat renewals need approval?']:['What did Asoka learn this week?','Who approves a 30% discount?','What is Asoka unsure about?']).filter(function(x){return asked.indexOf(x)<0}).slice(0,CH.msgs.length?1:onPage?2:3).forEach(function(s){c.push('<button class="dchip" data-act="sug" data-v="'+esc(s)+'">'+esc(s)+'</button>')});
  return c.join('');
@@ -586,7 +586,7 @@ function renderDock(){
  $('datt').innerHTML=CH.files.map(function(f,i){return attHtml(f,i,true)}).join('');
  $('composer').classList.toggle('listening',CH.listening);$('mic').classList.toggle('on',CH.listening);
  $('mic').setAttribute('aria-label',CH.listening?'Stop listening':'Speak your question');
- $('cin').placeholder=CH.listening?'Listening…':CH.files.length?(CH.files.length===1?'Ask about this file':'Ask about these files'):(S.view==='page'&&CH.scope==='page'?'Ask about this page':'Ask anything about Northwind');
+ $('cin').placeholder=CH.listening?'Listening…':CH.files.length?(CH.files.length===1?'Ask about this file':'Ask about these files'):(S.view==='page'?'Ask about this page, or anything':'Ask anything about Northwind');
  requestAnimationFrame(function(){document.documentElement.style.setProperty('--dockh',$('dock').offsetHeight+'px')});
 }
 function initials(n){return n.split(' ').map(function(w){return w[0]}).join('').slice(0,2)}
@@ -603,7 +603,7 @@ function msgHtml(m,i){
   else if(m.qs==='answered')b+='<div class="src">'+esc(w.who)+' answered. See below.</div>';
   else b+='<div class="src">Okay. I won’t ask anyone.</div>';
  }
- else b+='<p>'+esc(m.t)+(m.n&&m.n.length?rf(m.n):'')+'</p>'+(m.note?'<div class="note">'+esc(m.note)+'</div>':'')+'<div class="src">'+(m.pending?'Checking all of its sources…':m.src==='asoka'?'Answered by Asoka from its sources. Tap a number to see one.':m.n&&m.n.length?'From the page’s sources. Tap a number to see one.':'')+'</div>';
+ else b+='<p>'+esc(m.t)+(m.n&&m.n.length?rf(m.n):'')+'</p>'+(m.note?'<div class="note">'+esc(m.note)+'</div>':'')+'<div class="src">'+(m.pending?'Checking all of its sources…':m.n&&m.n.length?(m.src==='asoka'?'Answered by Asoka from ':'From ')+(m.onPage?'this page.':'Opportunity approvals.')+' <button class="wl" data-act="showsrc" data-n="'+m.n[0]+'">Show on page</button>':'')+'</div>';
  return b+'</div></div>';
 }
 var ROUTE=[[/park|office|desk|building|badge|wifi|lunch|travel|expense/,'Leo Park','Facilities'],[/vacation|pto|leave|benefit|salary|pay|hiring|holiday|onboard/,'Ana Silva','People'],[/password|security|vpn|laptop|access|sso|mfa/,'Sol Reyes','Security'],[/quote|cpq|integration|sync|api/,'Ben Ito','Integrations'],[/deal|discount|approv|renewal|forecast|lead|pipeline|sales|quota/,'Maria Okafor','RevOps']];
@@ -612,7 +612,7 @@ function markUnknown(m,q){
  var l=q.toLowerCase(),r=null;ROUTE.forEach(function(x){if(!r&&x[0].test(l))r=x});
  var nq=q.replace(/\s+/g,' ').trim(),ex=S.newQs.filter(function(x){return !x.resolved&&x.q.toLowerCase()===nq.toLowerCase()})[0];
  if(ex){m.who=ex;m.qs='dup';return}
- m.who={q:nq,who:r?r[1]:'Dana Ruiz',team:r?r[2]:'Asoka’s sysadmin',page:S.view==='page'&&CH.scope==='page'&&(!r||r[2]==='RevOps')};m.qs='offer';
+ m.who={q:nq,who:r?r[1]:'Dana Ruiz',team:r?r[2]:'Asoka’s sysadmin',page:S.view==='page'&&(!r||r[2]==='RevOps')};m.qs='offer';
 }
 var DOCS={Facilities:'office handbook',People:'people handbook',Security:'IT security guide',Integrations:'integrations runbook',RevOps:'RevOps playbook'};
 function answerFor(it){var l=it.q.toLowerCase();
@@ -684,7 +684,7 @@ function fileAnswer(files,q){
 function chatAsk(q,files){
  q=(q||'').trim();files=files||[];if(!q&&!files.length)return;
  askSeq++;var seq=askSeq;
- CH.msgs.push({role:'u',t:q,files:files});var m={role:'a'};CH.msgs.push(m);CH.open=true;renderChat();
+ CH.msgs.push({role:'u',t:q,files:files});var m={role:'a',onPage:S.view==='page'};CH.msgs.push(m);CH.open=true;renderChat();
  var a=q?localAns(q):null;if(!a&&files.length)a=fileAnswer(files,q);
  setTimeout(function(){
   if(seq!==askSeq&&CH.msgs.indexOf(m)<0)return;
@@ -730,15 +730,27 @@ function askHtml(){
 
 /* ---------- popovers ---------- */
 var PREV={'Maria Okafor':['Person','Owns the approval process, lead routing, and forecasting, in RevOps.'],'CPQ quote sync':['Integration','Sends approved discounts from Salesforce to quotes. Failing for multi-currency deals since Oct 29. 2 statements, 1 being checked.'],'Discount policy':['Page','What reps can discount on their own, and what needs approval. 3 statements, all verified.'],'Quarter-end close':['Page','The rules for the last 3 business days of a quarter, including the Slack approvals.'],'Deal Desk':['Page','The team that runs approvals and contract exceptions. Led by Priya Shah since Oct 12.'],'Renewals':['Page','How renewals are priced and approved.'],'Case escalation':['Page','When support cases go to engineering. Includes the unwritten data-loss rule.']};
-function openRef(n){
+function openRef(n,away){
  var r=n==14?{k:'talk',src:'Maria Okafor, on the Talk tab',d:'Just now',q:'Yes, on purpose since 2023. Flat renewals don’t change revenue risk.',u:'A process owner answered Asoka’s question. The article was rewritten and cited this answer.',v:null}:REFS[n];
  var ver=!!r.v,chk=r.check;
  var chain='<div class="chain" aria-label="How Asoka learned this"><span class="y">Observed</span><i>›</i><span class="y">Reflected</span><i>›</i><span class="y">Written</span><i>›</i><span class="'+(ver?'y':'n')+'">'+(ver?'Verified':'Not verified yet')+'</span></div>';
- $('pop').innerHTML='<div class="pc"><div class="pk">Source '+n+': '+KIND[r.k]+', '+esc(r.src)+', '+esc(r.d)+(chk?'. <span style="color:var(--warn)">'+esc(chk)+'</span>':'')+'</div><div class="pq">“'+esc(r.q)+'”</div><div class="pu">'+esc(r.u)+'</div>'+chain+(ver?'<div style="font-size:13px;color:var(--ok);font-weight:600;margin-bottom:8px">✓ Verified by '+esc(r.v)+'</div>':'')+'<button class="wl" data-act="tohist">See it in Changes</button><button class="px press" data-act="unpop" aria-label="Close">×</button></div>';
+ $('pop').innerHTML='<div class="pc"><div class="pk">Source '+n+': '+KIND[r.k]+', '+esc(r.src)+', '+esc(r.d)+(chk?'. <span style="color:var(--warn)">'+esc(chk)+'</span>':'')+'</div><div class="pq">“'+esc(r.q)+'”</div><div class="pu">'+esc(r.u)+'</div>'+chain+(ver?'<div style="font-size:13px;color:var(--ok);font-weight:600;margin-bottom:8px">✓ Verified by '+esc(r.v)+'</div>':'')+(away?'<button class="wl" data-act="showsrc" data-n="'+n+'" style="margin-right:18px">Show on page</button>':'')+'<button class="wl" data-act="tohist">See it in Changes</button><button class="px press" data-act="unpop" aria-label="Close">×</button></div>';
  $('pop').classList.add('on');$('scrim').classList.add('on');
+ setTimeout(function(){var x=$('pop').querySelector('.px');if(x)x.focus({preventScroll:true})},30);
 }
 function openPrev(name){var p=PREV[name]||['Article',name+'.'];$('pop').innerHTML='<div class="pc"><div class="pk">'+p[0]+'</div><div class="pq" style="font-weight:500">'+esc(name)+'</div><div class="pu">'+esc(p[1])+'</div><div style="font-size:13px;color:var(--ink2)">Prototype: only Opportunity approvals has a full page.</div><button class="px press" data-act="unpop" aria-label="Close">×</button></div>';$('pop').classList.add('on');$('scrim').classList.add('on')}
-function closePop(){$('pop').classList.remove('on');$('scrim').classList.remove('on')}
+function closePop(){var was=$('pop').classList.contains('on');$('pop').classList.remove('on');$('scrim').classList.remove('on');if(was&&popFrom&&document.body.contains(popFrom))popFrom.focus();popFrom=null}
+var popFrom=null;
+function showSrc(n){
+ closePop();$('toast').classList.remove('on');CH.open=false;renderChat();
+ var need=S.view!=='page'||S.tab!=='read';if(need){S.view='page';S.tab='read';render();window.scrollTo(0,0)}
+ setTimeout(function(){
+  var r=document.querySelector('main .art-body [data-act="ref"][data-n="'+n+'"]')||document.querySelector('main [data-act="ref"][data-n="'+n+'"]');
+  var blk=r?r.closest('p,li,.obs,td,.cap'):$('ref-'+n);if(!blk)return;
+  blk.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});
+  setTimeout(function(){blk.classList.remove('hlsent');void blk.offsetWidth;blk.classList.add('hlsent');if(r){r.classList.remove('bump');void r.offsetWidth;r.classList.add('bump');r.focus({preventScroll:true})}},RM?0:380);
+ },need?80:20);
+}
 
 /* ---------- the learning moment ---------- */
 function learn(){
@@ -785,7 +797,8 @@ document.addEventListener('click',function(e){
  else if(a==='talk')go('page',{tab:'talk'});
  else if(a==='tab'){S.tab=v;render();window.scrollTo(0,0)}
  else if(a==='toc'){var el=$('s-'+v);if(el)el.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})}
- else if(a==='ref')openRef(+b.dataset.n);
+ else if(a==='ref'){popFrom=b;openRef(+b.dataset.n,!!b.closest('#chat')||S.view!=='page')}
+ else if(a==='showsrc')showSrc(+b.dataset.n);
  else if(a==='prev')openPrev(v);
  else if(a==='unpop')closePop();
  else if(a==='tohist'){closePop();S.tab='history';S.openRev=S.learned?'r6':'r5';S.hlRev=S.openRev;render();window.scrollTo(0,0);setTimeout(function(){S.hlRev=null},2500)}
@@ -803,9 +816,9 @@ document.addEventListener('click',function(e){
  else if(a==='attach')$('file').click();
  else if(a==='unattach'){var f=CH.files.splice(+b.dataset.i,1)[0];renderDock()}
  else if(a==='showchat'){$('toast').classList.remove('on');S.newQs.forEach(function(x){x.unseen=false});CH.open=true;renderChat()}
- else if(a==='hidechat'){CH.open=false;renderChat()}
- else if(a==='newchat'){CH.msgs=[];CH.open=false;askSeq++;renderChat()}
- else if(a==='scope'){CH.scope=CH.scope==='page'?'all':'page';renderDock()}
+ else if(a==='hidechat'){CH.open=false;renderChat();$('cin').focus()}
+ else if(a==='newchat'){CH.last=CH.msgs;CH.msgs=[];CH.open=false;askSeq++;renderChat();toast('Conversation cleared.','undonew','Undo');$('cin').focus()}
+ else if(a==='undonew'){if(CH.last){CH.msgs=CH.last.concat(CH.msgs);CH.last=null;CH.open=true;renderChat()}}
  else if(a==='area'){toast(v==='Sales Cloud'?'Opening the featured Sales Cloud article.':'Prototype: only Opportunity approvals has a full page.');if(v==='Sales Cloud')go('page')}
  else if(a==='loopstep'){var li=document.querySelectorAll('#lsteps li');li.forEach(function(x,i){x.classList.toggle('on',i==b.dataset.i)})}
 });
@@ -822,7 +835,9 @@ document.addEventListener('keydown',function(e){
   if(e.key==='l'||e.key==='L')learn();
   else if(e.key==='a'||e.key==='A'){var pend=S.newQs.filter(function(x){return !x.resolved});if(pend.length)resolveQ(pend[pend.length-1])}
  }
- if(e.key==='Escape')closePop();if((e.key==='Enter'||e.key===' ')&&e.target.tagName==='g'){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+ if(e.key==='/'&&!e.metaKey&&!e.ctrlKey&&tg!=='INPUT'&&tg!=='TEXTAREA'){e.preventDefault();$('cin').focus();return}
+ if(e.key==='Tab'&&$('pop').classList.contains('on')){var f=[].slice.call($('pop').querySelectorAll('button'));if(f.length){var i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}else if(i<0){e.preventDefault();f[0].focus()}}}
+ if(e.key==='Escape'){if($('pop').classList.contains('on'))closePop();else if(CH.open){CH.open=false;renderChat();$('cin').focus()}}if((e.key==='Enter'||e.key===' ')&&e.target.tagName==='g'){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 var h0=location.hash.slice(1),m0=h0.match(/^approvals(?:-(talk|history))?$/);
 if(m0){S.view='page';S.tab=m0[1]||'read';render()}else render();
 if(S.view==='page'&&S.tab==='read'&&!RM)setTimeout(function(){if(!RP.t&&$('rp'))rpPlay()},1200);
