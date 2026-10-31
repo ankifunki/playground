@@ -56,8 +56,6 @@ header.sc{border-bottom-color:var(--line)}
 .tabs button{border:0;background:none;padding:7px 15px;font-size:14px;font-weight:600;color:var(--ink2);border-radius:999px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:background-color .2s,color .2s}
 .tabs button.on{background:var(--panel);color:var(--ink);box-shadow:var(--sh)}
 .tabs .cnt{background:var(--warnb);color:var(--warn);border-radius:999px;font-size:11.5px;padding:0 7px;font-weight:700}
-.tabs .sp{display:none}
-.tabs .askt{color:var(--link)}
 h1.t{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5.5vw,48px);line-height:1.05;letter-spacing:-.02em;margin:18px 0 8px}
 .byline{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:14px;color:var(--ink2);margin-bottom:20px}
 .byline .live{display:inline-flex;align-items:center;gap:8px;color:var(--ok);font-weight:600}
@@ -145,6 +143,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .wt td{padding:12px 16px;border-top:1px solid var(--hair);vertical-align:top}
 .wt tr:nth-child(2) td{border-top:0}
 .wt td.bad{color:var(--warn);font-weight:600}
+@media (max-width:600px){.wt,.wt tbody,.wt tr,.wt td{display:block}.wt tr:first-child{display:none}.wt tr{padding:12px 16px;border-top:1px solid var(--hair)}.wt tr:nth-child(2){border-top:0}.wt td{padding:0;border:0}.wt td:nth-child(1){font-weight:600}.wt td:nth-child(2),.wt td:nth-child(3){display:inline;font-size:14px;color:var(--ink2)}.wt td.bad{color:var(--warn)}.wt td:nth-child(3)::before{content:" \00B7  ";color:var(--ink2);font-weight:400}}
 .refs{font-size:14.5px;padding:0;margin:0;list-style:none;counter-reset:r}
 .refs li{position:relative;padding:12px 14px 12px 48px;background:var(--panel);box-shadow:var(--sh);border-radius:16px;margin-bottom:8px;counter-increment:r}
 .refs li::before{content:counter(r);position:absolute;left:14px;top:12px;min-width:22px;height:22px;border-radius:999px;background:var(--linkb);color:var(--link);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
@@ -270,12 +269,20 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media (max-width:420px){#toast{white-space:normal;text-align:center;border-radius:16px}}
 .enter{animation:fade .35s var(--eo) both}
-@media (prefers-reduced-motion:reduce){.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
+.flyq{position:fixed;z-index:60;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--warnb);color:var(--warn);font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;box-shadow:var(--sh);pointer-events:none}
+@keyframes bmp{0%{transform:scale(1)}35%{transform:scale(1.35)}100%{transform:scale(1)}}
+.bump{animation:bmp .45s var(--eo);display:inline-block}
+#asking li.in{animation:rise .35s var(--eo) both,fresh 1.6s ease-out}
+@media (prefers-reduced-motion:reduce){.bump,#asking li.in,.pdot::after,.feed li.in,.msg.in,.upd,.refs li.hl,.rev.hl,.typing i,.enter,.spark rect.now{animation:none}.pop{transition:none}.cursor,.path span,.apprs span{transition:none}.press:active{transform:none}}
 .hlive{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--ink2)}
-.page{padding-bottom:240px}
-#dock{position:fixed;left:0;right:0;bottom:0;z-index:45;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(to top,var(--bg) 62%,transparent)}
+.page{padding-bottom:calc(var(--dockh,130px) + 48px)}
+#dock{position:fixed;left:0;right:0;bottom:0;z-index:45;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(to top,var(--bg) 28%,transparent 56%);pointer-events:none}
+#dock .dw{pointer-events:auto}
 .dw{max-width:720px;margin:0 auto}
-.dchips{display:flex;gap:8px;overflow-x:auto;padding:14px 2px 10px;scrollbar-width:none}
+.dchips{display:flex;gap:8px;overflow-x:auto;padding:14px 2px 10px;scrollbar-width:none;max-height:64px;transition:max-height .28s var(--eo),opacity .2s var(--eo),padding .28s var(--eo)}
+.dchips::after{content:"";flex:none;width:24px}
+.dchips.ovf{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}
+#dock.lean .dchips{max-height:0;opacity:0;padding-top:0;padding-bottom:8px}
 .dchips::-webkit-scrollbar{display:none}
 .dchip{flex:none;white-space:nowrap;border:0;background:var(--panel);box-shadow:var(--sh);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:transform .16s var(--eo),background-color .2s}
 .dchip:active{transform:scale(.97)}
@@ -359,7 +366,7 @@ var REFS={
 };
 function rf(ns){return '<span style="white-space:nowrap">'+ns.map(function(n){var r=REFS[n];return '<sup class="rf'+(r&&r.check?' ck':'')+'"><button data-act="ref" data-n="'+n+'" aria-label="Source '+n+'">'+n+'</button></sup>'}).join('')+'</span>'}
 
-var S={view:'home',tab:'read',learned:false,learnT:null,talkTyping:false,openRev:null,hlRev:null,q:'',ans:null,toc:'lead',obs:3912,edits:214,ver:38,asks:9};
+var S={view:'home',tab:'read',learned:false,newQs:[],pendingFly:false,learnT:null,talkTyping:false,openRev:null,hlRev:null,q:'',ans:null,toc:'lead',obs:3912,edits:214,ver:38,asks:9};
 
 /* ---------- generated diagram ---------- */
 function flowSvg(small){
@@ -428,8 +435,10 @@ function articleHtml(){
  return h+'</div>';
 }
 /* ---------- talk ---------- */
+function whoStr(x){return x.who+(/^Asoka/.test(x.team)?', '+x.team:' in '+x.team)}
 function talkHtml(){
  var h='<p style="color:var(--ink2);font-size:15.5px;margin:20px 0">Where Asoka works out what it doesn’t know yet. When something looks inconsistent or missing, it asks the person most likely to know.</p>';
+ S.newQs.filter(function(x){return x.page}).forEach(function(x){h+='<div class="thread"><div class="th"><b>'+esc(x.q)+'</b><span class="st w">Asking</span></div><div class="msg"><span class="av a">A</span><div><div class="who">Asoka<small>Just now</small></div><p>Someone asked this and I don’t know yet. @'+esc(x.who)+', can you help? I’ll update the page when you answer.</p></div></div></div>'});
  h+='<div class="thread"><div class="th"><b>Do flat renewals skip approval on purpose?</b><span class="st '+(S.learned?'o':'w')+'">'+(S.learned?'Resolved':'Waiting')+'</span></div>';
  h+='<div class="msg"><span class="av a">A</span><div><div class="who">Asoka<small>Oct 27</small></div><p>I saw 14 flat renewals skip approval last quarter, but no rule explains it. @Maria Okafor, is this intentional?</p></div></div>';
  if(S.talkTyping&&!S.learned)h+='<div class="msg"><span class="av h">MO</span><div><div class="who">Maria Okafor<small>typing</small></div><span class="typing"><i></i><i></i><i></i></span></div></div>';
@@ -457,10 +466,10 @@ function histHtml(){
  return h;
 }
 /* ---------- page shell ---------- */
+function qCount(){return (S.learned?1:2)+S.newQs.filter(function(x){return x.page}).length}
 function pageHtml(){
- var open=S.learned?0:1;
  var h='<div class="page art"><nav class="toc" aria-label="Contents"><h4>On this page</h4>'+SECS.map(function(s){return '<button class="'+(S.toc===s[0]?'on':'')+'" data-act="toc" data-v="'+s[0]+'">'+s[1]+'</button>'}).join('')+'</nav><div>';
- h+='<div class="tabs" role="tablist"><button class="'+(S.tab==='read'?'on':'')+'" data-act="tab" data-v="read" role="tab">Overview</button><button class="'+(S.tab==='talk'?'on':'')+'" data-act="tab" data-v="talk" role="tab">Questions'+(open?' <span class="cnt">'+(open+1)+'</span>':'')+'</button><button class="'+(S.tab==='history'?'on':'')+'" data-act="tab" data-v="history" role="tab">Changes</button><span class="sp"></span><button class="askt" data-act="focusq">Ask</button></div>';
+ h+='<div class="tabs" role="tablist"><button class="'+(S.tab==='read'?'on':'')+'" data-act="tab" data-v="read" role="tab">Overview</button><button class="'+(S.tab==='talk'?'on':'')+'" data-act="tab" data-v="talk" role="tab">Questions <span class="cnt" id="qcnt">'+qCount()+'</span></button><button class="'+(S.tab==='history'?'on':'')+'" data-act="tab" data-v="history" role="tab">Changes</button></div>';
  h+='<h1 class="t">Opportunity approvals</h1><div class="byline"><span>Written and kept current by Asoka.</span><span class="live"><span class="pdot"></span>'+(S.learned?'Updated just now from a RevOps answer':'Reading 2 new Slack threads about this')+'</span></div>';
  h+=S.tab==='read'?articleHtml():S.tab==='talk'?talkHtml():histHtml();
  return h+'</div></div>';
@@ -486,7 +495,7 @@ function loopSvg(){
  return '<svg viewBox="0 0 300 300" role="img" aria-label="Asoka’s learning loop: observe, reflect, update, verify, ask">'+s+'</svg>';
 }
 function homeHtml(){
- var h='<div class="page enter"><section class="welcome"><div class="kick">Northwind, as Asoka understands it</div><h1>Everything Asoka knows, kept current every few seconds.</h1><p>Nobody wrote these pages by hand. Asoka writes them from what it observes, and a person verifies what matters.</p><div class="nums"><span><b>1,284</b>pages</span><span><b id="n-obs">'+S.obs.toLocaleString()+'</b>observations this week</span><span><b>71%</b>verified by a person</span><span><b>'+(S.learned?8:9)+'</b>open questions</span></div></section>';
+ var h='<div class="page enter"><section class="welcome"><div class="kick">Northwind, as Asoka understands it</div><h1>Everything Asoka knows, kept current every few seconds.</h1><p>Nobody wrote these pages by hand. Asoka writes them from what it observes, and a person verifies what matters.</p><div class="nums"><span><b>1,284</b>pages</span><span><b id="n-obs">'+S.obs.toLocaleString()+'</b>observations this week</span><span><b>71%</b>verified by a person</span><span><b id="n-asks">'+S.asks+'</b>open questions</span></div></section>';
  h+='<div class="hg"><div>';
  h+='<section class="box"><h2>In focus</h2><div class="bb feat"><div class="ft"><p><button class="wl" data-act="open">Opportunity approvals</button> is how Northwind reviews large deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Asoka watched 212 approvals this quarter.</p><p style="font-size:14px;color:var(--ink2)">5 of 8 statements verified. Updated Oct 28.</p><button class="wl" data-act="open">Open the page</button></div><div class="fthumb">'+flowSvg(true)+'</div></div></section>';
  h+='<section class="box"><h2>Unwritten rules Asoka found</h2><div class="bb"><ul class="dyk"><li>At quarter end, large deals are approved in Slack before Salesforce. <small>Learned from 9 #deal-desk threads.</small> <button class="wl" data-act="open" data-v="practice">Read more</button></li><li>Approval requests expire after 14 days because two deals once closed on six-week-old prices. <small>From a 2024 #revops thread.</small></li><li>Cases that mention data loss get escalated by hand, whatever their priority. <small>Seen in 11 of 11 cases.</small> <button class="wl" data-act="prev" data-v="Case escalation">Read more</button></li></ul></div></section>';
@@ -495,7 +504,7 @@ function homeHtml(){
  h+='</div><div>';
  h+='<section class="box"><h2>What changed</h2><div class="bb"><ul class="news"><li><button class="wl" data-act="open" data-v="hist">Discounts over 35% now go straight to the CRO</button><small>It was 40% until Oct 28. 4 pages updated.</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">CPQ quote sync is failing for multi-currency deals</button><small>Since Oct 29. Asoka asked Integrations why.</small></li><li><button class="wl" data-act="prev" data-v="Deal Desk">Priya Shah now leads Deal Desk</button><small>From the org chart and #announcements.</small></li></ul></div></section>';
  h+='<section class="box"><h2><span class="pdot"></span>Learning right now</h2><div class="bb"><ul class="feed" id="feed">'+feedHtml(false)+'</ul></div></section>';
- h+='<section class="box"><h2>Asoka is asking</h2><div class="bb"><ul class="news"><li><button class="wl" data-act="talk">Do flat renewals skip approval on purpose?</button><small>'+(S.learned?'Answered by Maria Okafor just now.':'Asked Maria Okafor in RevOps, Oct 27.')+'</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">Why do multi-currency quotes fail to sync?</button><small>Asked Ben Ito in Integrations, 2 days ago.</small></li><li><button class="wl" data-act="talk">Do EMEA deals really go to Sofia first?</button><small>Watching the next EMEA approval.</small></li></ul></div></section>';
+ h+='<section class="box"><h2>Asoka is asking</h2><div class="bb"><ul class="news" id="asking">'+S.newQs.map(function(x){return '<li><button class="wl" data-act="'+(x.page?'talk':'focusq')+'">'+esc(x.q)+'</button><small>Asking '+esc(whoStr(x))+', just now.</small></li>'}).join('')+'<li><button class="wl" data-act="talk">Do flat renewals skip approval on purpose?</button><small>'+(S.learned?'Answered by Maria Okafor just now.':'Asked Maria Okafor in RevOps, Oct 27.')+'</small></li><li><button class="wl" data-act="prev" data-v="CPQ quote sync">Why do multi-currency quotes fail to sync?</button><small>Asked Ben Ito in Integrations, 2 days ago.</small></li><li><button class="wl" data-act="talk">Do EMEA deals really go to Sofia first?</button><small>Watching the next EMEA approval.</small></li></ul></div></section>';
  h+='</div></div></div>';
  return h;
 }
@@ -510,11 +519,25 @@ setInterval(function(){
 
 /* ---------- ask: AI is the front door, every answer cited ---------- */
 var CORPUS=[
- [1,'Opportunity approval is how Northwind reviews large deals before they move to Negotiation.'],[2,'Any deal over $100,000 needs approval.'],[3,'Discounts over 20% add Finance as a second approver. Over 35%, the CRO approves directly.'],[4,'EMEA deals reportedly go to the regional director, Sofia, first. Seen once.'],[5,'Most approvals finish in under four hours. Median 3 hours 40 minutes.'],[6,'An approval request expires after 14 days, and the rep must resubmit.'],[7,'Requests expire because two deals closed on six-week-old prices in 2024, losing about $90k in margin.'],[8,'Once a deal is approved, only Deal Desk can change its amount.'],[9,'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward. Unofficial.'],[11,'Renewals with no price change skip approval. Open question.']
+ [1,'Opportunity approval is how Northwind reviews large deals before they move to Negotiation.'],[2,'Any deal over $100,000 needs approval.'],[3,'Up to 20% off, the sales manager approves. Over 20%, Finance is added as a second approver. Over 35%, the CRO approves directly instead.'],[4,'EMEA deals reportedly go to the regional director, Sofia, first. Seen once.'],[5,'Most approvals finish in under four hours. Median 3 hours 40 minutes.'],[6,'An approval request expires after 14 days, and the rep must resubmit.'],[7,'Requests expire because two deals closed on six-week-old prices in 2024, losing about $90k in margin.'],[8,'Once a deal is approved, only Deal Desk can change its amount.'],[9,'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward. Unofficial.'],[11,'Renewals with no price change skip approval. Open question.']
 ];
 function localAns(q){
  var l=q.toLowerCase();
- if(/who approves|30%|discount/.test(l))return {t:'The sales manager and Finance. Over 35%, the CRO approves directly.',n:[3,13],note:'For EMEA deals, Sofia may approve first, but Asoka has seen that only once.'};
+ var pm=l.match(/(\d{1,3})\s*(%|percent)/),pct=pm?+pm[1]:null;
+ var am=l.match(/\$\s?(\d[\d,]*(?:\.\d+)?)\s*(k|m|thousand|million)?\b/),amt=null;
+ if(am){amt=parseFloat(am[1].replace(/,/g,''));var u=am[2]||'';amt*=/^k|thousand/.test(u)?1e3:/^m/.test(u)?1e6:1}
+ var emea=/emea|europe|sofia/.test(l),renew=/renewal/.test(l);
+ if(/who approves|approv|discount|% off|percent/.test(l)&&(pct!==null||/discount/.test(l))&&!/expire/.test(l)){
+  var a;
+  if(amt!==null&&amt<=100000)a={t:'No one. Only deals over $100,000 need approval.',n:[2]};
+  else if(pct===null)a={t:'It depends on the discount: up to 20%, the sales manager. Over 20%, the manager and then Finance. Over 35%, the CRO directly.',n:[3,13]};
+  else if(pct<=20)a={t:'The sales manager. Discounts up to 20% need only the manager.',n:[3]};
+  else if(pct<=35)a={t:'The sales manager, then Finance. Discounts over 20% add Finance as a second approver.',n:[3,13]};
+  else a={t:'The CRO. Discounts over 35% go straight to the CRO.',n:[3,12]};
+  if(renew&&a.n[0]!==2){a.t+=' Renewals follow the same rules when the price changes.';a.note=S.learned?'Renewals with no price change skip approval on purpose.':'Renewals with no price change skip approval. Asoka is still asking RevOps why.';a.n=a.n.concat([11])}
+  else if(emea)a.note='For EMEA deals, Sofia may approve first, but Asoka has seen that only once.';
+  return a;
+ }
  if(/expire|14|how long/.test(l))return {t:'An approval request expires after 14 days, because two deals once closed on six-week-old prices.',n:[6,7]};
  if(/quarter|slack|bypass|work around|in practice/.test(l))return {t:'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward.',n:[9,10],note:'This is unofficial and differs from the written policy.'};
  if(/renewal/.test(l))return S.learned?{t:'Flat renewals skip approval on purpose. That has been the policy since 2023.',n:[11,14]}:{t:'Flat renewals skip approval in practice, but no rule explains it yet. Asoka asked RevOps.',n:[11],note:'Treat this as unconfirmed.'};
@@ -534,11 +557,12 @@ function chips(){
  var onPage=S.view==='page',c=[];
  if(CH.msgs.length&&!CH.open)c.push('<button class="dchip conv" data-act="showchat">Conversation ('+CH.msgs.filter(function(m){return m.role==='u'}).length+')</button>');
  if(onPage)c.push('<button class="dchip scope" data-act="scope" aria-pressed="'+(CH.scope==='page')+'">'+(CH.scope==='page'?'Asking about this page':'Asking about all of Northwind')+' ⇄</button>');
- (onPage?['Who approves a 30% discount?','What happens at quarter end?','Do flat renewals need approval?']:['What did Asoka learn this week?','Who approves a 30% discount?','What is Asoka unsure about?']).forEach(function(s){c.push('<button class="dchip" data-act="sug" data-v="'+esc(s)+'">'+esc(s)+'</button>')});
+ var asked=CH.msgs.filter(function(m){return m.role==='u'}).map(function(m){return m.t});
+ (onPage?['Who approves a 30% discount?','What happens at quarter end?','Do flat renewals need approval?']:['What did Asoka learn this week?','Who approves a 30% discount?','What is Asoka unsure about?']).filter(function(x){return asked.indexOf(x)<0}).slice(0,CH.msgs.length?1:onPage?2:3).forEach(function(s){c.push('<button class="dchip" data-act="sug" data-v="'+esc(s)+'">'+esc(s)+'</button>')});
  return c.join('');
 }
 function renderDock(){
- $('dchips').innerHTML=chips();
+ var dc=$('dchips');dc.innerHTML=chips();dc.classList.toggle('ovf',dc.scrollWidth>dc.clientWidth+2);
  $('datt').innerHTML=CH.files.map(function(f,i){return attHtml(f,i,true)}).join('');
  $('composer').classList.toggle('listening',CH.listening);$('mic').classList.toggle('on',CH.listening);
  $('mic').setAttribute('aria-label',CH.listening?'Stop listening':'Speak your question');
@@ -549,14 +573,39 @@ function msgHtml(m){
  if(m.role==='u')return '<div class="bu">'+(m.files.length?'<div class="atts">'+m.files.map(function(f){return f.kind==='img'?'<img src="'+f.url+'" alt="'+esc(f.name)+'">':'<span>'+esc(f.name)+'</span>'}).join('')+'</div>':'')+esc(m.t||'')+'</div>';
  var b='<div class="ba"><span class="av a">A</span><div>';
  if(!m.t&&!m.unknown)b+='<span class="dots3" aria-label="Asoka is thinking"><i></i><i></i><i></i></span>';
- else if(m.unknown)b+='<p>I don’t know that yet, and I won’t guess.</p><div class="src">I’ve added it to my open questions and will ask the person most likely to know.</div>';
+ else if(m.unknown)b+='<p>I don’t know that yet, and I won’t guess.</p><div class="src">Added to open questions. I’m asking '+esc(whoStr(m.who))+' and will update the page when they answer.'+(m.who.page&&!(S.view==='page'&&S.tab==='talk')?' <button class="wl" data-act="tab" data-v="talk">See it in Questions</button>':'')+'</div>';
  else b+='<p>'+esc(m.t)+(m.n&&m.n.length?rf(m.n):'')+'</p>'+(m.note?'<div class="note">'+esc(m.note)+'</div>':'')+'<div class="src">'+(m.pending?'Checking all of its sources…':m.src==='asoka'?'Answered by Asoka from its sources. Tap a number to see one.':m.n&&m.n.length?'From the page’s sources. Tap a number to see one.':'')+'</div>';
  return b+'</div></div>';
+}
+var ROUTE=[[/park|office|desk|building|badge|wifi|lunch|travel|expense/,'Leo Park','Facilities'],[/vacation|pto|leave|benefit|salary|pay|hiring|holiday|onboard/,'Ana Silva','People'],[/password|security|vpn|laptop|access|sso|mfa/,'Sol Reyes','Security'],[/quote|cpq|integration|sync|api/,'Ben Ito','Integrations'],[/deal|discount|approv|renewal|forecast|lead|pipeline|sales|quota/,'Maria Okafor','RevOps']];
+function markUnknown(m,q){
+ if(m.unknown)return;m.unknown=true;
+ var l=q.toLowerCase(),r=null;ROUTE.forEach(function(x){if(!r&&x[0].test(l))r=x});
+ var it={q:q.replace(/\s+/g,' ').trim(),who:r?r[1]:'Dana Ruiz',team:r?r[2]:'Asoka’s sysadmin',page:S.view==='page'&&CH.scope==='page'&&(!r||r[2]==='RevOps')};
+ m.who=it;
+ if(!S.newQs.some(function(x){return x.q.toLowerCase()===it.q.toLowerCase()})){S.newQs.unshift(it);S.asks++;S.pendingFly=it}
+}
+function bump(el){if(!el)return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
+function inView(el){if(!el)return false;var r=el.getBoundingClientRect(),d=$('dock').getBoundingClientRect().top;return r.width>0&&r.top>=0&&r.bottom<=d}
+function flyQ(it){
+ var c=$('qcnt');if(c)c.textContent=qCount();
+ ['n-asks','lc-asks'].forEach(function(k){var e=$(k);if(e)e.textContent=S.asks.toLocaleString()});
+ var as=$('asking');if(as&&S.view==='home'){var li=document.createElement('li');li.className='in';li.innerHTML='<button class="wl" data-act="focusq">'+esc(it.q)+'</button><small>Asking '+esc(whoStr(it))+', just now.</small>';as.insertBefore(li,as.firstChild)}
+ if(S.view==='page'&&S.tab==='talk'){render();return}
+ var to=it.page?c:$('n-asks');
+ var from=document.querySelector('#cms .ba:last-child p');
+ if(!inView(to)){toast('Added to open questions. Asking '+it.who+'.');return}
+ if(RM||!from||!from.animate){bump(to);return}
+ var a=from.getBoundingClientRect(),b=to.getBoundingClientRect(),f=document.createElement('div');
+ f.className='flyq';f.textContent=it.q;f.style.left=a.left+'px';f.style.top=a.top+'px';document.body.appendChild(f);
+ var dx=b.left+b.width/2-(a.left+f.offsetWidth/2),dy=b.top+b.height/2-(a.top+f.offsetHeight/2);
+ f.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx*.55+'px,'+(dy*.55-40)+'px) scale(.7)',opacity:1,offset:.6},{transform:'translate('+dx+'px,'+dy+'px) scale(.2)',opacity:0}],{duration:720,easing:'cubic-bezier(.23,1,.32,1)'}).onfinish=function(){f.remove();bump(to)};
 }
 function renderChat(){
  var c=$('chat');
  c.innerHTML=CH.msgs.length?'<div class="cw"><div class="chd"><span class="pdot"></span>Asoka<span class="sp2"></span><button data-act="newchat">New</button><button data-act="hidechat">Hide</button></div><div class="cms" id="cms">'+CH.msgs.map(msgHtml).join('')+'</div></div>':'';
  c.classList.toggle('open',CH.open&&CH.msgs.length>0);
+ if(S.pendingFly){var it=S.pendingFly;S.pendingFly=false;setTimeout(function(){flyQ(it)},260)}
  var ms=$('cms');if(ms)ms.scrollTop=ms.scrollHeight;
  renderDock();
 }
@@ -575,18 +624,18 @@ function chatAsk(q,files){
  setTimeout(function(){
   if(seq!==askSeq&&CH.msgs.indexOf(m)<0)return;
   if(a){m.t=a.t;m.n=a.n;m.note=a.note||'';m.src='local';m.pending=!!(CLAUDE&&q&&!files.length)}
-  else if(!CLAUDE){m.unknown=true}
+  else if(!CLAUDE){markUnknown(m,q)}
   else m.pending=true;
   renderChat();
   if(!CLAUDE||!q||files.length)return;
   sampleP.then(function(sample){
-   if(!sample){m.pending=false;if(!m.t)m.unknown=true;renderChat();return}
-   var prompt='You are Asoka. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Cite the statement numbers you used. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n'+CORPUS.map(function(c){return '['+c[0]+'] '+c[1]}).join('\n')+'\n\nQuestion: '+q;
+   if(!sample){m.pending=false;if(!m.t)markUnknown(m,q);renderChat();return}
+   var prompt='You are Asoka. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Start with the direct answer in a few words (for example \u201cThe CRO.\u201d), then the reason. Cite the statement numbers you used. Mention an exception only if it changes the answer to this question. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n'+CORPUS.map(function(c){return '['+c[0]+'] '+c[1]}).join('\n')+'\n\nQuestion: '+q;
    sample.json(prompt,{modelTier:'quick'}).then(function(r){
     var n=(r&&Array.isArray(r.cites)?r.cites:[]).filter(function(x){return REFS[x]});
-    if(r&&!r.unknown&&r.answer&&n.length){m.t=String(r.answer);m.n=n;m.note=r.note?String(r.note):'';m.src='asoka';m.unknown=false}else if(!m.t){m.unknown=true}
+    if(r&&!r.unknown&&r.answer&&n.length){m.t=String(r.answer);m.n=n;m.note=r.note?String(r.note):'';m.src='asoka'}else if(!m.t){markUnknown(m,q)}
     m.pending=false;renderChat();
-   }).catch(function(){m.pending=false;if(!m.t)m.unknown=true;renderChat()});
+   }).catch(function(){m.pending=false;if(!m.t)markUnknown(m,q);renderChat()});
   });
  },RM?0:450);
 }
@@ -629,7 +678,7 @@ function closePop(){$('pop').classList.remove('on');$('scrim').classList.remove(
 /* ---------- the learning moment ---------- */
 function learn(){
  if(S.learned)return;S.talkTyping=true;if(S.view==='page'&&S.tab==='talk')render();
- setTimeout(function(){S.talkTyping=false;S.learned=true;S.justLearned=true;S.asks=8;S.edits++;
+ setTimeout(function(){S.talkTyping=false;S.learned=true;S.justLearned=true;S.asks=Math.max(0,S.asks-1);S.edits++;
   if(S.view==='page'){render();toast('Maria answered. Asoka updated the page.')}
   setTimeout(function(){S.justLearned=false},3200);
  },RM?300:1800);
@@ -685,7 +734,12 @@ document.addEventListener('click',function(e){
 });
 $('file').addEventListener('change',function(e){Array.prototype.forEach.call(e.target.files,function(f){if(CH.files.length<4)CH.files.push({name:f.name,size:f.size,type:f.type,kind:fileKind(f),url:/^image\//.test(f.type)?URL.createObjectURL(f):''})});e.target.value='';renderDock();$('cin').focus()});
 $('cin').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendFromDock()}});
-window.addEventListener('scroll',function(){var hd=document.querySelector('header');if(hd)hd.classList.toggle('sc',window.scrollY>4)},{passive:true});
+var lastY=0;
+function setLean(on){var d=$('dock');if(!d||d.classList.contains('lean')===on)return;d.classList.toggle('lean',on);setTimeout(function(){document.documentElement.style.setProperty('--dockh',d.offsetHeight+'px')},300)}
+window.addEventListener('scroll',function(){var y=window.scrollY,hd=document.querySelector('header');if(hd)hd.classList.toggle('sc',y>4);
+ if(CH.open||document.activeElement===$('cin'))setLean(false);else if(y>160&&y>lastY+6)setLean(true);else if(y<lastY-6||y<=160)setLean(false);
+ if(Math.abs(y-lastY)>6)lastY=y},{passive:true});
+$('cin').addEventListener('focus',function(){setLean(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop();if((e.key==='Enter'||e.key===' ')&&e.target.tagName==='g'){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
 var h0=location.hash.slice(1),m0=h0.match(/^approvals(?:-(talk|history))?$/);
 if(m0){S.view='page';S.tab=m0[1]||'read';render();S.learnT=setTimeout(learn,20000)}else render();
