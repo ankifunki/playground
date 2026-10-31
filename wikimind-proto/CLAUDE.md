@@ -15,9 +15,9 @@ dist/index.html    open this in a browser to switch between variants
 
 Open a single variant directly (`variants/wikimind3.html`) when iterating on it. Run `python3 build.py` to refresh the bundle.
 
-## Deploy
+## Running it
 
-Live at https://thedigibrain.vercel.app (also wikimind-proto.vercel.app), Vercel project `wikimind-proto`, root directory `wikimind-proto`. `middleware.js` gates every path behind a password page; the password is the `WIKIMIND_PASSWORD` env var in Vercel (never commit it). `/` serves `dist/index.html`, so run `python3 build.py` before deploying. The project is not Git-connected: pushes don't auto-deploy.
+Local only. Do not deploy (no Vercel or other hosting). Open `dist/index.html` in a browser, or a single variant from `variants/`. Run `python3 build.py` after editing a variant to refresh the bundle.
 
 ## Variants
 

@@ -1,8 +1,0 @@
-node_modules
-fonts
-*.md
-build.py
-shell.html
-package.json
-package-lock.json
-.gitignore
