@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { ARRIVAL, CHANGES, KIND, refFor, type Mark } from './data'
+import { ARRIVAL, CHANGES, KIND, refFor, type Mark, type RefKind } from './data'
+import { Icon, type IconName } from './Icon'
 import { useW } from './store'
 
 const fine = () => window.matchMedia('(hover:hover) and (pointer:fine)').matches
@@ -31,6 +32,27 @@ export function C({ ns, mark, cls, children }: { ns: number[]; mark?: Mark; cls?
   )
 }
 
+export const KICON: Record<RefKind, IconName> = { doc: 'file-text', sf: 'cloud', jira: 'ticket', slack: 'hash', meet: 'video', watch: 'eye', talk: 'message-circle' }
+/** Feed kinds on Home, in the same icon language as sources. */
+export const FICON: Record<string, IconName> = { Slack: 'hash', Salesforce: 'cloud', Jira: 'ticket', Meeting: 'video', Watched: 'eye', Integration: 'plug', Verified: 'badge-check' }
+
+/** A single source-kind tile. Verified sources carry a small green dot. */
+export function Tile({ icon, label, ok }: { icon: IconName; label: string; ok?: boolean }) {
+  return <span className={'pt' + (ok ? ' v' : '')} title={label}><Icon name={icon} size={14} /></span>
+}
+
+/** Sources as an overlapping pile of icons instead of a list of names. The full list is in the label. */
+export function Pile({ ns, max = 5 }: { ns: number[]; max?: number }) {
+  const refs = ns.map(refFor).filter(Boolean)
+  const label = refs.length + (refs.length === 1 ? ' source: ' : ' sources: ') + refs.map((r) => `${KIND[r.k]}, ${r.src}${r.v ? ', verified' : ''}`).join('; ')
+  return (
+    <span className="pile" role="img" aria-label={label} title={label}>
+      {refs.slice(0, max).map((r, i) => <span key={i} className={'pt' + (r.v ? ' v' : '')} style={{ '--i': i } as React.CSSProperties}><Icon name={KICON[r.k]} size={14} /></span>)}
+      {refs.length > max && <span className="pt more" style={{ '--i': max } as React.CSSProperties}>+{refs.length - max}</span>}
+    </span>
+  )
+}
+
 /** Where a sentence came from: each source, whether a person checked it, and what it replaced. */
 export function Prov({ ns }: { ns: number[] }) {
   return (
@@ -39,12 +61,10 @@ export function Prov({ ns }: { ns: number[] }) {
         const r = refFor(n), ch = CHANGES[n]
         return (
           <div className="pv" key={n}>
-            <div className="pvk">{KIND[r.k]} · {r.d}</div>
-            <div className="pvs">{r.src}</div>
+            <div className="pvh"><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={!!r.v} /><span className="pvs">{r.src}</span><span className="pvk">{r.d}</span></div>
             <div className="pvq">“{r.q}”</div>
-            <div className="pvu">{r.u}</div>
-            <div className={'pvst ' + (r.v ? 'ok' : r.check ? 'warn' : '')}>{r.v ? `Verified by ${r.v}` : r.check || 'Not checked by a person yet'}</div>
-            {ch && <div className="pvch"><span className="pvk">Changed {ch.d}</span><del>{ch.was}</del><small>{ch.why}</small></div>}
+            <div className={'pvst ' + (r.v ? 'ok' : r.check ? 'warn' : '')}>{r.v ? `Verified · ${r.v}` : r.check || 'Not checked yet'}</div>
+            {ch && <div className="pvch"><span className="pvk">Changed {ch.d}</span><del>{ch.was}</del></div>}
           </div>
         )
       })}
@@ -62,14 +82,15 @@ const lineTop = (el: HTMLElement, base: number) => (el.getClientRects()[0] || el
  */
 export function Margin() {
   const w = useW(), self = useRef<HTMLDivElement>(null)
-  // Measured from the margin's own parent (the page grid): a child's layout effect runs before the parent's ref is set.
+  // Positions are measured against the margin itself (it starts level with the article); the page grid is observed for resizes.
   const root = () => self.current?.parentElement || null
+  const top0 = () => self.current!.getBoundingClientRect().top
   const [marks, setMarks] = useState<M[]>([])
   const [noteTop, setNoteTop] = useState(0)
   useLayoutEffect(() => {
     const r = root(); if (!r) return
     const measure = () => {
-      const base = r.getBoundingClientRect().top
+      const base = top0()
       let last = -Infinity
       setMarks(Array.from(r.querySelectorAll<HTMLElement>('.cl[data-mark]')).map((el) => {
         const top = Math.max(lineTop(el, base), last + 32); last = top
@@ -82,7 +103,7 @@ export function Margin() {
   }, [w.learned, w.qas, w.arrival])
   useLayoutEffect(() => {
     const r = root()
-    if (w.blame && r) setNoteTop(lineTop(w.blame.el, r.getBoundingClientRect().top))
+    if (w.blame && r) setNoteTop(lineTop(w.blame.el, top0()))
   }, [w.blame])
   const b = w.blame
   return (
@@ -92,7 +113,7 @@ export function Margin() {
       ))}
       {b && (
         <div className={'note' + (b.pinned ? ' pin' : '')} style={{ top: noteTop }} key={b.ns.join()}>
-          <div className="nh"><span>Where this came from</span>{b.pinned ? <button className="wl" onClick={w.clearBlame}>Close</button> : <small>Click the sentence to keep this open</small>}</div>
+          <div className="nh">{b.ns.length > 1 ? <Pile ns={b.ns} /> : <span />}{b.pinned && <button className="ibtn sm" onClick={w.clearBlame} aria-label="Close" title="Close"><Icon name="x" size={16} /></button>}</div>
           <Prov ns={b.ns} />
         </div>
       )}

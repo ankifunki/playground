@@ -57,7 +57,7 @@ export function TrustVectors() {
   return (
     <section className="trust3" aria-label="How far you can trust Asoka">
       <div className="tpath">
-        <div className="tml"><b>Path to full automation</b><span>{auto}% runs on its own</span></div>
+        <div className="tml"><b>Path to full automation</b><span>{auto}%</span></div>
         <div className="tbar3" ref={track} role="img" aria-label={`${auto}% runs on its own, ${asks}% asks a person first, ${blocked}% blocked by gaps or access`}>
           <div className="tbars" style={{ gap: pitch - 2, marginLeft: shift }}>
             {segs.map((k, i) => <i key={i} className={k} style={{ '--d': `${Math.round((i * 700) / N)}ms` } as React.CSSProperties} />)}
@@ -70,30 +70,30 @@ export function TrustVectors() {
         <div className="tv">
           <div className="tk">Reliability</div>
           <div className="tn"><b>98.6%</b><Spark v={[97.1, 97.4, 97.9, 98.0, 98.3, 98.2, 98.6]} label="Reliability over the last 7 weeks, rising to 98.6%" /></div>
-          <p>matched what a person would do, across 1,912 decisions in 30 days. 3 were reversed.</p>
+          <p>matched a person across 1,912 decisions in 30 days</p>
           <button className="wl" onClick={w.tvMiss} aria-expanded={t.miss}>{t.miss ? 'Hide the misses' : 'See the 3 misses'}</button>
           {t.miss && <ul className="tmini">{MISSES.map(([d, what, fix]) => <li key={d}><span className="tk">{d}</span><span>{what}<small>Since then: {fix}</small></span></li>)}</ul>}
         </div>
         <div className="tv">
           <div className="tk">Automation</div>
           <div className="tn"><b>{auto}%</b><Spark v={[51, 54, 55, 58, 60, 62, auto]} label={`Share running without a person, up from 51% in September to ${auto}%`} /></div>
-          <p>runs without a person, up from 51% in September.</p>
+          <p>runs on its own, up from 51% in September</p>
           {t.hand !== 'done' ? (
-            <div className="tvb"><span><b>License seats</b><small>58 of 60 matched your call. Ready to hand over.</small></span>{btn(t.hand, 'Hand it over', w.tvHand)}</div>
+            <div className="tvb"><span><b>License seats</b><small>58 of 60 matched your call</small></span>{btn(t.hand, 'Hand it over', w.tvHand)}</div>
           ) : (
-            <div className="tnext"><span className="tdone">License seats handed over</span><small>Next: offboarding, after 8 more clean runs.</small></div>
+            <div className="tnext"><span className="tdone">License seats handed over</span><small>Next: offboarding, after 8 clean runs</small></div>
           )}
         </div>
         <div className="tv">
           <div className="tk">Gaps and access</div>
           <div className="tn"><b>{blocked}%</b></div>
-          <p>blocked by what Asoka can’t reach or doesn’t know yet.</p>
+          <p>blocked by missing access or knowledge</p>
           <ul className="tmini">
-            <li><span><b>Okta sign-in logs, read</b><small>Blocks 4% of security work.</small></span>{btn(t.acc.okta, 'Grant', () => w.tvAcc('okta'))}</li>
-            <li><span><b>NetSuite, write</b><small>Blocks 2% of finance work.</small></span>{btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite'))}</li>
-            <li><span><b>Why flat renewals skip approval</b><small>{w.learned ? 'Maria answered. Resolved.' : 'Asked Maria Okafor in RevOps.'}</small></span>{w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button>}</li>
+            <li><span><b>Okta sign-in logs, read</b><small>4% of security work</small></span>{btn(t.acc.okta, 'Grant', () => w.tvAcc('okta'))}</li>
+            <li><span><b>NetSuite, write</b><small>2% of finance work</small></span>{btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite'))}</li>
+            <li><span><b>Why flat renewals skip approval</b><small>{w.learned ? 'Maria answered' : 'Asked Maria Okafor'}</small></span>{w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button>}</li>
           </ul>
-          <small className="tfoot">Close every gap and up to 81% could run on its own.</small>
+          <small className="tfoot">Close every gap: up to 81% on its own</small>
         </div>
       </div>
     </section>

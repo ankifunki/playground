@@ -1,3 +1,4 @@
+import { Pile } from './Claim'
 import { Icon } from './Icon'
 import { firstName, initials, whoStr } from './logic'
 import { useW, type QA, type View } from './store'
@@ -12,7 +13,7 @@ function Unknown({ qa }: { qa: QA }) {
         <div className="qacts"><button className="qbtn pri press" onClick={() => w.commitAsk(qa.id)}>Ask {firstName(c.who)}</button><button className="qbtn press" onClick={() => w.notNow(qa.id)}>Not now</button></div>
       </>}
       {qa.qs === 'asking' && <div className="qsrc qst">Asking {c.who}. <button className="wl" onClick={() => w.undoAsk(qa.id)}>Undo</button></div>}
-      {qa.qs === 'asked' && <div className="qsrc qst">Asking {whoStr(c)}. Their answer will appear right here.</div>}
+      {qa.qs === 'asked' && <div className="qsrc qst">Asking {whoStr(c)}.</div>}
       {qa.qs === 'dup' && <div className="qsrc qst">Asoka is already asking {whoStr(c)}.</div>}
       {qa.qs === 'dismissed' && <div className="qsrc">Okay. I won’t ask anyone.</div>}
     </>
@@ -25,7 +26,7 @@ function QaBlock({ qa }: { qa: QA }) {
   return (
     <section className="qa" id={'qa-' + qa.id} aria-live="polite" aria-label={'Your question: ' + qa.q}>
       <div className="qah">
-        <span className="tk">You asked{qa.files.length ? `, with ${qa.files.length === 1 ? 'a file' : qa.files.length + ' files'}` : ''}. Only you see this</span>
+        <span className="tk">Only you see this</span>
         <button className="ibtn sm" onClick={() => w.closeQa(qa.id)} aria-label="Remove this answer" title="Remove"><Icon name="x" size={16} /></button>
       </div>
       <p className="qq">{qa.q}</p>
@@ -35,10 +36,10 @@ function QaBlock({ qa }: { qa: QA }) {
       {qa.t && !qa.unknown && <>
         <p className="qan">{qa.t}</p>
         {qa.note && <div className="qnote">{qa.note}</div>}
-        <div className="qsrc">
-          {qa.pending ? 'Checking all of its sources…' : n.length > 0 && <>
-            {qa.src === 'asoka' ? 'Answered by Asoka from ' : 'From '}{n.length === 1 ? 'one sentence' : n.length + ' sentences'} {qa.where === 'page' ? 'on this page' : 'in Opportunity approvals'}.{' '}
-            <button className="wl" onClick={() => w.showClaims(n)}>{qa.where === 'page' ? 'Show them' : 'Open them'}</button>
+        <div className="qsrc qfoot">
+          {qa.pending ? 'Checking its sources…' : n.length > 0 && <>
+            <Pile ns={n} />
+            <button className="wl" onClick={() => w.showClaims(n)}>Show on page</button>
           </>}
         </div>
       </>}
@@ -48,7 +49,6 @@ function QaBlock({ qa }: { qa: QA }) {
           <div>
             <div className="rwho">{qa.reply.who} answered<small>Just now</small></div>
             <p>{qa.reply.ans}</p>
-            <div className="qsrc">Asoka added this to what it knows and will answer it directly from now on.</div>
           </div>
         </div>
       )}

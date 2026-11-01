@@ -276,6 +276,7 @@ p,li,.pq,.pvq{text-wrap:pretty}
 /* The page: one reading column, and on wide screens a margin for provenance. */
 .doc{position:relative;display:grid;grid-template-columns:minmax(0,720px);justify-content:center;column-gap:56px}
 @media (min-width:1100px){.doc{grid-template-columns:minmax(0,680px) 300px}}
+@media (min-width:1240px){.page.art{max-width:1280px}.doc{grid-template-columns:160px minmax(0,640px) 280px;column-gap:48px}}
 .margin{display:none;position:relative}
 @media (min-width:1100px){.margin{display:block}}
 h1.t{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5.5vw,48px);line-height:1.05;letter-spacing:-.02em;margin:32px 0 8px}
@@ -358,8 +359,6 @@ h1.t{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5.5vw,48px);l
 .obs .said span{display:block;font:600 12px var(--mono);letter-spacing:-.01em;margin-top:2px}
 .colophon{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--hl);font-size:14px;color:var(--ink2);line-height:1.6}
 .art-body p.colophon{margin:40px 0 0}
-.hint-touch{display:none}
-@media (hover:none),(pointer:coarse){.hint-fine{display:none}.hint-touch{display:inline}}
 /* Home */
 .welcome .now{display:flex;align-items:center;gap:10px;margin:24px 0 0;font-size:15px;color:var(--ink2);min-height:24px;max-width:none}
 .now .pdot,.now .tk{flex:none}
@@ -395,3 +394,99 @@ h1.t{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5.5vw,48px);l
 .demo{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:12px 0 0;font-size:14px;color:var(--ink2)}
 .demo .wl{font-size:14px}
 @media (prefers-reduced-motion:reduce){.qa,.qrep,.mv li.in,.dots3 i{animation:fade .2s both}.note,.now .nt{animation:fade .2s both}.cl{transition:none}}
+
+/* ---------- Sources as an icon pile ---------- */
+.pile{display:inline-flex;align-items:center;vertical-align:middle;padding-left:6px}
+.pt{position:relative;width:26px;height:26px;margin-left:-6px;border-radius:50%;display:inline-grid;place-items:center;background:var(--soft2);color:var(--ink);box-shadow:0 0 0 2px var(--panel);flex:none;transition:transform .25s var(--eo)}
+.pt.v::after{content:"";position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--panel)}
+.pt.more{font:600 12px var(--mono);letter-spacing:-.02em;color:var(--ink2);width:auto;min-width:26px;padding:0 6px;border-radius:999px}
+.pile>.pt:first-child{margin-left:0}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.pile:hover .pt{transform:translateX(calc(var(--i,0) * 4px))}}
+.now .pt,.pvh .pt{margin-left:0;box-shadow:none}
+.qfoot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px}
+.colophon{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pvh{display:flex;align-items:center;gap:10px}
+.pvh .pvs{flex:1;min-width:0;margin:0}
+.pvh .pvk{flex:none}
+.note .nh{align-items:center;margin-bottom:12px;min-height:28px}
+.note .nh .ibtn{margin:-6px -8px -6px 0}
+.pc .pk{padding-right:44px}
+.arrk{display:inline-flex;align-items:center;gap:6px}
+/* ---------- Section nav ---------- */
+.pnav button{display:flex;align-items:center;gap:12px;border:0;background:none;color:var(--ink2);font:500 14px var(--sans);cursor:pointer;border-radius:999px;transition:background-color .2s var(--eo),color .2s var(--eo),box-shadow .2s var(--eo),transform .16s var(--eo)}
+.pnav button:active{transform:scale(.97)}
+.pnav button.on{color:var(--ink);background:var(--panel);box-shadow:var(--sh);font-weight:600}
+.pnav .ic{flex:none}
+.pnav.rail{display:none}
+@media (min-width:1240px){
+ .pnav.rail{display:flex;flex-direction:column;gap:4px;position:sticky;top:96px;align-self:start;padding-top:40px}
+ .pnav.rail button{padding:10px 14px;width:100%;text-align:left}
+ .pnav.chips{display:none}
+}
+.pnav.chips{position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);z-index:20;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px 32px;padding:10px 18px;background:var(--bg)}
+.pnav.chips::-webkit-scrollbar{display:none}
+.pnav.chips button{flex:none;padding:8px 14px 8px 12px;gap:8px;white-space:nowrap}
+@media (max-width:1239px){.art-body section[id^="s-"]{scroll-margin-top:132px}}
+@media (hover:hover) and (pointer:fine){.pnav button:not(.on):hover{color:var(--ink);background:var(--soft2)}}
+/* Each section icon moves the way its idea does: lines write, nodes connect, the check draws, the eye blinks, the plug seats. */
+.ic-text path{transform-origin:left center}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .pnav button:hover .ic-text .l1{animation:icWrite .5s var(--eo)}
+ .pnav button:hover .ic-text .l2{animation:icWrite .5s var(--eo) .06s both}
+ .pnav button:hover .ic-text .l3{animation:icWrite .5s var(--eo) .12s both}
+ .pnav button:hover .ic-workflow .n1{animation:icN1 .55s var(--eo)}
+ .pnav button:hover .ic-workflow .n2{animation:icN2 .55s var(--eo)}
+ .pnav button:hover .ic-shield-check .tick{stroke-dasharray:12;animation:icTick .5s var(--eo)}
+ .pnav button:hover .ic-eye{animation:icBlink .45s var(--eo)}
+ .pnav button:hover .ic-plug .head,.pnav button:hover .ic-plug .prong{animation:icSeat .5s var(--eo)}
+}
+@keyframes icWrite{from{transform:scaleX(.2)}to{transform:none}}
+@keyframes icN1{0%,100%{transform:none}45%{transform:translate(-1.5px,-1.5px)}}
+@keyframes icN2{0%,100%{transform:none}45%{transform:translate(1.5px,1.5px)}}
+@keyframes icTick{from{stroke-dashoffset:12}to{stroke-dashoffset:0}}
+@keyframes icBlink{0%,100%{transform:none}45%{transform:scaleY(.12)}}
+@keyframes icSeat{0%,100%{transform:none}40%{transform:translateY(-3px)}}
+/* Feed icons on Home */
+.mv li{grid-template-columns:28px minmax(0,1fr)}
+.mk2{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--ink2)}
+.mk2.warn{background:var(--warnb)}.mk2.ok{background:var(--okb)}
+@media (max-width:420px){.mv li{grid-template-columns:28px minmax(0,1fr);gap:12px}}
+.now .tk{display:none}
+/* ---------- Airy: more room inside and between cards ---------- */
+.box{margin-bottom:24px}
+.box>h2{padding:24px 24px 0}
+.box>.bb{padding:16px 24px 24px}
+.tpath,.tv{padding:24px}
+.tv{gap:8px}
+.tvs{gap:24px;margin-top:24px}
+.trust3{margin-top:48px}
+.hg{gap:24px;margin-top:48px}
+.hg.lower{margin-top:24px}
+.welcome h1{margin:12px 0 0}
+.welcome .now{margin-top:28px}
+.mv li{padding:16px 0;gap:16px}
+.mv li:first-child{padding-top:4px}
+.dyk li{padding:16px 0}
+.areas{gap:12px}
+.area{padding:16px}
+.tmini li{padding:12px 0}
+.tvb{padding:12px 16px;margin-top:8px}
+.art-body p{margin:0 0 20px}
+.art-body h2{margin:64px 0 20px}
+.art-body h3{margin:32px 0 12px}
+.tline{padding:20px 24px;margin:8px 0 32px;gap:24px}
+.pnav.chips+.arrive{margin-top:0}
+.fig,.rp{padding:24px}
+.fig{margin:12px 0 24px}
+.obs{padding:24px;margin:0 0 16px}
+.arrive,.qa{padding:20px 24px 24px}
+.qa{margin:12px 0 32px}
+.wt th,.wt td{padding:14px 20px}
+.note{padding:20px}
+.pv{padding:16px 0}
+.pc{padding:24px}
+.colophon{margin-top:64px;padding-top:24px}
+.art-body p.colophon{margin-top:64px}
+.byline{margin-bottom:28px;gap:8px 16px}
+@media (max-width:560px){.tline{gap:12px;padding:20px}.box>h2{padding:20px 20px 0}.box>.bb{padding:16px 20px 20px}.tpath,.tv,.obs,.fig,.rp{padding:20px}}
+@media (min-width:1240px){.pnav.chips{display:none}}

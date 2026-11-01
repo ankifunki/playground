@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Prov } from './Claim'
+import { Pile, Prov } from './Claim'
 import { PREV } from './data'
 import { Icon } from './Icon'
 import { useW, type Pop } from './store'
@@ -19,7 +19,7 @@ function Body({ p }: { p: Pop }) {
   }
   return (
     <div className="pc">
-      <div className="pk">Where this came from</div>
+      <div className="pk">{p.ns.length > 1 ? <Pile ns={p.ns} /> : null}</div>
       <Prov ns={p.ns} />
       {close}
     </div>
