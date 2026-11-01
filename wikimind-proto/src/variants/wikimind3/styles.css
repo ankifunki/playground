@@ -369,8 +369,9 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .tml{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .tml b{font-size:15px;font-weight:600}
 .tml span{font-family:var(--mono);font-size:13px;color:var(--ink2)}
-.tbar3{position:relative;display:flex;justify-content:space-between;gap:1px;height:32px;margin:14px 0 30px;align-items:stretch}
-.tbar3 i{flex:0 0 auto;border-radius:.5px;background:var(--soft2);transform-origin:bottom;animation:tseg .5s var(--eo) both;animation-delay:var(--d);transition:background-color .35s var(--eo),opacity .35s var(--eo);transition-delay:calc(var(--d) * .6)}
+.tbar3{height:32px;margin:14px 0 30px}
+.tbars{position:relative;display:inline-flex;height:100%;align-items:stretch;vertical-align:top}
+.tbar3 i{flex:0 0 2px;width:2px;border-radius:.5px;background:var(--soft2);transform-origin:bottom;animation:tseg .5s var(--eo) both;animation-delay:var(--d);transition:background-color .35s var(--eo),opacity .35s var(--eo);transition-delay:calc(var(--d) * .6)}
 .tbar3 .a{background:var(--ok)}
 .tbar3 .p{background:var(--link);opacity:.45}
 .tbar3 .b{background:var(--warn)}
