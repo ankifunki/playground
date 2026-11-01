@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { QaSlot } from './Answer'
+import { Ag, AgentPile } from './agents'
 import { C, Margin, Pile } from './Claim'
 import { ARRIVAL, REFS } from './data'
 import { FlowSvg } from './Diagrams'
@@ -50,7 +51,7 @@ function Renewal() {
   const w = useW()
   if (w.learned) return (
     <div className={'obs done' + (w.diffPlay ? ' upd' : '')} id="renewal">
-      <div className="ok2">Confirmed by Maria just now</div>
+      <div className="ok2">Maria answered the Approvals agent just now</div>
       <p className={'was' + (w.diffPlay ? ' anim' : '')}><del>{OLD_RENEWAL}</del></p>
       <p className={w.diffPlay ? 'write' : ''}><C ns={[11, 14]} mark={{ t: 'Changed just now', tone: 'ok' }}>Flat <L to="Renewals">renewals</L> skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.</C></p>
       <div className="said">“Yes, on purpose since 2023. Flat renewals don’t change revenue risk.” <span>Maria Okafor, RevOps</span></div>
@@ -58,7 +59,7 @@ function Renewal() {
   )
   return (
     <div className="obs" id="renewal">
-      <div className="ok2">Open question · asked Maria, Oct 27</div>
+      <div className="ok2">Open question · Approvals agent asked Maria, Oct 27</div>
       <p><C ns={[11]}>{OLD_RENEWAL}</C></p>
       <Dots on={14} />
       <div className="dl">14 of 14 flat renewals last quarter</div>
@@ -75,7 +76,7 @@ function Arrival() {
   if (!w.arrival) return null
   return (
     <section className="arrive" aria-label="Why you are here">
-      <div className="qah"><span className="tk arrk"><Icon name="hash" size={14} />Asoka’s reply in {ARRIVAL.channel}</span><button className="ibtn sm" onClick={w.leaveArrival} aria-label="Read the whole page" title="Read the whole page"><Icon name="x" size={16} /></button></div>
+      <div className="qah"><span className="tk arrk"><Icon name="hash" size={14} />Approvals agent’s reply in {ARRIVAL.channel}</span><button className="ibtn sm" onClick={w.leaveArrival} aria-label="Read the whole page" title="Read the whole page"><Icon name="x" size={16} /></button></div>
       <p className="qq">{ARRIVAL.q}</p>
       <p className="qan">{ARRIVAL.a}</p>
       <div className="qsrc qfoot"><Pile ns={ARRIVAL.ns} /><button className="wl" onClick={() => w.showClaims(ARRIVAL.ns)}>Show on page</button></div>
@@ -113,6 +114,7 @@ export function Page() {
           <h1 className="t">Opportunity approvals</h1>
           <div className="byline">
             <span>Owned by <L to="Maria Okafor" />, RevOps</span>
+            <span className="agline">Kept by <Ag id="approvals" name /></span>
             <span className="live"><span className="pdot" />{w.learned ? 'Rewritten just now' : 'Reading 2 new Slack threads'}</span>
           </div>
           <TrustLine />
@@ -150,15 +152,16 @@ export function Page() {
           <section id="s-touches">
             <h2>What touches this</h2>
             <div className="tscroll"><table className="wt"><tbody>
-              <tr><th>Automation</th><th>Type</th><th>Status</th></tr>
-              <tr><td>Large Deal Approval</td><td>Approval process</td><td>Changed Oct 28</td></tr>
-              <tr><td>Discount_Requires_Reason</td><td>Validation rule</td><td>Healthy</td></tr>
-              <tr><td>Amount_Locked_After_Approval</td><td>Validation rule</td><td>Healthy</td></tr>
-              <tr><td><L to="CPQ quote sync" /></td><td>Integration</td><td className="bad">Failing for multi-currency since Oct 29</td></tr>
+              <tr><th>Automation</th><th>Type</th><th>Status</th><th>Watched by</th></tr>
+              <tr><td>Large Deal Approval</td><td>Approval process</td><td>Changed Oct 28</td><td><Ag id="approvals" name suffix="" /></td></tr>
+              <tr><td>Discount_Requires_Reason</td><td>Validation rule</td><td>Healthy</td><td><Ag id="approvals" name suffix="" /></td></tr>
+              <tr><td>Amount_Locked_After_Approval</td><td>Validation rule</td><td>Healthy</td><td><Ag id="finance" name suffix="" /></td></tr>
+              <tr><td><L to="CPQ quote sync" /></td><td>Integration</td><td className="bad">Failing for multi-currency since Oct 29</td><td><Ag id="integrations" name suffix="" /></td></tr>
             </tbody></table></div>
           </section>
           <div className="colophon">
             <Pile ns={[...Object.keys(REFS).map(Number), ...(w.learned ? [14] : [])]} />
+            <span className="colag"><AgentPile ids={['approvals', 'finance', 'integrations']} size={22} />3 agents</span>
             <span>{Object.keys(REFS).length + (w.learned ? 1 : 0)} sources · {verified} verified · rewritten {w.learned ? 7 : 6} times</span>
           </div>
         </article>

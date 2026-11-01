@@ -1,6 +1,6 @@
 # Wikimind prototypes
 
-Front-end-only React prototypes for **Wikimind**: a read-only surface that exposes the knowledge inside Asoka (a "digital human" sysadmin agent) to customers. Everything is faked in the browser. No backend. Vite + React + TypeScript, run locally.
+Front-end-only React prototypes for **Wikimind**: a read-only surface that exposes the knowledge inside Asoka to customers. **Asoka is not one agent:** it is a team of specialist sysadmin agents, each with one job (Approvals, Access, Security, Finance ops, Integrations, Support). Everything is faked in the browser. No backend. Vite + React + TypeScript, run locally.
 
 Brief: https://docs.google.com/document/d/1hVtsbMiSN-4_3rn8jfR_p6HhGTC3foUkvRIHkwXpc3c (Asoka design on-site, "How do you expose everything in a digital human's brain?").
 
@@ -27,11 +27,11 @@ Hosted for preview on Vercel (project `wikimind-proto`, root directory `wikimind
 
 ## Demo controls (Wikimind 3 and 4)
 
-- `L`: Maria answers the flat-renewals question. Asoka rewrites the card (old sentence struck, new one written in). Also reachable via "Simulate her reply" in Questions. There is no automatic timer.
-- `A`: the person Asoka is asking answers the visitor's newest open question immediately. Otherwise they answer 15 seconds after the visitor taps "Ask".
+- `L`: Maria answers the flat-renewals question. The Approvals agent rewrites the card (old sentence struck, new one written in). Also reachable via "Simulate her reply" in Questions. There is no automatic timer.
+- `A`: the person an agent is asking answers the visitor's newest open question immediately. Otherwise they answer 15 seconds after the visitor taps "Ask".
 - Wikimind 4 only: `S` (or the Demo link at the bottom of Home, or `#approvals-slack`) opens the page as a visitor arriving from a Slack citation. Maria also answers on her own about 20 seconds after the page opens.
 - `/` focuses the ask box. Esc closes the source sheet, then the conversation.
-- Unknown questions offer "Ask <name>" or "Not now". Undo is available for 5 seconds after asking. Asoka never contacts anyone without the visitor's tap.
+- Unknown questions offer "Ask <name>" or "Not now". Undo is available for 5 seconds after asking. No agent contacts anyone without the visitor's tap.
 
 ## Variants
 
@@ -57,7 +57,8 @@ Audiences in priority order: CIO buyer in a demo, architects and developers (rea
 - House visual language: warm stone background `#F8F6F2` with warm neutrals, white cards with soft shadows (no hairline borders), indigo accent `#4B45D6`, Geist for UI and body, Geist Mono for tags, labels and counts, Geist Serif for headlines and long reading text. Full dark mode via CSS variables.
 - Trust by exception: solid facts carry no mark. Only uncertain, changed, unofficial, or stale content gets marked.
 - Ask is persistent at the bottom (composer with attachments, voice, scope toggle), not a header search.
-- Unknown questions get "I don't know that yet, and I won't guess," then become open questions.
+- Unknown questions get "No agent knows that yet, and none will guess," then become open questions that the relevant agent asks a person.
+- **Asoka is a team of specialist agents, not one entity.** Never write "Asoka is…" or "Asoka learned…" as if it were a single actor. Every fact, change, question and answer is credited to the agent that did it (`agents.tsx`: square indigo tile + name; sources stay round and neutral). Home shows each agent's reliability, share running on its own, and what is holding it back.
 
 ## Craft rules
 

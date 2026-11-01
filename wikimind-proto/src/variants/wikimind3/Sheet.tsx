@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { KIND, PREV, refFor } from './data'
 import { KICON, Pile, Tile } from './Pile'
+import { Ag, agentFor } from './agents'
 import { Icon } from './Icon'
 import { useW, type Pop } from './store'
 
@@ -19,14 +20,14 @@ function Body({ p }: { p: Pop }) {
   }
   return (
     <div className="pc">
-      <div className="pk">{p.ns.length > 1 ? <Pile ns={p.ns} /> : null}</div>
+      <div className="pk nh"><Ag id={agentFor(p.ns).id} name />{p.ns.length > 1 && <Pile ns={p.ns} />}</div>
       {p.ns.map((n) => {
         const r = refFor(n), ver = !!r.v
         return (
           <div className="psrc" key={n} id={'pop-ref-' + n}>
             <div className="pvh"><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={ver} warn={!!r.check} /><span className="pvs">{r.src}</span><span className="pvk">{r.d}</span></div>
             <div className="pq">“{r.q}”</div>
-            <div className="chain" aria-label="How Asoka learned this"><span className="y">Observed</span><i>›</i><span className="y">Written</span><i>›</i><span className={ver ? 'y' : r.check ? 'w' : 'n'}>{ver ? `Verified · ${r.v}` : r.check || 'Not checked yet'}</span></div>
+            <div className="chain" aria-label="How the agent learned this"><span className="y">Observed</span><i>›</i><span className="y">Written</span><i>›</i><span className={ver ? 'y' : r.check ? 'w' : 'n'}>{ver ? `Verified · ${r.v}` : r.check || 'Not checked yet'}</span></div>
           </div>
         )
       })}

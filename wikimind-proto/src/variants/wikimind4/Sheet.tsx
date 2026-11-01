@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Ag, agentFor } from './agents'
 import { Pile, Prov } from './Claim'
 import { PREV } from './data'
 import { Icon } from './Icon'
@@ -19,7 +20,7 @@ function Body({ p }: { p: Pop }) {
   }
   return (
     <div className="pc">
-      <div className="pk">{p.ns.length > 1 ? <Pile ns={p.ns} /> : null}</div>
+      <div className="pk nh"><Ag id={agentFor(p.ns).id} name />{p.ns.length > 1 && <Pile ns={p.ns} />}</div>
       <Prov ns={p.ns} />
       {close}
     </div>

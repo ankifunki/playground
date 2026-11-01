@@ -4,7 +4,7 @@ import { fileKind, firstName, fsize } from './logic'
 import { useW } from './store'
 
 const PAGE_SUGG = ['Who approves a 30% discount?', 'What happens at quarter end?', 'Do flat renewals need approval?']
-const HOME_SUGG = ['What did Asoka learn this week?', 'Who approves a 30% discount?', 'What is Asoka unsure about?']
+const HOME_SUGG = ['What did the agents learn this week?', 'Who approves a 30% discount?', 'What are the agents unsure about?']
 
 /** The persistent ask bar: suggestion chips, attachments, voice, send. */
 export function Dock() {
@@ -57,7 +57,7 @@ export function Dock() {
           ))}</div>
           <div className="crow2">
             <button className="cbtn" data-act="attach" aria-label="Add attachment" onClick={() => file.current?.click()}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg></button>
-            <input id="cin" ref={input} type="text" placeholder={placeholder} aria-label="Ask Asoka" autoComplete="off" value={w.text}
+            <input id="cin" ref={input} type="text" placeholder={placeholder} aria-label="Ask the agents" autoComplete="off" value={w.text}
               onChange={(e) => w.setText(e.target.value)} onFocus={() => setLean(false)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); w.send() } }} />
             <span className="wave" aria-hidden="true"><i /><i /><i /><i /><i /></span>

@@ -86,7 +86,7 @@ function useWikimindState() {
     if (location.hash.slice(1) !== h) history.replaceState(null, '', location.pathname + location.search + '#' + h)
   }, [view, tab])
 
-  // Asoka keeps learning in the background: the Home feed and counters tick.
+  // The agents keep learning in the background: the Home feed and counters tick.
   useEffect(() => {
     let fi = 0
     const t = window.setInterval(() => {
@@ -157,7 +157,7 @@ function useWikimindState() {
       const seen = L.view === 'page' && L.tab === 'read' && inView(document.getElementById('renewal'))
       setTalkTyping(false); setLearned(true); setJustLearned(true); setEdits((e) => e + 1)
       setLearnSeen(seen); setDiffPlay(seen)
-      if (!seen) showToast('Maria answered. Asoka updated the page.', 'goRenewal', 'See the change')
+      if (!seen) showToast('Maria answered. The Approvals agent updated the page.', 'goRenewal', 'See the change')
       window.setTimeout(() => { setJustLearned(false); setDiffPlay(false) }, 3200)
     }, RM ? 300 : 1800)
   }
@@ -195,7 +195,7 @@ function useWikimindState() {
       if (!CLAUDE || !q || atts.length) return
       sampleP.then((sample) => {
         if (!sample) { if (!ans) markUnknown(a.id, q); else patchMsg(a.id, { pending: false }); return }
-        const prompt = 'You are Asoka. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Start with the direct answer in a few words (for example “The CRO.”), then the reason. Cite the statement numbers you used. Mention an exception only if it changes the answer to this question. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n' + CORPUS.map((c) => `[${c[0]}] ${c[1]}`).join('\n') + '\n\nQuestion: ' + q
+        const prompt = 'You are the Approvals agent, one of Northwind’s Asoka agents. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Start with the direct answer in a few words (for example “The CRO.”), then the reason. Cite the statement numbers you used. Mention an exception only if it changes the answer to this question. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n' + CORPUS.map((c) => `[${c[0]}] ${c[1]}`).join('\n') + '\n\nQuestion: ' + q
         sample.json(prompt, { modelTier: 'quick' }).then((r) => {
           const n = (r && Array.isArray(r.cites) ? r.cites : []).filter((x: number) => REFS[x])
           if (r && !r.unknown && r.answer && n.length) patchMsg(a.id, { t: String(r.answer), n, note: r.note ? String(r.note) : '', src: 'asoka', pending: false })
@@ -282,16 +282,16 @@ function useWikimindState() {
 
   /* ---------- trust vectors ---------- */
   const tvMiss = () => setTv((t) => ({ ...t, miss: !t.miss }))
-  /** Widening what Asoka does alone always needs a second approver. */
+  /** Widening what an agent does alone always needs a second approver. */
   const tvHand = () => {
     if (tv.hand !== 'idle') return
     setTv((t) => ({ ...t, hand: 'sent' }))
-    window.setTimeout(() => { setTv((t) => ({ ...t, hand: 'done' })); showToast('Dev approved. License seats now run on their own.') }, 2000)
+    window.setTimeout(() => { setTv((t) => ({ ...t, hand: 'done' })); showToast('Dev approved. The Access agent now handles license seats on its own.') }, 2000)
   }
   const tvAcc = (k: 'okta' | 'netsuite') => {
     if (tv.acc[k] !== 'idle') return
     setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'sent' } }))
-    window.setTimeout(() => { setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'done' } })); showToast(k === 'okta' ? 'Dev approved. Asoka can read Okta sign-in logs.' : 'Dev approved. Asoka can write to NetSuite.') }, 2000)
+    window.setTimeout(() => { setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'done' } })); showToast(k === 'okta' ? 'Dev approved. The Security agent can read Okta sign-in logs.' : 'Dev approved. The Finance ops agent can write to NetSuite.') }, 2000)
   }
 
   const runToastAct = (a: ToastAct) => { hideToast(); if (a === 'showchat') showChat(); else if (a === 'goRenewal') showRenewal(); else undoNew() }

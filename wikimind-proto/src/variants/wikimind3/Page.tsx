@@ -6,6 +6,9 @@ import { initials, RM } from './logic'
 import { Replay } from './Replay'
 import { Icon, type IconName } from './Icon'
 import { KICON, Tile } from './Pile'
+import { AG, Ag, type AgentId } from './agents'
+
+const AGN = Object.fromEntries(Object.values(AG).map((a) => [a.id, a.name])) as Record<AgentId, string>
 import { Rf } from './Rf'
 import { useW } from './store'
 
@@ -20,14 +23,14 @@ function Renewal() {
   const w = useW()
   if (w.learned) return (
     <div className={'obs done' + (w.diffPlay ? ' upd' : '')} id="renewal">
-      <div className="ok2">Confirmed by Maria just now</div>
+      <div className="ok2">Maria answered the Approvals agent just now</div>
       <p className={'was' + (w.diffPlay ? ' anim' : '')}><del>{OLD_RENEWAL}</del></p>
       <p className={w.diffPlay ? 'write' : ''}>Renewals with no price change skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.<Rf ns={[11, 14]} /></p>
     </div>
   )
   return (
     <div className="obs" id="renewal">
-      <div className="ok2">Open question · asking Maria</div>
+      <div className="ok2">Open question · Approvals agent asking Maria</div>
       <p>{OLD_RENEWAL}<Rf ns={[11]} /></p>
       <Dots on={14} />
       <div className="dl">14 of 14 flat renewals last quarter</div>
@@ -52,6 +55,7 @@ function Infobox() {
         <tr><th>Type</th><td>Salesforce approval process</td></tr>
         <tr><th>Object</th><td>Opportunity</td></tr>
         <tr><th>Owner</th><td><button className="wl" onClick={(e) => w.openPrev('Maria Okafor', e.currentTarget)}>Maria Okafor</button>, RevOps</td></tr>
+        <tr><th>Kept by</th><td><Ag id="approvals" name /></td></tr>
         <tr><th>Runs</th><td>212 this quarter</td></tr>
         <tr><th>Median time</th><td>3 hours 40 minutes</td></tr>
         <tr><th>Automations</th><td>4, <span style={{ color: 'var(--warn)', fontWeight: 600 }}>1 failing</span></td></tr>
@@ -107,11 +111,11 @@ function Article({ onToc, toc }: { onToc: (id: string) => void; toc: string }) {
       <section id="s-touches">
         <h2>What touches this</h2>
         <div className="tscroll"><table className="wt"><tbody>
-          <tr><th>Automation</th><th>Type</th><th>Status</th></tr>
-          <tr><td>Large Deal Approval</td><td>Approval process</td><td>Changed Oct 28</td></tr>
-          <tr><td>Discount_Requires_Reason</td><td>Validation rule</td><td>Healthy</td></tr>
-          <tr><td>Amount_Locked_After_Approval</td><td>Validation rule</td><td>Healthy</td></tr>
-          <tr><td><button className="wl" onClick={(e) => w.openPrev('CPQ quote sync', e.currentTarget)}>CPQ quote sync</button></td><td>Integration</td><td className="bad">Failing for multi-currency since Oct 29</td></tr>
+          <tr><th>Automation</th><th>Type</th><th>Status</th><th>Watched by</th></tr>
+          <tr><td>Large Deal Approval</td><td>Approval process</td><td>Changed Oct 28</td><td><Ag id="approvals" name suffix="" /></td></tr>
+          <tr><td>Discount_Requires_Reason</td><td>Validation rule</td><td>Healthy</td><td><Ag id="approvals" name suffix="" /></td></tr>
+          <tr><td>Amount_Locked_After_Approval</td><td>Validation rule</td><td>Healthy</td><td><Ag id="finance" name suffix="" /></td></tr>
+          <tr><td><button className="wl" onClick={(e) => w.openPrev('CPQ quote sync', e.currentTarget)}>CPQ quote sync</button></td><td>Integration</td><td className="bad">Failing for multi-currency since Oct 29</td><td><Ag id="integrations" name suffix="" /></td></tr>
         </tbody></table></div>
       </section>
       <section id="s-hist">
@@ -132,8 +136,8 @@ function Article({ onToc, toc }: { onToc: (id: string) => void; toc: string }) {
   )
 }
 
-function Msg({ av, cls, who, when, children, enter }: { av: string; cls: string; who: string; when?: string; children: React.ReactNode; enter?: boolean }) {
-  return <div className={'msg' + (enter ? ' in' : '')}><span className={'av ' + cls}>{av}</span><div><div className="who">{who}{when && <small>{when}</small>}</div>{children}</div></div>
+function Msg({ av, cls, who, when, children, enter, agent }: { av: string; cls: string; who: string; when?: string; children: React.ReactNode; enter?: boolean; agent?: AgentId }) {
+  return <div className={'msg' + (enter ? ' in' : '')}>{agent ? <span className="avag"><Ag id={agent} size={32} /></span> : <span className={'av ' + cls}>{av}</span>}<div><div className="who">{who}{when && <small>{when}</small>}</div>{children}</div></div>
 }
 
 function Talk() {
@@ -144,27 +148,27 @@ function Talk() {
       {w.newQs.filter((x) => x.page).map((x) => (
         <div className="thread" key={x.id}>
           <div className="th"><b>{x.q}</b><span className={'st ' + (x.resolved ? 'o' : 'w')}>{x.resolved ? 'Resolved' : 'Asking'}</span></div>
-          <Msg av="A" cls="a" who="Asoka" when="Just now"><p>Someone asked this and I don’t know yet. @{x.who}, can you help? I’ll update the page when you answer.</p></Msg>
+          <Msg av="" cls="a" agent={x.agent} who={AGN[x.agent] + " agent"} when="Just now"><p>Someone asked this and I don’t know yet. @{x.who}, can you help? I’ll update the page when you answer.</p></Msg>
           {x.resolved && <Msg av={initials(x.who)} cls="h" who={x.who} when="Just now" enter><p>{x.ans}</p></Msg>}
         </div>
       ))}
       <div className="thread">
         <div className="th"><b>Do flat renewals skip approval on purpose?</b><span className={'st ' + (w.learned ? 'o' : 'w')}>{w.learned ? 'Resolved' : 'Waiting'}</span></div>
-        <Msg av="A" cls="a" who="Asoka" when="Oct 27"><p>I saw 14 flat renewals skip approval last quarter, but no rule explains it. @Maria Okafor, is this intentional?</p></Msg>
+        <Msg av="" cls="a" agent="approvals" who="Approvals agent" when="Oct 27"><p>I saw 14 flat renewals skip approval last quarter, but no rule explains it. @Maria Okafor, is this intentional?</p></Msg>
         {w.talkTyping && !w.learned && <Msg av="MO" cls="h" who="Maria Okafor" when="typing"><span className="typing"><i /><i /><i /></span></Msg>}
         {w.learned && <>
           <Msg av="MO" cls="h" who="Maria Okafor" when="Just now" enter={w.justLearned}><p>Yes, on purpose since 2023. Flat renewals don’t change revenue risk.</p></Msg>
-          <Msg av="A" cls="a" who="Asoka" when="Just now" enter={w.justLearned}><p>Thanks. I updated the page and cited your answer. <button className="wl" onClick={w.showRenewal}>See the change</button></p></Msg>
+          <Msg av="" cls="a" agent="approvals" who="Approvals agent" when="Just now" enter={w.justLearned}><p>Thanks. I updated the page and cited your answer. <button className="wl" onClick={w.showRenewal}>See the change</button></p></Msg>
         </>}
         {!w.learned && !w.talkTyping && <Msg av="MO" cls="h" who="Maria Okafor"><p style={{ color: 'var(--ink2)' }}>Hasn’t replied yet. <button className="wl" onClick={w.learn}>Simulate her reply</button></p></Msg>}
       </div>
       <div className="thread">
         <div className="th"><b>EMEA routing seen only once</b><span className="st i">Watching</span></div>
-        <Msg av="A" cls="a" who="Asoka" when="Aug 20"><p>One Slack message says EMEA deals go to Sofia first, but there’s no matching step in Salesforce. I’ll confirm on the next EMEA approval and update the article either way.</p></Msg>
+        <Msg av="" cls="a" agent="approvals" who="Approvals agent" when="Aug 20"><p>One Slack message says EMEA deals go to Sofia first, but there’s no matching step in Salesforce. I’ll confirm on the next EMEA approval and update the article either way.</p></Msg>
       </div>
       <div className="thread">
         <div className="th"><b>Rules section checked</b><span className="st o">Verified</span></div>
-        <Msg av="DR" cls="d" who="Dana Ruiz" when="Asoka’s sysadmin, Oct 12"><p>Checked against the approval process settings and the validation rule. Verified.</p></Msg>
+        <Msg av="DR" cls="d" who="Dana Ruiz" when="the agents’ admin, Oct 12"><p>Checked against the approval process settings and the validation rule. Verified.</p></Msg>
       </div>
     </>
   )
@@ -206,7 +210,7 @@ export function Page() {
           <button className={w.tab === 'history' ? 'on' : ''} role="tab" aria-selected={w.tab === 'history'} onClick={() => w.pickTab('history')}><Icon name="history" size={16} />Changes</button>
         </div>
         <h1 className="t">Opportunity approvals</h1>
-        <div className="byline"><span className="live"><span className="pdot" />{w.learned ? 'Updated just now' : 'Reading 2 new Slack threads'}</span></div>
+        <div className="byline"><span className="agline">Kept by <Ag id="approvals" name /></span><span className="live"><span className="pdot" />{w.learned ? 'Updated just now' : 'Reading 2 new Slack threads'}</span></div>
         {w.tab === 'read' ? <Article onToc={setToc} toc={toc} /> : w.tab === 'talk' ? <Talk /> : <History />}
       </div>
     </div>

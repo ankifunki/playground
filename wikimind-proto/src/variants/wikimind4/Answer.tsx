@@ -1,3 +1,4 @@
+import { AG, Ag, agentsFor } from './agents'
 import { Pile } from './Claim'
 import { Icon } from './Icon'
 import { firstName, initials, whoStr } from './logic'
@@ -7,14 +8,14 @@ function Unknown({ qa }: { qa: QA }) {
   const w = useW(), c = qa.cand!
   return (
     <>
-      <p className="qan">I don’t know that yet, and I won’t guess.</p>
+      <p className="qan">No agent knows that yet, and none will guess.</p>
       {qa.qs === 'offer' && <>
-        <div className="qsrc">{whoStr(c)} would know.</div>
+        <div className="qsrc">{whoStr(c)} would know. The <Ag id={c.agent} name /> can ask.</div>
         <div className="qacts"><button className="qbtn pri press" onClick={() => w.commitAsk(qa.id)}>Ask {firstName(c.who)}</button><button className="qbtn press" onClick={() => w.notNow(qa.id)}>Not now</button></div>
       </>}
-      {qa.qs === 'asking' && <div className="qsrc qst">Asking {c.who}. <button className="wl" onClick={() => w.undoAsk(qa.id)}>Undo</button></div>}
-      {qa.qs === 'asked' && <div className="qsrc qst">Asking {whoStr(c)}.</div>}
-      {qa.qs === 'dup' && <div className="qsrc qst">Asoka is already asking {whoStr(c)}.</div>}
+      {qa.qs === 'asking' && <div className="qsrc qst"><Ag id={c.agent} /> Asking {c.who}. <button className="wl" onClick={() => w.undoAsk(qa.id)}>Undo</button></div>}
+      {qa.qs === 'asked' && <div className="qsrc qst"><Ag id={c.agent} /> Asking {whoStr(c)}.</div>}
+      {qa.qs === 'dup' && <div className="qsrc qst">The {AG[c.agent].name} agent is already asking {whoStr(c)}.</div>}
       {qa.qs === 'dismissed' && <div className="qsrc">Okay. I won’t ask anyone.</div>}
     </>
   )
@@ -31,13 +32,14 @@ function QaBlock({ qa }: { qa: QA }) {
       </div>
       <p className="qq">{qa.q}</p>
       {qa.files.some((f) => f.kind === 'img') && <div className="qimgs">{qa.files.filter((f) => f.kind === 'img').map((f, i) => <img key={i} src={f.url} alt={f.name} />)}</div>}
-      {!qa.t && !qa.unknown && <span className="dots3" aria-label="Asoka is thinking"><i /><i /><i /></span>}
+      {!qa.t && !qa.unknown && <span className="dots3" aria-label="The agents are thinking"><i /><i /><i /></span>}
       {qa.unknown && <Unknown qa={qa} />}
       {qa.t && !qa.unknown && <>
         <p className="qan">{qa.t}</p>
         {qa.note && <div className="qnote">{qa.note}</div>}
         <div className="qsrc qfoot">
           {qa.pending ? 'Checking its sources…' : n.length > 0 && <>
+            <span className="agby">{agentsFor(n).map((a) => <Ag key={a.id} id={a.id} name />)}</span>
             <Pile ns={n} />
             <button className="wl" onClick={() => w.showClaims(n)}>Show on page</button>
           </>}

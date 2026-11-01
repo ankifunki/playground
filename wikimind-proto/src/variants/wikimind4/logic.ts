@@ -1,9 +1,10 @@
+import { TEAM_AGENT, type AgentId } from './agents'
 import { DOCS, ROUTE } from './data'
 
 export const RM = typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export type Answer = { t: string; n: number[]; note?: string }
-export type Cand = { q: string; who: string; team: string; page: boolean }
+export type Cand = { q: string; who: string; team: string; page: boolean; agent: AgentId }
 export type FileKind = 'img' | 'sheet' | 'doc' | 'file'
 export type Att = { name: string; size: number; type: string; kind: FileKind; url: string }
 
@@ -24,17 +25,17 @@ export function localAns(q: string, learned: boolean): Answer | null {
     else a = { t: 'The CRO. Discounts over 35% go straight to the CRO.', n: [3, 12] }
     if (renew && a.n[0] !== 2) {
       a.t += ' Renewals follow the same rules when the price changes.'
-      a.note = learned ? 'Renewals with no price change skip approval on purpose.' : 'Renewals with no price change skip approval. Asoka is still asking RevOps why.'
+      a.note = learned ? 'Renewals with no price change skip approval on purpose.' : 'Renewals with no price change skip approval. The Approvals agent is still asking RevOps why.'
       a.n = a.n.concat([11])
-    } else if (emea) a.note = 'For EMEA deals, Sofia may approve first, but Asoka has seen that only once.'
+    } else if (emea) a.note = 'For EMEA deals, Sofia may approve first, but the Approvals agent has seen that only once.'
     return a
   }
   if (/expire|14|how long/.test(l)) return { t: 'An approval request expires after 14 days, because two deals once closed on six-week-old prices.', n: [6, 7] }
   if (/quarter|slack|bypass|work around|in practice/.test(l)) return { t: 'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward.', n: [9, 10], note: 'This is unofficial and differs from the written policy.' }
-  if (/renewal/.test(l)) return learned ? { t: 'Flat renewals skip approval on purpose. That has been the policy since 2023.', n: [11, 14] } : { t: 'Flat renewals skip approval in practice, but no rule explains it yet. Asoka asked RevOps.', n: [11], note: 'Treat this as unconfirmed.' }
+  if (/renewal/.test(l)) return learned ? { t: 'Flat renewals skip approval on purpose. That has been the policy since 2023.', n: [11, 14] } : { t: 'Flat renewals skip approval in practice, but no rule explains it yet. The Approvals agent asked RevOps.', n: [11], note: 'Treat this as unconfirmed.' }
   if (/amount|change.*approved/.test(l)) return { t: 'Once a deal is approved, only Deal Desk can change its amount.', n: [8] }
-  if (/learn|this week|changed|new/.test(l)) return { t: 'This week Asoka lowered the CRO threshold to 35%, wrote down how quarter-end approvals really happen, and flagged CPQ sync failing for multi-currency deals.', n: [3, 9] }
-  if (/unsure|not sure|uncertain|check/.test(l)) return { t: 'Two things on approvals: whether EMEA deals go to Sofia first, which it has seen only once, and why flat renewals skip approval, which it has asked RevOps about.', n: [4, 11] }
+  if (/learn|this week|changed|new/.test(l)) return { t: 'This week the Approvals agent lowered the CRO threshold to 35% and wrote down how quarter-end approvals really happen. The Integrations agent flagged CPQ sync failing for multi-currency deals.', n: [3, 9] }
+  if (/unsure|not sure|uncertain|check/.test(l)) return { t: 'The Approvals agent is unsure of two things: whether EMEA deals go to Sofia first, which it has seen only once, and why flat renewals skip approval, which it has asked RevOps about.', n: [4, 11] }
   if (/how fast|time|hours/.test(l)) return { t: 'Most approvals finish in under four hours. The median is 3 hours 40 minutes.', n: [5] }
   return null
 }
@@ -47,10 +48,10 @@ export function fileAnswer(files: Att[], q: string): Answer {
   return { t: 'I looked at that file. Tell me what you want to know about it, and I’ll answer from what I know about approvals.', n: [] }
 }
 
-/** Who Asoka would ask about an unknown question. Off-topic questions belong on Home, not this page. */
+/** Who an agent would ask about an unknown question, and which agent asks. Off-topic questions belong on Home, not this page. */
 export function route(q: string, onPage: boolean): Cand {
   const l = q.toLowerCase(), r = ROUTE.find((x) => x[0].test(l))
-  return { q: q.replace(/\s+/g, ' ').trim(), who: r ? r[1] : 'Dana Ruiz', team: r ? r[2] : 'Asoka’s sysadmin', page: onPage && (!r || r[2] === 'RevOps') }
+  return { q: q.replace(/\s+/g, ' ').trim(), who: r ? r[1] : 'Dana Ruiz', team: r ? r[2] : 'the agents’ admin', agent: TEAM_AGENT[r ? r[2] : ''] || 'support', page: onPage && (!r || r[2] === 'RevOps') }
 }
 
 export function answerFor(c: Cand) {
@@ -59,10 +60,10 @@ export function answerFor(c: Cand) {
   if (/vpn|password/.test(l)) return 'Reset it at id.northwind.com, then reconnect to the VPN. If MFA fails, file an IT ticket and Security resets it within the hour.'
   if (/vacation|pto|leave|holiday/.test(l)) return 'Request time off in Workday. Your manager approves it, usually within a day.'
   if (/sla/.test(l)) return 'Deal Desk does. Priya Shah reviews any approval that has waited more than 24 hours.'
-  return DOCS[c.team] ? `It’s covered in the ${DOCS[c.team]}. I’ve sent Asoka the current version.` : 'I’ve pointed Asoka to the team that owns this. It will have a page on it shortly.'
+  return DOCS[c.team] ? `It’s covered in the ${DOCS[c.team]}. I’ve sent the agents the current version.` : 'I’ve pointed the agents to the team that owns this. One of them will have a page on it shortly.'
 }
 
-export const whoStr = (c: Cand) => c.who + (/^Asoka/.test(c.team) ? ', ' + c.team : ' in ' + c.team)
+export const whoStr = (c: Cand) => c.who + (/^the agents/.test(c.team) ? ', ' + c.team : ' in ' + c.team)
 export const initials = (n: string) => n.split(' ').map((w) => w[0]).join('').slice(0, 2)
 export const firstName = (n: string) => n.split(' ')[0]
 export function fileKind(f: File): FileKind {

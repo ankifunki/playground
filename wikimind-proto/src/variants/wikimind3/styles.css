@@ -517,3 +517,49 @@ p,li,.pq{text-wrap:pretty}
 .refs li{margin-bottom:12px}
 .pc{padding:24px}
 @media (max-width:560px){.box>h2{padding:20px 20px 0}.box>.bb{padding:16px 20px 20px}.tpath,.tv,.obs,.fig,.rp,.ibox{padding:20px}}
+/* ---------- Agents: Asoka is a team of specialists, each with one job ---------- */
+/* Agents are square indigo tiles; sources are round and neutral, so the two never read as the same thing. */
+.ag{display:inline-flex;align-items:center;gap:8px;vertical-align:middle}
+.agt{display:inline-grid;place-items:center;flex:none;border-radius:8px;background:var(--linkb);color:var(--link)}
+.agn{font-weight:600;color:var(--ink);font-size:inherit}
+.agpile{display:inline-flex;align-items:center;vertical-align:middle}
+.agpile .agt{margin-left:-5px;box-shadow:0 0 0 2px var(--bg);transition:transform .25s var(--eo)}
+.agpile .agt:first-child{margin-left:0}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.agpile:hover .agt{transform:translateX(calc(var(--i,0) * 4px))}}
+.agw{font-weight:600;color:var(--ink)}
+.hlive{gap:10px}
+.colag{display:inline-flex;align-items:center;gap:8px}
+.colag .agpile .agt{box-shadow:0 0 0 2px var(--bg)}
+.agline{display:inline-flex;align-items:center;gap:8px;color:var(--ink2)}
+.agline .agn{color:var(--ink)}
+.agby{display:inline-flex;gap:12px;flex-wrap:wrap;font-size:14px}
+/* The agents breakdown on Home */
+.agents3{background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:24px;margin-top:24px}
+.agl{list-style:none;margin:12px 0 0;padding:0}
+.agl li{display:grid;grid-template-columns:32px minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1.2fr) minmax(0,1fr);align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--hair)}
+.agl li:first-child{border-top:0}
+.agnm b{display:block;font-size:15px;font-weight:600}
+.agnm small{display:block;font-size:13px;color:var(--ink2)}
+.agrel,.agau{display:flex;flex-direction:column;gap:2px;min-width:0}
+.agrel b,.agau b{font-family:var(--mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.agau{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px}
+.agau .tk{grid-column:1/-1}
+.agbar{height:2px;background:var(--hl);position:relative}
+.agbar i{position:absolute;inset:0 auto 0 0;background:var(--ok);transition:width .6s var(--eo)}
+.agst{justify-self:end}
+.agst .tdone{align-self:auto}
+@media (max-width:760px){
+ .agl li{grid-template-columns:32px minmax(0,1fr) auto;row-gap:10px}
+ .agrel{grid-column:2}.agau{grid-column:3;grid-row:2;min-width:120px}
+ .agst{grid-column:2/-1;justify-self:start}
+ .agst:empty{display:none}
+}
+@media (max-width:560px){.agents3{padding:20px}}
+/* Watched-by column */
+.wt td .ag{font-size:14px}
+@media (max-width:600px){.wt td:nth-child(4){display:block;margin-top:6px}.wt td:nth-child(4)::before{content:none}}
+.pc .pk.nh{display:flex;align-items:center;gap:10px;font-size:14px;font-family:var(--sans);color:var(--ink)}
+.avag{flex:none;display:inline-flex}
+.ba .src .ag{margin:0 2px}
+.ibox .ag{font-size:14px}
+.agn{white-space:nowrap}

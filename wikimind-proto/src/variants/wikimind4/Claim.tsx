@@ -2,6 +2,7 @@ import type React from 'react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { ARRIVAL, CHANGES, KIND, refFor, type Mark, type RefKind } from './data'
 import { Icon, type IconName } from './Icon'
+import { Ag, agentFor } from './agents'
 import { useW } from './store'
 
 const fine = () => window.matchMedia('(hover:hover) and (pointer:fine)').matches
@@ -15,11 +16,12 @@ export function C({ ns, mark, cls, children }: { ns: number[]; mark?: Mark; cls?
   const w = useW(), ref = useRef<HTMLSpanElement>(null)
   const on = !!w.blame && !!ref.current && w.blame.el === ref.current
   const arr = w.arrival && ns.some((n) => ARRIVAL.ns.includes(n))
+  const lit = !!w.flash && ns.some((n) => w.flash!.includes(n))
   const fromLink = (e: React.SyntheticEvent) => !!(e.target as HTMLElement).closest('button')
   return (
     <span
       ref={ref}
-      className={'cl' + (on ? ' on' : '') + (on && w.blame!.pinned ? ' pin' : '') + (arr ? ' arr' : '') + (cls ? ' ' + cls : '')}
+      className={'cl' + (on ? ' on' : '') + (on && w.blame!.pinned ? ' pin' : '') + (arr ? ' arr' : '') + (lit ? ' hlsent' : '') + (cls ? ' ' + cls : '')}
       data-ns={ns.join(',')} data-mark={mark?.t} data-tone={mark?.tone}
       tabIndex={0} role="button"
       onMouseEnter={(e) => fine() && w.hoverBlame(ns, e.currentTarget)}
@@ -64,7 +66,7 @@ export function Prov({ ns }: { ns: number[] }) {
             <div className="pvh"><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={!!r.v} /><span className="pvs">{r.src}</span><span className="pvk">{r.d}</span></div>
             <div className="pvq">“{r.q}”</div>
             <div className={'pvst ' + (r.v ? 'ok' : r.check ? 'warn' : '')}>{r.v ? `Verified · ${r.v}` : r.check || 'Not checked yet'}</div>
-            {ch && <div className="pvch"><span className="pvk">Changed {ch.d}</span><del>{ch.was}</del></div>}
+            {ch && <div className="pvch"><span className="pvk">Changed {ch.d} by {agentFor([n]).name}</span><del>{ch.was}</del></div>}
           </div>
         )
       })}
@@ -113,7 +115,7 @@ export function Margin() {
       ))}
       {b && (
         <div className={'note' + (b.pinned ? ' pin' : '')} style={{ top: noteTop }} key={b.ns.join()}>
-          <div className="nh">{b.ns.length > 1 ? <Pile ns={b.ns} /> : <span />}{b.pinned && <button className="ibtn sm" onClick={w.clearBlame} aria-label="Close" title="Close"><Icon name="x" size={16} /></button>}</div>
+          <div className="nh"><Ag id={agentFor(b.ns).id} name />{b.ns.length > 1 && <Pile ns={b.ns} />}<span className="sp2" />{b.pinned && <button className="ibtn sm" onClick={w.clearBlame} aria-label="Close" title="Close"><Icon name="x" size={16} /></button>}</div>
           <Prov ns={b.ns} />
         </div>
       )}

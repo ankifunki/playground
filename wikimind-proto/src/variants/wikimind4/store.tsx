@@ -63,6 +63,8 @@ function useWikimindState() {
   const [listening, setListening] = useState(false)
   const [pop, setPop] = useState<Pop | null>(null)
   const [blame, setBlame] = useState<Blame | null>(null)
+  /** Sentences lit up by "Show on page". State, not a DOM class, so a re-render (e.g. hover) can't wipe it. */
+  const [flash, setFlash] = useState<number[] | null>(null)
   const [toast, setToast] = useState<Toast | null>(null)
   const [tv, setTv] = useState<TV>({ miss: false, hand: 'idle', acc: { okta: 'idle', netsuite: 'idle' } })
 
@@ -87,7 +89,7 @@ function useWikimindState() {
     if (location.hash.slice(1) !== h) history.replaceState(null, '', location.pathname + location.search + '#' + h)
   }, [view, arrival])
 
-  // Asoka keeps learning in the background: the live line, the feed and the counter tick.
+  // The agents keep learning in the background: the live line, the feed and the counter tick.
   useEffect(() => {
     let fi = 0
     const t = window.setInterval(() => {
@@ -140,7 +142,10 @@ function useWikimindState() {
       const els = Array.from(document.querySelectorAll<HTMLElement>('main .cl')).filter((e) => (e.dataset.ns || '').split(',').some((x) => ns.includes(+x)))
       if (!els.length) return
       els[0].scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
-      window.setTimeout(() => els.forEach((e) => { e.classList.remove('hlsent'); void e.offsetWidth; e.classList.add('hlsent') }), RM ? 0 : 380)
+      window.setTimeout(() => {
+        setFlash(null)
+        requestAnimationFrame(() => { setFlash(ns); window.clearTimeout(timers.current.flash); timers.current.flash = window.setTimeout(() => setFlash(null), 2600) })
+      }, RM ? 0 : 380)
     }, need ? 140 : 20)
   }
 
@@ -157,7 +162,7 @@ function useWikimindState() {
       const seen = L.view === 'page' && inView(document.getElementById('renewal'))
       setTalkTyping(false); setLearned(true)
       setLearnSeen(seen); setDiffPlay(seen)
-      if (!seen) showToast('Maria answered. Asoka rewrote the page.', 'goRenewal', 'See the change')
+      if (!seen) showToast('Maria answered. The Approvals agent rewrote the page.', 'goRenewal', 'See the change')
       window.setTimeout(() => setDiffPlay(false), 3200)
     }, RM ? 300 : 1800)
   }
@@ -201,7 +206,7 @@ function useWikimindState() {
       if (!CLAUDE || !q || atts.length) return
       sampleP.then((sample) => {
         if (!sample) { if (!ans) markUnknown(qa.id, q); else patchQa(qa.id, { pending: false }); return }
-        const prompt = 'You are Asoka. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Start with the direct answer in a few words (for example “The CRO.”), then the reason. Cite the statement numbers you used. Mention an exception only if it changes the answer to this question. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n' + CORPUS.map((c) => `[${c[0]}] ${c[1]}`).join('\n') + '\n\nQuestion: ' + q
+        const prompt = 'You are the Approvals agent, one of Northwind’s Asoka agents. Answer ONLY from these numbered statements about Northwind’s Opportunity approvals. At most 2 plain sentences. Start with the direct answer in a few words (for example “The CRO.”), then the reason. Cite the statement numbers you used. Mention an exception only if it changes the answer to this question. If a statement you use is marked unofficial, seen once, or open question, add a short plain-language note. If the statements do not answer the question, set unknown true. Return JSON only: {"answer":string,"cites":number[],"note":string,"unknown":boolean}\n\n' + CORPUS.map((c) => `[${c[0]}] ${c[1]}`).join('\n') + '\n\nQuestion: ' + q
         sample.json(prompt, { modelTier: 'quick' }).then((r) => {
           const n = (r && Array.isArray(r.cites) ? r.cites : []).filter((x: number) => REFS[x])
           if (r && !r.unknown && r.answer && n.length) patchQa(qa.id, { t: String(r.answer), n, note: r.note ? String(r.note) : '', src: 'asoka', pending: false })
@@ -226,7 +231,7 @@ function useWikimindState() {
     setNewQs((qs) => qs.filter((x) => x.id !== m.qid)); patchQa(qaId, { qs: 'offer', qid: undefined })
   }
   const notNow = (qaId: string) => { const m = findQa(qaId); if (m && m.qs === 'offer') patchQa(qaId, { qs: 'dismissed' }) }
-  /** Remove an answer from the page. A question Asoka is already asking keeps going. */
+  /** Remove an answer from the page. A question an agent is already asking keeps going. */
   const closeQa = (qaId: string) => setQas((qs) => qs.filter((x) => x.id !== qaId))
   /** The person answers: the question resolves, counts drop, and the answer is written into the same block. */
   const resolveQ = (qid: string) => {
@@ -279,16 +284,16 @@ function useWikimindState() {
 
   /* ---------- trust vectors ---------- */
   const tvMiss = () => setTv((t) => ({ ...t, miss: !t.miss }))
-  /** Widening what Asoka does alone always needs a second approver. */
+  /** Widening what an agent does alone always needs a second approver. */
   const tvHand = () => {
     if (tv.hand !== 'idle') return
     setTv((t) => ({ ...t, hand: 'sent' }))
-    window.setTimeout(() => { setTv((t) => ({ ...t, hand: 'done' })); showToast('Dev approved. License seats now run on their own.') }, 2000)
+    window.setTimeout(() => { setTv((t) => ({ ...t, hand: 'done' })); showToast('Dev approved. The Access agent now handles license seats on its own.') }, 2000)
   }
   const tvAcc = (k: 'okta' | 'netsuite') => {
     if (tv.acc[k] !== 'idle') return
     setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'sent' } }))
-    window.setTimeout(() => { setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'done' } })); showToast(k === 'okta' ? 'Dev approved. Asoka can read Okta sign-in logs.' : 'Dev approved. Asoka can write to NetSuite.') }, 2000)
+    window.setTimeout(() => { setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'done' } })); showToast(k === 'okta' ? 'Dev approved. The Security agent can read Okta sign-in logs.' : 'Dev approved. The Finance ops agent can write to NetSuite.') }, 2000)
   }
 
   const runToastAct = (t: Toast) => { hideToast(); if (t.act === 'showqa' && t.qa) showQa(t.qa); else if (t.act === 'goRenewal') showRenewal() }
@@ -299,7 +304,7 @@ function useWikimindState() {
 
   return {
     tv, tvNums, tvMiss, tvHand, tvAcc,
-    view, arrival, learned, talkTyping, learnSeen, diffPlay, obs, asks,
+    view, arrival, flash, learned, talkTyping, learnSeen, diffPlay, obs, asks,
     feed, feedTick, newQs, qas, freshQa, files, text, listening, pop, blame, toast,
     setText,
     go, openPrev, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival,

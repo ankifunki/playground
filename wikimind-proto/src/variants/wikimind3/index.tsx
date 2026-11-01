@@ -5,6 +5,7 @@ import { Dock } from './Dock'
 import { Home } from './Home'
 import { Page } from './Page'
 import { Sheet } from './Sheet'
+import { AgentPile } from './agents'
 import { useW, WikimindProvider } from './store'
 import css from './styles.css?inline'
 import { Toast } from './Toast'
@@ -16,7 +17,7 @@ function Header() {
     <header className={sc ? 'sc' : ''}>
       <div className="hw">
         <button className="logo" onClick={() => w.go('home')} aria-label="Wikimind home"><b>Wikimind</b><small>Northwind</small></button>
-        <span className="hlive"><span className="pdot" />Asoka is learning</span>
+        <span className="hlive"><AgentPile /><span>6 agents working</span></span>
       </div>
     </header>
   )

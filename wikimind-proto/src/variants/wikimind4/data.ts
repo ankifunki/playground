@@ -1,3 +1,4 @@
+import type { AgentId } from './agents'
 export type RefKind = 'doc' | 'sf' | 'jira' | 'slack' | 'meet' | 'watch' | 'talk'
 export type Ref = { k: RefKind; src: string; d: string; q: string; u: string; v: string | null; check?: string }
 
@@ -8,19 +9,19 @@ export const REFS: Record<number, Ref> = {
   1: { k: 'doc', src: 'Sales policy v4, section 3', d: 'Jan 2026', q: 'Opportunities above $100,000 need approval before negotiation.', u: 'Defines the process and the threshold.', v: 'Dana Ruiz, Oct 12' },
   2: { k: 'sf', src: 'Salesforce setup history', d: 'Mar 4, 2024', q: 'Approval process “Large Deal Approval” activated on Opportunity.', u: 'Confirms the threshold is enforced in Salesforce, not just written down.', v: 'Dana Ruiz, Oct 12' },
   3: { k: 'jira', src: 'Jira SF-2231', d: 'Oct 28', q: 'Lower the CRO threshold from 40% to 35%. Done.', u: 'Updated the discount tiers. Matches the Salesforce change the same day.', v: null },
-  4: { k: 'slack', src: '#emea-sales, L. Moreau', d: 'Aug 20', q: 'Remember, EMEA goes to Sofia first.', u: 'The only source for this step, and nothing in Salesforce matches it. Asoka is watching the next EMEA approval to confirm.', v: null, check: 'Seen once' },
-  5: { k: 'watch', src: '212 approvals Asoka watched this quarter', d: 'Ongoing', q: 'Median time to approve: 3 hours 40 minutes.', u: 'Measured from real approvals, not claimed by anyone.', v: null },
+  4: { k: 'slack', src: '#emea-sales, L. Moreau', d: 'Aug 20', q: 'Remember, EMEA goes to Sofia first.', u: 'The only source for this step, and nothing in Salesforce matches it. The Approvals agent is watching the next EMEA approval to confirm.', v: null, check: 'Seen once' },
+  5: { k: 'watch', src: '212 approvals watched this quarter', d: 'Ongoing', q: 'Median time to approve: 3 hours 40 minutes.', u: 'Measured from real approvals, not claimed by anyone.', v: null },
   6: { k: 'sf', src: 'Approval process settings', d: 'Mar 4, 2024', q: 'Pending requests are recalled automatically after 14 days.', u: 'The rule as Salesforce enforces it.', v: 'Dana Ruiz, Oct 12' },
   7: { k: 'slack', src: '#revops, Feb 2024', d: 'Feb 2024', q: 'Two deals closed on six-week-old prices. About $90k in margin lost.', u: 'Explains why requests expire.', v: null },
   8: { k: 'sf', src: 'Validation rule Amount_Locked_After_Approval', d: 'Jun 2025', q: 'Blocks amount edits on approved records unless the user is in Deal Desk.', u: 'The rule as Salesforce enforces it.', v: 'Dana Ruiz, Oct 12' },
   9: { k: 'slack', src: '#deal-desk, 9 threads', d: 'Last 3 quarter ends', q: 'Approved in the thread, logged in Salesforce afterward.', u: 'Seen in 9 of the last 12 quarter-end deals. Different from the written policy.', v: null, check: 'Unofficial' },
   10: { k: 'meet', src: 'RevOps weekly', d: 'Sep 30', q: 'Maria Okafor: “At quarter end we just do it in Slack.”', u: 'A process owner confirming the pattern out loud.', v: null },
-  11: { k: 'meet', src: 'RevOps weekly', d: 'Oct 27', q: 'Someone mentioned renewals don’t need approval.', u: '14 flat renewals skipped approval last quarter, with no rule behind it. Asoka asked Maria Okafor.', v: null, check: 'Asking' },
+  11: { k: 'meet', src: 'RevOps weekly', d: 'Oct 27', q: 'Someone mentioned renewals don’t need approval.', u: '14 flat renewals skipped approval last quarter, with no rule behind it. The Approvals agent asked Maria Okafor.', v: null, check: 'Asking' },
   12: { k: 'slack', src: '#deal-desk, J. Patel', d: 'Oct 3', q: 'Anything over 35 goes straight to Marcus now.', u: 'An early signal of the threshold change, before the ticket.', v: null },
   13: { k: 'sf', src: 'Salesforce setup history', d: 'Sep 12', q: 'Approval step “Finance review” added for discounts over 20%.', u: 'Added Finance as a second approver.', v: 'Dana Ruiz, Oct 12' },
 }
 /** Source 14 only exists once Maria has answered. */
-export const REF_MARIA: Ref = { k: 'talk', src: 'Maria Okafor, replying to Asoka', d: 'Just now', q: 'Yes, on purpose since 2023. Flat renewals don’t change revenue risk.', u: 'A process owner answered Asoka’s question. The page was rewritten and cites this answer.', v: null }
+export const REF_MARIA: Ref = { k: 'talk', src: 'Maria Okafor, replying to the Approvals agent', d: 'Just now', q: 'Yes, on purpose since 2023. Flat renewals don’t change revenue risk.', u: 'A process owner answered Asoka’s question. The page was rewritten and cites this answer.', v: null }
 export const refFor = (n: number) => (n === 14 ? REF_MARIA : REFS[n])
 
 /** Where on the page each source is used, so an answer can be written next to the sentences it rests on. */
@@ -31,13 +32,13 @@ export type Change = { d: string; was: string; why: string }
 export const CHANGES: Record<number, Change> = {
   3: { d: 'Oct 28', was: 'Over 40%, the CRO approves directly.', why: 'Jira SF-2231, matched with a #deal-desk message' },
   13: { d: 'Sep 12', was: 'Over 25%, the CRO approves.', why: 'A Salesforce setup change added Finance' },
-  14: { d: 'Just now', was: 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.', why: 'Maria Okafor answered Asoka’s question' },
+  14: { d: 'Just now', was: 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.', why: 'Maria Okafor answered the Approvals agent' },
 }
 
 /** How a sentence reads in the margin when it needs attention. Solid sentences carry no mark. */
 export type Mark = { t: string; tone: 'warn' | 'ok' | 'info' }
 
-/** A visitor arriving from a Slack reply Asoka posted. */
+/** A visitor arriving from a Slack reply the Approvals agent posted. */
 export const ARRIVAL = { channel: '#deal-desk', who: 'You', q: 'Who approves a 30% discount on a $240k deal?', a: 'The sales manager, then Finance.', ns: [3, 13] }
 
 export type RStep = { path: number; btn: number; lock: number; ap: number[]; c: [number, number]; cap: string }
@@ -51,18 +52,18 @@ export const RSTEPS: RStep[] = [
   { path: 3, btn: 0, lock: 0, ap: [1, 1, 0], c: [78, 46], cap: 'Unlocked. The deal moves to Negotiation.' },
 ]
 
-export type FeedItem = [kind: string, text: string, page: string]
+export type FeedItem = [kind: string, text: string, page: string, agent: AgentId]
 export const POOL: FeedItem[] = [
-  ['Slack', 'Read a #deal-desk thread about a 38% discount', 'Opportunity approvals'],
-  ['Salesforce', 'New validation rule on Case: Priority_Requires_SLA', 'Case escalation'],
-  ['Watched', 'A deal closed after CRO approval', 'Opportunity approvals'],
-  ['Integration', 'CPQ sync retried 3 times for quote Q-1192', 'CPQ quote sync'],
-  ['Meeting', 'Transcribed RevOps weekly (42 minutes)', 'Lead routing'],
-  ['Verified', 'Dana verified “Discount policy, section 2”', 'Discount policy'],
-  ['Salesforce', 'New field on Account: Partner_Tier__c', 'Partner deals'],
-  ['Jira', 'SF-2240: add Finance to approvals over $500k', 'Opportunity approvals'],
+  ['Slack', 'Read a #deal-desk thread about a 38% discount', 'Opportunity approvals', 'approvals'],
+  ['Salesforce', 'New validation rule on Case: Priority_Requires_SLA', 'Case escalation', 'support'],
+  ['Watched', 'A deal closed after CRO approval', 'Opportunity approvals', 'approvals'],
+  ['Integration', 'CPQ sync retried 3 times for quote Q-1192', 'CPQ quote sync', 'integrations'],
+  ['Meeting', 'Transcribed RevOps weekly (42 minutes)', 'Lead routing', 'approvals'],
+  ['Verified', 'Dana verified “Discount policy, section 2”', 'Discount policy', 'approvals'],
+  ['Salesforce', 'New field on Account: Partner_Tier__c', 'Partner deals', 'finance'],
+  ['Jira', 'SF-2240: add Finance to approvals over $500k', 'Opportunity approvals', 'approvals'],
 ]
-export const FEED0: FeedItem[] = [['Slack', 'Read 2 new #deal-desk threads about approvals', 'Opportunity approvals'], ['Salesforce', 'Approval step changed on Large Deal Approval', 'Opportunity approvals'], ['Verified', 'Dana verified the rules in Opportunity approvals', 'Opportunity approvals'], ['Meeting', 'Transcribed the CS leadership sync', 'Case escalation']]
+export const FEED0: FeedItem[] = [['Slack', 'Read 2 new #deal-desk threads about approvals', 'Opportunity approvals', 'approvals'], ['Salesforce', 'Approval step changed on Large Deal Approval', 'Opportunity approvals', 'approvals'], ['Verified', 'Dana verified the rules in Opportunity approvals', 'Opportunity approvals', 'approvals'], ['Meeting', 'Transcribed the CS leadership sync', 'Case escalation', 'support']]
 
 export const AREAS: [string, number, number][] = [['Sales Cloud', 412, 92], ['CPQ', 188, 81], ['Policies', 174, 84], ['People and teams', 153, 77], ['Service Cloud', 236, 66], ['Integrations', 121, 46]]
 
