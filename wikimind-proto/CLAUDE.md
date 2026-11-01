@@ -10,8 +10,7 @@ Brief: https://docs.google.com/document/d/1hVtsbMiSN-4_3rn8jfR_p6HhGTC3foUkvRIHk
 src/App.tsx                 variant switcher (?v=b..f), loads one variant at a time
 src/useVariantCss.ts        mounts a variant's stylesheet only while it is on screen
 src/fonts.css               Figtree, DM Mono (@fontsource) and Geist Serif (geist package), bundled locally
-src/variants/<name>/        one folder per variant: index.tsx, store.tsx (state + actions), components, styles.css
-legacy/                     original single-file HTML for variants not yet ported (shown in an iframe)
+src/variants/<name>/        one folder per variant: index.tsx, a store (state + actions), components, data.ts, styles.css
 ```
 
 Each variant's CSS is the original stylesheet, loaded with `?inline` and injected while the variant is mounted, so generic class names in different variants never collide.
@@ -35,13 +34,13 @@ npm run build      # type-check and production build into dist/
 
 ## Variants
 
-| Key | File | Idea |
+| Key | Folder | Idea |
 |---|---|---|
-| b | warden-team.html | Agent fleet: avatars, brain map, operating-profile dials, traces |
-| c | warden-v2.html | Decision classes, spot checks, correct-on-example |
-| d | wikimind.html | Pages with arrival context, actions, relationship map |
-| e | wikimind2.html | Ask-first, semantic-zoom map, claims, time travel, policy vs. practice |
-| f | wikimind3.html | **Current focus.** Cited sentences, Questions and Changes views, live learning loop, persistent composer with voice and attachments |
+| b | warden-team | Agent fleet: avatars, brain map, operating-profile dials, traces. The simulation is an engine (`engine.ts`) React subscribes to via `useSyncExternalStore` |
+| c | warden-v2 | Decision classes, spot checks, correct-on-example |
+| d | wikimind | Pages with arrival context, actions, relationship map |
+| e | wikimind2 | Ask-first, semantic-zoom map, claims, time travel, policy vs. practice. Map gestures move the camera through a ref; level and selection are React state |
+| f | wikimind3 | **Current focus.** Cited sentences, Questions and Changes views, live learning loop, persistent composer with voice and attachments |
 
 ## Design goals (from the brief)
 

@@ -1,12 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react'
-import LegacyFrame from './LegacyFrame'
 
 type Variant = { key: string; name: string; desc: string; Component: ComponentType }
-
-const legacy = (file: string, title: string): ComponentType => {
-  const load = () => import(`../legacy/${file}.html?raw`)
-  return function Legacy() { return <LegacyFrame load={load} title={title} /> }
-}
 
 export const VARIANTS: Variant[] = [
   { key: 'b', name: 'Team + brain', desc: 'Fleet, brain map, dials, traces', Component: lazy(() => import('./variants/warden-team')) },

@@ -11,6 +11,4 @@
 .vs-seg button[aria-selected="true"]{background:var(--vs-panel);color:var(--vs-ink);box-shadow:var(--vs-sh)}
 .vs-seg button:focus-visible{outline:2px solid var(--vs-accent);outline-offset:1px}
 @media (max-width:520px){.vs-lbl{display:none}.vs-seg button span{display:none}.vs-seg button{padding:8px 12px}}
-.vs-legacy{position:fixed;left:0;right:0;bottom:0;width:100%;border:0;background:#F4F5F2}
-html.vs-legacy-on,html.vs-legacy-on body{overflow:hidden}
 .vs-loading{padding:40px;font-family:"Figtree",system-ui,sans-serif;color:#5E6A65}
