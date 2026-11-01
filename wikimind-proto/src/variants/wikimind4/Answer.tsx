@@ -16,7 +16,7 @@ function Unknown({ qa }: { qa: QA }) {
       {qa.qs === 'asking' && <div className="qsrc qst"><Ag id={c.agent} /> Asking {c.who}. <button className="wl" onClick={() => w.undoAsk(qa.id)}>Undo</button></div>}
       {qa.qs === 'asked' && <div className="qsrc qst"><Ag id={c.agent} /> Asking {whoStr(c)}.</div>}
       {qa.qs === 'dup' && <div className="qsrc qst">The {AG[c.agent].name} agent is already asking {whoStr(c)}.</div>}
-      {qa.qs === 'dismissed' && <div className="qsrc">Okay. I won’t ask anyone.</div>}
+      {qa.qs === 'dismissed' && <div className="qsrc">Okay. No agent will ask anyone.</div>}
     </>
   )
 }

@@ -19,7 +19,7 @@ function Unknown({ m }: { m: AMsg }) {
       {m.qs === 'asked' && <div className="src qst">Asking {whoStr(c)}.{c.page && !onTalk && <> <button className="wl" onClick={() => w.pickTab('talk')}>See it in Questions</button></>}</div>}
       {m.qs === 'dup' && <div className="src qst">The {AG[c.agent].name} agent is already asking {whoStr(c)}.</div>}
       {m.qs === 'answered' && <div className="src">{c.who} answered. See below.</div>}
-      {m.qs === 'dismissed' && <div className="src">Okay. I won’t ask anyone.</div>}
+      {m.qs === 'dismissed' && <div className="src">Okay. No agent will ask anyone.</div>}
     </>
   )
 }
