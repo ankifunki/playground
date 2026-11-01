@@ -9,8 +9,8 @@ function Spark({ v, label }: { v: number[]; label: string }) {
   const last = pts[pts.length - 1].split(',')
   return (
     <svg className="tsp" viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={label}>
-      <polyline points={pts.join(' ')} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={last[0]} cy={last[1]} r={2.6} fill="currentColor" />
+      <polyline points={pts.join(' ')} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <circle cx={last[0]} cy={last[1]} r={2} fill="currentColor" />
     </svg>
   )
 }
