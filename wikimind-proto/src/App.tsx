@@ -8,8 +8,9 @@ export const VARIANTS: Variant[] = [
   { key: 'd', name: 'Wikimind', desc: 'Pages with trust and actions', Component: lazy(() => import('./variants/wikimind')) },
   { key: 'e', name: 'Wikimind 2', desc: 'Ask, zoom map, claims', Component: lazy(() => import('./variants/wikimind2')) },
   { key: 'f', name: 'Wikimind 3', desc: 'Cited, always learning', Component: lazy(() => import('./variants/wikimind3')) },
+  { key: 'g', name: 'Wikimind 4', desc: 'Provenance, answers in place', Component: lazy(() => import('./variants/wikimind4')) },
 ]
-const DEFAULT = 'f'
+const DEFAULT = 'g'
 
 function readKey() {
   const k = new URLSearchParams(location.search).get('v') || (() => { try { return localStorage.getItem('wikimind-variant') } catch { return null } })()
@@ -35,7 +36,7 @@ export default function App() {
         <span className="vs-lbl">Variant</span>
         <div className="vs-seg" role="tablist" aria-label="Prototype variant">
           {VARIANTS.map((v) => (
-            <button key={v.key} role="tab" aria-selected={v.key === key} onClick={() => pick(v.key)}>
+            <button key={v.key} role="tab" aria-selected={v.key === key} onClick={() => pick(v.key)} ref={(el) => { if (el && v.key === key) el.scrollIntoView({ block: 'nearest', inline: 'nearest' }) }}>
               <b>{v.name}</b><span>{v.desc}</span>
             </button>
           ))}
