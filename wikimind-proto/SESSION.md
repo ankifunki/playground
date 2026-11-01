@@ -66,6 +66,8 @@ The full arc of the claude.ai session that produced these prototypes, in order. 
 
 37. **Asoka is a team, not one agent.** Correction from the brief's "digital human": Asoka is a set of specialist agents, each with one job. Wikimind 3 and 4 now credit every fact, change, question and answer to its agent: Approvals, Access, Security, Finance ops, Integrations, Support (square indigo tiles; sources stay round and neutral). The header shows the team ("6 agents working"); Home's hero reads "What you can trust the agents with today, and what they need to do more"; a new "The agents" card lists each agent's job, reliability, share on its own and what holds it back (asking someone, missing access), and Hand it over / Grant update the right agent. Feed rows, misses, unwritten rules, the page byline ("Kept by Approvals agent"), the margin note, the source sheet, the systems table ("Watched by"), Questions threads and answers all name their agent. Unknown questions: "No agent knows that yet, and none will guess", and the agent for that team does the asking. Also fixed: "Show on page" highlights could be wiped by a hover re-render in Wikimind 4; the highlight is now React state.
 
+38. **Type restraint.** Tags read too big and bold. Wikimind 3 and 4 now use two weights only: 400 for reading and 500 for emphasis and titles (no 600/700 anywhere; `<b>` is 500). Geist Serif stays at 400 so the browser never fakes a bold. Every tag, pill, label and kicker is Geist Mono 11px at 450 with a little tracking. Considered and declined for now: `@polishd/next` (Next.js-only analytics; this app is Vite).
+
 ## Open threads worth picking up
 
 - "Hand it over" and "Grant" should only render for governors. Other users see the trust vectors without actions.

@@ -58,7 +58,7 @@ function Infobox() {
         <tr><th>Kept by</th><td><Ag id="approvals" name /></td></tr>
         <tr><th>Runs</th><td>212 this quarter</td></tr>
         <tr><th>Median time</th><td>3 hours 40 minutes</td></tr>
-        <tr><th>Automations</th><td>4, <span style={{ color: 'var(--warn)', fontWeight: 600 }}>1 failing</span></td></tr>
+        <tr><th>Automations</th><td>4, <span style={{ color: 'var(--warn)', fontWeight: 500 }}>1 failing</span></td></tr>
         <tr><th>Last changed</th><td>Oct 28 <button className="wl" onClick={() => w.pickTab('history')}>See changes</button></td></tr>
       </tbody></table>
     </aside>
@@ -185,7 +185,7 @@ function History() {
           <div key={r.id} className={'rev' + (w.hlRev === r.id ? ' hl' : '')}>
             <button onClick={() => w.toggleRev(r.id)} aria-expanded={open}>
               <span className="d">{r.d}</span>
-              <span className="x1"><b>{r.t}</b><small>{r.ver ? <span style={{ color: 'var(--ok)', fontWeight: 600 }}>✓ {r.who}</span> : r.who}. Caused by: {r.why}</small></span>
+              <span className="x1"><b>{r.t}</b><small>{r.ver ? <span style={{ color: 'var(--ok)', fontWeight: 500 }}>✓ {r.who}</span> : r.who}. Caused by: {r.why}</small></span>
             </button>
             {open && <div className="diff">{r.m && <div className="m">− {r.m}</div>}<div className="p">+ {r.p}</div><div className="c">Caused by: {r.why}</div></div>}
           </div>
