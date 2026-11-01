@@ -1,16 +1,12 @@
-import { refFor } from './data'
+import { Pile, pileLabel } from './Pile'
 import { useW } from './store'
 
-/** Source numbers after a sentence. Tapping one opens the source sheet. */
+/** The sources behind a sentence, as a small icon pile. Tapping it opens them in the source sheet. */
 export function Rf({ ns }: { ns: number[] }) {
   const w = useW()
   return (
-    <span style={{ whiteSpace: 'nowrap' }}>
-      {ns.map((n) => (
-        <sup key={n} className={'rf' + (refFor(n)?.check ? ' ck' : '')}>
-          <button data-ref={n} aria-label={`Source ${n}`} onClick={(e) => w.openRef(n, e.currentTarget)}>{n}</button>
-        </sup>
-      ))}
-    </span>
+    <button className="rfp" data-refs={ns.join(' ')} aria-label={pileLabel(ns)} onClick={(e) => w.openRef(ns, e.currentTarget)}>
+      <Pile ns={ns} max={3} label={false} />
+    </button>
   )
 }

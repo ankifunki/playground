@@ -4,6 +4,8 @@ import { KIND, REFS, revs, SECS } from './data'
 import { FlowSvg, SparkSvg } from './Diagrams'
 import { initials, RM } from './logic'
 import { Replay } from './Replay'
+import { Icon, type IconName } from './Icon'
+import { KICON, Tile } from './Pile'
 import { Rf } from './Rf'
 import { useW } from './store'
 
@@ -18,17 +20,17 @@ function Renewal() {
   const w = useW()
   if (w.learned) return (
     <div className={'obs done' + (w.diffPlay ? ' upd' : '')} id="renewal">
-      <div className="ok2">Confirmed by RevOps just now</div>
+      <div className="ok2">Confirmed by Maria just now</div>
       <p className={'was' + (w.diffPlay ? ' anim' : '')}><del>{OLD_RENEWAL}</del></p>
       <p className={w.diffPlay ? 'write' : ''}>Renewals with no price change skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.<Rf ns={[11, 14]} /></p>
     </div>
   )
   return (
     <div className="obs" id="renewal">
-      <div className="ok2">Open question. Asoka is asking Maria Okafor why</div>
+      <div className="ok2">Open question · asking Maria</div>
       <p>{OLD_RENEWAL}<Rf ns={[11]} /></p>
       <Dots on={14} />
-      <div className="dl">14 of 14 flat renewals last quarter skipped approval.</div>
+      <div className="dl">14 of 14 flat renewals last quarter</div>
     </div>
   )
 }
@@ -45,7 +47,7 @@ function Infobox() {
         <div><span className="tk">Gaps</span><b>{gaps}</b><small>{w.learned ? 'EMEA routing' : 'EMEA routing, flat renewals'}</small></div>
       </div>
       <div className="thumb"><SparkSvg /></div>
-      <div className="cap">Approvals per week, watched live by Asoka</div>
+      <div className="cap">Approvals per week</div>
       <table><tbody>
         <tr><th>Type</th><td>Salesforce approval process</td></tr>
         <tr><th>Object</th><td>Opportunity</td></tr>
@@ -59,9 +61,12 @@ function Infobox() {
   )
 }
 
+/** Each section's icon. They move like their idea on hover (see styles.css). */
+const SIC: Record<string, IconName> = { lead: 'text', how: 'workflow', rules: 'shield-check', practice: 'eye', touches: 'plug', hist: 'history', see: 'link', refs: 'layers' }
+
 const scrollTo = (id: string) => document.getElementById('s-' + id)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })
 
-function Article({ onToc }: { onToc: (id: string) => void }) {
+function Article({ onToc, toc }: { onToc: (id: string) => void; toc: string }) {
   const w = useW()
   // The contents rail follows the section being read.
   useEffect(() => {
@@ -72,18 +77,17 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
   }, [onToc])
   return (
     <div className="art-body">
+      <nav className="pnav chips" aria-label="On this page">{SECS.map(([id, name]) => <button key={id} className={toc === id ? 'on' : ''} aria-current={toc === id ? 'true' : undefined} onClick={() => scrollTo(id)}><Icon name={SIC[id]} size={18} /><span>{name}</span></button>)}</nav>
       <section id="s-lead">
-        <div className="mtoc"><details><summary>On this page</summary><ol>{SECS.slice(1).map(([id, name]) => <li key={id}><button className="wl" onClick={() => scrollTo(id)}>{name}</button></li>)}</ol></details></div>
         <Infobox />
         <p><b>Opportunity approval</b> is how Northwind reviews large deals before they move to Negotiation.<Rf ns={[1]} /> Any deal over $100,000 needs approval,<Rf ns={[2]} /> and who approves depends on the discount.<Rf ns={[3, 13]} /> <span className="uns">EMEA deals reportedly go to the regional director first.</span><Rf ns={[4]} /> Most approvals finish in under four hours.<Rf ns={[5]} /></p>
       </section>
       <section id="s-how">
         <h2>How it works</h2>
-        <div className="fig"><FlowSvg /><div className="fc"><span>Drawn by Asoka from the approval process.</span><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><span className="pdot" />6 approvals in flight now</span></div></div>
+        <div className="fig"><FlowSvg /><div className="fc"><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><span className="pdot" />6 in flight now</span></div></div>
         <p>When a rep moves a qualifying deal to Negotiation, Salesforce locks the record and routes it for approval.<Rf ns={[2]} /> Discounts over 20% add Finance as a second approver. Over 35%, the CRO approves directly.<Rf ns={[3, 12, 13]} /></p>
         <h3>Watch it happen</h3>
         <Replay />
-        <p style={{ fontSize: 14, color: 'var(--ink2)', marginTop: 6 }}>Replayed by Asoka from a real approval on Oct 29.</p>
       </section>
       <section id="s-rules">
         <h2>Rules</h2>
@@ -92,12 +96,11 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
       </section>
       <section id="s-practice">
         <h2>In practice</h2>
-        <p style={{ color: 'var(--ink2)', fontSize: 15 }}>What people actually do, which nobody wrote down. Asoka learned it by watching the work.</p>
         <div className="obs">
-          <div className="ok2">Unofficial. Differs from the written policy</div>
+          <div className="ok2">Unofficial</div>
           <p>At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.<Rf ns={[9, 10]} /></p>
           <Dots on={9} off={3} />
-          <div className="dl">9 of the last 12 quarter-end deals. Filled: approved in Slack first.</div>
+          <div className="dl">9 of the last 12 quarter ends</div>
         </div>
         <Renewal />
       </section>
@@ -113,7 +116,7 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
       </section>
       <section id="s-hist">
         <h2>History</h2>
-        <p>The CRO threshold dropped from 40% to 35% on Oct 28, 2026, after the CRO asked to see more large discounts personally.<Rf ns={[3, 12]} /> Finance was added as a second approver on Sep 12.<Rf ns={[13]} /> The full record of every change is in <button className="wl" onClick={() => w.pickTab('history')}>Changes</button>.</p>
+        <p>The CRO threshold dropped from 40% to 35% on Oct 28, 2026, after the CRO asked to see more large discounts personally.<Rf ns={[3, 12]} /> Finance was added as a second approver on Sep 12.<Rf ns={[13]} /> <button className="wl" onClick={() => w.pickTab('history')}>Every change</button></p>
       </section>
       <section id="s-see">
         <h2>Related</h2>
@@ -121,9 +124,8 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
       </section>
       <section id="s-refs">
         <h2>Sources</h2>
-        <p style={{ fontSize: 14, color: 'var(--ink2)' }}>Everything Asoka observed to write this page. Tap a number in the text to see it in place.</p>
         <ol className="refs">{Object.entries(REFS).map(([n, r]) => (
-          <li key={n} id={'ref-' + n}><span className="k">{KIND[r.k]}</span>: {r.src}, {r.d}. <span className="q">“{r.q}”</span>{r.v && <span className="vr">✓ Verified</span>}</li>
+          <li key={n} id={'ref-' + n}><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={!!r.v} warn={!!r.check} /><span><b>{r.src}</b><small>{r.d}{r.v ? ' · verified' : r.check ? ' · ' + r.check.toLowerCase() : ''}</small><span className="q">“{r.q}”</span></span></li>
         ))}</ol>
       </section>
     </div>
@@ -138,7 +140,7 @@ function Talk() {
   const w = useW()
   return (
     <>
-      <p style={{ color: 'var(--ink2)', fontSize: 15, margin: '20px 0' }}>Where Asoka works out what it doesn’t know yet. When something looks inconsistent or missing, it asks the person most likely to know.</p>
+      <div style={{ height: 24 }} />
       {w.newQs.filter((x) => x.page).map((x) => (
         <div className="thread" key={x.id}>
           <div className="th"><b>{x.q}</b><span className={'st ' + (x.resolved ? 'o' : 'w')}>{x.resolved ? 'Resolved' : 'Asking'}</span></div>
@@ -172,7 +174,7 @@ function History() {
   const w = useW()
   return (
     <>
-      <p style={{ color: 'var(--ink2)', fontSize: 15, margin: '20px 0' }}>Every edit, who made it, and what caused it. Asoka writes. A person verifies.</p>
+      <div style={{ height: 24 }} />
       {revs(w.learned).map((r) => {
         const open = w.openRev === r.id
         return (
@@ -194,19 +196,18 @@ export function Page() {
   const [toc, setToc] = useState('lead')
   return (
     <div className="page art">
-      <nav className="toc" aria-label="Contents">
-        <h4>On this page</h4>
-        {SECS.map(([id, name]) => <button key={id} className={toc === id ? 'on' : ''} onClick={() => scrollTo(id)}>{name}</button>)}
+      <nav className="toc pnav" aria-label="On this page">
+        {SECS.map(([id, name]) => <button key={id} className={toc === id ? 'on' : ''} aria-current={toc === id ? 'true' : undefined} onClick={() => scrollTo(id)}><Icon name={SIC[id]} size={18} /><span>{name}</span></button>)}
       </nav>
       <div>
         <div className="tabs" role="tablist">
-          <button className={w.tab === 'read' ? 'on' : ''} role="tab" aria-selected={w.tab === 'read'} onClick={() => w.pickTab('read')}>Overview</button>
-          <button className={w.tab === 'talk' ? 'on' : ''} role="tab" aria-selected={w.tab === 'talk'} onClick={() => w.pickTab('talk')}>Questions <span className="cnt" id="qcnt">{w.qCount}</span></button>
-          <button className={w.tab === 'history' ? 'on' : ''} role="tab" aria-selected={w.tab === 'history'} onClick={() => w.pickTab('history')}>Changes</button>
+          <button className={w.tab === 'read' ? 'on' : ''} role="tab" aria-selected={w.tab === 'read'} onClick={() => w.pickTab('read')}><Icon name="file-text" size={16} />Overview</button>
+          <button className={w.tab === 'talk' ? 'on' : ''} role="tab" aria-selected={w.tab === 'talk'} onClick={() => w.pickTab('talk')}><Icon name="circle-help" size={16} />Questions <span className="cnt" id="qcnt">{w.qCount}</span></button>
+          <button className={w.tab === 'history' ? 'on' : ''} role="tab" aria-selected={w.tab === 'history'} onClick={() => w.pickTab('history')}><Icon name="history" size={16} />Changes</button>
         </div>
         <h1 className="t">Opportunity approvals</h1>
-        <div className="byline"><span>Written and kept current by Asoka.</span><span className="live"><span className="pdot" />{w.learned ? 'Updated just now from a RevOps answer' : 'Reading 2 new Slack threads about this'}</span></div>
-        {w.tab === 'read' ? <Article onToc={setToc} /> : w.tab === 'talk' ? <Talk /> : <History />}
+        <div className="byline"><span className="live"><span className="pdot" />{w.learned ? 'Updated just now' : 'Reading 2 new Slack threads'}</span></div>
+        {w.tab === 'read' ? <Article onToc={setToc} toc={toc} /> : w.tab === 'talk' ? <Talk /> : <History />}
       </div>
     </div>
   )

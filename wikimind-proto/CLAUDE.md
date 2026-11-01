@@ -41,7 +41,7 @@ Hosted for preview on Vercel (project `wikimind-proto`, root directory `wikimind
 | c | warden-v2 | Decision classes, spot checks, correct-on-example |
 | d | wikimind | Pages with arrival context, actions, relationship map |
 | e | wikimind2 | Ask-first, semantic-zoom map, claims, time travel, policy vs. practice. Map gestures move the camera through a ref; level and selection are React state |
-| f | wikimind3 | Cited sentences, Questions and Changes views, live learning loop, persistent composer with voice and attachments |
+| f | wikimind3 | Cited sentences (each citation is a small icon pile, `Pile.tsx`), icon section rail and tabs, Questions and Changes views, live learning loop, persistent composer with voice and attachments |
 | g | wikimind4 | **Current focus.** Wikimind 3 without the wiki scaffolding: each sentence shows its provenance in a margin (git-blame style, sheet on phones), answers are written into the page beside what they rest on, arrival from Slack, a live line and one feed on Home. `Claim.tsx` (sentence, margin, provenance, source pile), `Answer.tsx` (answer blocks). Section nav with hover-animated icons: a rail at 1240px+, sticky chips below |
 
 ## Design goals (from the brief)
@@ -61,7 +61,7 @@ Audiences in priority order: CIO buyer in a demo, architects and developers (rea
 
 ## Craft rules
 
-- **Wikimind 3 and 4 design system** (stay on it): type 12 / 13 / 14 / 15 / 16 / 18 / 21 / 24 / 28 / 38px plus the clamped display headline; radii 8 (small controls), 14 (inner panels), 20 (cards), 24 (floating surfaces: chat, composer, sheets), pills 999; spacing in 4px steps. Wikimind 3: 20px card padding, 32px between Home's main sections. Wikimind 4 is airier: 24px card padding (20px on phones), 48px between Home's main sections, 64px above page section headings. Wikimind 4 shows sources as an icon pile (one Lucide icon per source kind, green dot when verified) rather than names, and keeps UI copy to what a person needs to act: no explanatory sublines. Labels and kickers are Geist Mono 12px. Line work: 1px `--hl` hairlines for structure, 2px square bars for data, 1.5px trends. Headlines `text-wrap: balance`, body `text-wrap: pretty`.
+- **Wikimind 3 and 4 design system** (stay on it): type 12 / 13 / 14 / 15 / 16 / 18 / 21 / 24 / 28 / 38px plus the clamped display headline; radii 8 (small controls), 14 (inner panels), 20 (cards), 24 (floating surfaces: chat, composer, sheets), pills 999; spacing in 4px steps. Both are now airier: 24px card padding (20px on phones), 48px between Home's main sections, 64px above page section headings. Both show sources as an icon pile (one Lucide icon per source kind, green dot when verified) rather than names, and keeps UI copy to what a person needs to act: no explanatory sublines. Labels and kickers are Geist Mono 12px. Line work: 1px `--hl` hairlines for structure, 2px square bars for data, 1.5px trends. Headlines `text-wrap: balance`, body `text-wrap: pretty`.
 - Motion: custom ease-out `cubic-bezier(.23,1,.32,1)`, press feedback `scale(.97)`, hover only inside `@media (hover:hover) and (pointer:fine)`, `-webkit-tap-highlight-color: transparent`, reduced-motion keeps fades but drops movement (Emil Kowalski's design-engineering skill rules).
 - Entrances animate only on view change; reveals animate only the element just opened (see the `S.entering` / `S.flash` pattern in wikimind.html).
 - Watch for **CSS class collisions**. Two real bugs came from reusing generic class names (`.x`, `.cite`, `.ck`) across components. Prefer component-specific names.

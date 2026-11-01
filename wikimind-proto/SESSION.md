@@ -62,6 +62,8 @@ The full arc of the claude.ai session that produced these prototypes, in order. 
 
 35. **Wikimind 4: icons, room, less copy.** Sources show as an overlapping pile of source-kind icons (Slack, Salesforce, Jira, policy doc, meeting, watched, person), with a green dot when a person verified them, in answers, the arrival card, the margin note, the sheet and the page footer. Feed rows on Home lead with icons too (changed, asking, answered, source kind). Section nav came back as icons with labels (Summary, How it works, Rules, In practice, Systems): a sticky rail at 1240px and wider, sticky chips below; each icon moves like its idea on hover (lines write, nodes connect, the check draws, the eye blinks, the plug seats), hover-only and off under reduced motion. Cards got 24px padding, Home sections 48px apart, page headings 64px. Explanatory copy was cut: the Home subline, the page byline, figure and replay captions, the In practice intro, the margin hint, and wordy trust-card and feed lines.
 
+36. **The same pass on Wikimind 3.** The numbered citations became small icon piles after each sentence (tap opens every source behind it in the sheet, with its icon, quote and verified/unchecked state). The Sources list leads each entry with its icon, the Home feed with icons. The contents rail and the Overview/Questions/Changes tabs got icons that animate on hover (History's clock hand turns, Related's link joins, Sources' layers lift); on phones the "On this page" dropdown became sticky icon chips. Same airy spacing and the same copy cuts as Wikimind 4.
+
 ## Open threads worth picking up
 
 - "Hand it over" and "Grant" should only render for governors. Other users see the trust vectors without actions.

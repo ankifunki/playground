@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { KIND, PREV, refFor } from './data'
+import { KICON, Pile, Tile } from './Pile'
 import { Icon } from './Icon'
 import { useW, type Pop } from './store'
 
@@ -11,21 +12,28 @@ function Body({ p }: { p: Pop }) {
     return (
       <div className="pc">
         <div className="pk">{kind}</div><div className="pq" style={{ fontWeight: 500 }}>{p.name}</div><div className="pu">{text}</div>
-        <div style={{ fontSize: 13, color: 'var(--ink2)' }}>Prototype: only Opportunity approvals has a full page.</div>
+        <div className="pnote">Prototype: only Opportunity approvals has a full page.</div>
         {close}
       </div>
     )
   }
-  const r = refFor(p.n), ver = !!r.v
   return (
     <div className="pc">
-      <div className="pk">Source {p.n}: {KIND[r.k]}, {r.src}, {r.d}{r.check && <>. <span style={{ color: 'var(--warn)' }}>{r.check}</span></>}</div>
-      <div className="pq">“{r.q}”</div>
-      <div className="pu">{r.u}</div>
-      <div className="chain" aria-label="How Asoka learned this"><span className="y">Observed</span><i>›</i><span className="y">Reflected</span><i>›</i><span className="y">Written</span><i>›</i><span className={ver ? 'y' : 'n'}>{ver ? 'Verified' : 'Not verified yet'}</span></div>
-      {ver && <div style={{ fontSize: 13, color: 'var(--ok)', fontWeight: 600, marginBottom: 8 }}>✓ Verified by {r.v}</div>}
-      {p.away && <button className="wl" onClick={() => w.showSrc(p.n)} style={{ marginRight: 18 }}>Show on page</button>}
-      <button className="wl" onClick={w.toHistory}>See it in Changes</button>
+      <div className="pk">{p.ns.length > 1 ? <Pile ns={p.ns} /> : null}</div>
+      {p.ns.map((n) => {
+        const r = refFor(n), ver = !!r.v
+        return (
+          <div className="psrc" key={n} id={'pop-ref-' + n}>
+            <div className="pvh"><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={ver} warn={!!r.check} /><span className="pvs">{r.src}</span><span className="pvk">{r.d}</span></div>
+            <div className="pq">“{r.q}”</div>
+            <div className="chain" aria-label="How Asoka learned this"><span className="y">Observed</span><i>›</i><span className="y">Written</span><i>›</i><span className={ver ? 'y' : r.check ? 'w' : 'n'}>{ver ? `Verified · ${r.v}` : r.check || 'Not checked yet'}</span></div>
+          </div>
+        )
+      })}
+      <div className="pacts">
+        {p.away && <button className="wl" onClick={() => w.showSrc(p.ns[0])}>Show on page</button>}
+        <button className="wl" onClick={w.toHistory}>See it in Changes</button>
+      </div>
       {close}
     </div>
   )

@@ -12,7 +12,7 @@ export type UMsg = { id: string; role: 'u'; t: string; files: Att[] }
 export type AMsg = { id: string; role: 'a'; onPage: boolean; t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean; unknown?: boolean; cand?: Cand; qid?: string; qs?: QState }
 export type RMsg = { id: string; role: 'r'; q: string; who: string; ans: string }
 export type Msg = UMsg | AMsg | RMsg
-export type Pop = { kind: 'ref'; n: number; away: boolean } | { kind: 'prev'; name: string }
+export type Pop = { kind: 'ref'; ns: number[]; away: boolean } | { kind: 'prev'; name: string }
 export type Toast = { id: number; msg: string; act?: ToastAct; label?: string }
 export type ToastAct = 'showchat' | 'goRenewal' | 'undonew'
 export type Step = 'idle' | 'sent' | 'done'
@@ -119,9 +119,9 @@ function useWikimindState() {
     }, 60)
   }
   const pickTab = (t: Tab) => { setTab(t); window.scrollTo(0, 0) }
-  const openRef = (n: number, from: HTMLElement) => {
+  const openRef = (ns: number[], from: HTMLElement) => {
     popFrom.current = from
-    setPop({ kind: 'ref', n, away: !!from.closest('#chat') || latest.current.view !== 'page' })
+    setPop({ kind: 'ref', ns, away: !!from.closest('#chat') || latest.current.view !== 'page' })
   }
   const openPrev = (name: string, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'prev', name }) }
   const toHistory = () => {
@@ -137,7 +137,7 @@ function useWikimindState() {
     const need = latest.current.view !== 'page' || latest.current.tab !== 'read'
     if (need) { setView('page'); setTab('read'); window.scrollTo(0, 0) }
     window.setTimeout(() => {
-      const r = (document.querySelector(`main .art-body [data-ref="${n}"]`) || document.querySelector(`main [data-ref="${n}"]`)) as HTMLElement | null
+      const r = (document.querySelector(`main .art-body [data-refs~="${n}"]`) || document.querySelector(`main [data-refs~="${n}"]`)) as HTMLElement | null
       const blk = r ? r.closest('p,li,.obs,td,.cap') : document.getElementById('ref-' + n)
       if (!blk) return
       blk.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
