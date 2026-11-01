@@ -59,6 +59,7 @@ Audiences in priority order: CIO buyer in a demo, architects and developers (rea
 
 ## Craft rules
 
+- **Wikimind 3 design system** (stay on it): type 12 / 13 / 14 / 15 / 16 / 18 / 21 / 24 / 28 / 38px plus the clamped display headline; radii 8 (small controls), 14 (inner panels), 20 (cards), 24 (floating surfaces: chat, composer, sheets), pills 999; spacing in 4px steps, 20px card padding, 32px between Home's main sections. Labels and kickers are Geist Mono 12px. Line work: 1px `--hl` hairlines for structure, 2px square bars for data, 1.5px trends. Headlines `text-wrap: balance`, body `text-wrap: pretty`.
 - Motion: custom ease-out `cubic-bezier(.23,1,.32,1)`, press feedback `scale(.97)`, hover only inside `@media (hover:hover) and (pointer:fine)`, `-webkit-tap-highlight-color: transparent`, reduced-motion keeps fades but drops movement (Emil Kowalski's design-engineering skill rules).
 - Entrances animate only on view change; reveals animate only the element just opened (see the `S.entering` / `S.flash` pattern in wikimind.html).
 - Watch for **CSS class collisions**. Two real bugs came from reusing generic class names (`.x`, `.cite`, `.ck`) across components. Prefer component-specific names.

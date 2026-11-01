@@ -83,7 +83,7 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
         <p>When a rep moves a qualifying deal to Negotiation, Salesforce locks the record and routes it for approval.<Rf ns={[2]} /> Discounts over 20% add Finance as a second approver. Over 35%, the CRO approves directly.<Rf ns={[3, 12, 13]} /></p>
         <h3>Watch it happen</h3>
         <Replay />
-        <p style={{ fontSize: 13.5, color: 'var(--ink2)', marginTop: 6 }}>Replayed by Asoka from a real approval on Oct 29.</p>
+        <p style={{ fontSize: 14, color: 'var(--ink2)', marginTop: 6 }}>Replayed by Asoka from a real approval on Oct 29.</p>
       </section>
       <section id="s-rules">
         <h2>Rules</h2>
@@ -121,7 +121,7 @@ function Article({ onToc }: { onToc: (id: string) => void }) {
       </section>
       <section id="s-refs">
         <h2>Sources</h2>
-        <p style={{ fontSize: 14.5, color: 'var(--ink2)' }}>Everything Asoka observed to write this page. Tap a number in the text to see it in place.</p>
+        <p style={{ fontSize: 14, color: 'var(--ink2)' }}>Everything Asoka observed to write this page. Tap a number in the text to see it in place.</p>
         <ol className="refs">{Object.entries(REFS).map(([n, r]) => (
           <li key={n} id={'ref-' + n}><span className="k">{KIND[r.k]}</span>: {r.src}, {r.d}. <span className="q">“{r.q}”</span>{r.v && <span className="vr">✓ Verified</span>}</li>
         ))}</ol>
@@ -138,7 +138,7 @@ function Talk() {
   const w = useW()
   return (
     <>
-      <p style={{ color: 'var(--ink2)', fontSize: 15.5, margin: '20px 0' }}>Where Asoka works out what it doesn’t know yet. When something looks inconsistent or missing, it asks the person most likely to know.</p>
+      <p style={{ color: 'var(--ink2)', fontSize: 15, margin: '20px 0' }}>Where Asoka works out what it doesn’t know yet. When something looks inconsistent or missing, it asks the person most likely to know.</p>
       {w.newQs.filter((x) => x.page).map((x) => (
         <div className="thread" key={x.id}>
           <div className="th"><b>{x.q}</b><span className={'st ' + (x.resolved ? 'o' : 'w')}>{x.resolved ? 'Resolved' : 'Asking'}</span></div>
@@ -172,7 +172,7 @@ function History() {
   const w = useW()
   return (
     <>
-      <p style={{ color: 'var(--ink2)', fontSize: 15.5, margin: '20px 0' }}>Every edit, who made it, and what caused it. Asoka writes. A person verifies.</p>
+      <p style={{ color: 'var(--ink2)', fontSize: 15, margin: '20px 0' }}>Every edit, who made it, and what caused it. Asoka writes. A person verifies.</p>
       {revs(w.learned).map((r) => {
         const open = w.openRev === r.id
         return (
