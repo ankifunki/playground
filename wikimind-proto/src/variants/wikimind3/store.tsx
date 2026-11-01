@@ -51,7 +51,6 @@ function useWikimindState() {
   const [edits, setEdits] = useState(214)
   const [feed, setFeed] = useState<FeedItem[]>(FEED0)
   const [feedFresh, setFeedFresh] = useState(false)
-  const [loopOn, setLoopOn] = useState(-1)
   const [newQs, setNewQs] = useState<OpenQ[]>([])
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [chatOpen, setChatOpen] = useState(false)
@@ -95,7 +94,6 @@ function useWikimindState() {
       setFeed((f) => [p, ...f].slice(0, 4)); setFeedFresh(true)
       setObs((o) => o + 1 + Math.floor(Math.random() * 3))
       if (Math.random() < 0.4) setEdits((e) => e + 1)
-      setLoopOn(fi % 5)
     }, 3600)
     return () => window.clearInterval(t)
   }, [])
@@ -211,7 +209,7 @@ function useWikimindState() {
   const flyQ = (q: OpenQ) => {
     const L = latest.current
     if (L.view === 'page' && L.tab === 'talk') return
-    const to = document.getElementById(q.page ? 'qcnt' : 'lc-asks')
+    const to = document.getElementById(q.page ? 'qcnt' : 'n-asks')
     const from = document.querySelector(`[data-mi="${q.msgId}"] p`)
     if (!inView(to)) return
     if (RM || !from || !(from as HTMLElement).animate) { bump(to); return }
@@ -305,8 +303,8 @@ function useWikimindState() {
   return {
     tv, tvNums, tvMiss, tvHand, tvAcc,
     view, tab, learned, justLearned, talkTyping, learnSeen, diffPlay, openRev, hlRev, obs, edits, ver, asks, qCount,
-    feed, feedFresh, loopOn, newQs, msgs, chatOpen, files, text, listening, pop, toast,
-    setText, setLoopOn,
+    feed, feedFresh, newQs, msgs, chatOpen, files, text, listening, pop, toast,
+    setText,
     go, pickTab, openRef, openPrev, closePop, toHistory, toggleRev, showSrc,
     learn, showRenewal, ask, commitAsk, undoAsk, notNow, resolveNewest, showChat, hideChat, newChat,
     send, addFiles, removeFile, toggleMic, showToast, hideToast, runToastAct, area,

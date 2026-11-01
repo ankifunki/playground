@@ -1,5 +1,5 @@
-import { AREAS, LOOP } from './data'
-import { FlowSvg, LoopSvg } from './Diagrams'
+import { AREAS } from './data'
+import { FlowSvg } from './Diagrams'
 import { whoStr } from './logic'
 import { useW } from './store'
 import { TrustVectors } from './Trust'
@@ -8,7 +8,6 @@ const nf = (n: number) => n.toLocaleString()
 
 export function Home() {
   const w = useW()
-  const counts = { obs: w.obs, edits: w.edits, ver: w.ver, asks: w.asks }
   const openPage = (sec?: string) => w.go('page', { sec })
   return (
     <div className="page enter">
@@ -33,13 +32,6 @@ export function Home() {
             <li>Approval requests expire after 14 days because two deals once closed on six-week-old prices. <small>From a 2024 #revops thread.</small></li>
             <li>Cases that mention data loss get escalated by hand, whatever their priority. <small>Seen in 11 of 11 cases.</small> <button className="wl" onClick={(e) => w.openPrev('Case escalation', e.currentTarget)}>Read more</button></li>
           </ul></div></section>
-          <section className="box"><h2>How Asoka keeps this current</h2><div className="bb loop">
-            <LoopSvg onStep={w.setLoopOn} />
-            <ul className="lsteps" id="lsteps">{LOOP.map(([name, text, key], i) => (
-              <li key={name} className={w.loopOn === i ? 'on' : ''}><b>{name}</b><span>{text}</span>{key && <em id={'lc-' + key}>{nf(counts[key])}</em>}</li>
-            ))}</ul>
-            <p className="scale"><b>1,284</b> pages, <b id="n-obs">{nf(w.obs)}</b> observations this week, <b>71%</b> checked by a person.</p>
-          </div></section>
           <section className="box"><h2>Areas</h2><div className="bb areas">{AREAS.map(([name, pages, pct]) => (
             <button key={name} className={'area press' + (pct < 55 ? ' low' : '')} onClick={() => w.area(name)}><b>{name}</b><small>{pages} pages, {pct}% understood</small><div className="cb"><i style={{ width: pct + '%' }} /></div></button>
           ))}</div></section>
@@ -52,8 +44,9 @@ export function Home() {
           </ul></div></section>
           <section className="box"><h2><span className="pdot" />Learning right now</h2><div className="bb"><ul className="feed" id="feed">{w.feed.map((f, i) => (
             <li key={f[1] + i} className={w.feedFresh && i === 0 ? 'in' : ''}><span className="k">{f[0]}</span><span>{f[1]}<small>{i === 0 && w.feedFresh ? 'Just now' : i === 0 ? '1 min ago' : i * 3 + ' min ago'}, updated <button className="wl" onClick={(e) => (f[2] === 'Opportunity approvals' ? openPage() : w.openPrev(f[2], e.currentTarget))}>{f[2]}</button></small></span></li>
-          ))}</ul></div></section>
-          <section className="box"><h2>Asoka is asking</h2><div className="bb"><ul className="news" id="asking">
+          ))}</ul>
+            <p className="scale"><b>1,284</b> pages, <b id="n-obs">{nf(w.obs)}</b> observations this week, <b>71%</b> checked by a person.</p></div></section>
+          <section className="box"><h2>Asoka is asking <span className="hcnt" id="n-asks">{w.asks}</span></h2><div className="bb"><ul className="news" id="asking">
             {w.newQs.map((x) => (
               <li key={x.id} className={x.fresh ? 'in' : ''}><button className="wl" onClick={() => (x.page ? w.go('page', { tab: 'talk' }) : w.showChat())}>{x.q}</button><small>{x.resolved ? `Answered by ${x.who} just now.` : `Asking ${whoStr(x)}, just now.`}</small></li>
             ))}

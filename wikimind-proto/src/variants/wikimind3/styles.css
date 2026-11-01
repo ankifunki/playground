@@ -229,15 +229,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .feed li.in{animation:rise .45s var(--eo) both}
 .feed .k{font-size:12px;font-weight:700;color:var(--ink2);min-width:66px;padding-top:2px}
 .feed small{display:block;color:var(--ink2);font-size:12.5px}
-.loop{display:grid;grid-template-columns:1fr;gap:14px;align-items:center}
-@media (min-width:760px){.loop{grid-template-columns:280px 1fr}}
-.loop svg{width:100%;max-width:280px;margin:0 auto;display:block}
-.lsteps{list-style:none;margin:0;padding:0}
-.lsteps li{display:flex;gap:12px;padding:10px 10px;border-radius:12px;align-items:baseline;transition:background-color .3s}
-.lsteps li.on{background:var(--linkb)}
-.lsteps b{min-width:64px;font-weight:600}
-.lsteps span{flex:1;color:var(--ink2);font-size:14.5px}
-.lsteps em{font-style:normal;font-weight:600;font-variant-numeric:tabular-nums;font-size:14px}
+@media (min-width:760px){}
 .areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (min-width:760px){.areas{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .area{border:0;border-radius:16px;padding:12px 14px;text-align:left;background:var(--soft);cursor:pointer}
@@ -403,7 +395,7 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .tdone{flex:none;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ok);background:var(--okb);border-radius:999px;padding:4px 10px;align-self:flex-start;letter-spacing:-.01em}
 .tdone.wait{color:var(--warn);background:var(--warnb)}
 .tfoot{display:block;margin-top:auto;padding-top:8px;color:var(--ink2);font-size:13px}
-.box .scale{grid-column:1/-1;margin:4px 0 0;font-size:13.5px;color:var(--ink2)}
+.box .scale{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--hair);font-size:13.5px;color:var(--ink2)}
 .box .scale b{font-family:var(--mono);font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 /* ---------- Trust rows (page At a glance) ---------- */
 .tr3{background:var(--soft);border-radius:14px;padding:4px 12px;margin:2px 0 14px}
@@ -414,6 +406,5 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .tr3 small{grid-column:2;color:var(--ink2);font-size:12.5px;line-height:1.4}
 @media (prefers-reduced-motion:reduce){.tbar3 i{transition:none;animation:none}.tmini li{animation:none}}
 /* Line work: 1px hairlines (--hl) for structure, 2px square bars for data, 1.5px for trends. */
-.loop svg .ring{stroke:var(--hl);stroke-width:1px;vector-effect:non-scaling-stroke}
-.loop svg .lnode{fill:var(--bg);stroke:var(--link);stroke-width:1px;vector-effect:non-scaling-stroke}
+.box h2 .hcnt{font-family:var(--mono);font-weight:600;color:var(--warn);background:var(--warnb);border-radius:999px;padding:0 7px;font-size:11.5px;margin-left:6px;display:inline-block}
 

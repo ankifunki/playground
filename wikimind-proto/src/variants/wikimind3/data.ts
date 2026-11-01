@@ -49,15 +49,6 @@ export const POOL: FeedItem[] = [
 ]
 export const FEED0: FeedItem[] = [['Slack', 'Read 2 new #deal-desk threads about approvals', 'Opportunity approvals'], ['Salesforce', 'Approval step changed on Large Deal Approval', 'Opportunity approvals'], ['Verified', 'Dana verified the rules in Opportunity approvals', 'Opportunity approvals'], ['Meeting', 'Transcribed the CS leadership sync', 'Case escalation']]
 
-export type LoopKey = 'obs' | 'edits' | 'ver' | 'asks'
-export const LOOP: [name: string, text: string, key: LoopKey | null][] = [
-  ['Observe', 'Reads Slack, tickets, meetings, and every Salesforce change.', 'obs'],
-  ['Reflect', 'Notices what’s new, what conflicts, and what’s missing.', null],
-  ['Update', 'Rewrites the exact sentence, linked to what caused it.', 'edits'],
-  ['Verify', 'A sysadmin stamps what matters as trusted.', 'ver'],
-  ['Ask', 'Interviews people to close gaps it can’t resolve.', 'asks'],
-]
-
 export const AREAS: [string, number, number][] = [['Sales Cloud', 412, 92], ['CPQ', 188, 81], ['Policies', 174, 84], ['People and teams', 153, 77], ['Service Cloud', 236, 66], ['Integrations', 121, 46]]
 
 export const CORPUS: [number, string][] = [

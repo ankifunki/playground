@@ -1,4 +1,3 @@
-import { LOOP } from './data'
 import { RM } from './logic'
 
 function Box({ x, y, w, h, a, b }: { x: number; y: number; w: number; h: number; a: string; b?: string }) {
@@ -44,28 +43,6 @@ export function SparkSvg() {
       <line className="base" x1={4} x2={282} y1={72.5} y2={72.5} />
       {v.map((x, i) => <line key={i} className={i === v.length - 1 ? 'now' : ''} x1={15 + i * 23} x2={15 + i * 23} y1={72} y2={72 - x * 3} />)}
       <text x={278} y={82} textAnchor="end" fontSize={10} fill="var(--ink2)">this week, counting</text>
-    </svg>
-  )
-}
-
-export function LoopSvg({ onStep }: { onStep: (i: number) => void }) {
-  const cx = 150, cy = 150, R = 104
-  return (
-    <svg viewBox="0 0 300 300" role="img" aria-label="Asoka’s learning loop: observe, reflect, update, verify, ask">
-      <circle className="ring" cx={cx} cy={cy} r={R} fill="none" />
-      <path id="lp" d={`M${cx} ${cy - R} A${R} ${R} 0 1 1 ${cx - 0.01} ${cy - R}`} fill="none" />
-      {LOOP.map((l, i) => {
-        const an = -Math.PI / 2 + (i * 2 * Math.PI) / LOOP.length, x = cx + R * Math.cos(an), y = cy + R * Math.sin(an)
-        return (
-          <g key={l[0]} style={{ cursor: 'pointer' }} tabIndex={0} role="button" aria-label={l[0]} onClick={() => onStep(i)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onStep(i) } }}>
-            <circle className="lnode" cx={x.toFixed(1)} cy={y.toFixed(1)} r={24} />
-            <text x={x.toFixed(1)} y={(y + 4).toFixed(1)} textAnchor="middle" fontSize={10.5} fontWeight={700} fill="var(--ink)">{l[0]}</text>
-          </g>
-        )
-      })}
-      {!RM && <circle r={2.5} fill="var(--link)"><animateMotion dur="10s" repeatCount="indefinite"><mpath href="#lp" /></animateMotion></circle>}
-      <text x={cx} y={cy - 4} textAnchor="middle" fontFamily="var(--serif)" fontSize={17} fontWeight={600} fill="var(--ink)">Always learning</text>
-      <text x={cx} y={cy + 16} textAnchor="middle" fontSize={11.5} fill="var(--ink2)">every few seconds</text>
     </svg>
   )
 }
