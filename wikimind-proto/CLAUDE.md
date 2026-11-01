@@ -17,13 +17,13 @@ Each variant's CSS is the original stylesheet, loaded with `?inline` and injecte
 
 ## Running it
 
-Local only. Do not deploy (no Vercel or other hosting).
-
 ```
 npm install
 npm run dev        # http://localhost:5173/?v=f  (f = Wikimind 3)
 npm run build      # type-check and production build into dist/
 ```
+
+Hosted for preview on Vercel (project `wikimind-proto`, root directory `wikimind-proto`, Vite build) behind a password page: `middleware.js` reads `WIKIMIND_PASSWORD` from the Vercel env (never commit it). The project is not Git-connected, so deploy explicitly after pushing.
 
 ## Demo controls (Wikimind 3)
 
@@ -52,7 +52,7 @@ Audiences in priority order: CIO buyer in a demo, architects and developers (rea
 
 - **Never use neumorphism / soft-UI.** Not for anything, not even the map.
 - **Nothing should look or read like a wiki.** No gray bordered boxes, blue bracketed citations, infoboxes, underlined tabs, or wiki vocabulary (Talk, History, References, See also, Did you know, Featured article). Borrowed *ideas* are fine if restyled.
-- House visual language: fog background `#F7F8F6`, white cards with soft shadows (no hairline borders), indigo accent `#4B45D6`, Figtree for UI, Newsreader serif for headlines and long reading text. Full dark mode via CSS variables.
+- House visual language: warm stone background `#F8F6F2` with warm neutrals, white cards with soft shadows (no hairline borders), indigo accent `#4B45D6`, Geist for UI and body, Geist Mono for tags, labels and counts, Geist Serif for headlines and long reading text. Full dark mode via CSS variables.
 - Trust by exception: solid facts carry no mark. Only uncertain, changed, unofficial, or stale content gets marked.
 - Ask is persistent at the bottom (composer with attachments, voice, scope toggle), not a header search.
 - Unknown questions get "I don't know that yet, and I won't guess," then become open questions.

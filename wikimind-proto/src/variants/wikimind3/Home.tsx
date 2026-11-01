@@ -15,12 +15,11 @@ export function Home() {
         <div className="kick">Northwind, as Asoka understands it</div>
         <h1>Everything Asoka knows, kept current every few seconds.</h1>
         <p>Nobody wrote these pages by hand. Asoka writes them from what it observes, and a person verifies what matters.</p>
-        <div className="nums">
-          <span><b>1,284</b>pages</span>
-          <span><b id="n-obs">{nf(w.obs)}</b>observations this week</span>
-          <span><b>71%</b>verified by a person</span>
-          <span><b id="n-asks">{w.asks}</b>open questions</span>
-        </div>
+        {/* Scale is context, not a dashboard: one quiet line, with the only actionable number linking to what Asoka is asking. */}
+        <p className="prov">
+          <b>1,284</b> pages, written from <b id="n-obs">{nf(w.obs)}</b> observations this week. <b>71%</b> checked by a person.{' '}
+          <button className="wl" onClick={() => document.getElementById('asking')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}><b id="n-asks">{w.asks}</b> open questions</button>
+        </p>
       </section>
       <div className="hg">
         <div>

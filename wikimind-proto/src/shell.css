@@ -1,7 +1,7 @@
 /* Variant switcher. Uses its own --vs-* tokens and vs- class names so it never collides with a variant's CSS. */
-.vs-bar{--vs-bg:#F4F5F2;--vs-panel:#fff;--vs-ink:#1E2724;--vs-ink2:#5E6A65;--vs-line:#E3E7E2;--vs-accent:#4353C6;--vs-sh:0 1px 2px rgba(25,40,32,.06),0 4px 14px rgba(25,40,32,.06);
- position:relative;z-index:80;display:flex;align-items:center;gap:10px;padding:8px 12px;padding-top:calc(env(safe-area-inset-top,0px) + 8px);border-bottom:1px solid var(--vs-line);background:var(--vs-bg);font-family:"Figtree",system-ui,sans-serif;color:var(--vs-ink)}
-@media (prefers-color-scheme:dark){.vs-bar{--vs-bg:#121614;--vs-panel:#1B201E;--vs-ink:#ECEFEC;--vs-ink2:#A1ACA7;--vs-line:#2C3431;--vs-accent:#9EA9FF;--vs-sh:0 1px 2px rgba(0,0,0,.4)}}
+.vs-bar{--vs-bg:#F6F4EF;--vs-panel:#fff;--vs-ink:#221E1A;--vs-ink2:#6B6259;--vs-line:#E6E1D9;--vs-accent:#4353C6;--vs-sh:0 1px 2px rgba(40,32,24,.06),0 4px 14px rgba(40,32,24,.06);
+ position:relative;z-index:80;display:flex;align-items:center;gap:10px;padding:8px 12px;padding-top:calc(env(safe-area-inset-top,0px) + 8px);border-bottom:1px solid var(--vs-line);background:var(--vs-bg);font-family:"Geist",system-ui,sans-serif;color:var(--vs-ink)}
+@media (prefers-color-scheme:dark){.vs-bar{--vs-bg:#16130F;--vs-panel:#1F1C18;--vs-ink:#EFEBE6;--vs-ink2:#B0A79C;--vs-line:#35302A;--vs-accent:#9EA9FF;--vs-sh:0 1px 2px rgba(0,0,0,.4)}}
 .vs-lbl{font-size:12.5px;font-weight:600;color:var(--vs-ink2);white-space:nowrap}
 .vs-seg{flex:1;display:flex;gap:4px;background:var(--vs-line);padding:3px;border-radius:999px;overflow-x:auto;scrollbar-width:none;max-width:920px}
 .vs-seg::-webkit-scrollbar{display:none}
@@ -11,4 +11,4 @@
 .vs-seg button[aria-selected="true"]{background:var(--vs-panel);color:var(--vs-ink);box-shadow:var(--vs-sh)}
 .vs-seg button:focus-visible{outline:2px solid var(--vs-accent);outline-offset:1px}
 @media (max-width:520px){.vs-lbl{display:none}.vs-seg button span{display:none}.vs-seg button{padding:8px 12px}}
-.vs-loading{padding:40px;font-family:"Figtree",system-ui,sans-serif;color:#5E6A65}
+.vs-loading{padding:40px;font-family:"Geist",system-ui,sans-serif;color:#6B6259}

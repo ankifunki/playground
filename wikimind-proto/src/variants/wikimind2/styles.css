@@ -1,17 +1,17 @@
 :root{
- --bg:#F7F8F6;--panel:#FFFFFF;--panel2:#F0F2EF;--ink:#17201C;--ink2:#5B6661;--line:#E2E6E1;--accent:#4B45D6;--accb:#ECEBFC;
+ --bg:#F8F6F2;--panel:#FFFFFF;--panel2:#F2EFEA;--ink:#1F1B17;--ink2:#6B6259;--line:#E6E1D9;--accent:#4B45D6;--accb:#ECEBFC;
  --ok:#1E8467;--okb:#E1F3EC;--warn:#B06E12;--warnb:#FCF0DA;
  --sh:0 1px 2px rgba(20,30,25,.05),0 8px 24px rgba(20,30,25,.06);
- --sans:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ --sans:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
  --serif:"Geist Serif",Georgia,"Times New Roman",serif;
  --eo:cubic-bezier(.23,1,.32,1);--eio:cubic-bezier(.77,0,.175,1);
  color-scheme:light;box-sizing:border-box;
  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
- :root:not([data-theme="light"]){--bg:#111513;--panel:#191E1C;--panel2:#212825;--ink:#ECEFEC;--ink2:#A2ADA8;--line:#2B3330;--accent:#A9A5FF;--accb:#26244A;--ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--sh:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
+ :root:not([data-theme="light"]){--bg:#15130F;--panel:#1D1A17;--panel2:#27231F;--ink:#EFEBE6;--ink2:#B0A79C;--line:#35302A;--accent:#A9A5FF;--accb:#26244A;--ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--sh:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
 }
-:root[data-theme="dark"]{--bg:#111513;--panel:#191E1C;--panel2:#212825;--ink:#ECEFEC;--ink2:#A2ADA8;--line:#2B3330;--accent:#A9A5FF;--accb:#26244A;--ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--sh:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
+:root[data-theme="dark"]{--bg:#15130F;--panel:#1D1A17;--panel2:#27231F;--ink:#EFEBE6;--ink2:#B0A79C;--line:#35302A;--accent:#A9A5FF;--accb:#26244A;--ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--sh:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.25);color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-tap-highlight-color:transparent;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 100px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);-webkit-text-size-adjust:100%}
@@ -197,3 +197,9 @@ svg[data-lvl="1"] .lk,svg[data-lvl="2"] .lk{opacity:0}
 .stopb{border:0;background:none;color:var(--ink2);font-weight:600;font-size:13px;text-decoration:underline;cursor:pointer;padding:0}
 .peek .openp2{margin-top:12px;border:0;background:var(--ink);color:var(--panel);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.thinking i{animation:none;opacity:.6}}
+/* Tags, labels and counts are set in Geist Mono. */
+.tag,.ttbadge,.mini,.st,.dl,.cstate,.pk{font-family:var(--mono);letter-spacing:-.01em}
+/* Zoom: a plain + and − pair. */
+.zpm{display:flex;flex-direction:column;gap:6px}
+.zpm .zb{width:40px;height:40px;padding:0;display:grid;place-items:center;font-size:22px;font-weight:500;line-height:1;font-family:var(--sans)}
+.zpm .zb:disabled{opacity:.4;cursor:default}

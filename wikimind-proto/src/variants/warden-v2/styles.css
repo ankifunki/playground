@@ -1,23 +1,23 @@
 
 :root{
- --bg:#F4F5F2;--panel:#FFFFFF;--panel2:#EEF1EC;--ink:#1E2724;--ink2:#5E6A65;--line:#E3E7E2;--accent:#4353C6;--ub:#E9ECFB;
+ --bg:#F6F4EF;--panel:#FFFFFF;--panel2:#F1EDE7;--ink:#221E1A;--ink2:#6B6259;--line:#E6E1D9;--accent:#4353C6;--ub:#E9ECFB;
  --ok:#1E8467;--okb:#E1F3EC;--warn:#B06E12;--warnb:#FCF0DA;--bad:#C2423B;--badb:#FBE6E3;
  --iris-bg:#E8EBFC;--iris-fg:#4353C6;--sol-bg:#DFF3EC;--sol-fg:#1E8467;--fen-bg:#FCEFD8;--fen-fg:#A86A12;--pia-bg:#FBE6EF;--pia-fg:#B2457A;
- --sh:0 1px 2px rgba(25,40,32,.05),0 6px 20px rgba(25,40,32,.06);
- --sans:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ --sh:0 1px 2px rgba(40,32,24,.05),0 6px 20px rgba(40,32,24,.06);
+ --sans:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
  color-scheme:light;box-sizing:border-box;
  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
  :root:not([data-theme="light"]){
-  --bg:#121614;--panel:#1B201E;--panel2:#232A27;--ink:#ECEFEC;--ink2:#A1ACA7;--line:#2C3431;--accent:#9EA9FF;--ub:#262C52;
+  --bg:#16130F;--panel:#1F1C18;--panel2:#29251F;--ink:#EFEBE6;--ink2:#B0A79C;--line:#35302A;--accent:#9EA9FF;--ub:#262C52;
   --ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--bad:#FF9A92;--badb:#44221F;
   --iris-bg:#262C52;--iris-fg:#AEB8FF;--sol-bg:#16362D;--sol-fg:#6FD3B4;--fen-bg:#3D3016;--fen-fg:#F0C36B;--pia-bg:#43202F;--pia-fg:#F2A6C6;
   --sh:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.25);color-scheme:dark;
  }
 }
 :root[data-theme="dark"]{
- --bg:#121614;--panel:#1B201E;--panel2:#232A27;--ink:#ECEFEC;--ink2:#A1ACA7;--line:#2C3431;--accent:#9EA9FF;--ub:#262C52;
+ --bg:#16130F;--panel:#1F1C18;--panel2:#29251F;--ink:#EFEBE6;--ink2:#B0A79C;--line:#35302A;--accent:#9EA9FF;--ub:#262C52;
  --ok:#6FD3B4;--okb:#16362D;--warn:#F0C36B;--warnb:#3D3016;--bad:#FF9A92;--badb:#44221F;
  --iris-bg:#262C52;--iris-fg:#AEB8FF;--sol-bg:#16362D;--sol-fg:#6FD3B4;--fen-bg:#3D3016;--fen-fg:#F0C36B;--pia-bg:#43202F;--pia-fg:#F2A6C6;
  --sh:0 1px 2px rgba(0,0,0,.35),0 6px 20px rgba(0,0,0,.25);color-scheme:dark;
@@ -125,3 +125,5 @@ footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,
 #toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:10px 18px;border-radius:999px;font-size:14.5px;max-width:calc(100% - 32px);opacity:0;pointer-events:none;transition:opacity .15s;z-index:30;box-shadow:var(--sh)}
 #toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
+/* Tags, labels and counts are set in Geist Mono. */
+.ai,.pc{font-family:var(--mono);letter-spacing:-.01em}

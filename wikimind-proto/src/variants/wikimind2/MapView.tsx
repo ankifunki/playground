@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { claimsOf, cl, DOMAINS, dom, proc, PROCS, type Proc } from './data'
 import { camFor, levelFromCam, links, RM, type Cam } from './logic'
-import { Back, Chev, FindOut, StLine } from './parts'
+import { Chev, FindOut, StLine } from './parts'
 import { useW } from './store'
 
 const camTransform = (c: Cam) => `translate(200px,200px) scale(${c.s}) translate(${-c.x}px,${-c.y}px)`
@@ -11,9 +11,11 @@ export function MapView() {
   const w = useW(), m = w.map
   const svg = useRef<SVGSVGElement>(null), g = useRef<SVGGElement>(null)
   const cam = useRef<Cam>(w.camReq.cam), dragged = useRef(0)
+  const [lim, setLim] = useState({ min: w.camReq.cam.s <= 1.001, max: w.camReq.cam.s >= 34 })
+  const zoomBy = useRef<(f: number) => void>(() => {})
   const latest = useRef(w); latest.current = w
 
-  const apply = (anim: boolean) => { const el = g.current; if (!el) return; el.style.transition = anim && !RM ? '' : 'none'; el.style.transform = camTransform(cam.current) }
+  const apply = (anim: boolean) => { const el = g.current; if (!el) return; el.style.transition = anim && !RM ? '' : 'none'; el.style.transform = camTransform(cam.current); const min = cam.current.s <= 1.001, max = cam.current.s >= 34; setLim((l) => (l.min === min && l.max === max ? l : { min, max })) }
   useLayoutEffect(() => { cam.current = w.camReq.cam; apply(w.camReq.anim) }, [w.camReq.n])
 
   useEffect(() => {
@@ -38,6 +40,13 @@ export function MapView() {
       cam.current = { s: ns, x: wp.x - (p.x - 200) / ns, y: wp.y - (p.y - 200) / ns }; apply(false); sync(); snapSoon()
     }
     const hideHint = () => latest.current.setHint(false)
+    // + and −: zoom around the centre of the map; − settles on the full overview when it gets close.
+    zoomBy.current = (f: number) => {
+      hideHint()
+      const ns = Math.max(1, Math.min(34, cam.current.s * f))
+      cam.current = ns <= 1.15 ? { x: 200, y: 200, s: 1 } : { ...cam.current, s: ns }
+      apply(true); sync()
+    }
     const down = (e: PointerEvent) => {
       pts[e.pointerId] = vb(e); moved = false; start = { cam: { ...cam.current }, p: vb(e) }
       const k = Object.keys(pts); if (k.length === 2) start.dist = Math.hypot(pts[+k[0]].x - pts[+k[1]].x, pts[+k[0]].y - pts[+k[1]].y)
@@ -92,7 +101,10 @@ export function MapView() {
             })}
           </g>
         </svg>
-        <div className="zbtns">{m.lvl > 0 && <button className="zb press" onClick={w.zoomOut}><Back /> Zoom out</button>}</div>
+        <div className="zbtns zpm" role="group" aria-label="Zoom">
+          <button className="zb press" onClick={() => zoomBy.current(1.8)} disabled={lim.max} aria-label="Zoom in" title="Zoom in">+</button>
+          <button className="zb press" onClick={() => zoomBy.current(1 / 1.8)} disabled={lim.min} aria-label="Zoom out" title="Zoom out">−</button>
+        </div>
         <div className="mhint" style={{ opacity: w.hint ? 1 : 0 }}>Pinch or scroll to zoom. Drag to move.</div>
       </div></div>
       <div className="mcap" id="mcap"><Caption /></div>

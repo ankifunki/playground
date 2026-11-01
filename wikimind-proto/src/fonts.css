@@ -1,14 +1,5 @@
-@import '@fontsource/figtree/400.css';
-@import '@fontsource/figtree/500.css';
-@import '@fontsource/figtree/600.css';
-@import '@fontsource/figtree/700.css';
-@import '@fontsource/dm-mono/400.css';
-
+/* Geist for UI and body, Geist Mono for tags, Geist Serif for headlines. All from the geist package, bundled locally. */
+@font-face { font-family: 'Geist'; src: url('../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url('../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
 /* Geist Serif ships one weight; declared across 100-900 so headings use real glyphs, not synthetic bold. */
-@font-face {
-  font-family: 'Geist Serif';
-  src: url('../node_modules/geist/dist/fonts/geist-serif/GeistSerif-Regular.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+@font-face { font-family: 'Geist Serif'; src: url('../node_modules/geist/dist/fonts/geist-serif/GeistSerif-Regular.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
