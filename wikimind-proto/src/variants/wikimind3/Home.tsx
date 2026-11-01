@@ -2,6 +2,7 @@ import { AREAS, LOOP } from './data'
 import { FlowSvg, LoopSvg } from './Diagrams'
 import { whoStr } from './logic'
 import { useW } from './store'
+import { TrustVectors } from './Trust'
 
 const nf = (n: number) => n.toLocaleString()
 
@@ -13,14 +14,10 @@ export function Home() {
     <div className="page enter">
       <section className="welcome">
         <div className="kick">Northwind, as Asoka understands it</div>
-        <h1>Everything Asoka knows, kept current every few seconds.</h1>
-        <p>Nobody wrote these pages by hand. Asoka writes them from what it observes, and a person verifies what matters.</p>
-        {/* Scale is context, not a dashboard: one quiet line, with the only actionable number linking to what Asoka is asking. */}
-        <p className="prov">
-          <b>1,284</b> pages, written from <b id="n-obs">{nf(w.obs)}</b> observations this week. <b>71%</b> checked by a person.{' '}
-          <button className="wl" onClick={() => document.getElementById('asking')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}><b id="n-asks">{w.asks}</b> open questions</button>
-        </p>
+        <h1>What you can trust Asoka with today, and what it needs to do more.</h1>
+        <p>How reliable it is, how much already runs on its own, and what stands between here and full automation.</p>
       </section>
+      <TrustVectors />
       <div className="hg">
         <div>
           <section className="box"><h2>In focus</h2><div className="bb feat">
@@ -41,6 +38,7 @@ export function Home() {
             <ul className="lsteps" id="lsteps">{LOOP.map(([name, text, key], i) => (
               <li key={name} className={w.loopOn === i ? 'on' : ''}><b>{name}</b><span>{text}</span>{key && <em id={'lc-' + key}>{nf(counts[key])}</em>}</li>
             ))}</ul>
+            <p className="scale"><b>1,284</b> pages, <b id="n-obs">{nf(w.obs)}</b> observations this week, <b>71%</b> checked by a person.</p>
           </div></section>
           <section className="box"><h2>Areas</h2><div className="bb areas">{AREAS.map(([name, pages, pct]) => (
             <button key={name} className={'area press' + (pct < 55 ? ' low' : '')} onClick={() => w.area(name)}><b>{name}</b><small>{pages} pages, {pct}% understood</small><div className="cb"><i style={{ width: pct + '%' }} /></div></button>

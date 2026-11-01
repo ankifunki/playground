@@ -75,9 +75,6 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 .ibox tr+tr th,.ibox tr+tr td{border-top:1px solid var(--hair)}
 .tbar{height:6px;border-radius:999px;background:var(--soft2);overflow:hidden;margin:8px 0 6px;display:flex;gap:2px}
 .tbar i{display:block;height:100%;border-radius:999px}
-.ibox .trust{background:var(--soft);border-radius:14px;padding:12px 14px;margin-top:10px}
-.ibox .trust b{font-size:14px;font-weight:600}
-.ibox .trust small{display:block;color:var(--ink2);font-size:12.5px;line-height:1.5}
 .spark rect{fill:var(--link);opacity:.45}.spark rect.now{opacity:1;animation:sp 1.6s ease-in-out infinite alternate}
 @keyframes sp{from{opacity:.5}to{opacity:1}}
 #s-lead{display:flex;flex-direction:column}
@@ -366,8 +363,52 @@ sup.rf.ck button{background:var(--warnb);color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.wave i,.ba .dots3 i,.att,.bu,.ba{animation:none}.chat{transition:none}}
 /* Tags, labels and counts are set in Geist Mono. */
 .tabs .cnt,.st,.ok2,.chain span,.refs .vr,.feed .k,.kick,.flyq,.rf button,.apprs span,.pk{font-family:var(--mono);letter-spacing:-.01em}
-/* Home provenance line (replaces the stat tiles). */
-.welcome .prov{font-size:14.5px;color:var(--ink2);margin:16px 0 0;max-width:46em}
-.welcome .prov b{font-family:var(--mono);font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
-.welcome .prov .wl{font-size:inherit}
-.welcome .prov .wl b{color:inherit}
+/* ---------- Trust vectors (Home) ---------- */
+.trust3{margin:26px 0 8px}
+.tpath{background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:18px 20px}
+.tml{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tml b{font-size:15px;font-weight:600}
+.tml span{font-family:var(--mono);font-size:13px;color:var(--ink2)}
+.tbar3{position:relative;display:flex;gap:3px;height:14px;margin:14px 0 30px}
+.tbar3 i{display:block;height:100%;border-radius:999px;min-width:6px;transition:flex-basis .6s var(--eo)}
+.tbar3 .a{background:var(--ok)}
+.tbar3 .p{background:var(--link);opacity:.45}
+.tbar3 .b{background:var(--warn)}
+.tfc{position:absolute;right:0;top:20px;font-family:var(--mono);font-size:11.5px;color:var(--ink2);white-space:nowrap;letter-spacing:-.01em}
+.tfc::before{content:"";position:absolute;right:0;top:-24px;width:2px;height:20px;border-radius:2px;background:var(--ink)}
+.tleg3{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:12px;color:var(--ink2);letter-spacing:-.01em}
+.tleg3 span{display:inline-flex;align-items:center;gap:6px}
+.tleg3 i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.tleg3 .a{background:var(--ok)}.tleg3 .p{background:var(--link);opacity:.45}.tleg3 .b{background:var(--warn)}
+.tvs{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;align-items:start}
+@media (min-width:860px){.tvs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tv{background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.tk{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:-.01em}
+.tn{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tn b{font-family:var(--serif);font-weight:500;font-size:38px;line-height:1.1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tsp{color:var(--ok);flex:none}
+.tv p{margin:0;color:var(--ink2);font-size:14.5px;line-height:1.5}
+.tv .wl{font-size:14.5px;align-self:flex-start;margin-top:2px}
+.tmini{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column}
+.tmini li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--hair);font-size:14px;line-height:1.45;animation:rise .3s var(--eo) both}
+.tmini li:first-child{border-top:0}
+.tmini li > span:not(.tk):not(.tdone){display:flex;flex-direction:column;min-width:0}
+.tmini li .tk{flex:none;align-self:flex-start;padding-top:1px;min-width:46px}
+.tmini small,.tvb small,.tnext small{display:block;color:var(--ink2);font-size:13px}
+.tvb{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--soft);border-radius:14px;padding:10px 12px;margin-top:6px;font-size:14px}
+.tnext{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.tgl{flex:none;border:0;border-radius:999px;padding:7px 14px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--ink);color:var(--panel)}
+.tdone{flex:none;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ok);background:var(--okb);border-radius:999px;padding:4px 10px;align-self:flex-start;letter-spacing:-.01em}
+.tdone.wait{color:var(--warn);background:var(--warnb)}
+.tfoot{display:block;margin-top:auto;padding-top:8px;color:var(--ink2);font-size:13px}
+.box .scale{grid-column:1/-1;margin:4px 0 0;font-size:13.5px;color:var(--ink2)}
+.box .scale b{font-family:var(--mono);font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+/* ---------- Trust rows (page At a glance) ---------- */
+.tr3{background:var(--soft);border-radius:14px;padding:4px 12px;margin:2px 0 14px}
+.tr3 > div{display:grid;grid-template-columns:86px 1fr;column-gap:10px;align-items:baseline;padding:9px 0;border-top:1px solid var(--hair)}
+.tr3 > div:first-child{border-top:0}
+.tr3 .tk{grid-row:span 2}
+.tr3 b{font-size:15px;font-weight:600;line-height:1.3}
+.tr3 small{grid-column:2;color:var(--ink2);font-size:12.5px;line-height:1.4}
+@media (prefers-reduced-motion:reduce){.tbar3 i{transition:none}.tmini li{animation:none}}
+

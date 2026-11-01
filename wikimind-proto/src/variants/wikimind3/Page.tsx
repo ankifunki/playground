@@ -33,11 +33,17 @@ function Renewal() {
   )
 }
 
+/** At a glance leads with the three trust vectors for this process. */
 function Infobox() {
-  const w = useW(), tv = 5, tot = 8, several = w.learned ? 2 : 1, checking = w.learned ? 1 : 2
+  const w = useW(), gaps = w.learned ? 1 : 2
   return (
     <aside className="ibox" aria-label="Summary card">
       <div className="ih">At a glance</div>
+      <div className="tr3">
+        <div><span className="tk">Reliability</span><b>99%</b><small>138 of 140 matched</small></div>
+        <div><span className="tk">Automation</span><b>Asks first</b><small>Resets and seats run alone</small></div>
+        <div><span className="tk">Gaps</span><b>{gaps}</b><small>{w.learned ? 'EMEA routing' : 'EMEA routing, flat renewals'}</small></div>
+      </div>
       <div className="thumb"><SparkSvg /></div>
       <div className="cap">Approvals per week, watched live by Asoka</div>
       <table><tbody>
@@ -49,11 +55,6 @@ function Infobox() {
         <tr><th>Automations</th><td>4, <span style={{ color: 'var(--warn)', fontWeight: 600 }}>1 failing</span></td></tr>
         <tr><th>Last changed</th><td>Oct 28 <button className="wl" onClick={() => w.pickTab('history')}>See changes</button></td></tr>
       </tbody></table>
-      <div className="trust">
-        <b>{tv} of {tot} statements verified by a person</b>
-        <div className="tbar"><i style={{ width: (tv / tot) * 100 + '%', background: 'var(--ok)' }} /><i style={{ width: (several / tot) * 100 + '%', background: 'var(--link)', opacity: 0.5 }} /><i style={{ width: (checking / tot) * 100 + '%', background: 'var(--warn)' }} /></div>
-        <small>{several} backed by several sources. {checking} still being checked. Last observed 2 hours ago.</small>
-      </div>
     </aside>
   )
 }

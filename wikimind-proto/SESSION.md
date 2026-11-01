@@ -52,8 +52,15 @@ The full arc of the claude.ai session that produced these prototypes, in order. 
 29. **`stageshow` skill** (`npx skills add benjitaylor/skills --skill stageshow`): couldn't install from claude.ai (no network) and not found in public indexes. Try it here.
 30. Moved to Claude Code.
 
+## Part 3: Claude Code
+
+31. **Hardening Wikimind 3, then React.** Answers lead with the single answer (the 50% renewal case was wrong). "I don't know" offers "Ask <name>" or "Not now", with Undo, and the person answers back (presenter keys `L` and `A`). The learning moment became visible: chip, toast, and a struck-then-rewritten renewal card. Show-on-page from answers, scope toggle removed, keyboard and focus fixes, icon buttons for secondary actions. Then the whole prototype moved to Vite + React + TypeScript, every variant ported with browser checks. Geist for body, Geist Mono for tags, warm stone base color, + and − map zoom in Wikimind 2. Hosted for preview on Vercel behind a password page.
+32. **Home and pages anchor on trust vectors.** The Home stats (pages, observations, % verified) were upfront but led nowhere. Home now orients toward building trust along three vectors: reliability, automation (progress toward full automation), and gaps and access (what blocks it). New hero: "What you can trust Asoka with today, and what it needs to do more." A path-to-full-automation bar (runs on its own / asks a person first / blocked by gaps or access) sits above three cards. Reliability: 98.6% matched, 1,912 decisions in 30 days, 3 reversals you can open. Automation: 64% (up from 51% in September), with "Hand it over" for license seats, which goes to Dev for a second OK and moves the bar to 66%. Gaps and access: 7% blocked, with "Grant" for Okta sign-in logs (4%) and NetSuite write (2%), and "Follow" for the flat-renewals question. The split is derived, never stored. Scale numbers moved into the "How Asoka keeps this current" card. On the page, "At a glance" leads with three trust rows (reliability, automation, gaps) instead of the statements-verified bar. In React: `Trust.tsx`, state `tv` in the store, Grant also goes through Dev like any widening.
+
 ## Open threads worth picking up
 
+- "Hand it over" and "Grant" should only render for governors. Other users see the trust vectors without actions.
+- Trust-vector numbers are hard-coded demo data.
 - Apply the stageshow skill to Wikimind 3.
 - Fold Questions and Changes into the page itself (inline threads, time slider) if separate views still feel wiki-adjacent.
 - Bring Wikimind 2's semantic-zoom map into Wikimind 3's home as the way to browse areas.

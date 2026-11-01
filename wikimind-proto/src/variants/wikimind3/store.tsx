@@ -15,6 +15,9 @@ export type Msg = UMsg | AMsg | RMsg
 export type Pop = { kind: 'ref'; n: number; away: boolean } | { kind: 'prev'; name: string }
 export type Toast = { id: number; msg: string; act?: ToastAct; label?: string }
 export type ToastAct = 'showchat' | 'goRenewal' | 'undonew'
+export type Step = 'idle' | 'sent' | 'done'
+/** Trust vectors on Home: which misses are open, the handover, and access grants. */
+export type TV = { miss: boolean; hand: Step; acc: Record<'okta' | 'netsuite', Step> }
 
 type Claude = { use: (k: string) => Promise<{ json: (p: string, o?: object) => Promise<any> } | null> }
 const CLAUDE: Claude | null = (() => {
@@ -57,11 +60,16 @@ function useWikimindState() {
   const [listening, setListening] = useState(false)
   const [pop, setPop] = useState<Pop | null>(null)
   const [toast, setToast] = useState<Toast | null>(null)
+  const [tv, setTv] = useState<TV>({ miss: false, hand: 'idle', acc: { okta: 'idle', netsuite: 'idle' } })
 
   const ver = 38
   // Derived counts, so they can never drift out of sync.
   const asks = 9 - (learned ? 1 : 0) + newQs.filter((q) => !q.resolved).length
   const qCount = (learned ? 1 : 2) + newQs.filter((q) => q.page && !q.resolved).length
+  // Path to full automation, derived: handing over license seats adds 2 points; each access grant removes what it was blocking.
+  const auto = 64 + (tv.hand === 'done' ? 2 : 0)
+  const blocked = 7 - (tv.acc.okta === 'done' ? 4 : 0) - (tv.acc.netsuite === 'done' ? 2 : 0)
+  const tvNums = { auto, blocked, asks: 100 - auto - blocked }
 
   // Timers and callbacks read the latest state through this ref.
   const S = { view, tab, learned, chatOpen, msgs, newQs, text, files, pop }
@@ -203,7 +211,7 @@ function useWikimindState() {
   const flyQ = (q: OpenQ) => {
     const L = latest.current
     if (L.view === 'page' && L.tab === 'talk') return
-    const to = document.getElementById(q.page ? 'qcnt' : 'n-asks')
+    const to = document.getElementById(q.page ? 'qcnt' : 'lc-asks')
     const from = document.querySelector(`[data-mi="${q.msgId}"] p`)
     if (!inView(to)) return
     if (RM || !from || !(from as HTMLElement).animate) { bump(to); return }
@@ -274,6 +282,20 @@ function useWikimindState() {
     } catch { setListening(false); showToast('Microphone is blocked here. Type instead.') }
   }
 
+  /* ---------- trust vectors ---------- */
+  const tvMiss = () => setTv((t) => ({ ...t, miss: !t.miss }))
+  /** Widening what Asoka does alone always needs a second approver. */
+  const tvHand = () => {
+    if (tv.hand !== 'idle') return
+    setTv((t) => ({ ...t, hand: 'sent' }))
+    window.setTimeout(() => { setTv((t) => ({ ...t, hand: 'done' })); showToast('Dev approved. License seats now run on their own.') }, 2000)
+  }
+  const tvAcc = (k: 'okta' | 'netsuite') => {
+    if (tv.acc[k] !== 'idle') return
+    setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'sent' } }))
+    window.setTimeout(() => { setTv((t) => ({ ...t, acc: { ...t.acc, [k]: 'done' } })); showToast(k === 'okta' ? 'Dev approved. Asoka can read Okta sign-in logs.' : 'Dev approved. Asoka can write to NetSuite.') }, 2000)
+  }
+
   const runToastAct = (a: ToastAct) => { hideToast(); if (a === 'showchat') showChat(); else if (a === 'goRenewal') showRenewal(); else undoNew() }
   const area = (name: string) => {
     if (name === 'Sales Cloud') { showToast('Opening the featured Sales Cloud article.'); go('page') }
@@ -281,6 +303,7 @@ function useWikimindState() {
   }
 
   return {
+    tv, tvNums, tvMiss, tvHand, tvAcc,
     view, tab, learned, justLearned, talkTyping, learnSeen, diffPlay, openRev, hlRev, obs, edits, ver, asks, qCount,
     feed, feedFresh, loopOn, newQs, msgs, chatOpen, files, text, listening, pop, toast,
     setText, setLoopOn,
