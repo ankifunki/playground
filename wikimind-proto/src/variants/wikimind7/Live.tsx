@@ -79,7 +79,7 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
   return (
     <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '')}>
       <Why id={id} />
-      {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={16} /><span>{AG[w.presence!.ag].name} agent is writing</span></span>}
+      {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={14} /><span>{AG[w.presence!.ag].name}</span><i className="cursor-dots" aria-hidden="true"><b /><b /><b /></i></span>}
       <div className="blk-c">{children}</div>
       <span className="blk-m"><Chip id={id} /></span>
     </div>

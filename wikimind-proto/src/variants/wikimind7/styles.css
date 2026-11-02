@@ -632,3 +632,22 @@ body{font-size:15.5px}
 @media (max-width:640px){.here.live .cap-t{max-width:170px}.cap-t{overflow:hidden;text-overflow:ellipsis}}
 @media (prefers-reduced-motion:reduce){.cap,.cap-t,.here-a{transition:none}.here.live .here-a.w .ag-t{animation:none}}
 @media (max-width:640px){.cap-t b:nth-of-type(2){display:none}.here.live .cap-t{max-width:150px}}
+
+/* ---------- Light-touch live editing: no boxes, a floating label and a highlighter ---------- */
+.blk.editing,.blk.traced{background:none;box-shadow:none}
+.blk.editing .blk-c .lt{-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,color-mix(in srgb,var(--agent) 16%,transparent) 58%);background-repeat:no-repeat}
+.blk.traced .blk-c .lt,.blk.traced .blk-c p{-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 60%,color-mix(in srgb,var(--agent) 12%,transparent) 60%)}
+.cursor{top:-16px;left:6px;height:20px;padding:0 7px 0 3px;gap:5px;border-radius:999px;background:var(--panel);color:var(--agent);font-size:11.5px;font-weight:600;box-shadow:0 1px 2px rgba(28,25,23,.06),0 4px 12px rgba(28,25,23,.08)}
+.cursor .ag-t{background:var(--agentb);color:var(--agent);border-radius:50%}
+.cursor-dots{display:inline-flex;gap:2px;margin-left:1px}
+.cursor-dots b{width:3px;height:3px;border-radius:50%;background:currentColor;animation:dots 1s ease-in-out infinite}
+.cursor-dots b:nth-child(2){animation-delay:.15s}.cursor-dots b:nth-child(3){animation-delay:.3s}
+@keyframes dots{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.chip,.chip.new{height:22px;padding:0 4px;background:none;box-shadow:none;border-radius:4px;font-size:12px;color:var(--ink2)}
+.chip.new{color:var(--agent);animation:fade .3s ease both}
+.chip .ag-t,.chip.new .ag-t{background:none;color:inherit}
+@media (hover:hover) and (pointer:fine){.chip:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}}
+.blk-m{top:-10px;right:0}
+@keyframes glow{0%,30%{background:color-mix(in srgb,var(--agent) 16%,transparent);box-shadow:none}100%{background:transparent;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.cursor-dots b{animation:none;opacity:.6}}
+@media (min-width:1101px) and (hover:hover){.cursor{left:auto;right:calc(100% + 6px);top:5px}.blk.editing>.why{opacity:0 !important}}
