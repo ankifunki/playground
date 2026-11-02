@@ -1346,3 +1346,8 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-lines .kh-bg{fill:color-mix(in srgb,var(--ink) 12%,transparent)}
 .kn-lines .kh-ln{fill:color-mix(in srgb,var(--ink) 45%,transparent)}
 @media (prefers-reduced-motion:reduce){.kn-lines rect[data-s]{animation:none}}
+
+/* Proven bars: a single grey shape with two diagonal cuts; top and bottom always solid. */
+.kn-lines path[data-s]{transform-box:fill-box;transform-origin:bottom;animation:knTick .5s var(--eo) backwards;transition:opacity .2s ease;fill:color-mix(in srgb,var(--ink) 45%,transparent)}
+.kn-lines path.dim{opacity:.18}
+@media (prefers-reduced-motion:reduce){.kn-lines path[data-s]{animation:none}}

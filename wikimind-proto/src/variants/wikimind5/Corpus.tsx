@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AUTO, CORPUS_TOTAL, INVENTORY, READS, SPOT } from './data'
 import { Icon } from './Icon'
 import { RM } from './logic'
@@ -37,13 +37,22 @@ export function useWidth(ref: React.RefObject<HTMLElement | null>) {
  * as the same ink cut by diagonal slashes as thick as the bar is wide (tall blocks, 3px cuts), so they read as not quite complete.
  */
 export function Bars({ ticks, W, h, lit }: { ticks: string[]; W: number; h: number; lit?: (s: never) => boolean }) {
-  const id = 'h' + useId().replace(/[^a-z0-9]/gi, ''), N = ticks.length, step = W / Math.max(1, N), bw = 3, dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1
+  const N = ticks.length, step = W / Math.max(1, N), bw = 3, dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1
+  // Proven bars: one solid bar with two diagonal cuts (3px tall, rising left to right) at a third and two thirds of its height.
+  const g = 3, d = 2.5, c1 = h / 3, c2 = (2 * h) / 3
+  const cut = (x: number) => {
+    const r = x + bw, p = (a: number[][]) => 'M' + a.map((q) => q.join(',')).join('L') + 'Z'
+    return p([[x, 0], [r, 0], [r, c1 - g / 2 - d / 2], [x, c1 - g / 2 + d / 2]])
+      + p([[x, c1 + g / 2 + d / 2], [r, c1 + g / 2 - d / 2], [r, c2 - g / 2 - d / 2], [x, c2 - g / 2 + d / 2]])
+      + p([[x, c2 + g / 2 + d / 2], [r, c2 + g / 2 - d / 2], [r, h], [x, h]])
+  }
   return (
     <svg className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
-      <defs><pattern id={id} width="4" height="12" patternUnits="userSpaceOnUse" patternTransform="skewY(-40)"><rect className="kh-ln" width="4" height="9" /></pattern></defs>
       {W > 0 && ticks.map((s, i) => {
-        const x = Math.round((i * step + (step - bw) / 2) * dpr) / dpr, cls = lit && !lit(s as never) ? 'dim' : undefined
-        return <rect key={i} data-s={s} className={cls} x={x} y={0} width={bw} height={h} fill={s === 'ready' ? `url(#${id})` : undefined} style={{ animationDelay: Math.round((i / N) * 700) + 'ms' }} />
+        const x = Math.round((i * step + (step - bw) / 2) * dpr) / dpr, cls = lit && !lit(s as never) ? 'dim' : undefined, st = { animationDelay: Math.round((i / N) * 700) + 'ms' }
+        return s === 'ready'
+          ? <path key={i} data-s={s} className={cls} d={cut(x)} style={st} />
+          : <rect key={i} data-s={s} className={cls} x={x} y={0} width={bw} height={h} style={st} />
       })}
     </svg>
   )
