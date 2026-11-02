@@ -10,7 +10,11 @@ const fmt = (n: number) => Math.round(n).toLocaleString()
 const AUTOS = INVENTORY[1], PRACTICES = INVENTORY[INVENTORY.length - 1]
 type Seg = 'own' | 'ready' | 'complete' | 'current' | 'unknown' | 'person'
 const ORDER: Seg[] = ['own', 'ready', 'complete', 'current', 'unknown', 'person']
-const GAPS: Seg[] = ['complete', 'current', 'unknown']
+/** What each part of the bar is, said where the reader is looking (on hover or tap), instead of in a legend. */
+const SAYS: Record<Seg, string> = {
+  own: 'runs on its own', ready: 'proven, needs your OK', complete: 'waits on unwritten practice being written up',
+  current: 'waits on out-of-date pages being re-checked', unknown: 'waits on open questions', person: 'stays with a person, by policy',
+}
 
 /** Eases a number to its target: from zero on mount and whenever `from0` changes (the tour replays it). */
 function useTween(to: number, from0: number) {
@@ -49,10 +53,12 @@ function Spark({ pts }: { pts: number[] }) {
 export function Corpus() {
   const w = useW(), a = w.auto
   const [hi, setHi] = useState<Seg[] | null>(null)
+  const [tip, setTip] = useState<{ s: Seg; x: number } | null>(null)
+  const bar = useRef<HTMLDivElement>(null)
   const [slack, setSlack] = useState(READS[0].n)
   const on = useRef(w.wireOn); on.current = w.wireOn
   const own = useTween(a.own, w.replayN)
-  const gaps = a.complete + a.current + a.unknown, reach = 100 - a.person, cleared = a.own + a.ready
+  const reach = 100 - a.person, cleared = a.own + a.ready
   // They are still reading.
   useEffect(() => {
     const t = window.setInterval(() => { if (on.current) setSlack((n) => n + 1 + Math.floor(Math.random() * 3)) }, 2200)
@@ -64,6 +70,19 @@ export function Corpus() {
   const hover = (h: Seg[] | null) => ({ onMouseEnter: () => setHi(h), onMouseLeave: () => setHi(null), onFocus: () => setHi(h), onBlur: () => setHi(null) })
   const toAsks = () => document.getElementById('asking-col')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
   const trend = [...AUTO.trend.slice(0, -1), a.own]
+  // The bar explains itself: point at a part to name it, tap it to see its proof.
+  const segAt = (e: React.PointerEvent | React.MouseEvent) => {
+    const r = bar.current!.getBoundingClientRect(), i = Math.max(0, Math.min(99, Math.floor(((e.clientX - r.left) / r.width) * 100)))
+    const s = ticks[i], start = ticks.indexOf(s), mid = ((start + a[s] / 2) / 100) * r.width
+    return { s, x: Math.max(96, Math.min(r.width - 96, mid)) }
+  }
+  const point = (e: React.PointerEvent) => { const t = segAt(e); setTip(t); setHi([t.s]) }
+  const leave = () => { setTip(null); setHi(null) }
+  const open = (e: React.MouseEvent) => {
+    const { s } = segAt(e)
+    if (s === 'ready' || s === 'person' || s === 'complete' || s === 'current') w.openProof(s, e.currentTarget as HTMLElement)
+    else if (s === 'unknown') toAsks()
+  }
 
   return (
     <section className="kn" id="corpus" aria-label="Trusted to run on its own">
@@ -71,27 +90,23 @@ export function Corpus() {
         <div className="kn-head">
           <span className="tk">Trusted to run on its own</span>
           <div className="kn-num"><b className="kn-big">{own}%</b><span className="kn-what">of Northwind’s Salesforce admin work</span></div>
-          <small>A person undid {AUTO.undone} of the last {fmt((AUTO.requests * AUTO.own) / 100)} requests the agents ran alone.</small>
+          <small>A person undid {AUTO.undone} of the last {fmt((AUTO.requests * AUTO.own) / 100)} requests the agents ran alone.
+            {w.hand === 'sent' ? <span className="kn-ready on"> Asking Dev to hand over {a.ready}% more…</span>
+              : a.ready > 0 && <> <button className="kn-ready" {...hover(['ready'])} onClick={(e) => w.openProof('ready', e.currentTarget)}>{a.ready}% more is ready to hand over</button></>}
+          </small>
         </div>
         <div className="kn-trend"><Spark pts={trend} /><span className="tk">Up from {AUTO.sept}% in September</span></div>
       </div>
 
       <div className="kn-meter">
-        <div className="kn-reach" style={{ left: reach + '%' }}><span className="tk">{reach}% is the most it can reach</span></div>
-        <div className="kn-bar" key={w.replayN} role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${gaps}% is held back by gaps in what the agents know, ${a.person}% stays with a person by policy.`}>
+        <div className="kn-reach" style={{ left: reach + '%' }}>
+          <button className="tk" {...hover(['person'])} onClick={(e) => w.openProof('person', e.currentTarget)}>{reach}% is the most it can reach</button>
+        </div>
+        <div className="kn-bar" key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
+          role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${a.complete + a.current + a.unknown}% is held back by gaps in what the agents know, ${a.person}% stays with a person by policy.`}>
           {ticks.map((s, i) => <i key={i} data-s={s} className={lit(s) ? '' : 'dim'} style={{ '--i': i } as React.CSSProperties} />)}
         </div>
-        <div className="kn-key">
-          <div {...hover(['own'])}><span className="kn-sw" data-s="own" /><span>Runs on its own<b>{a.own}%</b></span></div>
-          <button {...hover(['ready'])} onClick={(e) => w.openProof('ready', e.currentTarget)} disabled={a.ready === 0 && w.hand === 'idle'}>
-            <span className="kn-sw" data-s="ready" /><span>Proven, needs your OK<b>{a.ready}%</b></span>
-            {(a.ready > 0 || w.hand === 'sent') && <span className="kn-more">{w.hand === 'sent' ? 'Asking Dev…' : 'Hand it over'}</span>}
-          </button>
-          <div {...hover(GAPS)}><span className="kn-sw" data-s="complete" /><span>Held back by gaps<b>{gaps}%</b></span></div>
-          <button {...hover(['person'])} onClick={(e) => w.openProof('person', e.currentTarget)}>
-            <span className="kn-sw" data-s="person" /><span>Stays with a person<b>{a.person}%</b></span><span className="kn-more">By policy</span>
-          </button>
-        </div>
+        {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{a[tip.s]}%</b> {SAYS[tip.s]}</div>}
       </div>
 
       <div className="kn-q">
