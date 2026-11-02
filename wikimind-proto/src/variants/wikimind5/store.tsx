@@ -1,6 +1,6 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { corpus, RECEIPT_LIVE, RECEIPTS0, REF_CFG, REF_SEC, refFor, WIRE_POOL, type Receipt, type Wire } from './data'
+import { AUTO, corpus, RECEIPT_LIVE, RECEIPTS0, REF_CFG, REF_SEC, refFor, WIRE_POOL, type Receipt, type Wire } from './data'
 import { answerFor, bump, fileAnswer, inView, localAns, RM, route, type Att, type Cand } from './logic'
 
 export type View = 'home' | 'page'
@@ -16,7 +16,7 @@ export type QA = {
   t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
-export type Proof = 'complete' | 'right' | 'current'
+export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'person'
 export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }
@@ -66,6 +66,9 @@ function useWikimindState() {
   const [tour, setTour] = useState<number | null>(null)
   const [simReq, setSimReq] = useState<SimReq | null>(null)
   const [replayN, setReplayN] = useState(0)
+  /** Handing proven work over to the agents. Widening what agents do alone always needs a second approver (Dev). */
+  const [hand, setHand] = useState<'idle' | 'sent'>('idle')
+  const [handed, setHanded] = useState(0)
   const [newQs, setNewQs] = useState<OpenQ[]>([])
   const [qas, setQas] = useState<QA[]>([])
   const [freshQa, setFreshQa] = useState<string | null>(null)
@@ -80,9 +83,11 @@ function useWikimindState() {
 
   // Derived counts, so they can never drift out of sync.
   const asks = 9 - (learned ? 1 : 0) + newQs.filter((q) => !q.resolved).length
+  // The automation split, derived so it always adds up: answering Maria releases 1% to "ready"; handing over moves ready to own.
+  const auto = { own: AUTO.own + handed, ready: AUTO.ready + (learned ? 1 : 0) - handed, complete: AUTO.gaps.complete, current: AUTO.gaps.current, unknown: AUTO.gaps.unknown - (learned ? 1 : 0), person: AUTO.person }
 
   // Timers and callbacks read the latest state through this ref.
-  const S = { view, learned, qas, newQs, text, files, pop, blame, cfg, wireOn, fin }
+  const S = { view, learned, qas, newQs, text, files, pop, blame, cfg, wireOn, fin, ready: auto.ready }
   const latest = useRef(S)
   latest.current = S
   const timers = useRef<Record<string, number>>({})
@@ -222,6 +227,17 @@ function useWikimindState() {
   const toggleWire = () => setWireOn((v) => !v)
   /** Ask the corpus on Home to replay how it was built (used by the tour). */
   const replay = () => setReplayN((n) => n + 1)
+  const handOver = () => {
+    if (hand !== 'idle' || latest.current.ready <= 0) return
+    setHand('sent')
+    timers.current.hand = window.setTimeout(() => {
+      const n = latest.current.ready
+      setHanded((h) => h + n); setHand('idle')
+      const P = latest.current.pop
+      if (P && P.kind === 'proof' && P.k === 'ready') closePop()
+      showToast(`Dev approved. ${n}% more of Northwind’s admin work now runs on its own.`)
+    }, 2400)
+  }
 
   /* ---------- the guided demo (tour) ---------- */
   const startTour = () => { closePop(); hideToast(); setBlame(null); setTour(0) }
@@ -339,11 +355,11 @@ function useWikimindState() {
 
   return {
     view, arrival, flash, learned, talkTyping, learnSeen, diffPlay, obs, asks, lastObs,
-    wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq, replayN,
+    wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq, replayN, hand, handed, auto,
     newQs, qas, freshQa, files, text, listening, pop, blame, toast,
     setText, setLens, setTour,
     go, openPrev, openCell, openProof, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
-    learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, replay, startTour, endTour,
+    learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, replay, handOver, startTour, endTour,
     ask, commitAsk, undoAsk, notNow, closeQa, resolveNewest, showQa,
     send, addFiles, removeFile, toggleMic, showToast, hideToast, runToastAct,
   }

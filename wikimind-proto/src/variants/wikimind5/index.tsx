@@ -23,7 +23,7 @@ function Header() {
   )
 }
 
-/** Keyboard: / to ask, Esc to back out, Tab stays inside the sheet. Presenter keys: T tour, C Salesforce change, L Maria answers, A a person answers, S arrive from Slack, E evidence. */
+/** Keyboard: / to ask, Esc to back out, Tab stays inside the sheet. Presenter keys: T tour, C Salesforce change, L Maria answers, A a person answers, S arrive from Slack, E evidence, H hand proven work over. */
 function Keys() {
   const w = useW(), ref = useRef(w)
   ref.current = w
@@ -37,6 +37,7 @@ function Keys() {
         if (e.key === 't' || e.key === 'T') return w.startTour()
         if (e.key === 'c' || e.key === 'C') return w.observeChange()
         if (e.key === 'e' || e.key === 'E') return w.setLens(!w.lens)
+        if (e.key === 'h' || e.key === 'H') return w.handOver()
         if (e.key === '/') { e.preventDefault(); document.getElementById('cin')?.focus(); return }
       }
       const pop = document.getElementById('pop')

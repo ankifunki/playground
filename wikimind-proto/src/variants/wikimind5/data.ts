@@ -276,3 +276,26 @@ export const STALE_EG: { t: string; why: string }[] = [
   { t: 'Quarter-end freeze dates', why: 'Last year’s dates; this year’s not announced yet.' },
   { t: 'Okta group mapping', why: 'Two Salesforce profiles were renamed.' },
 ]
+
+/* =====================================================================================
+   The CIO's goal, as the anchor: how much of Northwind's Salesforce admin work can be handed to the
+   agents and run reliably. The four questions are the levers. Nothing reaches 100% by design: some work
+   stays with a person by policy. Shares are % of last month's requests. Demo data.
+   ===================================================================================== */
+export const AUTO = {
+  own: 64, ready: 6, person: 19, sept: 51, trend: [51, 53, 55, 58, 59, 62, 64],
+  /** Last 30 days: Salesforce admin requests the agents saw, and how many of those they ran alone were undone by a person. */
+  requests: 2980, undone: 3,
+  /** Held back by knowledge, by the question that would release it. */
+  gaps: { complete: 3, current: 3, unknown: 5 },
+  /** Proven in shadow runs, waiting for a person to hand it over (a second approver signs off). */
+  readyItems: [
+    { ag: 'access' as AgentId, what: 'License seat requests', proof: '58 of 60 matched what a person did' },
+    { ag: 'access' as AgentId, what: 'Contractor password resets', proof: '41 of 41 matched, manager checked first every time' },
+    { ag: 'support' as AgentId, what: 'Case routing for Tier 1', proof: '212 of 214 matched' },
+  ],
+  /** Released when Maria answers the flat-renewals question. */
+  readyLearned: { ag: 'approvals' as AgentId, what: 'Flat renewals', proof: 'Maria confirmed the rule today; 19 of 19 past renewals match it' },
+  /** Work that stays with a person, by policy, however good the agents get. */
+  byDesign: ['Approving discounts over 20%', 'Paying invoices', 'Wiping devices', 'Changing who has admin rights'],
+}

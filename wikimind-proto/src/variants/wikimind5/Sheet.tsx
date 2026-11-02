@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Ag, agentFor } from './agents'
 import { Pile, Prov } from './Claim'
-import { AREAS, CT_LABEL, INVENTORY, PAGES, PREV, SPOT, STALE_EG, TOTALS } from './data'
+import { AREAS, AUTO, CT_LABEL, INVENTORY, PAGES, PREV, SPOT, STALE_EG, TOTALS } from './data'
 import { Icon } from './Icon'
 import { useW, type Pop } from './store'
 
@@ -27,6 +27,34 @@ function Body({ p }: { p: Pop }) {
           <li key={f.wrote}><div className="pf-h"><Ag id={f.ag} name /><span className="tk">{f.when}</span></div><del>{f.wrote}</del><span>{f.right}</span></li>
         ))}</ul>
         <div className="pnote">After each correction the agent re-checks similar facts on other pages.</div>
+        {close}
+      </div>
+    )
+    if (p.k === 'ready') {
+      // What is proven and waiting: the base items until they are handed over, then Maria's flat renewals once she answers.
+      const items = [...(w.handed === 0 ? AUTO.readyItems.map((x) => ({ ...x, n: 2 })) : []), ...(w.learned && w.handed < AUTO.ready + 1 ? [{ ...AUTO.readyLearned, n: 1 }] : [])]
+      return (
+        <div className="pc">
+          <div className="pk">Proven, needs your OK</div>
+          {items.length ? <>
+            <div className="pq">The agents ran these alongside a person and matched what they did. Dev approves before any agent does more on its own.</div>
+            <ul className="pf-fix pf-ready">{items.map((x) => (
+              <li key={x.what}><div className="pf-h"><Ag id={x.ag} name /><span className="tk">{x.n}% of the work</span></div><b>{x.what}</b><span>{x.proof}</span></li>
+            ))}</ul>
+            <div className="pf-act">
+              <button className="qbtn pri press" onClick={w.handOver} disabled={w.hand === 'sent'}>{w.hand === 'sent' ? 'Asking Dev…' : 'Ask Dev to hand it over'}</button>
+            </div>
+          </> : <div className="pq">Nothing is waiting. Everything proven so far already runs on its own.</div>}
+          {close}
+        </div>
+      )
+    }
+    if (p.k === 'person') return (
+      <div className="pc">
+        <div className="pk">Stays with a person</div>
+        <div className="pq">Northwind’s policy keeps these with a person however good the agents get, so {100 - AUTO.person}% is the most that can run on its own.</div>
+        <ul className="pf-inv">{AUTO.byDesign.map((x) => <li key={x}><span>{x}</span><b>Policy</b></li>)}</ul>
+        <div className="pnote">The agents still prepare each one and cite the rule. A person makes the call.</div>
         {close}
       </div>
     )

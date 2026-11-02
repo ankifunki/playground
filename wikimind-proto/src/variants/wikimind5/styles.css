@@ -993,17 +993,8 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .hm-mast h1{font-size:28px;line-height:1.15;letter-spacing:-.01em;max-width:none}
 .hm-mast .hm-date{margin:6px 0 0}
 .kn{margin-top:28px;background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:28px}
-.kn-flow{display:grid;grid-template-columns:minmax(0,1.2fr) 72px minmax(0,1fr);align-items:center;gap:20px;padding-bottom:28px;border-bottom:1px solid var(--hair)}
-.kn-read ul{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
-.kn-read li{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink2);line-height:1.3}
-.kn-read li b{font:450 15px var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;min-width:4.6em;text-align:right}
-.kn-read .pt{margin:0;box-shadow:none;width:24px;height:24px}
-.kn-arrow{display:flex;align-items:center;color:var(--ink2)}
-.kn-arrow i{flex:1;height:1px;background:var(--hl);margin-right:-4px}
-.kn-wrote{display:flex;flex-direction:column}
 .kn-big{font-family:var(--serif);font-weight:400;font-size:clamp(52px,7vw,76px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:8px 0 6px}
 .kn-what{font-family:var(--serif);font-size:21px;line-height:1.3}
-.kn-wrote small{font-size:13px;color:var(--ink2);margin-top:10px;line-height:1.5;max-width:28em}
 .kn-q{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px}
 .kn-q button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:0;background:var(--soft);border-radius:14px;padding:16px 16px 14px;cursor:pointer;color:inherit;font:inherit;transition:background-color .2s var(--eo),transform .16s var(--eo)}
 .kn-q button:active{transform:scale(.98)}
@@ -1016,10 +1007,6 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 @media (max-width:900px){.kn-q{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){
  .kn{padding:20px}
- .kn-flow{grid-template-columns:1fr;gap:12px}
- .kn-arrow{justify-content:flex-start;padding-left:2px}
- .kn-arrow i{display:none}
- .kn-arrow .ic{transform:rotate(90deg)}
  .kn-q{gap:8px}
  .kn-q button{padding:14px 12px 12px}
  .kn-q b{font-size:22px}
@@ -1037,3 +1024,53 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .pf-fix b{font-weight:500}
 .pf-fix span{color:var(--ink)}
 .pc .pq{font-size:18px}
+
+/* Trusted to run on its own: the CIO's number as Home's anchor, one tick per 1% of the work, the four questions as its levers */
+.kn-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.kn-head{display:flex;flex-direction:column;min-width:0}
+.kn-num{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 16px;margin-top:8px}
+.kn-num .kn-big{margin:0}
+.kn-head small{font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.5}
+.kn-trend{display:flex;flex-direction:column;align-items:flex-end;gap:6px;color:var(--ink);flex-shrink:0}
+.kn-trend .tk{color:var(--ink2)}
+.kn-meter{position:relative;margin-top:28px;padding-top:28px}
+.kn-reach{position:absolute;top:0;bottom:44px;border-left:1px dashed var(--hl);transition:left .6s var(--eo)}
+.kn-reach .tk{position:absolute;right:8px;top:0;white-space:nowrap;color:var(--ink2)}
+.kn-bar{display:grid;grid-template-columns:repeat(100,minmax(0,1fr));height:40px;align-items:stretch}
+.kn-bar i{display:block;width:2px;justify-self:center;background:var(--hl);transition:background-color .6s var(--eo),opacity .2s ease;animation:knTick .5s var(--eo) backwards;animation-delay:calc(var(--i) * 7ms);transform-origin:bottom}
+.kn-bar i[data-s="own"],.kn-sw[data-s="own"],.kn-hold i[data-s="own"]{background:var(--ink)}
+.kn-bar i[data-s="ready"],.kn-sw[data-s="ready"]{background:var(--link)}
+.kn-bar i[data-s="complete"],.kn-bar i[data-s="current"],.kn-bar i[data-s="unknown"],.kn-sw[data-s="complete"],.kn-hold i[data-s="complete"],.kn-hold i[data-s="current"],.kn-hold i[data-s="unknown"]{background:var(--warn)}
+.kn-bar i[data-s="person"],.kn-sw[data-s="person"]{background:var(--hl)}
+.kn-bar i.dim{opacity:.18}
+@keyframes knTick{from{transform:scaleY(.3);opacity:0}to{transform:none;opacity:1}}
+.kn-key{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+.kn-key>*{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;align-content:start;column-gap:10px;row-gap:2px;text-align:left;border:0;background:none;padding:6px 8px;margin:-6px -8px;border-radius:8px;font:inherit;color:inherit;font-size:13px}
+.kn-key>* b{font:450 13px var(--mono);font-variant-numeric:tabular-nums;margin-left:6px;white-space:nowrap}
+.kn-key button{cursor:pointer;transition:background-color .2s var(--eo),transform .16s var(--eo)}
+.kn-key button:active{transform:scale(.98)}
+.kn-key button:disabled{cursor:default}
+.kn-key .kn-more{grid-column:2/-1;margin:0;padding:0}
+@media (hover:hover) and (pointer:fine){.kn-key button:not(:disabled):hover{background:var(--soft)}}
+.kn-sw{width:2px;height:14px;display:block}
+.kn-hold{display:inline-flex;align-items:center;gap:8px;margin-top:4px;font:450 11px var(--mono);color:var(--ink2)}
+.kn-hold i{width:2px;height:12px;display:block;flex-shrink:0;align-self:flex-start;margin-top:1px}
+.kn-foot{display:flex;align-items:center;gap:12px;margin:24px 0 0;padding-top:20px;border-top:1px solid var(--hair);font-size:13px;line-height:1.5;color:var(--ink2);text-wrap:pretty}
+.kn-pile{display:flex;flex-shrink:0}
+.kn-pile .pt{width:22px;height:22px;margin:0 0 0 -6px;box-shadow:0 0 0 2px var(--panel)}
+.kn-pile .pt:first-child{margin-left:0}
+.pf-ready b{font-weight:500}
+.pf-act{display:flex;align-items:center;gap:12px;margin:4px 0 4px}
+.pf-act .qbtn:disabled{opacity:.6;cursor:default}
+@media (max-width:900px){.kn-key{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}}
+@media (max-width:640px){
+ .kn-top{flex-direction:column;align-items:flex-start;gap:16px}
+ .kn-trend{flex-direction:row;align-items:center;gap:10px}
+ .kn-bar{height:32px}
+ .kn-reach{bottom:auto;height:60px}
+ .kn-foot{align-items:flex-start}
+ .kn-key{grid-template-columns:1fr;row-gap:8px}
+ .kn-key>*{grid-template-columns:auto minmax(0,1fr) auto;padding:8px;margin:-4px -8px}
+ .kn-key .kn-more{grid-column:3;grid-row:1;padding-left:12px}
+}
+@media (prefers-reduced-motion:reduce){.kn-bar i{animation:none}.kn-reach{transition:none}}
