@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { DEALS, money } from './data'
 import { Icon, type IconName } from './Icon'
-import { Ag, Chip } from './Live'
+import { Ag, Chip, Why } from './Live'
 import { RM, useW } from './store'
 
 type Deal = (typeof DEALS)[number]
@@ -148,6 +148,7 @@ export function Flow() {
           ))}
         </ol>
         {w.why['flow'] && <Chip id="flow" />}
+        <Why id="flow" />
       </div>
       <div className="fo-stage" aria-live="polite">
         <div key={di + '-' + s + '-' + fin} className="fo-in">

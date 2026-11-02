@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { AG, ago, PAGES, SPACES } from './data'
 import { Flow } from './Flow'
 import { Icon } from './Icon'
-import { Ag, Block, Chip, LiveText } from './Live'
+import { Ag, Block, Chip, LiveText, Why } from './Live'
 import { useW } from './store'
 
 /** Notion-style properties: who keeps the page, who verified it, how fresh it is. Live values tick. */
@@ -74,7 +74,7 @@ export function Approvals() {
             <tr><td className="code">Large Deal Approval</td><td>Approval process</td><td><LiveText text={`Routes deals over $100,000: manager, Finance over ${f}%, CRO over 35%`} /></td><td><span className="mk">Active</span></td></tr>
             <tr><td className="code">Discount_Requires_Reason</td><td>Validation rule</td><td>Blocks a discount over 10% without a reason</td><td><span className="mk">Active</span></td></tr>
             <tr><td className="code">Amount_Locked_After_Approval</td><td>Validation rule</td><td>Only Deal Desk can change an approved amount</td><td><span className="mk">Active</span></td></tr>
-            <tr id="b-cfg-cpq" className={w.presence?.block === 'cfg-cpq' ? 'editing' : ''}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="mk warn">Failing for multi-currency</span> : <span className="mk ok fresh">Fixed · 40 of 40 synced</span>} <Chip id="cfg-cpq" /></td></tr>
+            <tr id="b-cfg-cpq" className={w.presence?.block === 'cfg-cpq' ? 'editing' : ''}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="mk warn">Failing for multi-currency</span> : <span className="mk ok fresh">Fixed · 40 of 40 synced</span>} <Chip id="cfg-cpq" /> <Why id="cfg-cpq" /></td></tr>
           </tbody>
         </table>
       </Block>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
 import { AG, ago, type AgentId } from './data'
 import { Icon } from './Icon'
 import { RM, useW } from './store'
@@ -54,49 +53,32 @@ export function LiveText({ text }: { text: string }) {
 }
 const TAIL = 4
 
-/**
- * The margin chip on anything an agent changed: who, when, and on tap, why, from what, and what it said before.
- * The popover is portalled to the body with fixed positioning, so no scroll container or table can clip it; it opens
- * below the chip (above it when there is no room) and closes on scroll, Esc or a click outside.
- */
+/** The chip on anything an agent changed: who and when. It opens the block's trace, like every "Why?" on the page. */
 export function Chip({ id }: { id: string }) {
-  const w = useW(), y = w.why[id], [at, setAt] = useState<{ x: number; y: number; up: boolean } | null>(null)
-  const btn = useRef<HTMLButtonElement>(null), pop = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    if (!at) return
-    const y0 = scrollY
-    const close = (e: Event) => { if (e.type === 'scroll' && Math.abs(scrollY - y0) < 40) return; if (e.type === 'keydown' && (e as KeyboardEvent).key !== 'Escape') return; if (e.type === 'mousedown' && (pop.current?.contains(e.target as Node) || btn.current?.contains(e.target as Node))) return; setAt(null) }
-    document.addEventListener('mousedown', close); addEventListener('scroll', close); addEventListener('resize', close); addEventListener('keydown', close)
-    return () => { document.removeEventListener('mousedown', close); removeEventListener('scroll', close); removeEventListener('resize', close); removeEventListener('keydown', close) }
-  }, [at])
+  const w = useW(), y = w.why[id]
   if (!y) return null
   const s = (w.now - y.at) / 1000, recent = s < 8
-  const toggle = () => {
-    if (at) return setAt(null)
-    const r = btn.current!.getBoundingClientRect(), W = Math.min(320, innerWidth - 24)
-    setAt({ x: Math.max(12, Math.min(r.right - W, innerWidth - W - 12)), y: r.bottom + 220 > innerHeight ? r.top - 8 : r.bottom + 8, up: r.bottom + 220 > innerHeight })
-  }
   return (
     <span className="chip-w">
-      <button ref={btn} className={'chip' + (recent ? ' new' : '')} onClick={toggle} aria-expanded={!!at}>
+      <button className={'chip' + (recent ? ' new' : '')} onClick={() => w.openTrace(id)} aria-label={`Edited ${recent ? 'just now' : ago(s)}: see why`}>
         <Ag id={y.ag} size={16} /><span>Edited {recent ? 'just now' : ago(s)}</span>
       </button>
-      {at && createPortal(
-        <span ref={pop} className={'pop w7-pop' + (at.up ? ' up' : '')} role="dialog" aria-label="Why this changed" style={{ left: at.x, top: at.y }}>
-          <span className="pop-h"><Ag id={y.ag} name size={20} /><span className="tk">{ago(s)}</span></span>
-          <span className="pop-l">Why</span><span className="pop-v">{y.t}</span>
-          <span className="pop-l">From</span><span className="pop-v">{y.src}</span>
-          <span className="pop-l">Before</span><span className="pop-v"><del>{y.before}</del></span>
-        </span>, document.body)}
     </span>
   )
+}
+
+/** The one affordance for "why should I trust this?": a handle in the block's gutter that opens its trace. */
+export function Why({ id }: { id: string }) {
+  const w = useW()
+  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="Why: see the trace"><Icon name="git-branch" size={13} /><span>Why?</span></button>
 }
 
 /** A page block. While an agent edits it, its cursor flag sits in the gutter and the block is outlined; afterwards the chip stays in the margin. */
 export function Block({ id, children, cls = '' }: { id: string; children: ReactNode; cls?: string }) {
   const w = useW(), editing = w.presence?.block === id
   return (
-    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '')}>
+    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '')}>
+      <Why id={id} />
       {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={16} /><span>{AG[w.presence!.ag].name} agent is writing</span></span>}
       <div className="blk-c">{children}</div>
       <span className="blk-m"><Chip id={id} /></span>

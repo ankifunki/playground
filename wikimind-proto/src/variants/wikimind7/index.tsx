@@ -6,6 +6,8 @@ import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
 import { Ag } from './Live'
 import { Omni } from './Omni'
+import { Trace } from './Trace'
+import { TRACE } from './traces'
 import { Approvals, Stub } from './Page'
 import { Provider, useW } from './store'
 import css from './styles.css?inline'
@@ -19,7 +21,7 @@ function Sidebar() {
       <div className="sb-ws"><span className="sb-logo">N</span><span><b>Northwind</b><small>Wikimind · kept by 6 agents</small></span></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={15} />Home</button>
-      <button className="sb-i" onClick={() => { w.setRail(true); if (innerWidth < 1400) w.setNav(false) }}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
+      <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
       <div className="sb-l">Spaces</div>
       {SPACES.map((s) => {
         const pages = s.pages.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()))
@@ -54,7 +56,7 @@ function Top() {
   return (
     <div className="top">
       <div className="top-r">
-        <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><Icon name="menu" size={16} /></button>
+        <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><span className="hb" aria-hidden="true"><i /><i /><i /></span></button>
         <div className="crumb">
           {p ? <><button onClick={() => w.go('home')}>Northwind</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name}</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>Home</b>}
         </div>
@@ -79,19 +81,25 @@ function Rail() {
   const w = useW()
   return (
     <aside className={'rail' + (w.rail ? ' open' : '')} aria-label="Live activity">
-      <div className="rail-h"><span className="rail-t"><i className={w.playing ? 'on' : ''} aria-hidden="true" />Live activity</span><button className="ib" onClick={() => w.setRail(false)} aria-label="Close"><Icon name="x" size={15} /></button></div>
+      <div className="rail-h">
+        {w.trace ? <span className="rail-t"><button className="ib" onClick={() => w.openTrace(null)} aria-label="Back to live activity"><Icon name="chevron-down" size={15} /></button>Trace</span>
+          : <span className="rail-t"><i className={w.playing ? 'on' : ''} aria-hidden="true" />Live activity</span>}
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null) }} aria-label="Close"><Icon name="x" size={15} /></button>
+      </div>
+      {w.trace ? <div className="rail-sc"><Trace id={w.trace} /></div> : <>
       <ol>
         {w.acts.map((a) => (
           <li key={a.id} className={a.id > 0 && w.now - a.at < 6000 ? 'in' : ''}>
             {a.ag === 'person' ? <span className="rail-p" aria-hidden="true"><Icon name="user" size={12} /></span> : <Ag id={a.ag} size={22} />}
             <span>
               <span className="rail-x"><b>{a.ag === 'person' ? a.who : AG[a.ag].name}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
-              <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
+              <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button>{a.block && TRACE[a.block] && <> · <button className="wl" onClick={() => w.openTrace(a.block!)}>Why?</button></>}</small>
             </span>
           </li>
         ))}
       </ol>
       <p className="rail-demo"><span className="tk">Demo</span><button className="wl" onClick={w.replay}>Replay live updates</button></p>
+      </>}
     </aside>
   )
 }
@@ -139,7 +147,7 @@ function Shell() {
   return (
     <div className={'w7' + (w.nav ? ' nav-on' : '') + (w.rail ? ' rail-on' : '')}>
       <Sidebar />
-      {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
+      {w.nav && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top />
         {w.page === 'home' ? <Home /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}

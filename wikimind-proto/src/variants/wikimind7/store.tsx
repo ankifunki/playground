@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import type { AgentId } from './data'
+import type { TStep } from './traces'
 
 export type Act = { id: number; ag: AgentId | 'person'; who?: string; t: string; page: string; block?: string; at: number; kind: 'edit' | 'read' | 'verify' | 'ask' }
 /** Why a block changed: shown in the block's margin chip and its popover. */
@@ -13,6 +14,7 @@ type W = {
   playing: boolean; setPlaying: (b: boolean) => void
   rail: boolean; setRail: (b: boolean) => void; nav: boolean; setNav: (b: boolean) => void
   replay: () => void; jump: (block: string) => void; log: (a: Omit<Act, 'id' | 'at'>) => void
+  trace: string | null; openTrace: (id: string | null) => void; extra: Record<string, TStep[]>
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -37,8 +39,13 @@ export function Provider({ children }: { children: ReactNode }) {
   const [qe, setQe] = useState<[number, number]>([9, 12]), [renewal, setRenewal] = useState<'asking' | 'answered'>('asking'), [cpq, setCpq] = useState<'failing' | 'fixed'>('failing')
   const [why, setWhy] = useState<Record<string, Why>>({}), [presence, setPresence] = useState<Presence>(null)
   const [now, setNow] = useState(Date.now()), [acts, setActs] = useState<Act[]>(() => SEED(Date.now()))
-  const [playing, setPlaying] = useState(!RM), [rail, setRail] = useState(false), [nav, setNav] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1400px)').matches)
-  const [run, setRun] = useState(0)
+  const [playing, setPlaying] = useState(!RM), [rail, setRailS] = useState(false), [nav, setNavS] = useState(false)
+  // One floating panel at a time: opening the nav closes the right panel, and the other way round.
+  const setNav = (b: boolean) => { setNavS(b); if (b) setRailS(false) }
+  const setRail = (b: boolean) => { setRailS(b); if (b) setNavS(false) }
+  const [run, setRun] = useState(0), [trace, setTrace] = useState<string | null>(null), [extra, setExtra] = useState<Record<string, TStep[]>>({})
+  const add = (id: string, ...st: TStep[]) => setExtra((m) => ({ ...m, [id]: [...(m[id] || []), ...st] }))
+  const openTrace = (id: string | null) => { setTrace(id); if (id) setRail(true) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
   useEffect(() => { const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t) }, [])
@@ -49,6 +56,7 @@ export function Provider({ children }: { children: ReactNode }) {
     setPresence({ ag, block, label, page })
     later(1400, () => {
       apply(); setWhy((m) => ({ ...m, [block]: { ...w, ag, at: Date.now() } })); act({ ag, t, page, block, kind: 'edit' })
+      add(block, { k: 'observed', by: ag, t: w.t, src: w.src, at: 'just now' }, { k: 'edited', by: ag, t: 'Rewrote this block', before: w.before, at: 'just now' })
       later(2600, () => setPresence((p) => (p?.block === block ? null : p)))
     })
   }
@@ -61,11 +69,13 @@ export function Provider({ children }: { children: ReactNode }) {
       { t: 'Priya Shah changed the Large Deal Approval process in Salesforce: Finance now joins over 25%, not 20%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'From 20% to 35%: the sales manager, then Finance.' }, 'Rewrote Who approves and the flow: Finance joins over 25%')
     later(1400, () => setWhy((m) => ({ ...m, 'who-mgr': { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed the Large Deal Approval process in Salesforce: the sales manager now approves alone up to 25%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Up to 20% off: the sales manager approves on their own.' } })))
     later(1400, () => setWhy((m) => ({ ...m, flow: { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed the Large Deal Approval process in Salesforce: Finance now joins over 25%, not 20%. The agent redrew the routes.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Sales manager up to 20%; Finance from 20% to 35%.' } })))
-    later(9000, () => { setVerify('ok'); act({ ag: 'person', who: 'Dana Ruiz', t: 'Verified the change to Who approves', page: 'discount-approvals', block: 'who-fin', kind: 'verify' }) })
+    later(1500, () => { add('who-fin', { k: 'revoked', by: 'person', name: 'Dana Ruiz', t: 'Verification withdrawn automatically: the Salesforce config changed under it', at: 'just now' }); add('who-mgr', { k: 'observed', by: 'approvals', t: 'Sales manager limit moved from 20% to 25%', src: 'Setup audit trail · Large Deal Approval', at: 'just now' }); add('flow', { k: 'edited', by: 'approvals', t: 'Redrew the discount bands', before: 'Sales manager up to 20%; Finance from 20% to 35%', at: 'just now' }) })
+    later(9000, () => { add('who-fin', { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Re-checked the change and verified it again', at: 'just now' }); setVerify('ok'); act({ ag: 'person', who: 'Dana Ruiz', t: 'Verified the change to Who approves', page: 'discount-approvals', block: 'who-fin', kind: 'verify' }) })
   }, [fin])
   const answer = useCallback(() => {
     if (renewal === 'answered') return
     act({ ag: 'person', who: 'Maria Okafor', t: 'Answered in Slack: flat renewals skip approval on purpose', page: 'discount-approvals', kind: 'ask' })
+    add('renew', { k: 'verified', by: 'person', name: 'Maria Okafor', t: 'Answered the agent’s question', quote: '“Yes, on purpose. Policy since 2023: a flat renewal doesn’t change revenue risk.”', at: 'just now' })
     edit('approvals', 'renew', 'In practice', 'discount-approvals', () => setRenewal('answered'),
       { t: 'Maria Okafor (RevOps) answered the agent’s question in Slack: it has been policy since 2023.', src: 'Slack DM with Maria Okafor · just now', before: 'Open question: do flat renewals skip approval on purpose?' }, 'Wrote Maria’s answer into Flat renewals')
   }, [renewal])
@@ -87,10 +97,10 @@ export function Provider({ children }: { children: ReactNode }) {
 
   const replay = () => {
     timers.current.forEach((t) => window.clearTimeout(t)); timers.current = []
-    setFin(20); setVerify('ok'); setQe([9, 12]); setRenewal('asking'); setCpq('failing'); setWhy({}); setPresence(null); setActs(SEED(Date.now()))
+    setFin(20); setVerify('ok'); setExtra({}); setTrace(null); setQe([9, 12]); setRenewal('asking'); setCpq('failing'); setWhy({}); setPresence(null); setActs(SEED(Date.now()))
     setPage('discount-approvals'); window.scrollTo({ top: 0 }); setRun((r) => r + 1)
   }
-  const go = (p: string) => { setPage(p); if (window.innerWidth < 1400) setNav(false); window.scrollTo({ top: 0 }) }
+  const go = (p: string) => { setPage(p); setNav(false); window.scrollTo({ top: 0 }) }
   const jump = (block: string) => {
     const doIt = () => document.getElementById('b-' + block)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
     if (page !== 'discount-approvals') { setPage('discount-approvals'); window.setTimeout(doIt, 80) } else doIt()
@@ -103,10 +113,10 @@ export function Provider({ children }: { children: ReactNode }) {
       if (e.key === 'c' || e.key === 'C') change()
       else if (e.key === 'l' || e.key === 'L') answer()
       else if (e.key === 'r' || e.key === 'R') replay()
-      else if (e.key === 'Escape') { setRail(false); setNav(false) }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra }}>{children}</Ctx.Provider>
 }
