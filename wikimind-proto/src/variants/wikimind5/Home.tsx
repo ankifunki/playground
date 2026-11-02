@@ -2,6 +2,7 @@ import { QaSlot } from './Answer'
 import { AG, Ag } from './agents'
 import { Pile } from './Claim'
 import { Built, Corpus } from './Corpus'
+import { Thresholds } from './Thresholds'
 import { ASKS, CHANGED, LEARNED, type Story } from './data'
 import { Icon } from './Icon'
 import { Ago } from './Job'
@@ -10,29 +11,13 @@ import { useW } from './store'
 
 const DATE = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
-/** The approval thresholds as a strip: who approves at each discount, with the old line struck through. */
-function Thresholds({ fin, was }: { fin: number; was: { at: number; label: string } }) {
-  const pct = (n: number) => (n / 50) * 100 + '%'
-  return (
-    <div className="thr" role="img" aria-label={`Sales manager up to ${fin}%, Finance added over ${fin}%, CRO over 35%. Previously ${was.label}.`}>
-      <div className="thr-bar">
-        <span className="thr-s m" style={{ left: 0, width: pct(fin) }}><b>Manager</b></span>
-        <span className="thr-s f" style={{ left: pct(fin), width: pct(35 - fin) }}><b>+ Finance</b></span>
-        <span className="thr-s c" style={{ left: pct(35), width: pct(15) }}><b>CRO</b></span>
-        <span className="thr-was" style={{ left: pct(was.at) }}><small>was {was.at}%</small></span>
-      </div>
-      <div className="thr-ax">{[0, 10, 20, 30, 40, 50].map((n) => <span key={n} style={{ left: pct(n) }}>{n}%</span>)}</div>
-    </div>
-  )
-}
-
 /** The lead story: the biggest change in Northwind's Salesforce. It is replaced live when a new change lands. */
 function Lead() {
   const w = useW(), live = w.cfg !== 'idle'
   return (
     <article className="hm-lead" id="lead">
       <div className="hm-k">
-        {live ? <span className="tdone info live">Just now</span> : <span className="tk">Oct 28</span>}
+        {live ? <span className="tk ago"><span className="pdot" />Just now</span> : <span className="tk">Oct 28</span>}
         <span className="tk">Changed in Salesforce</span>
       </div>
       <h2>{live ? 'Finance now reviews discounts over 25%, not 20%' : 'Discounts over 35% now go straight to the CRO'}</h2>
@@ -42,7 +27,7 @@ function Lead() {
       <Thresholds fin={w.fin} was={live ? { at: 20, label: 'Finance over 20%' } : { at: 40, label: 'CRO over 40%' }} />
       <div className="hm-by">
         <Ag id="approvals" name />
-        <span className={'tdone' + (live && w.cfg === 'changed' ? ' wait' : '')}>{live ? (w.cfg === 'changed' ? 'Dana is re-checking' : 'Verified by Dana just now') : 'Verified by Dana Ruiz'}</span>
+        <span className={'hm-ver' + (live && w.cfg === 'changed' ? ' wait' : '')}>{live ? (w.cfg === 'changed' ? 'Dana is re-checking' : 'Verified by Dana just now') : 'Verified by Dana Ruiz'}</span>
         <Pile ns={live ? [15] : [3, 12]} />
         <button className="wl" onClick={() => (live ? w.showCfg() : w.showClaims([3, 12]))}>Read it on the page</button>
       </div>
@@ -76,7 +61,7 @@ function StoryCol({ title, items, icon }: { title: string; items: Story[]; icon:
         <li key={s.t}>
           <button className="hm-st" onClick={(e) => (s.sec ? (s.ns ? w.showClaims(s.ns) : w.go('page', { sec: s.sec })) : w.openPrev(s.page!, e.currentTarget))}>{s.t}</button>
           <p>{s.s}</p>
-          <div className="hm-meta"><Ag id={s.ag} name suffix="" />{s.tag && <span className={'tdone' + (s.tag[1] === 'warn' ? ' wait' : s.tag[1] === 'info' ? ' info' : '')}>{s.tag[0]}</span>}{s.ns && <Pile ns={s.ns} max={3} />}</div>
+          <div className="hm-meta"><Ag id={s.ag} name suffix="" />{s.ns && <Pile ns={s.ns} max={3} />}</div>
         </li>
       ))}</ul>
     </section>
@@ -93,7 +78,7 @@ function AskCol() {
           <li key={x.id} className={x.fresh ? 'in' : ''}>
             <button className="hm-st" onClick={() => w.showQa(x.qaId)}>{x.q}</button>
             <p>{x.resolved ? `${x.who} answered just now.` : `Asking ${whoStr(x)}.`}</p>
-            <div className="hm-meta"><Ag id={x.agent} name suffix="" /><span className={'tdone' + (x.resolved ? '' : ' wait')}>{x.resolved ? 'Answered' : 'Asking'}</span></div>
+            <div className="hm-meta"><Ag id={x.agent} name suffix="" /></div>
           </li>
         ))}
         {ASKS.map((a, i) => {
@@ -102,7 +87,7 @@ function AskCol() {
             <li key={a.q}>
               <button className="hm-st" onClick={(e) => (i === 0 ? (w.learned ? w.showRenewal() : w.go('page', { sec: 'practice' })) : a.sec ? w.go('page', { sec: a.sec }) : w.openPrev(a.page!, e.currentTarget))}>{a.q}</button>
               <p>{done ? 'Maria Okafor answered. The page was rewritten.' : a.who === 'Watching' ? a.s : `${a.who}, ${a.s}`}</p>
-              <div className="hm-meta"><Ag id={a.ag} name suffix="" /><span className={'tdone' + (done ? '' : ' wait')}>{done ? 'Answered' : a.who === 'Watching' ? 'Watching' : 'Asking'}</span></div>
+              <div className="hm-meta"><Ag id={a.ag} name suffix="" /></div>
             </li>
           )
         })}

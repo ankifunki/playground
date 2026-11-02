@@ -1188,3 +1188,59 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .pf-inv li .wl{margin-left:6px;font-size:13px}
 @media (prefers-reduced-motion:reduce){.kn-ny{transition:none}}
 .pc .pnote{font-size:14px;line-height:1.5;color:var(--ink2);margin:8px 0 4px}
+
+/* ---- Try a deal, reduced to what's needed ----
+   Active: one input panel ("Your deal", two sliders) on a soft fill, the only thing on the card that responds.
+   Passive: the answer, the discount bands with the deal marked, the reason, and the link to the rule. */
+.sim{gap:28px}
+.sim-in{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 32px;background:var(--soft);border-radius:8px;padding:16px 20px 22px}
+.sim-in>.tk{grid-column:1/-1}
+.sim-r>span{font-size:14px;color:var(--ink2)}
+.sim-out{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.sim-out .thr{align-self:stretch;margin:20px 0 6px}
+.sim-ans{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;background:none;padding:0;border-radius:0;margin:0}
+.sim-ans b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.15;letter-spacing:-.015em}
+.sim-ans span{font-size:14px;color:var(--ink2)}
+.sim-reason{margin:6px 0 2px;font-size:16px;line-height:1.55}
+/* The shared threshold strip: the deal's band in full ink, the rest receded; a marker at the deal. */
+.thr.pick .thr-s,.thr.off .thr-s{opacity:.35;transition:opacity .3s var(--eo),left .6s var(--eo),width .6s var(--eo)}
+.thr.pick .thr-s.on{opacity:1}
+.thr.pick .thr-s.on b{color:var(--ink)}
+.thr-mark{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:var(--ink);transition:left .35s var(--eo)}
+.thr-mark small{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);font:450 11px var(--mono);letter-spacing:.01em;color:var(--ink);white-space:nowrap}
+.thr.off .thr-mark{background:var(--ink2)}
+.thr.off .thr-mark small{color:var(--ink2)}
+@media (max-width:640px){.sim-in{grid-template-columns:1fr;gap:12px}}
+@media (prefers-reduced-motion:reduce){.thr-mark,.thr .thr-s{transition:none}}
+/* In Try a deal, band labels sit under the line so the deal marker crosses only the line, never a label. */
+.sim-out .thr{margin-top:28px}
+.sim-out .thr-bar{height:30px}
+.sim-out .thr-s{border-bottom:0;border-top:2px solid;align-items:flex-end;padding:0 6px 4px}
+.sim-out .thr-s.m{border-top-color:color-mix(in srgb,var(--ink) 30%,transparent)}
+.sim-out .thr-s.f{border-top-color:color-mix(in srgb,var(--ink) 60%,transparent)}
+.sim-out .thr-s.c{border-top-color:var(--ink)}
+.sim-out .thr-mark{top:-7px;bottom:auto;height:16px}
+.sim-out .thr-mark small{bottom:calc(100% + 2px)}
+
+/* ---- Status has one purpose and one place ----
+   On the page, a status flags a sentence that isn't solid and opens its evidence: it lives only in the margin beside that
+   sentence (inline after it on narrow screens), always clickable, one solid 2px bar, tone colour for meaning.
+   On Home, headlines and meta lines say the state in words; only the lead's byline names who verified it. */
+.mk{font:450 11px/20px var(--mono);letter-spacing:.01em}
+.mk.info,.mk.stale{color:var(--ink2)}
+.mk.stale::before{background:currentColor}
+@media (hover:hover) and (pointer:fine){.mk:hover{text-decoration:underline;text-underline-offset:3px}}
+.hm-ver{font-size:13px;color:var(--ok)}
+.hm-ver.wait{color:var(--warn)}
+.hm-lead .hm-k .ago{font:450 11px var(--mono);letter-spacing:.01em}
+
+/* The page's overall status: Home's anchor at page scale, read-only, sitting with the four questions between hairlines. */
+.pm{padding:20px 0 0;border-top:1px solid var(--hl);margin-top:8px}
+.pm-row{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:8px 24px;margin-top:6px}
+.pm-num{display:flex;align-items:baseline;gap:10px;margin:0}
+.pm-num b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.1;letter-spacing:-.015em}
+.pm-num span{font-size:14px;color:var(--ink2)}
+.pm-bar{height:28px;cursor:default;margin-bottom:4px}
+.pm-meta{margin:8px 0 0;font-size:13px;color:var(--ink2)}
+.pm+.tline{border-top:0;padding-top:16px;margin-top:4px}
+@media (max-width:640px){.pm-row{grid-template-columns:1fr}.pm-bar{height:24px}}

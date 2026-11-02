@@ -296,6 +296,8 @@ export const AUTO = {
     { ag: 'access' as AgentId, what: 'Contractor password resets', proof: '41 of 41 matched, manager checked first every time' },
     { ag: 'support' as AgentId, what: 'Case routing for Tier 1', proof: '212 of 214 matched' },
   ],
+  /** This page's job (Discount approvals), in the same terms as Home: the Approvals agent's share of it. */
+  page: { own: 52, ran: 618, undone: 1, job: 'discount approvals' },
   /** Released when Maria answers the flat-renewals question. */
   readyLearned: { ag: 'approvals' as AgentId, what: 'Flat renewals', proof: 'Maria confirmed the rule today; 19 of 19 past renewals match it' },
   /** The hardest work, still done by people for now. The agents shadow each one (prepare it, compare with what the person decided)

@@ -1,3 +1,4 @@
+import { PageMeter } from './Corpus'
 import { useEffect, useRef, useState } from 'react'
 import { QaSlot } from './Answer'
 import { Ag, AgentPile, type AgentId } from './agents'
@@ -60,16 +61,14 @@ function Renewal() {
   const w = useW()
   if (w.learned) return (
     <div className={'obs done' + (w.diffPlay ? ' upd' : '')} id="renewal">
-      <div className="ok2">Maria answered the Approvals agent just now</div>
       <p className={'was' + (w.diffPlay ? ' anim' : '')}><del>{OLD_RENEWAL}</del></p>
-      <p className={w.diffPlay ? 'write' : ''}><C ns={[11, 14]} mark={{ t: 'Changed just now', tone: 'ok' }}>Flat <L to="Renewals">renewals</L> skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.</C></p>
+      <p className={w.diffPlay ? 'write' : ''}><C ns={[11, 14]} mark={{ t: 'Maria answered just now', tone: 'ok' }}>Flat <L to="Renewals">renewals</L> skip approval on purpose. It has been the policy since 2023, because flat renewals don’t change revenue risk.</C></p>
       <div className="said">“Yes, on purpose since 2023. Flat renewals don’t change revenue risk.” <span>Maria Okafor, RevOps</span></div>
     </div>
   )
   return (
     <div className="obs" id="renewal">
-      <div className="ok2">Open question · Approvals agent asked Maria, Oct 27</div>
-      <p><C ns={[11]}>{OLD_RENEWAL}</C></p>
+      <p><C ns={[11]} mark={{ t: 'Asking Maria', tone: 'warn' }}>{OLD_RENEWAL}</C></p>
       <Dots on={14} />
       <div className="dl">14 of 14 flat renewals last quarter</div>
       <div className="wait">{w.talkTyping ? <><span className="typing"><i /><i /><i /></span>Maria is replying</> : <button className="wl" onClick={w.learn}>Simulate her reply</button>}</div>
@@ -111,12 +110,12 @@ function TrustLine({ sents }: { sents: number[][] }) {
 /* ---------- How it's configured: what touches the Opportunity object, and why each thing exists ---------- */
 function Config() {
   const w = useW(), ch = w.cfg !== 'idle'
-  const autos: { type: string; name: string; ns: number[]; does: string; st?: [string, 'ok' | 'warn' | 'info' | 'stale']; ag: AgentId; mark?: Mark }[] = [
-    { type: 'Approval process', name: 'Large Deal Approval', ns: ch ? [2, 15] : [2, 13], does: `Locks deals over $100,000 and routes them: the manager, Finance over ${w.fin}%, the CRO over 35%.`, st: ch ? ['Changed just now', 'info'] : ['Changed Oct 28', 'info'], ag: 'approvals' },
+  const autos: { type: string; name: string; ns: number[]; does: string; ag: AgentId; mark?: Mark }[] = [
+    { type: 'Approval process', name: 'Large Deal Approval', ns: ch ? [2, 15] : [2, 13], does: `Locks deals over $100,000 and routes them: the manager, Finance over ${w.fin}%, the CRO over 35%.`, ag: 'approvals' },
     { type: 'Validation rule', name: 'Discount_Requires_Reason', ns: [16], does: 'Blocks a discount over 10% without a written reason.', ag: 'finance' },
     { type: 'Validation rule', name: 'Amount_Locked_After_Approval', ns: [8], does: 'Lets only Deal Desk change the amount once a deal is approved.', ag: 'finance' },
-    { type: 'Flow', name: 'Notify_Deal_Desk', ns: [17], does: 'Posts approved deals over $500,000 to #deal-desk.', st: ['Stale', 'stale'], ag: 'approvals', mark: { t: 'Not seen since Aug 14', tone: 'stale' } },
-    { type: 'Integration', name: 'CPQ quote sync', ns: [18], does: 'Sends approved discounts to CPQ quotes.', st: ['Failing for multi-currency', 'warn'], ag: 'integrations' },
+    { type: 'Flow', name: 'Notify_Deal_Desk', ns: [17], does: 'Posts approved deals over $500,000 to #deal-desk.', ag: 'approvals', mark: { t: 'Not seen since Aug 14', tone: 'stale' } },
+    { type: 'Integration', name: 'CPQ quote sync', ns: [18], does: 'Sends approved discounts to CPQ quotes.', ag: 'integrations', mark: { t: 'Failing for multi-currency', tone: 'warn' } },
   ]
   return (
     <div className="cfg">
@@ -127,7 +126,7 @@ function Config() {
       </div>
       <ul className="cfg-l">{autos.map((a) => (
         <li key={a.name}>
-          <div className="cfg-h"><span className="tk">{a.type}</span>{a.st && <span className={'tdone' + (a.st[1] === 'warn' ? ' wait' : a.st[1] === 'info' ? ' info' : a.st[1] === 'stale' ? ' stale' : '')}>{a.st[0]}</span>}</div>
+          <div className="cfg-h"><span className="tk">{a.type}</span></div>
           <code className="cfg-n">{a.name}</code>
           <p><C ns={a.ns} mark={a.mark}>{a.does}</C></p>
           <div className="cfg-by"><Ag id={a.ag} name suffix=" agent watches it" /></div>
@@ -183,6 +182,7 @@ export function Job() {
               <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span><span><i className="lg-stale" />Stale</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
             </div>
           )}
+          <PageMeter />
           <TrustLine sents={sents} />
           <PageNav kind="chips" />
           <Arrival />
@@ -207,8 +207,7 @@ export function Job() {
           <section id="s-practice">
             <h2>In practice</h2>
             <div className="obs">
-              <div className="ok2">Unofficial</div>
-              <p><C ns={[9, 10]}>At <L to="Quarter-end close">quarter end</L>, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.</C></p>
+              <p><C ns={[9, 10]} mark={{ t: 'Unofficial', tone: 'warn' }}>At <L to="Quarter-end close">quarter end</L>, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.</C></p>
               <Dots on={9} off={3} />
               <div className="dl">9 of the last 12 quarter ends</div>
             </div>

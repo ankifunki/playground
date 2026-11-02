@@ -129,3 +129,25 @@ export function Built() {
     </p>
   )
 }
+
+/**
+ * The same anchor as Home, at page scale: how much of this page's job runs on its own. Read-only: three looks, three
+ * statuses, all named in the line under it. Maria's answer moves flat renewals (3%) from not yet to proven.
+ */
+export function PageMeter() {
+  const w = useW(), P = AUTO.page
+  const ready = w.learned ? 3 : 0, own = P.own, notyet = 100 - own - ready
+  const ticks: string[] = [...Array(own).fill('own'), ...Array(ready).fill('ready'), ...Array(notyet).fill('shadow')]
+  return (
+    <div className="pm" aria-label="How much of this job runs on its own">
+      <span className="tk">Trusted to run on its own</span>
+      <div className="pm-row">
+        <p className="pm-num"><b>{own}%</b><span>of {P.job}</span></p>
+        <div className="kn-bar pm-bar" role="img" aria-label={`${own}% runs on its own${ready ? `, ${ready}% is proven and needs your OK` : ''}, ${notyet}% not yet.`}>
+          {ticks.map((s, i) => <i key={i} data-s={s} style={{ '--i': i } as React.CSSProperties} />)}
+        </div>
+      </div>
+      <p className="pm-meta">A person undid {P.undone} of the last {P.ran} the Approvals agent ran alone.{ready ? ` ${ready}% more is proven and needs your OK.` : ''} {notyet}% not yet.</p>
+    </div>
+  )
+}
