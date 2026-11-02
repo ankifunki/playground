@@ -9,7 +9,7 @@ import { useW, type View, type W } from './store'
  */
 type Step = { v: View; sel: string; t: string; b: string; run?: (w: W) => void }
 const STEPS: Step[] = [
-  { v: 'home', sel: '#corpus', t: 'Assembled automatically, in days', b: 'The agents started writing the day Northwind connected Slack, Salesforce, Jira and meetings. Watch the curve: over 900 pages in the first week, 1,284 today, and for each topic, how much a person has checked.', run: (w) => w.replay() },
+  { v: 'home', sel: '#corpus', t: 'Assembled automatically', b: 'The agents read Northwind’s Slack, tickets, six years of Salesforce changes and 214 meetings, and wrote 1,284 pages, most in the first week. Then four questions you can check: complete, right, current, and what they don’t know yet.', run: (w) => w.replay() },
   { v: 'home', sel: '#lead', t: 'What changed, at a glance', b: 'Like a front page: the biggest change in Northwind’s Salesforce, written up by the agent that noticed it, with its sources.' },
   { v: 'page', sel: '#s-lead', t: 'Proof, not claims', b: 'With Evidence on, every sentence shows what it came from. Green was checked by Dana, a sysadmin. Amber is still unconfirmed.', run: (w) => w.setLens(true) },
   { v: 'page', sel: '#sim', t: 'Anyone can see how it works', b: 'Try a deal and watch its real route, step by step. The demo is generated from the rules on the page and the live Salesforce setup.', run: (w) => { w.setLens(false); w.tryDeal(240000, 28) } },

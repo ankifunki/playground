@@ -16,7 +16,8 @@ export type QA = {
   t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
-export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number }
+export type Proof = 'complete' | 'right' | 'current'
+export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }
 export type Toast = { id: number; msg: string; act?: ToastAct; label?: string; qa?: string }
@@ -130,6 +131,8 @@ function useWikimindState() {
   const openPrev = (name: string, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'prev', name }) }
   /** A page from the corpus grid. */
   const openCell = (i: number) => { popFrom.current = null; setPop({ kind: 'page', i }) }
+  /** The proof behind one of the four trust answers. */
+  const openProof = (k: Proof, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'proof', k }) }
 
   /* ---------- provenance: every sentence knows where it came from ---------- */
   const hoverBlame = (ns: number[] | null, el?: HTMLElement) => {
@@ -339,7 +342,7 @@ function useWikimindState() {
     wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq, replayN,
     newQs, qas, freshQa, files, text, listening, pop, blame, toast,
     setText, setLens, setTour,
-    go, openPrev, openCell, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
+    go, openPrev, openCell, openProof, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
     learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, replay, startTour, endTour,
     ask, commitAsk, undoAsk, notNow, closeQa, resolveNewest, showQa,
     send, addFiles, removeFile, toggleMic, showToast, hideToast, runToastAct,

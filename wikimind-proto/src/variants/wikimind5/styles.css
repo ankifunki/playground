@@ -985,3 +985,55 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
  .gr{margin:32px 4px 44px;height:96px}
 }
 @media (prefers-reduced-motion:reduce){.tp-live,.tp-pages{animation:fade .2s both}.tp-bar,.tp-chev{transition:none}}
+
+/* =====================================================================================
+   Home, simplified: a quiet nameplate, then what the agents know in four checkable questions.
+   ===================================================================================== */
+.hm-mast{align-items:center;padding-top:28px}
+.hm-mast h1{font-size:28px;line-height:1.15;letter-spacing:-.01em;max-width:none}
+.hm-mast .hm-date{margin:6px 0 0}
+.kn{margin-top:28px;background:var(--panel);box-shadow:var(--sh);border-radius:20px;padding:28px}
+.kn-flow{display:grid;grid-template-columns:minmax(0,1.2fr) 72px minmax(0,1fr);align-items:center;gap:20px;padding-bottom:28px;border-bottom:1px solid var(--hair)}
+.kn-read ul{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.kn-read li{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink2);line-height:1.3}
+.kn-read li b{font:450 15px var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;min-width:4.6em;text-align:right}
+.kn-read .pt{margin:0;box-shadow:none;width:24px;height:24px}
+.kn-arrow{display:flex;align-items:center;color:var(--ink2)}
+.kn-arrow i{flex:1;height:1px;background:var(--hl);margin-right:-4px}
+.kn-wrote{display:flex;flex-direction:column}
+.kn-big{font-family:var(--serif);font-weight:400;font-size:clamp(52px,7vw,76px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:8px 0 6px}
+.kn-what{font-family:var(--serif);font-size:21px;line-height:1.3}
+.kn-wrote small{font-size:13px;color:var(--ink2);margin-top:10px;line-height:1.5;max-width:28em}
+.kn-q{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px}
+.kn-q button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:0;background:var(--soft);border-radius:14px;padding:16px 16px 14px;cursor:pointer;color:inherit;font:inherit;transition:background-color .2s var(--eo),transform .16s var(--eo)}
+.kn-q button:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){.kn-q button:hover{background:var(--soft2)}}
+.kn-q b{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.kn-q span:not(.tk):not(.kn-more):not(.ago){font-size:13px;color:var(--ink2);line-height:1.45}
+.kn-q .ago{display:inline;font-size:13px}
+.kn-q .ago .pdot{display:none}
+.kn-more{margin-top:auto;padding-top:8px;font:500 13px var(--sans);color:var(--link)}
+@media (max-width:900px){.kn-q{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+ .kn{padding:20px}
+ .kn-flow{grid-template-columns:1fr;gap:12px}
+ .kn-arrow{justify-content:flex-start;padding-left:2px}
+ .kn-arrow i{display:none}
+ .kn-arrow .ic{transform:rotate(90deg)}
+ .kn-q{gap:8px}
+ .kn-q button{padding:14px 12px 12px}
+ .kn-q b{font-size:22px}
+}
+/* Proof sheets */
+.pf-inv,.pf-fix{list-style:none;margin:8px 0 12px;padding:0}
+.pf-inv li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding:10px 0;border-top:1px solid var(--hair);font-size:14px}
+.pf-inv li:first-child{border-top:0}
+.pf-inv b{font:450 14px var(--mono);font-variant-numeric:tabular-nums}
+.pf-inv small{grid-column:1/-1;font-size:12px;color:var(--ink2)}
+.pf-fix li{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-top:1px solid var(--hair);font-size:14px;line-height:1.45}
+.pf-fix li:first-child{border-top:0}
+.pf-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.pf-fix del{color:var(--ink2);text-decoration-color:var(--del)}
+.pf-fix b{font-weight:500}
+.pf-fix span{color:var(--ink)}
+.pc .pq{font-size:18px}

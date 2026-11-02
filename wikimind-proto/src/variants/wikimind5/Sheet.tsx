@@ -1,13 +1,45 @@
 import { useEffect, useRef } from 'react'
 import { Ag, agentFor } from './agents'
 import { Pile, Prov } from './Claim'
-import { AREAS, CT_LABEL, PAGES, PREV } from './data'
+import { AREAS, CT_LABEL, INVENTORY, PAGES, PREV, SPOT, STALE_EG, TOTALS } from './data'
 import { Icon } from './Icon'
 import { useW, type Pop } from './store'
 
 function Body({ p }: { p: Pop }) {
   const w = useW()
   const close = <button className="px press" onClick={w.closePop} aria-label="Close" title="Close"><Icon name="x" size={16} /></button>
+  if (p.kind === 'proof') {
+    if (p.k === 'complete') return (
+      <div className="pc">
+        <div className="pk">Is it complete?</div>
+        <div className="pq">Everything that exists in Northwind’s Salesforce is explained. Unwritten practice has no total, so it’s counted, not given a percentage.</div>
+        <ul className="pf-inv">{INVENTORY.map((r) => (
+          <li key={r.what}><span>{r.what}</span><b>{r.of === null ? `${r.have} found` : `${r.have} of ${r.of}`}</b>{r.note && <small>{r.note}</small>}</li>
+        ))}</ul>
+        {close}
+      </div>
+    )
+    if (p.k === 'right') return (
+      <div className="pc">
+        <div className="pk">Is it right?</div>
+        <div className="pq">{SPOT.held} of {SPOT.checks} facts held up when {SPOT.by} spot-checked them this month. These are the {SPOT.checks - SPOT.held} that didn’t, and what replaced them.</div>
+        <ul className="pf-fix">{SPOT.fixes.map((f) => (
+          <li key={f.wrote}><div className="pf-h"><Ag id={f.ag} name /><span className="tk">{f.when}</span></div><del>{f.wrote}</del><span>{f.right}</span></li>
+        ))}</ul>
+        <div className="pnote">After each correction the agent re-checks similar facts on other pages.</div>
+        {close}
+      </div>
+    )
+    return (
+      <div className="pc">
+        <div className="pk">Is it current?</div>
+        <div className="pq">Every page is re-read against its sources at least once a day. {TOTALS.stale} look out of date because a source went quiet or changed; each waits for someone to confirm.</div>
+        <ul className="pf-fix">{STALE_EG.map((x) => <li key={x.t}><b>{x.t}</b><span>{x.why}</span></li>)}</ul>
+        <div className="pnote">and {TOTALS.stale - STALE_EG.length} more, each with the agent that owns it.</div>
+        {close}
+      </div>
+    )
+  }
   if (p.kind === 'page') {
     const c = PAGES[p.i], a = AREAS[c.area]
     return (

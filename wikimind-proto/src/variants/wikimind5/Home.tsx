@@ -86,7 +86,7 @@ function StoryCol({ title, items, icon }: { title: string; items: Story[]; icon:
 function AskCol() {
   const w = useW()
   return (
-    <section className="hm-col">
+    <section className="hm-col" id="asking-col">
       <h3><Icon name="circle-help" size={16} />Asking people <span className="hcnt" id="n-asks">{w.asks}</span></h3>
       <ul>
         {w.newQs.map((x) => (
@@ -117,8 +117,8 @@ export function Home() {
     <div className="page enter hm">
       <div className="hm-mast">
         <div>
-          <div className="hm-date"><span className="tk">{DATE}</span><span className="tk"><Ago prefix="Edition updated" /></span></div>
-          <h1>What the agents learned about Northwind today</h1>
+          <h1>Today at Northwind</h1>
+          <div className="hm-date"><span className="tk">{DATE}</span><span className="tk">Written live by 6 agents</span><span className="tk"><Ago prefix="Updated" /></span></div>
         </div>
         <div className="hm-side">
           <button className="hm-tour press" onClick={w.startTour}><Icon name="play" size={14} />Take the 1-minute tour</button>

@@ -236,3 +236,43 @@ export const TOTALS = { ok: PAGES.filter((p) => p.tier === 'ok').length, stale: 
 export const GROWTH = Array.from({ length: DAYS + 1 }, (_, d) => PAGES.filter((p) => p.day <= d).length)
 /** What an agent just did to a page, for the live line on each topic. */
 export const VERBS = ['rewrote', 'verified with Dana', 'wrote a new page:', 'linked 3 more pages to', 'marked as changed:', 'answered a question on']
+
+/* =====================================================================================
+   What the agents know, in four questions a CIO can repeat: complete, right, current, still learning.
+   "% checked by a person" was dropped: in a system that keeps learning its denominator keeps growing,
+   and its 100% would mean people reviewing everything, the old wiki model.
+   ===================================================================================== */
+/** What the agents read to write the corpus. The first count keeps ticking: they are still reading. */
+export const READS: { icon: 'hash' | 'ticket' | 'cloud' | 'video' | 'file-text'; n: number; what: string }[] = [
+  { icon: 'hash', n: 48210, what: 'Slack messages' },
+  { icon: 'ticket', n: 1912, what: 'tickets' },
+  { icon: 'cloud', n: 6, what: 'years of Salesforce changes' },
+  { icon: 'video', n: 214, what: 'meetings' },
+  { icon: 'file-text', n: 380, what: 'documents' },
+]
+/** Is it complete? What exists in Salesforce is finite, so it can reach 100%. Unwritten practice has no total. */
+export const INVENTORY: { what: string; have: number; of: number | null; note?: string }[] = [
+  { what: 'Objects', have: 214, of: 214 },
+  { what: 'Automations: flows, approval processes, triggers', have: 312, of: 312 },
+  { what: 'Validation rules', have: 168, of: 168 },
+  { what: 'Profiles and permission sets', have: 96, of: 96 },
+  { what: 'Integrations', have: 14, of: 14 },
+  { what: 'Written policies', have: 41, of: 41 },
+  { what: 'Unwritten practices', have: 47, of: null, note: 'No total exists. The agents keep finding more in Slack and meetings.' },
+]
+/** Is it right? Accuracy by spot check, the way auditors measure it, with every miss shown. */
+export const SPOT = { checks: 412, held: 406, by: 'Dana Ruiz', fixes: [
+  { ag: 'approvals', wrote: 'Finance reviews discounts over 15%.', right: 'It was 20%.', when: 'Oct 12' },
+  { ag: 'access', wrote: 'Priya Shah leads Deal Desk.', right: 'Not until Oct 12; it was Tom Reyes.', when: 'Oct 9' },
+  { ag: 'integrations', wrote: 'CPQ syncs every 5 minutes.', right: 'It syncs hourly.', when: 'Oct 21' },
+  { ag: 'approvals', wrote: 'EMEA renewals need one signer.', right: 'Over €200k they need two.', when: 'Oct 24' },
+  { ag: 'support', wrote: 'P1 cases page on-call at once.', right: 'After 10 minutes without an owner.', when: 'Oct 27' },
+  { ag: 'approvals', wrote: 'RevOps owns the discount policy.', right: 'Finance owns it; RevOps runs it.', when: 'Oct 30' },
+] as { ag: AgentId; wrote: string; right: string; when: string }[] }
+/** Is it current? Pages whose sources went quiet or changed, waiting for someone to confirm. */
+export const STALE_EG: { t: string; why: string }[] = [
+  { t: 'Notify_Deal_Desk flow', why: 'Hasn’t fired since Aug 14. Was it switched off?' },
+  { t: 'Partner discount tiers', why: 'The source sheet hasn’t changed in 9 months.' },
+  { t: 'Quarter-end freeze dates', why: 'Last year’s dates; this year’s not announced yet.' },
+  { t: 'Okta group mapping', why: 'Two Salesforce profiles were renamed.' },
+]

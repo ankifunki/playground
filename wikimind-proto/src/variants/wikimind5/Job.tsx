@@ -94,14 +94,14 @@ function Arrival() {
  * Gaps and stale content are named, so "complete" and "current" are claims you can check.
  */
 function TrustLine({ sents }: { sents: number[][] }) {
-  const w = useW(), ok = sents.filter((ns) => tierOf(ns, w.cfg === 'changed') === 'ok').length
+  const w = useW(), tiers = sents.map((ns) => tierOf(ns, w.cfg === 'changed')), checked = tiers.filter((t) => t === 'ok').length
   const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
   return (
     <div className="tline" aria-label="How far to trust this page">
-      <div><span className="tk">Checked by a person</span><b>{ok} of {sents.length} sentences</b><small>by Dana Ruiz, Northwind’s sysadmin</small></div>
-      <div><span className="tk">Complete</span><b>5 of 5 automations</b><small>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></small></div>
-      <div><span className="tk">Current</span><b><Ago prefix="Observed" /></b><small>1 stale sentence: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></small></div>
-      <div><span className="tk">Cited by agents</span><b>{214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)} times</b><small>this month, to justify what they did</small></div>
+      <div><span className="tk">Is it complete?</span><b>5 of 5 automations</b><small>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></small></div>
+      <div><span className="tk">Is it right?</span><b>{checked} of {checked} held up</b><small>every sentence Dana spot-checked here</small></div>
+      <div><span className="tk">Is it current?</span><b><Ago prefix="Re-read" /></b><small>1 sentence looks out of date: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></small></div>
+      <div><span className="tk">Is it used?</span><b>Cited {214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)} times</b><small>this month, by agents justifying what they did</small></div>
     </div>
   )
 }
