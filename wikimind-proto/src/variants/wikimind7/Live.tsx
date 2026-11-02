@@ -70,7 +70,7 @@ export function Chip({ id }: { id: string }) {
 /** The one affordance for "why should I trust this?": a handle in the block's gutter that opens its trace. */
 export function Why({ id }: { id: string }) {
   const w = useW()
-  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="Why: see the trace"><Icon name="git-branch" size={13} /><span>Why?</span></button>
+  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="See why: the trace behind this" title="See why"><Icon name="trace" size={15} /></button>
 }
 
 /** A page block. While an agent edits it, its cursor flag sits in the gutter and the block is outlined; afterwards the chip stays in the margin. */

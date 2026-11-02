@@ -656,3 +656,11 @@ body{font-size:15.5px}
 .rail .tr-s.new{animation:rise .45s var(--eo) both}
 .tr-ic{position:relative;z-index:1}
 .tr-s:not(:last-child)::before{top:31px;bottom:5px;left:12px;background:var(--hair)}
+/* Why: an icon-only handle in the right gutter */
+.why{width:26px;height:26px;padding:0;justify-content:center;border-radius:7px;color:var(--ink2)}
+.blk>.why{right:auto;left:calc(100% + 6px);top:3px}
+.why.on{background:var(--agentb);color:var(--agent)}
+.fo-h .why{border:0}
+@media (hover:none),(max-width:1100px){.blk>.why{position:absolute;margin:0;left:auto;right:-24px;opacity:.7}}
+@media (min-width:1101px) and (hover:hover){.blk.editing>.why{opacity:0 !important}}
+@media (max-width:640px){.blk:has(>.why){padding-right:30px}.blk>.why{right:2px;top:2px;width:24px;height:24px}}

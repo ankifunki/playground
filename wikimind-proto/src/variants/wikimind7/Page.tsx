@@ -60,7 +60,7 @@ export function Approvals() {
 
       <h2>In practice</h2>
       <h3>Quarter-end approvals in Slack</h3>
-      <Block id="qe"><p><LiveText text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /> <span className="mk warn">Unofficial</span></p></Block>
+      <Block id="qe"><p><LiveText text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /></p></Block>
       <h3>Flat renewals</h3>
       {w.renewal === 'asking'
         ? <Block id="renew" cls="callout ask"><span className="co-ic"><Icon name="circle-help" size={16} /></span><p>Renewals with no price change skip approval, even over $100,000, but no rule explains it. <span className="ask-who"><Ag id="approvals" size={16} />Asking Maria Okafor in RevOps</span></p></Block>
