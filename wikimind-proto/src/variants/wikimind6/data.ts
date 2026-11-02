@@ -1,0 +1,311 @@
+import type { AgentId } from './agents'
+
+/* =========================================================================================
+   Wikimind 5. Everything here is demo data for one company (Northwind) and one fully written
+   page (Discount approvals). Asoka is a team of agents; each fact is credited to the one that
+   learned it (see agents.tsx).
+   ========================================================================================= */
+
+export type RefKind = 'doc' | 'sf' | 'jira' | 'slack' | 'meet' | 'watch' | 'talk'
+/** u is the agent's reasoning (the brief's "reflection"): why this observation changed the page. stale: not re-observed lately. */
+export type Ref = { k: RefKind; src: string; d: string; q: string; u: string; v: string | null; check?: string; stale?: string }
+
+export const KIND: Record<RefKind, string> = { doc: 'Policy document', sf: 'Salesforce change', jira: 'Jira ticket', slack: 'Slack', meet: 'Meeting recording', watch: 'Watched in practice', talk: 'Interview' }
+
+/** Every sentence on the page is tied to the observations behind it. */
+export const REFS: Record<number, Ref> = {
+  1: { k: 'doc', src: 'Sales policy v4, section 3', d: 'Jan 2026', q: 'Opportunities above $100,000 need approval before negotiation.', u: 'Defines the process and the threshold.', v: 'Dana Ruiz, Oct 12' },
+  2: { k: 'sf', src: 'Approval process Large Deal Approval', d: 'Mar 4, 2024', q: 'Entry criteria: Amount greater than 100,000.', u: 'Confirms the threshold is enforced in Salesforce, not just written down.', v: 'Dana Ruiz, Oct 12' },
+  3: { k: 'jira', src: 'Jira SF-2231', d: 'Oct 28', q: 'Lower the CRO threshold from 40% to 35%. Done.', u: 'Matches the Salesforce change the same day.', v: 'Dana Ruiz, Oct 29' },
+  4: { k: 'slack', src: '#emea-sales, L. Moreau', d: 'Aug 20', q: 'Remember, EMEA goes to Sofia first.', u: 'The only source, and nothing in Salesforce matches it.', v: null, check: 'Seen once' },
+  5: { k: 'watch', src: '212 approvals watched this quarter', d: 'Ongoing', q: 'Median time to approve: 3 hours 40 minutes.', u: 'Measured from real approvals.', v: null },
+  6: { k: 'sf', src: 'Approval process settings', d: 'Mar 4, 2024', q: 'Pending requests are recalled automatically after 14 days.', u: 'The rule as Salesforce enforces it.', v: 'Dana Ruiz, Oct 12' },
+  7: { k: 'slack', src: '#revops', d: 'Feb 2024', q: 'Two deals closed on six-week-old prices. About $90k in margin lost.', u: 'Why requests expire.', v: null },
+  8: { k: 'sf', src: 'Validation rule Amount_Locked_After_Approval', d: 'Jun 2025', q: 'Blocks Amount edits on approved records unless the user is in Deal Desk.', u: 'The rule as Salesforce enforces it.', v: 'Dana Ruiz, Oct 12' },
+  9: { k: 'slack', src: '#deal-desk, 9 threads', d: 'Last 3 quarter ends', q: 'Approved in the thread, logged in Salesforce afterward.', u: 'Seen in 9 of the last 12 quarter-end deals.', v: null, check: 'Unofficial' },
+  10: { k: 'meet', src: 'RevOps weekly', d: 'Sep 30', q: 'Maria Okafor: “At quarter end we just do it in Slack.”', u: 'A process owner confirming the pattern.', v: null },
+  11: { k: 'meet', src: 'RevOps weekly', d: 'Oct 27', q: 'Someone mentioned renewals don’t need approval.', u: '14 flat renewals skipped approval last quarter, with no rule behind it.', v: null, check: 'Asking' },
+  12: { k: 'slack', src: '#deal-desk, J. Patel', d: 'Oct 3', q: 'Anything over 35 goes straight to Marcus now.', u: 'An early signal of the threshold change.', v: null },
+  13: { k: 'sf', src: 'Approval step Finance review', d: 'Sep 12', q: 'Entry criteria: Discount greater than 20%.', u: 'Added Finance as a second approver.', v: 'Dana Ruiz, Oct 12' },
+  16: { k: 'sf', src: 'Validation rule Discount_Requires_Reason', d: 'Jul 2025', q: 'Discount over 10% requires Discount_Reason__c.', u: 'Finance asked for an audit trail on discounts.', v: 'Dana Ruiz, Oct 12' },
+  17: { k: 'sf', src: 'Flow Notify_Deal_Desk', d: 'Feb 2026', q: 'On approval, posts deals over $500,000 to #deal-desk.', u: 'Deal Desk wanted to see big deals the moment they clear. It hasn’t fired since Aug 14, so the agent is checking whether it was switched off.', v: null, stale: 'Not seen since Aug 14' },
+  18: { k: 'sf', src: 'Integration CPQ quote sync', d: 'Oct 29', q: '412 sync errors: currency mismatch on multi-currency quotes.', u: 'Failing since a CPQ update.', v: null, check: 'Failing' },
+}
+/** Source 14 only exists once Maria has answered. */
+export const REF_MARIA: Ref = { k: 'talk', src: 'Maria Okafor, replying to the Approvals agent', d: 'Just now', q: 'Yes, on purpose since 2023. Flat renewals don’t change revenue risk.', u: 'A process owner answered the agent; the page cites her answer.', v: null }
+/**
+ * Source 15 only exists once the live Salesforce change has been observed. Its verification is
+ * filled in when Dana re-checks it (the brief: verification can be revoked when new observations contradict it).
+ */
+export const REF_CFG: Ref = { k: 'sf', src: 'Salesforce setup audit trail, Priya Shah', d: 'Just now', q: 'Changed Finance review entry criteria: Discount greater than 25% (was 20%).', u: 'A live configuration change. It contradicted a verified sentence, so the verification was withdrawn until Dana re-checked.', v: null }
+export const refFor = (n: number) => (n === 14 ? REF_MARIA : n === 15 ? REF_CFG : REFS[n])
+
+/** Where on the page each source is used, so an answer can be written next to the sentences it rests on. */
+export const REF_SEC: Record<number, string> = { 1: 'lead', 2: 'lead', 4: 'lead', 5: 'lead', 3: 'rules', 12: 'rules', 13: 'rules', 15: 'rules', 6: 'rules', 7: 'rules', 8: 'rules', 16: 'rules', 9: 'practice', 10: 'practice', 11: 'practice', 14: 'practice', 17: 'config', 18: 'config' }
+
+/** What changed, attached to the source that caused it: the change shows on the sentence. */
+export type Change = { d: string; was: string; why: string }
+export const CHANGES: Record<number, Change> = {
+  3: { d: 'Oct 28', was: 'Over 40%, the CRO approves directly.', why: 'Jira SF-2231, matched with a #deal-desk message' },
+  14: { d: 'Just now', was: 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.', why: 'Maria Okafor answered the Approvals agent' },
+  15: { d: 'Just now', was: 'Discounts over 20% add Finance as a second approver.', why: 'Priya Shah changed Finance review in Salesforce setup' },
+}
+
+/** How a sentence reads in the margin when it needs attention. Solid sentences carry no mark. */
+export type Mark = { t: string; tone: 'warn' | 'ok' | 'info' | 'stale' }
+
+/** The evidence tier of a set of sources, for the evidence lens. */
+export type Tier = 'ok' | 'obs' | 'warn' | 'pend' | 'stale'
+export function tierOf(ns: number[], pending: boolean): Tier {
+  if (pending && ns.includes(15)) return 'pend'
+  const rs = ns.map(refFor)
+  if (rs.some((r) => r.check)) return 'warn'
+  if (rs.some((r) => r.stale)) return 'stale'
+  return rs.every((r) => r.v) ? 'ok' : 'obs'
+}
+export const TIER_LABEL: Record<Tier, string> = { ok: 'Checked by a person', obs: 'Written from what agents saw', warn: 'Unconfirmed', pend: 'Being re-checked', stale: 'Stale' }
+
+/** The page's own sentence for a source, so a rule can be shown in place (e.g. inside the simulator). */
+export function sentenceFor(n: number, fin: number, learned: boolean): string {
+  switch (n) {
+    case 1: return 'Discount approval is how Northwind reviews big deals before they move to Negotiation.'
+    case 2: return 'Any deal over $100,000 needs approval.'
+    case 3: case 12: return 'Over 35%, the CRO approves directly.'
+    case 13: case 15: return `Discounts over ${fin}% add Finance as a second approver.`
+    case 4: return 'EMEA deals reportedly go to the regional director first.'
+    case 5: return 'Most approvals finish in under four hours.'
+    case 6: return 'An approval request expires after 14 days, and the rep has to submit it again.'
+    case 7: return 'The rule exists because two deals closed on six-week-old prices in 2024.'
+    case 8: return 'Once a deal is approved, only Deal Desk can change its amount.'
+    case 9: case 10: return 'At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.'
+    case 11: case 14: return learned || n === 14 ? 'Flat renewals skip approval on purpose. It has been the policy since 2023.' : 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.'
+    case 16: return 'Discounts over 10% need a written reason.'
+    case 17: return 'Posts approved deals over $500,000 to #deal-desk.'
+    default: return 'Sends approved discounts to CPQ quotes.'
+  }
+}
+
+/**
+ * A business user arriving from Slack: the Approvals agent pushed back on their request and cited this page
+ * (the brief's example). They can see the rule, or try their own deal in the simulator.
+ */
+export const ARRIVAL = {
+  channel: '#deal-desk', who: 'Jamie Chen',
+  q: 'Can you approve 40% off on Helios? Marcus is out today.',
+  a: 'Not without the CRO. Over 35%, the CRO approves directly. I put it in Marcus’s queue for tomorrow morning.',
+  ns: [3, 12], deal: { amt: 240000, disc: 40 },
+}
+
+/* ---------- Receipts: the agents' actions that cited this page ---------- */
+export type Receipt = { id: string; when: string; ag: AgentId; ch: string; did: string; why: string; ns: number[]; out?: string }
+export const RECEIPTS0: Receipt[] = [
+  { id: 'r1', when: 'Today, 10:42', ag: 'approvals', ch: '#deal-desk', did: 'Declined Jamie Chen’s request to approve 40% off on Helios without the CRO.', why: 'Over 35%, the CRO approves directly.', ns: [3, 12], out: 'Jamie sent it to Marcus.' },
+  { id: 'r2', when: 'Today, 9:15', ag: 'approvals', ch: 'Salesforce', did: 'Routed Helios expansion (28% off) to Finance after the sales manager approved.', why: 'Discounts over 20% add Finance as a second approver.', ns: [13] },
+  { id: 'r3', when: 'Yesterday', ag: 'finance', ch: '#revops', did: 'Refused to change the amount on the approved Orbit renewal for Pat Kim.', why: 'Once a deal is approved, only Deal Desk can change its amount.', ns: [8], out: 'Pat asked Deal Desk.' },
+  { id: 'r4', when: 'Oct 30', ag: 'approvals', ch: 'Email', did: 'Reminded Lee Park that the Vega request expires in 2 days.', why: 'An approval request expires after 14 days.', ns: [6] },
+]
+export const RECEIPT_LIVE: Receipt = { id: 'r0', when: 'Just now', ag: 'approvals', ch: '#sales', did: 'Told Lee Park the $90k Juno deal needs no approval.', why: 'Any deal over $100,000 needs approval.', ns: [2] }
+
+/* ---------- The live wire on Home: what each agent is doing right now ---------- */
+export type Wire = { id: number; ag: AgentId; t: string; page: string; ns?: number[] }
+export const WIRE_POOL: Omit<Wire, 'id'>[] = [
+  { ag: 'approvals', t: 'Read a #deal-desk thread about a 38% discount', page: 'Discount approvals' },
+  { ag: 'support', t: 'Saw a new validation rule on Case: Priority_Requires_SLA', page: 'Case escalation' },
+  { ag: 'approvals', t: 'Watched a deal close after CRO approval', page: 'Discount approvals', ns: [3] },
+  { ag: 'integrations', t: 'CPQ sync retried 3 times for quote Q-1192', page: 'CPQ quote sync' },
+  { ag: 'approvals', t: 'Transcribed RevOps weekly (42 minutes)', page: 'Lead routing' },
+  { ag: 'access', t: 'Matched a new hire in Workday to a Salesforce user', page: 'User provisioning' },
+  { ag: 'finance', t: 'Noticed a new field on Account: Partner_Tier__c', page: 'Partner deals' },
+  { ag: 'security', t: 'Read a login-policy change in Salesforce setup', page: 'Login policies' },
+  { ag: 'approvals', t: 'Cited Discount approvals to answer Lee Park in #sales', page: 'Discount approvals', ns: [2] },
+  { ag: 'support', t: 'Linked 3 cases to the data-loss escalation rule', page: 'Case escalation' },
+]
+
+/* ---------- Front-page stories ---------- */
+export type Story = { ag: AgentId; t: string; s: string; ns?: number[]; page?: string; sec?: string; tag?: [string, 'ok' | 'warn' | 'info'] }
+export const CHANGED: Story[] = [
+  { ag: 'integrations', t: 'CPQ quote sync is failing for multi-currency deals', s: '412 errors since a CPQ update on Oct 29. Asked Ben Ito why.', ns: [18], page: 'CPQ quote sync', tag: ['Failing', 'warn'] },
+  { ag: 'access', t: 'Priya Shah now leads Deal Desk', s: 'From the org chart and #announcements. 6 pages updated.', page: 'Deal Desk' },
+  { ag: 'support', t: 'New rule: high-priority cases need an SLA', s: 'Validation rule Priority_Requires_SLA, added yesterday.', page: 'Case escalation' },
+]
+export const LEARNED: Story[] = [
+  { ag: 'approvals', t: 'At quarter end, large deals are approved in Slack before Salesforce', s: '9 of the last 12 quarter ends. Not in any policy.', ns: [9, 10], sec: 'practice', tag: ['Unofficial', 'warn'] },
+  { ag: 'approvals', t: 'Approval requests expire after 14 days because of two stale-price deals', s: 'The reason lived only in a 2024 #revops thread.', ns: [6, 7], sec: 'rules' },
+  { ag: 'support', t: 'Cases that mention data loss are escalated by hand, whatever their priority', s: '11 of 11 cases. Confirmed by Kim in Support.', page: 'Case escalation', tag: ['Confirmed', 'ok'] },
+]
+
+export const PREV: Record<string, [string, string]> = {
+  'Maria Okafor': ['Person', 'Owns the approval process, lead routing, and forecasting, in RevOps.'],
+  'Dana Ruiz': ['Person', 'Northwind’s sysadmin. Checks what the agents write and verifies it.'],
+  'CPQ quote sync': ['Integration', 'Sends approved discounts from Salesforce to quotes. Failing for multi-currency deals since Oct 29.'],
+  'Discount policy': ['Page', 'What reps can discount on their own, and what needs approval. 3 statements, all verified.'],
+  'Quarter-end close': ['Page', 'The rules for the last 3 business days of a quarter, including the Slack approvals.'],
+  'Deal Desk': ['Page', 'The team that runs approvals and contract exceptions. Led by Priya Shah since Oct 12.'],
+  Renewals: ['Page', 'How renewals are priced and approved.'],
+  'Case escalation': ['Page', 'When support cases go to engineering. Includes the unwritten data-loss rule.'],
+  'Lead routing': ['Page', 'How inbound leads are assigned by territory and segment.'],
+  'User provisioning': ['Page', 'How new hires get Salesforce users, profiles and permission sets.'],
+  'Partner deals': ['Page', 'How partner-sourced opportunities are tagged and paid.'],
+  'Login policies': ['Page', 'Session, MFA and IP rules for Salesforce logins.'],
+}
+
+/* ---------- The corpus: a flat set of linked pages (no folders), each written by one agent ---------- */
+export type Area = { name: string; n: number; words: string[]; kinds: string[]; ag: AgentId }
+export const AREAS: Area[] = [
+  { name: 'Sales Cloud', n: 412, ag: 'approvals', words: ['Opportunity', 'Lead', 'Account', 'Contact', 'Forecast', 'Territory', 'Campaign', 'Pipeline'], kinds: ['approvals', 'routing', 'validation rules', 'fields', 'page layouts', 'flows', 'sharing', 'record types', 'reports'] },
+  { name: 'Service Cloud', n: 236, ag: 'support', words: ['Case', 'Entitlement', 'SLA', 'Queue', 'Knowledge', 'Omni-channel'], kinds: ['escalation', 'assignment', 'macros', 'fields', 'flows', 'milestones'] },
+  { name: 'CPQ', n: 188, ag: 'integrations', words: ['Quote', 'Price book', 'Product', 'Discount schedule', 'Bundle'], kinds: ['rules', 'templates', 'approvals', 'sync', 'fields'] },
+  { name: 'Policies', n: 174, ag: 'approvals', words: ['Discount', 'Security', 'Data retention', 'Travel', 'Contract', 'Access'], kinds: ['policy', 'exceptions', 'owners', 'history'] },
+  { name: 'People and teams', n: 153, ag: 'access', words: ['Deal Desk', 'RevOps', 'Support', 'Finance', 'Sales', 'IT'], kinds: ['team', 'owners', 'on-call', 'handbook'] },
+  { name: 'Integrations', n: 121, ag: 'integrations', words: ['NetSuite', 'Okta', 'Slack', 'Workday', 'CPQ', 'Zendesk'], kinds: ['sync', 'mappings', 'errors', 'credentials'] },
+]
+export const CORPUS_TOTAL = AREAS.reduce((s, a) => s + a.n, 0)
+/** How many days ago the sources were connected. The replay runs from then to today. */
+export const DAYS = 31
+
+/** Deterministic pseudo-random, so the corpus looks the same on every load. */
+function rng(seed: number) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
+export type CTier = 'ok' | 'obs' | 'warn' | 'open' | 'stale'
+export type PageCell = { title: string; area: number; tier: CTier; day: number; links: number[]; upd: string; h: number; main?: boolean }
+export const PAGES: PageCell[] = (() => {
+  const r = rng(42), out: PageCell[] = []
+  AREAS.forEach((a, ai) => {
+    for (let i = 0; i < a.n; i++) {
+      const x = r(), y = r()
+      const tier: CTier = x < 0.71 ? 'ok' : x < 0.9 ? 'obs' : x < 0.93 ? 'stale' : x < 0.98 ? 'warn' : 'open'
+      // Most pages were written in the first days after the sources were connected; the rest trickle in.
+      const day = y < 0.62 ? Math.floor(r() * 4) : y < 0.86 ? 4 + Math.floor(r() * 7) : 11 + Math.floor(r() * (DAYS - 11))
+      const h = 1 + Math.floor(r() * 70)
+      out.push({ title: `${a.words[i % a.words.length]} ${a.kinds[Math.floor(i / a.words.length) % a.kinds.length]}`, area: ai, tier, day, links: [], h, upd: h < 24 ? h + 'h ago' : Math.floor(h / 24) + 'd ago' })
+    }
+  })
+  out[0] = { ...out[0], title: 'Discount approvals', tier: 'ok', day: 0, upd: 'just now', h: 0, main: true }
+  // Flat: shuffle so pages aren't filed by area, keeping Discount approvals near the start so it's easy to find.
+  for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]] }
+  const m = out.findIndex((p) => p.main); [out[m], out[9]] = [out[9], out[m]]
+  // Every page links to a few others, mostly in its own area, sometimes across.
+  out.forEach((p, i) => {
+    const n = 3 + Math.floor(r() * 3), set = new Set<number>()
+    while (set.size < n) { const j = Math.floor(r() * out.length); if (j !== i && (out[j].area === p.area || r() < 0.3)) set.add(j) }
+    p.links = [...set]
+  })
+  return out
+})()
+export const CT_LABEL: Record<CTier, string> = { ok: 'Checked by a person', obs: 'Written from what agents saw', warn: 'Unconfirmed', open: 'Open question', stale: 'Stale' }
+/** Share of each area's pages a person has checked. */
+export const AREA_PCT = AREAS.map((_, ai) => { const ps = PAGES.filter((p) => p.area === ai); return Math.round((ps.filter((p) => p.tier === 'ok').length / ps.length) * 100) })
+
+/* ---------- Asking people: how the agents close their own gaps ---------- */
+export type Ask = { ag: AgentId; q: string; who: string; s: string; sec?: string; page?: string }
+export const ASKS: Ask[] = [
+  { ag: 'approvals', q: 'Do flat renewals skip approval on purpose?', who: 'Maria Okafor', s: 'RevOps · asked Oct 27', sec: 'practice' },
+  { ag: 'integrations', q: 'Why do multi-currency quotes fail to sync?', who: 'Ben Ito', s: 'Integrations · asked 2 days ago', page: 'CPQ quote sync' },
+  { ag: 'approvals', q: 'Do EMEA deals really go to Sofia first?', who: 'Watching', s: 'Seen once · waiting for the next EMEA deal', sec: 'lead' },
+]
+
+/* ---------- Routing people to ask ---------- */
+export const ROUTE: [RegExp, string, string][] = [
+  [/park|office|desk|building|badge|wifi|lunch|travel|expense/, 'Leo Park', 'Facilities'],
+  [/vacation|pto|leave|benefit|salary|pay|hiring|holiday|onboard/, 'Ana Silva', 'People'],
+  [/password|security|vpn|laptop|access|sso|mfa|login/, 'Sol Reyes', 'Security'],
+  [/quote|cpq|integration|sync|api/, 'Ben Ito', 'Integrations'],
+  [/deal|discount|approv|renewal|forecast|lead|pipeline|sales|quota/, 'Maria Okafor', 'RevOps'],
+]
+export const DOCS: Record<string, string> = { Facilities: 'office handbook', People: 'people handbook', Security: 'IT security guide', Integrations: 'integrations runbook', RevOps: 'RevOps playbook' }
+
+/** Statements the live model may answer from (only used when running inside a claude.ai artifact). */
+export const corpus = (fin: number): [number, string][] => [
+  [1, 'Discount approval is how Northwind reviews large deals before they move to Negotiation.'], [2, 'Any deal over $100,000 needs approval.'],
+  [3, `Up to ${fin}% off, the sales manager approves. Over ${fin}%, Finance is added as a second approver. Over 35%, the CRO approves directly instead.`],
+  [4, 'EMEA deals reportedly go to the regional director, Sofia, first. Seen once.'], [5, 'Most approvals finish in under four hours. Median 3 hours 40 minutes.'],
+  [6, 'An approval request expires after 14 days, and the rep must resubmit.'], [7, 'Requests expire because two deals closed on six-week-old prices in 2024, losing about $90k in margin.'],
+  [8, 'Once a deal is approved, only Deal Desk can change its amount.'], [9, 'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward. Unofficial.'],
+  [11, 'Renewals with no price change skip approval. Open question.'], [16, 'Discounts over 10% need a written reason.'],
+]
+
+/* ---------- Readable corpus: per-topic summaries and the growth curve ---------- */
+export type TopicStat = { ok: number; obs: number; stale: number; warn: number; open: number; n: number; recent: number[] }
+export const TOPICS: TopicStat[] = AREAS.map((_, ai) => {
+  const idx = PAGES.map((p, i) => [p, i] as const).filter(([p]) => p.area === ai)
+  const c = { ok: 0, obs: 0, stale: 0, warn: 0, open: 0 }
+  idx.forEach(([p]) => { c[p.tier]++ })
+  return { ...c, n: idx.length, recent: idx.sort((a, b) => a[0].h - b[0].h).slice(0, 5).map(([, i]) => i) }
+})
+export const TOTALS = { ok: PAGES.filter((p) => p.tier === 'ok').length, stale: PAGES.filter((p) => p.tier === 'stale').length, warn: PAGES.filter((p) => p.tier === 'warn' || p.tier === 'open').length }
+/** Pages written by the end of each day since the sources were connected. */
+export const GROWTH = Array.from({ length: DAYS + 1 }, (_, d) => PAGES.filter((p) => p.day <= d).length)
+/** What an agent just did to a page, for the live line on each topic. */
+export const VERBS = ['rewrote', 'verified with Dana', 'wrote a new page:', 'linked 3 more pages to', 'marked as changed:', 'answered a question on']
+
+/* =====================================================================================
+   What the agents know, in four questions a CIO can repeat: complete, right, current, still learning.
+   "% checked by a person" was dropped: in a system that keeps learning its denominator keeps growing,
+   and its 100% would mean people reviewing everything, the old wiki model.
+   ===================================================================================== */
+/** What the agents read to write the corpus. The first count keeps ticking: they are still reading. */
+export const READS: { icon: 'hash' | 'ticket' | 'cloud' | 'video' | 'file-text'; n: number; what: string }[] = [
+  { icon: 'hash', n: 48210, what: 'Slack messages' },
+  { icon: 'ticket', n: 1912, what: 'tickets' },
+  { icon: 'cloud', n: 6, what: 'years of Salesforce changes' },
+  { icon: 'video', n: 214, what: 'meetings' },
+  { icon: 'file-text', n: 380, what: 'documents' },
+]
+/** Is it complete? What exists in Salesforce is finite, so it can reach 100%. Unwritten practice has no total. */
+export const INVENTORY: { what: string; have: number; of: number | null; note?: string }[] = [
+  { what: 'Objects', have: 214, of: 214 },
+  { what: 'Automations: flows, approval processes, triggers', have: 312, of: 312 },
+  { what: 'Validation rules', have: 168, of: 168 },
+  { what: 'Profiles and permission sets', have: 96, of: 96 },
+  { what: 'Integrations', have: 14, of: 14 },
+  { what: 'Written policies', have: 41, of: 41 },
+  { what: 'Unwritten practices', have: 47, of: null, note: 'No total exists. The agents keep finding more in Slack and meetings. 12 are still being confirmed with the people who follow them.' },
+]
+/** Is it right? Accuracy by spot check, the way auditors measure it, with every miss shown. */
+export const SPOT = { checks: 412, held: 406, by: 'Dana Ruiz', fixes: [
+  { ag: 'approvals', wrote: 'Finance reviews discounts over 15%.', right: 'It was 20%.', when: 'Oct 12' },
+  { ag: 'access', wrote: 'Priya Shah leads Deal Desk.', right: 'Not until Oct 12; it was Tom Reyes.', when: 'Oct 9' },
+  { ag: 'integrations', wrote: 'CPQ syncs every 5 minutes.', right: 'It syncs hourly.', when: 'Oct 21' },
+  { ag: 'approvals', wrote: 'EMEA renewals need one signer.', right: 'Over €200k they need two.', when: 'Oct 24' },
+  { ag: 'support', wrote: 'P1 cases page on-call at once.', right: 'After 10 minutes without an owner.', when: 'Oct 27' },
+  { ag: 'approvals', wrote: 'RevOps owns the discount policy.', right: 'Finance owns it; RevOps runs it.', when: 'Oct 30' },
+] as { ag: AgentId; wrote: string; right: string; when: string }[] }
+/** Is it current? Pages whose sources went quiet or changed, waiting for someone to confirm. */
+export const STALE_EG: { t: string; why: string }[] = [
+  { t: 'Notify_Deal_Desk flow', why: 'Hasn’t fired since Aug 14. Was it switched off?' },
+  { t: 'Partner discount tiers', why: 'The source sheet hasn’t changed in 9 months.' },
+  { t: 'Quarter-end freeze dates', why: 'Last year’s dates; this year’s not announced yet.' },
+  { t: 'Okta group mapping', why: 'Two Salesforce profiles were renamed.' },
+]
+
+/* =====================================================================================
+   The CIO's goal, as the anchor: how much of Northwind's Salesforce admin work can be handed to the
+   agents and run reliably. The four questions are the levers. Nothing reaches 100% by design: some work
+   stays with a person by policy. Shares are % of last month's requests. Demo data.
+   ===================================================================================== */
+export const AUTO = {
+  own: 64, ready: 6, shadow: 19, sept: 51, trend: [51, 53, 55, 58, 59, 62, 64],
+  /** Last 30 days: Salesforce admin requests the agents saw, and how many of those they ran alone were undone by a person. */
+  requests: 2980, undone: 3,
+  /** Held back by knowledge, by the question that would release it. */
+  gaps: { complete: 3, current: 3, unknown: 5 },
+  /** Unwritten practices found but not yet confirmed: the work that touches them waits. */
+  confirming: 12,
+  /** Proven in shadow runs, waiting for a person to hand it over (a second approver signs off). */
+  readyItems: [
+    { ag: 'access' as AgentId, what: 'License seat requests', proof: '58 of 60 matched what a person did' },
+    { ag: 'access' as AgentId, what: 'Contractor password resets', proof: '41 of 41 matched, manager checked first every time' },
+    { ag: 'support' as AgentId, what: 'Case routing for Tier 1', proof: '212 of 214 matched' },
+  ],
+  /** This page's job (Discount approvals), in the same terms as Home: the Approvals agent's share of it. */
+  page: { own: 52, ran: 618, undone: 1, job: 'discount approvals' },
+  /** Released when Maria answers the flat-renewals question. */
+  readyLearned: { ag: 'approvals' as AgentId, what: 'Flat renewals', proof: 'Maria confirmed the rule today; 19 of 19 past renewals match it' },
+  /** The hardest work, still done by people for now. The agents shadow each one (prepare it, compare with what the person decided)
+   *  until their record earns it; then it moves to proven and can be handed over. The goal is all of it. */
+  shadowing: [
+    { ag: 'approvals' as AgentId, what: 'Discounts over 20%', record: '212 of 230 matched the approver', n: 8 },
+    { ag: 'finance' as AgentId, what: 'Paying invoices', record: '88 of 97 matched Finance', n: 6 },
+    { ag: 'access' as AgentId, what: 'Changing admin rights', record: '31 of 34 matched IT', n: 3 },
+    { ag: 'security' as AgentId, what: 'Wiping lost devices', record: '9 of 9 matched, too few to trust yet', n: 2 },
+  ],
+}

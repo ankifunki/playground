@@ -10,8 +10,9 @@ export const VARIANTS: Variant[] = [
   { key: 'f', name: 'Wikimind 3', desc: 'Cited, always learning', Component: lazy(() => import('./variants/wikimind3')) },
   { key: 'g', name: 'Wikimind 4', desc: 'Provenance, answers in place', Component: lazy(() => import('./variants/wikimind4')) },
   { key: 'h', name: 'Wikimind 5', desc: 'Front page, live proof, demos', Component: lazy(() => import('./variants/wikimind5')) },
+  { key: 'i', name: 'Wikimind 6', desc: 'Read-only proof layer, from the brief', Component: lazy(() => import('./variants/wikimind6')) },
 ]
-const DEFAULT = 'h'
+const DEFAULT = 'i'
 
 type Theme = 'light' | 'dark'
 /** Light unless the visitor chose dark. Every variant styles both through :root[data-theme]. */
