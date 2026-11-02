@@ -1,0 +1,90 @@
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { AG, type AgentId } from './data'
+import { Icon } from './Icon'
+import { Ag } from './Live'
+import { useW } from './store'
+
+type Ans = { q: string; ag: AgentId | null; body: ReactNode; cite?: { block: string; label: string }; ask?: boolean }
+
+/**
+ * The Omni bar: ask anything, answered by the agent that knows, with the block it rests on. It lines up with the page
+ * column, shrinks to an "Ask anything" pill while you read (scrolling down), and grows back on click or "/". The pill
+ * is the same input, so focus never breaks. Unknown questions are never guessed: the right agent offers to ask a person.
+ */
+export function Omni() {
+  const w = useW(), [q, setQ] = useState(''), [ans, setAns] = useState<Ans | null>(null), [mini, setMini] = useState(false), [asked, setAsked] = useState(false), [focus, setFocus] = useState(false)
+  const inp = useRef<HTMLInputElement>(null), lastY = useRef(0)
+
+  useEffect(() => {
+    const f = () => {
+      const y = scrollY, down = y > lastY.current + 4, up = y < lastY.current - 4; lastY.current = y
+      if (document.activeElement === inp.current || q || ans) return
+      if (y < 120) setMini(false); else if (down) setMini(true); else if (up && y < 240) setMini(false)
+    }
+    addEventListener('scroll', f, { passive: true }); return () => removeEventListener('scroll', f)
+  }, [q, ans])
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if (e.key === '/' && !(e.target as HTMLElement)?.closest?.('input,textarea')) { e.preventDefault(); setMini(false); inp.current?.focus() }
+      if (e.key === 'Escape' && document.activeElement === inp.current) { setAns(null); inp.current?.blur() }
+    }
+    addEventListener('keydown', k); return () => removeEventListener('keydown', k)
+  }, [])
+
+  const answer = (text: string): Ans => {
+    const t = text.toLowerCase(), f = w.fin
+    const m = t.match(/(\d{1,2})\s*%/), d = m ? +m[1] : null
+    if (d !== null || /who approves|approv|discount/.test(t)) {
+      const x = d ?? 30
+      const who = x <= f ? 'the sales manager approves on their own' : x <= 35 ? 'the sales manager approves, then Finance' : 'the CRO approves directly'
+      return { q: text, ag: 'approvals', body: <>On a deal over $100,000 at {x}% off, {who}. Finance joins over {f}%, from the Large Deal Approval process in Salesforce{w.why['who-fin'] ? ', changed just now' : ''}.</>, cite: { block: x <= f ? 'who-mgr' : x <= 35 ? 'who-fin' : 'who-cro', label: 'Who approves' } }
+    }
+    if (/chang|new|week|today|update/.test(t)) {
+      const edits = w.acts.filter((a) => a.kind === 'edit').slice(0, 3)
+      return { q: text, ag: 'approvals', body: <>Most recent changes: {edits.map((a, i) => <span key={a.id}>{i > 0 && '; '}{a.ag === 'person' ? a.who : AG[a.ag].name} {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>)}.</>, cite: edits[0]?.block ? { block: edits[0].block!, label: 'the latest edit' } : undefined }
+    }
+    if (/unsure|don.?t know|question|gap|missing/.test(t)) {
+      return { q: text, ag: 'approvals', body: w.renewal === 'asking'
+        ? <>Two things: whether flat renewals skip approval on purpose (asking Maria Okafor in RevOps), and whether EMEA deals go to the regional director first (seen once, watching for the next one).</>
+        : <>One thing: whether EMEA deals go to the regional director first. It has been seen once; the agent is watching for the next one. Flat renewals were answered by Maria Okafor.</>, cite: { block: 'renew', label: 'In practice' } }
+    }
+    if (/quarter|slack|deal.?desk/.test(t)) return { q: text, ag: 'approvals', body: <>At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: {w.qe[0]} of the last {w.qe[1]} quarter ends. It is unofficial; no policy says so.</>, cite: { block: 'qe', label: 'Quarter-end approvals in Slack' } }
+    if (/cpq|sync|currency/.test(t)) return { q: text, ag: 'integrations', body: w.cpq === 'failing' ? <>CPQ quote sync is failing for multi-currency deals since Oct 29. The Integrations agent asked Ben Ito why.</> : <>CPQ quote sync is fixed: Ben Ito corrected the currency mapping, and the last 40 quotes synced.</>, cite: { block: 'cfg', label: 'Configured in Salesforce' } }
+    return { q: text, ag: null, ask: true, body: <>No agent knows that yet, and none will guess.</> }
+  }
+  const submit = (text = q) => { const s = text.trim(); if (!s) return; setAns(answer(s)); setQ(''); setAsked(false); setMini(false) }
+  const askPerson = () => { setAsked(true); w.log({ ag: 'approvals', t: `Asked Maria Okafor: “${ans!.q}”`, page: 'discount-approvals', kind: 'ask' }) }
+
+  return (
+    <div className={'om' + (mini ? ' mini' : '')}>
+      {ans && (
+        <div className="om-ans" role="region" aria-label="Answer">
+          <div className="om-ah"><span className="om-q">{ans.q}</span><button className="ib" onClick={() => setAns(null)} aria-label="Close answer"><Icon name="x" size={14} /></button></div>
+          <div className="om-ab">
+            {ans.ag ? <Ag id={ans.ag} size={24} /> : <span className="om-none" aria-hidden="true"><Icon name="circle-help" size={14} /></span>}
+            <div>
+              {ans.ag && <span className="om-who">{AG[ans.ag].name} agent</span>}
+              <p>{ans.body}</p>
+              {ans.cite && <button className="wl om-cite" onClick={() => w.jump(ans.cite!.block)}>See it on the page: {ans.cite.label}</button>}
+              {ans.ask && (asked
+                ? <p className="om-asked">Asked. The Approvals agent will write Maria’s answer into the page and tell you here.</p>
+                : <span className="om-acts"><button className="om-btn" onClick={askPerson}>Ask Maria Okafor</button><button className="om-btn ghost" onClick={() => setAns(null)}>Not now</button></span>)}
+            </div>
+          </div>
+        </div>
+      )}
+      {!ans && !mini && focus && (
+        <div className="om-sug">
+          {['Who approves a 30% discount?', 'What changed today?', 'What are the agents unsure about?'].map((s) => <button key={s} onMouseDown={(e) => e.preventDefault()} onClick={() => submit(s)}>{s}</button>)}
+        </div>
+      )}
+      <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
+        <Icon name="search" size={16} />
+        <input ref={inp} value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini ? 'Ask anything' : 'Ask anything about Northwind'} aria-label="Ask anything" />
+        {!mini && <span className="om-scope tk">This workspace</span>}
+        {!mini && <kbd className="om-k">/</kbd>}
+        {!mini && <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={15} /></button>}
+      </form>
+    </div>
+  )
+}

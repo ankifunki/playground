@@ -17,3 +17,7 @@
 .vs-seg button:focus-visible{outline:2px solid var(--vs-accent);outline-offset:1px}
 @media (max-width:520px){.vs-lbl{display:none}.vs-seg button span{display:none}.vs-seg button{padding:8px 12px}}
 .vs-loading{padding:40px;font-family:"Geist",system-ui,sans-serif;color:#6B6259}
+.vs-seg button.vs-more{flex:none;min-width:0;flex-direction:row;gap:4px;align-items:center;padding:6px 10px;font-size:12px;font-weight:500;color:var(--vs-ink2)}
+.vs-seg button.vs-more svg{transition:transform .2s cubic-bezier(.23,1,.32,1)}
+.vs-seg button.vs-more.open svg{transform:rotate(180deg)}
+@media (hover:hover) and (pointer:fine){.vs-seg button.vs-more:hover{color:var(--vs-ink)}}

@@ -12,7 +12,7 @@ type W = {
   why: Record<string, Why>; presence: Presence; acts: Act[]; now: number
   playing: boolean; setPlaying: (b: boolean) => void
   rail: boolean; setRail: (b: boolean) => void; nav: boolean; setNav: (b: boolean) => void
-  replay: () => void; jump: (block: string) => void
+  replay: () => void; jump: (block: string) => void; log: (a: Omit<Act, 'id' | 'at'>) => void
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -37,7 +37,7 @@ export function Provider({ children }: { children: ReactNode }) {
   const [qe, setQe] = useState<[number, number]>([9, 12]), [renewal, setRenewal] = useState<'asking' | 'answered'>('asking'), [cpq, setCpq] = useState<'failing' | 'fixed'>('failing')
   const [why, setWhy] = useState<Record<string, Why>>({}), [presence, setPresence] = useState<Presence>(null)
   const [now, setNow] = useState(Date.now()), [acts, setActs] = useState<Act[]>(() => SEED(Date.now()))
-  const [playing, setPlaying] = useState(!RM), [rail, setRail] = useState(false), [nav, setNav] = useState(false)
+  const [playing, setPlaying] = useState(!RM), [rail, setRail] = useState(false), [nav, setNav] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1400px)').matches)
   const [run, setRun] = useState(0)
   const nid = useRef(1), timers = useRef<number[]>([])
 
@@ -90,7 +90,7 @@ export function Provider({ children }: { children: ReactNode }) {
     setFin(20); setVerify('ok'); setQe([9, 12]); setRenewal('asking'); setCpq('failing'); setWhy({}); setPresence(null); setActs(SEED(Date.now()))
     setPage('discount-approvals'); window.scrollTo({ top: 0 }); setRun((r) => r + 1)
   }
-  const go = (p: string) => { setPage(p); setNav(false); window.scrollTo({ top: 0 }) }
+  const go = (p: string) => { setPage(p); if (window.innerWidth < 1400) setNav(false); window.scrollTo({ top: 0 }) }
   const jump = (block: string) => {
     const doIt = () => document.getElementById('b-' + block)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
     if (page !== 'discount-approvals') { setPage('discount-approvals'); window.setTimeout(doIt, 80) } else doIt()
@@ -108,5 +108,5 @@ export function Provider({ children }: { children: ReactNode }) {
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act }}>{children}</Ctx.Provider>
 }

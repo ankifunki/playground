@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import '@fontsource-variable/instrument-sans'
+import '@fontsource/fragment-mono/400.css'
 import { useVariantCss } from '../../useVariantCss'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
 import { Ag } from './Live'
+import { Omni } from './Omni'
 import { Approvals, Stub } from './Page'
 import { Provider, useW } from './store'
 import css from './styles.css?inline'
@@ -16,7 +19,7 @@ function Sidebar() {
       <div className="sb-ws"><span className="sb-logo">N</span><span><b>Northwind</b><small>Wikimind · kept by 6 agents</small></span></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={15} />Home</button>
-      <button className="sb-i" onClick={() => { w.setRail(true); w.setNav(false) }}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
+      <button className="sb-i" onClick={() => { w.setRail(true); if (innerWidth < 1400) w.setNav(false) }}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
       <div className="sb-l">Spaces</div>
       {SPACES.map((s) => {
         const pages = s.pages.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()))
@@ -51,7 +54,7 @@ function Top() {
   return (
     <div className="top">
       <div className="top-r">
-        <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label="Pages"><Icon name="menu" size={16} /></button>
+        <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><Icon name="menu" size={16} /></button>
         <div className="crumb">
           {p ? <><button onClick={() => w.go('home')}>Northwind</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name}</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>Home</b>}
         </div>
@@ -128,13 +131,19 @@ function Home() {
 
 function Shell() {
   const w = useW()
+  // Floating panels sit below the variant bar until it scrolls away.
+  useEffect(() => {
+    const f = () => document.documentElement.style.setProperty('--vtop', Math.max(12, 76 - scrollY) + 'px')
+    f(); addEventListener('scroll', f, { passive: true }); return () => { removeEventListener('scroll', f); document.documentElement.style.removeProperty('--vtop') }
+  }, [])
   return (
-    <div className="w7">
+    <div className={'w7' + (w.nav ? ' nav-on' : '') + (w.rail ? ' rail-on' : '')}>
       <Sidebar />
-      {w.nav && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
+      {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top />
         {w.page === 'home' ? <Home /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
+        <Omni />
       </main>
       <Rail />
     </div>
