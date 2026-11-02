@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { AG, type AgentId } from './data'
+import React, { useEffect, useRef, useState, type ReactNode } from 'react'
+import { AG, ago, type AgentId } from './data'
 import { Icon } from './Icon'
 import { Ag } from './Live'
 import { useW } from './store'
@@ -13,7 +13,8 @@ type Ans = { q: string; ag: AgentId | null; body: ReactNode; cite?: { block: str
  */
 export function Omni() {
   const w = useW(), [q, setQ] = useState(''), [ans, setAns] = useState<Ans | null>(null), [mini, setMini] = useState(false), [asked, setAsked] = useState(false), [focus, setFocus] = useState(false)
-  const inp = useRef<HTMLInputElement>(null), lastY = useRef(0)
+  const inp = useRef<HTMLInputElement>(null), lastY = useRef(0), [sel, setSel] = useState(-1)
+  const [hist, setHist] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('w7-asks') || '[]') } catch { return [] } })
 
   useEffect(() => {
     const f = () => {
@@ -52,7 +53,24 @@ export function Omni() {
     if (/cpq|sync|currency/.test(t)) return { q: text, ag: 'integrations', body: w.cpq === 'failing' ? <>CPQ quote sync is failing for multi-currency deals since Oct 29. The Integrations agent asked Ben Ito why.</> : <>CPQ quote sync is fixed: Ben Ito corrected the currency mapping, and the last 40 quotes synced.</>, cite: { block: 'cfg', label: 'Configured in Salesforce' } }
     return { q: text, ag: null, ask: true, body: <>No agent knows that yet, and none will guess.</> }
   }
-  const submit = (text = q) => { const s = text.trim(); if (!s) return; setAns(answer(s)); setQ(''); setAsked(false); setMini(false) }
+  const submit = (text = q) => {
+    const s = text.replace(/^\//, '').trim(); if (!s) return
+    setAns(answer(s)); setQ(''); setAsked(false); setMini(false); setSel(-1)
+    const h = [s, ...hist.filter((x) => x !== s)].slice(0, 4); setHist(h); try { localStorage.setItem('w7-asks', JSON.stringify(h)) } catch { /* private mode */ }
+  }
+  // Auto-suggest, newest first: your recent questions, then questions raised by what just changed, then a few defaults.
+  const FROM: Record<string, string> = { 'who-fin': 'Who approves a 30% discount now?', 'who-mgr': 'What can a sales manager approve alone?', qe: 'What happens at quarter end?', renew: 'Do flat renewals need approval?', 'cfg-cpq': 'Is CPQ quote sync working?', flow: 'How does a deal get approved?' }
+  const live = w.acts.filter((a) => a.block && FROM[a.block]).map((a) => ({ t: FROM[a.block!], when: ago((w.now - a.at) / 1000) }))
+  const seen = new Set<string>(), term = q.replace(/^\//, '').trim().toLowerCase()
+  const rows: { t: string; kind: 'recent' | 'live' | 'try'; when?: string }[] = [
+    ...hist.map((t) => ({ t, kind: 'recent' as const })), ...live.map((x) => ({ ...x, kind: 'live' as const })),
+    ...['Who approves a 30% discount?', 'What changed today?', 'What are the agents unsure about?', 'Is CPQ quote sync working?'].map((t) => ({ t, kind: 'try' as const })),
+  ].filter((r) => { const k = r.t.toLowerCase(); if (seen.has(k) || (term && !k.includes(term))) return false; seen.add(k); return true }).slice(0, 6)
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSel((i) => Math.min(rows.length - 1, i + 1)) }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setSel((i) => Math.max(-1, i - 1)) }
+    else if (e.key === 'Enter' && sel >= 0 && rows[sel]) { e.preventDefault(); submit(rows[sel].t) }
+  }
   const askPerson = () => { setAsked(true); w.log({ ag: 'approvals', t: `Asked Maria Okafor: “${ans!.q}”`, page: 'discount-approvals', kind: 'ask' }) }
 
   return (
@@ -73,14 +91,20 @@ export function Omni() {
           </div>
         </div>
       )}
-      {!ans && !mini && focus && (
-        <div className="om-sug">
-          {['Who approves a 30% discount?', 'What changed today?', 'What are the agents unsure about?'].map((s) => <button key={s} onMouseDown={(e) => e.preventDefault()} onClick={() => submit(s)}>{s}</button>)}
+      {!ans && !mini && focus && rows.length > 0 && (
+        <div className="om-sug" role="listbox" aria-label="Suggestions">
+          {rows.map((r, i) => (
+            <button key={r.t} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => submit(r.t)}>
+              <Icon name={r.kind === 'recent' ? 'rotate-ccw' : r.kind === 'live' ? 'radio' : 'search'} size={14} />
+              <span>{r.t}</span>
+              <small>{r.kind === 'recent' ? 'You asked' : r.kind === 'live' ? `Changed ${r.when}` : 'Try'}</small>
+            </button>
+          ))}
         </div>
       )}
       <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
         <Icon name="search" size={16} />
-        <input ref={inp} value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini ? 'Ask anything' : 'Ask anything about Northwind'} aria-label="Ask anything" />
+        <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini ? 'Ask anything' : 'Ask anything about Northwind, or type /'} aria-label="Ask anything" />
         {!mini && <span className="om-scope tk">This workspace</span>}
         {!mini && <kbd className="om-k">/</kbd>}
         {!mini && <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={15} /></button>}

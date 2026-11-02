@@ -602,3 +602,15 @@ body{font-size:15.5px}
 .top-menu[aria-pressed="true"] .hb i:nth-child(3){top:5px;transform:rotate(-45deg)}
 .top-menu[aria-pressed="true"]{background:var(--soft2);color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.hb i{transition:none}}
+/* Omni: same width as the page column; suggestions as a recency-ordered list */
+.om{max-width:780px;padding:0 40px}
+.om-bar,.om-ans,.om-sug{width:100%}
+.om-sug{display:flex;flex-direction:column;gap:0;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh2)}
+.om-sug button{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:8px;box-shadow:none;padding:9px 10px;background:none;text-align:left;font-size:14px;color:var(--ink)}
+.om-sug button .ic{flex:none;color:var(--agent)}
+.om-sug button span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.om-sug button small{flex:none;font:400 11px var(--mono);color:var(--ink2)}
+.om-sug button.on{background:var(--soft)}
+@media (max-width:900px){.om{padding:0 20px}}
+.om-sug{flex-wrap:nowrap;align-items:stretch}
+.om-bar,.om-sug,.om-ans,.om-sug button{box-sizing:border-box}
