@@ -1393,3 +1393,18 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .hf-leg{left:30px;top:13px}
 .hf-leg em{top:-19px}
 @media (max-width:640px){.hf-dot{margin-top:0}.hf-leg{left:13px;top:30px;height:calc(100% - 8px)}}
+
+/* Elevation pass: two stats side by side so the contrast (seconds vs hours) reads at a glance; short single-line captions;
+   a calmer answer block in Try it out (reason in secondary ink, tighter rhythm on an 8px scale). */
+.hf-stats{display:grid;grid-template-columns:repeat(2,minmax(0,max-content));gap:8px 48px;margin:0 0 32px}
+.hf-stats>div{display:flex;flex-direction:column;gap:4px}
+.hf-stats dd{margin:0;display:flex;flex-direction:column;gap:2px}
+.hf-stats b{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.3;font-variant-numeric:tabular-nums}
+.hf-stats span{font-size:13px;color:var(--ink2)}
+.hf-t b{white-space:nowrap}
+.sim{gap:24px}
+.sim-out{gap:4px}
+.sim-out .thr{margin:24px 0 4px}
+.sim-reason{color:var(--ink2);font-size:14px;margin:12px 0 4px}
+.sim-in{padding:16px 20px 20px}
+@media (max-width:640px){.hf-stats{grid-template-columns:1fr 1fr;gap:8px 24px}.hf-t b{white-space:normal}}

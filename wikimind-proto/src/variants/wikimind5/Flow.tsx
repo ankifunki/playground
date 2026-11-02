@@ -21,15 +21,18 @@ export function HowFlow() {
     return () => window.clearInterval(t)
   }, [seen])
   const steps = [
-    { t: 'Rep moves the deal', s: 'to Negotiation', ic: 'user' },
-    { t: 'Agent checks and routes it', s: 'against the rules, in seconds', ic: 'stamp' },
-    { t: 'People approve', s: `manager, + Finance over ${w.fin}%, CRO over 35%`, ic: 'user' },
+    { t: 'Rep submits', s: 'moves the deal to Negotiation', ic: 'user' },
+    { t: 'Agent routes it', s: 'checks it against the rules', ic: 'stamp' },
+    { t: 'People approve', s: `Finance joins over ${w.fin}%`, ic: 'user' },
     { t: 'Record unlocks', s: 'the deal moves on', ic: 'lock-open' },
   ]
   const legs = ['', '4 s', '~3 h 40 m']
   return (
     <div className="hf" ref={root}>
-      <div className="hf-stat"><span className="tk">The agent’s part</span><b>4 seconds</b><span>to check a deal against the rules and route it. The rest is people approving: about 3 h 40 m.</span></div>
+      <dl className="hf-stats">
+        <div><dt className="tk">The agent’s part</dt><dd><b>4 s</b><span>to check and route a deal</span></dd></div>
+        <div><dt className="tk">People approving</dt><dd><b>3 h 40 m</b><span>median wait for approvers</span></dd></div>
+      </dl>
       <ol className="hf-flow" aria-label="How a discount approval works">
         {steps.map((st, i) => (
           <li key={st.t} className={'hf-s' + (at > i ? ' on' : '') + (i === 1 ? ' agent' : '')}>
