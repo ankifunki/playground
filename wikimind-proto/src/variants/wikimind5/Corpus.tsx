@@ -40,7 +40,7 @@ export function Bars({ ticks, W, h, lit }: { ticks: string[]; W: number; h: numb
   const id = 'h' + useId().replace(/[^a-z0-9]/gi, ''), N = ticks.length, step = W / Math.max(1, N), bw = 3, dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1
   return (
     <svg className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
-      <defs><pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect className="kh-bg" width="4" height="4" /><rect className="kh-ln" width="2.2" height="4" /></pattern></defs>
+      <defs><pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse"><rect className="kh-bg" width="4" height="4" /><path className="kh-ln" d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" /></pattern></defs>
       {W > 0 && ticks.map((s, i) => {
         const x = Math.round((i * step + (step - bw) / 2) * dpr) / dpr, cls = lit && !lit(s as never) ? 'dim' : undefined
         return <rect key={i} data-s={s} className={cls} x={x} y={0} width={bw} height={h} fill={s === 'ready' ? `url(#${id})` : undefined} style={{ animationDelay: Math.round((i / N) * 700) + 'ms' }} />
