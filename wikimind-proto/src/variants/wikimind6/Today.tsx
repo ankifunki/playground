@@ -29,7 +29,6 @@ export function Today() {
         <button onClick={(e) => w.openProof('learnt', e.currentTarget)}><b>{t.learned}</b><span>things learned</span><span className="td-sub">practice nobody had written down</span></button>
         <button onClick={(e) => w.openProof('rewrote', e.currentTarget)}><b>{t.rewrote}</b><span>pages rewritten</span><span className="td-sub">to match what changed</span></button>
       </div>
-      {last && <p className="td-live" key={last.id}><span className="pdot" /><Ag id={last.ag} /><span className="td-lt"><b className="agw">{AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span><span className="tk">just now</span></p>}
     </section>
   )
 }

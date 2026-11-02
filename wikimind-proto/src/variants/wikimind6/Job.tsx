@@ -6,7 +6,6 @@ import { ARRIVAL, REFS, tierOf, type Mark } from './data'
 import { Icon, type IconName } from './Icon'
 import { RM } from './logic'
 import { HowFlow } from './Flow'
-import { MarkdownView } from './Markdown'
 import { Sim } from './Sim'
 import { useW } from './store'
 
@@ -131,17 +130,6 @@ function LiveLine() {
   return <p className="pl-live"><i aria-hidden="true" /><span>{now}</span><span className="pl-m">Written from {srcs} sources · rewritten {n} times</span></p>
 }
 
-/** Evidence for a section, visible without asking: who wrote it, from how many sources, and who checked it. Opens the provenance. */
-function SecEv({ ns, ags = ['approvals'], children, tone }: { ns: number[]; ags?: AgentId[]; children: React.ReactNode; tone?: 'warn' }) {
-  const w = useW(), n = new Set(ns).size
-  if (!w.lens) return null
-  return (
-    <button className={'sev' + (tone ? ' ' + tone : '')} onClick={(e) => w.openBlame([...new Set(ns)], e.currentTarget)}>
-      <AgentPile ids={ags} size={20} /><Pile ns={[...new Set(ns)]} max={4} /><span>{n} sources · {children}</span>
-    </button>
-  )
-}
-
 /* ---------- How it's configured: what touches the Opportunity object, and why each thing exists ---------- */
 function Config() {
   const w = useW(), ch = w.cfg !== 'idle'
@@ -187,7 +175,7 @@ function Receipts() {
 }
 
 export function Job() {
-  const w = useW(), [md, setMd] = useState(false), finNs = w.fin === 20 ? [13] : [15]
+  const w = useW(), finNs = w.fin === 20 ? [13] : [15]
   const cfgMark: Mark | undefined = w.cfg === 'changed' ? { t: 'Changed just now · re-checking', tone: 'warn' } : w.cfg === 'verified' ? { t: 'Changed just now', tone: 'ok' } : undefined
   const sents = [[1], [2], [3, ...finNs], [4], [5], finNs, [3, 12], [6], [7], [8], [16], [9, 10], w.learned ? [11, 14] : [11], [17]]
   // Live events while you read: an agent cites this page; Salesforce changes; Maria answers. Presenter keys do the same (C, L).
@@ -204,32 +192,19 @@ export function Job() {
     <div className="page art">
       <div className="doc">
         <PageNav kind="rail" />
-        <article className={'art-body' + (w.lens ? ' lens' : '')}>
+        <article className="art-body">
           <div className="crumb"><button className="wl crumb-all" onClick={(e) => w.openPages(e.currentTarget)}><Icon name="library" size={14} />All pages</button></div>
           <h1 className="t">Discount approvals</h1>
           <div className="byline">
             <span className="agline">Kept by <Ag id="approvals" name /></span>
             <span className="agline">Verified by <L to="Dana Ruiz" /></span>
-            <span className="bl-ctl">
-              {!md && <button className={'lensbtn' + (w.lens ? ' on' : '')} aria-pressed={w.lens} onClick={() => w.setLens(!w.lens)}><Icon name="scan-eye" size={16} />Evidence</button>}
-              <span className="pmode" role="group" aria-label="View">
-                <button aria-pressed={!md} className={!md ? 'on' : ''} onClick={() => setMd(false)}>Page</button>
-                <button aria-pressed={md} className={md ? 'on' : ''} onClick={() => { setMd(true); w.setLens(false) }}><Icon name="code" size={14} />Markdown</button>
-              </span>
-            </span>
           </div>
-          {w.lens && !md && (
-            <div className="lzleg" aria-label="Evidence key">
-              <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span><span><i className="lg-stale" />Stale</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
-            </div>
-          )}
-          {!md && <LiveLine />}
+          <LiveLine />
           <PageStatus sents={sents} />
-          {md ? <MarkdownView /> : <>
+          <>
           <PageNav kind="chips" />
           <Arrival />
           <section id="s-lead">
-            <SecEv ns={[1, 2, 3, 4, 5, ...finNs]}>checked by Dana Ruiz</SecEv>
             <p><C ns={[1]}><b>Discount approval</b> is how Northwind reviews big deals before they move to Negotiation.</C> <C ns={[2]}>Any deal over $100,000 needs approval,</C> <C ns={[3, ...finNs]}>and who approves depends on the discount, under the <L to="Discount policy" />.</C> <C ns={[4]} mark={SEEN_ONCE} cls="uns">EMEA deals reportedly go to the regional director first.</C> <C ns={[5]}>Most approvals finish in under four hours.</C></p>
             <QaSlot where="page" sec="lead" />
           </section>
@@ -241,7 +216,6 @@ export function Job() {
           </section>
           <section id="s-rules">
             <h2>The rules</h2>
-            {w.cfg === 'changed' ? <SecEv ns={[...finNs, 3, 12, 6, 7, 8, 16]} tone="warn">Dana is re-checking a change from just now</SecEv> : <SecEv ns={[...finNs, 3, 12, 6, 7, 8, 16]}>checked by Dana Ruiz</SecEv>}
             <h3>Who approves</h3>
             <p>
               <C ns={finNs} mark={cfgMark} id="cfg-sentence">Discounts over {w.cfgAnim ? <><s className="oldv">20%</s> <span className="newv">25%</span></> : w.fin + '%'} add Finance as a second approver.</C>{' '}
@@ -255,7 +229,6 @@ export function Job() {
           </section>
           <section id="s-practice">
             <h2>In practice</h2>
-            {w.learned ? <SecEv ns={[9, 10, 11, 14]}>one confirmed by Maria Okafor, one unofficial</SecEv> : <SecEv ns={[9, 10, 11]} tone="warn">not confirmed yet</SecEv>}
             <h3>Quarter-end approvals in Slack</h3>
             <div className="obs">
               <p><C ns={[9, 10]} mark={{ t: 'Unofficial', tone: 'warn' }}>At <L to="Quarter-end close">quarter end</L>, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.</C></p>
@@ -268,14 +241,13 @@ export function Job() {
           </section>
           <section id="s-config">
             <h2>How it’s configured</h2>
-            <SecEv ns={[2, ...finNs, 16, 8, 17, 18]} ags={['approvals', 'finance', 'integrations']}>read from Salesforce</SecEv>
             <Config />
           </section>
           <section id="s-used">
             <h2>Cited by the agents</h2>
             <Receipts />
           </section>
-          </>}
+          </>
           <div className="colophon">
             <span className="colag"><AgentPile ids={['approvals', 'finance', 'integrations']} size={22} />3 agents</span>
             <Pile ns={[...Object.keys(REFS).map(Number), ...(w.learned ? [14] : []), ...(w.cfg !== 'idle' ? [15] : [])]} />

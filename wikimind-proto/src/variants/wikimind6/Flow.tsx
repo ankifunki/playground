@@ -1,44 +1,84 @@
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Ag } from './agents'
+import { Icon } from './Icon'
 import { RM } from './logic'
 import { useW } from './store'
 
-function Box({ x, y, w, h, a, b, agent }: { x: number; y: number; w: number; h: number; a: string; b?: string; agent?: boolean }) {
-  return (
-    <>
-      <rect className={'fb' + (agent ? ' ag' : '')} x={x} y={y} width={w} height={h} rx={6} />
-      <text className="ft" x={x + w / 2} y={y + (b ? 22 : h / 2 + 5)} textAnchor="middle">{a}</text>
-      {b && <text className="fs" x={x + w / 2} y={y + 40} textAnchor="middle">{b}</text>}
-    </>
-  )
-}
+type Frame = { s: number; clk: string; t: string; d?: string; ag?: boolean }
 
 /**
- * How it works, at a glance (Wikimind 4's flowchart): the deal comes in, the Approvals agent routes it by discount to one
- * of three approvers, and the record unlocks. The thresholds come from the live Salesforce config, so a change redraws it.
- * Dots travel the paths unless the reader prefers less motion. One caption says where the time goes.
+ * How it works, played the way the Approvals agent works a real deal. Four steps on one track; a narration line says
+ * what is happening at each moment, with the clock beside it, so the 4 seconds of agent work and the 3 h 40 m of people
+ * approving read as what they are. Play / pause / replay; tap a step to jump there. Plays once when it first comes into
+ * view; reduced motion starts paused at the end. Thresholds come from the live Salesforce config.
  */
 export function HowFlow() {
-  const w = useW(), f = w.fin
+  const w = useW(), f = w.fin, root = useRef<HTMLDivElement>(null)
+  const frames: Frame[] = [
+    { s: 0, clk: '0 s', t: 'A rep moves Helios expansion to Negotiation', d: '$240,000 at 28% off' },
+    { s: 1, clk: '+1 s', t: 'Reads the Discount policy and the live Salesforce config', ag: true },
+    { s: 1, clk: '+2 s', t: `28% is over ${f}%, so Finance approves after the sales manager`, ag: true },
+    { s: 1, clk: '+4 s', t: 'Locks the record and routes it to the sales manager', ag: true },
+    { s: 2, clk: '+1 h 10 m', t: 'The sales manager approves; Finance is next' },
+    { s: 2, clk: '+3 h 40 m', t: 'Finance approves' },
+    { s: 3, clk: '+3 h 40 m', t: 'Unlocks the record, and the deal moves on', d: 'Logged as a receipt on this page', ag: true },
+  ]
+  const steps = [
+    { t: 'Rep submits', s: 'deal over $100k', ic: 'user' },
+    { t: 'Agent routes', s: 'in about 4 seconds', ic: 'stamp' },
+    { t: 'People approve', s: 'about 3 h 40 m', ic: 'user' },
+    { t: 'Record unlocks', s: 'the deal moves on', ic: 'lock-open' },
+  ]
+  const last = frames.length - 1
+  const [i, setI] = useState(RM ? last : 0), [play, setPlay] = useState(false), started = useRef(false)
+
+  // Start once, the first time the diagram is mostly on screen.
+  useEffect(() => {
+    const el = root.current; if (!el || RM || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && !started.current) { started.current = true; setPlay(true) } }, { threshold: 0.6 })
+    io.observe(el); return () => io.disconnect()
+  }, [])
+  useEffect(() => {
+    if (!play) return
+    if (i >= last) { setPlay(false); return }
+    const t = window.setTimeout(() => setI((x) => x + 1), i === 0 ? 1600 : 1900)
+    return () => window.clearTimeout(t)
+  }, [play, i, last])
+
+  const fr = frames[i]
+  const inStep = frames.filter((x) => x.s === fr.s), k = inStep.indexOf(fr)
+  const p = Math.min(1, (fr.s + (fr.s < 3 ? (k + 1) / (inStep.length + 1) : 0)) / 3)
+  const toggle = () => { started.current = true; if (i >= last) { setI(0); setPlay(true) } else setPlay(!play) }
+  const jump = (s: number) => { started.current = true; setPlay(false); setI(frames.findIndex((x) => x.s === s)) }
+
   return (
-    <figure className="hfx">
-      <svg viewBox="0 0 400 356" role="img" aria-label={`Approval flow: the Approvals agent routes a deal over $100k by discount to the sales manager (up to ${f}%), then Finance (${f} to 35%), or the CRO (over 35%); the record unlocks when approved`}>
-        <defs>
-          <path id="hx1" d="M200 56 L200 140 C200 166 70 160 70 188 L70 244 C70 270 200 266 200 294" />
-          <path id="hx2" d="M200 56 L200 294" />
-          <path id="hx3" d="M200 56 L200 140 C200 166 330 160 330 188 L330 244 C330 270 200 266 200 294" />
-        </defs>
-        {['M200 56 L200 88', 'M200 140 C200 166 70 160 70 188', 'M200 140 L200 188', 'M200 140 C200 166 330 160 330 188', 'M70 244 C70 270 200 266 200 294', 'M200 244 L200 294', 'M330 244 C330 270 200 266 200 294'].map((d) => <path key={d} className="fe" d={d} />)}
-        {!RM && ([[1, 0], [1, 2.6], [2, 1.2], [2, 3.9], [3, 2]] as const).map(([p, t], i) => (
-          <circle key={i} r={2.5} className="fd">
-            <animateMotion dur="5.2s" begin={`-${t}s`} repeatCount="indefinite"><mpath href={`#hx${p}`} /></animateMotion>
-          </circle>
+    <div className="hwk" ref={root}>
+      <dl className="hwk-stats">
+        <div><dt className="tk">The agent’s part</dt><dd><b>4 s</b><span>to check and route a deal</span></dd></div>
+        <div><dt className="tk">People approving</dt><dd><b>3 h 40 m</b><span>median wait for approvers</span></dd></div>
+      </dl>
+      <ol className="hwk-track" aria-label="How a discount approval works" style={{ '--p': p } as React.CSSProperties}>
+        <span className="hwk-line" aria-hidden="true"><i /></span>
+        {steps.map((st, n) => (
+          <li key={st.t} className={'hwk-s' + (n < fr.s ? ' done' : n === fr.s ? ' now' : '') + (n === 1 ? ' agent' : '')}>
+            <button onClick={() => jump(n)} aria-current={n === fr.s ? 'step' : undefined}>
+              <span className="hwk-n" aria-hidden="true"><Icon name={st.ic} size={16} /></span>
+              <span className="hwk-t"><b>{st.t}</b><small>{st.s}</small></span>
+            </button>
+          </li>
         ))}
-        <Box x={40} y={10} w={320} h={46} a="Rep moves a deal over $100k to Negotiation" />
-        <Box x={40} y={88} w={320} h={52} a="Approvals agent checks and routes it" b="in about 4 seconds" agent />
-        <Box x={8} y={188} w={124} h={56} a={`Up to ${f}%`} b="Sales manager" />
-        <Box x={138} y={188} w={124} h={56} a={`${f} to 35%`} b="Manager + Finance" />
-        <Box x={268} y={188} w={124} h={56} a="Over 35%" b="CRO" />
-        <Box x={40} y={294} w={320} h={52} a="Approved: the record unlocks" b="people take about 3 h 40 m" />
-      </svg>
-    </figure>
+      </ol>
+      <div className="hwk-now">
+        <button className="hwk-play" onClick={toggle} aria-label={play ? 'Pause' : i >= last ? 'Replay' : 'Play'}>
+          <Icon name={play ? 'pause' : i >= last ? 'rotate-ccw' : 'play'} size={14} />
+        </button>
+        <div className="hwk-say" key={i} aria-live="polite">
+          {fr.ag ? <Ag id="approvals" /> : <span className="hwk-who" aria-hidden="true"><Icon name="user" size={13} /></span>}
+          <span className="hwk-txt"><span>{fr.ag && <b className="agw">Approvals agent </b>}{fr.ag ? fr.t.charAt(0).toLowerCase() + fr.t.slice(1) : fr.t}</span>{fr.d && <small>{fr.d}</small>}</span>
+        </div>
+        <span className="hwk-clk tk">{fr.clk}</span>
+      </div>
+    </div>
   )
 }

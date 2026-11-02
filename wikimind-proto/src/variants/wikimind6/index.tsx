@@ -36,7 +36,6 @@ function Keys() {
         if (e.key === 's' || e.key === 'S') return w.arrive()
         if (e.key === 't' || e.key === 'T') return w.startTour()
         if (e.key === 'c' || e.key === 'C') return w.observeChange()
-        if (e.key === 'e' || e.key === 'E') return w.setLens(!w.lens)
         if (e.key === '/') { e.preventDefault(); document.getElementById('cin')?.focus(); return }
       }
       const pop = document.getElementById('pop')
