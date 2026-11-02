@@ -9,8 +9,9 @@ export const VARIANTS: Variant[] = [
   { key: 'e', name: 'Wikimind 2', desc: 'Ask, zoom map, claims', Component: lazy(() => import('./variants/wikimind2')) },
   { key: 'f', name: 'Wikimind 3', desc: 'Cited, always learning', Component: lazy(() => import('./variants/wikimind3')) },
   { key: 'g', name: 'Wikimind 4', desc: 'Provenance, answers in place', Component: lazy(() => import('./variants/wikimind4')) },
+  { key: 'h', name: 'Wikimind 5', desc: 'Front page, live proof, demos', Component: lazy(() => import('./variants/wikimind5')) },
 ]
-const DEFAULT = 'g'
+const DEFAULT = 'h'
 
 function readKey() {
   const k = new URLSearchParams(location.search).get('v') || (() => { try { return localStorage.getItem('wikimind-variant') } catch { return null } })()
