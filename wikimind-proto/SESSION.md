@@ -96,6 +96,8 @@ The full arc of the claude.ai session that produced these prototypes, in order. 
 
 52. **Wikimind 4: one height for the trust cards.** The Gaps and access card listed all three gaps and stood taller than Reliability and Automation. The three cards now share one height, and the gaps show one at a time in the same row style as the Automation card. The first pager (loose indigo chevrons under the row) looked undesigned, so it moved into the card header: "2 of 3" as a quiet label and two round 28px buttons in the card's control style, aligned so every card's label and stat sit on the same lines. The row slides in from the side you moved toward, and also answers to swipe and the arrow keys.
 
+53. **Bars with width; a hatch inside, not angled bars.** Ankit: "angled line pattern" meant a diagonal pattern inside upright bars, and "denser" didn't mean thinner. The 1px hairlines (and the slanted lines for proven work) were wrong. Now: 3px upright bars about 5.5px apart, like Wikimind 4's density; proven-and-waiting bars are filled with one continuous diagonal ink hatch so together they read as a striped block. Each bar is still a round number of completed requests, picked so the bars fill the width (15 per bar on desktop, 10 on the page strip, 50 on phones), stated in the caption. Two CSS specificity slips (the bar fill rule reaching into the hatch pattern, then overriding the solid bars) were caught in screenshots and fixed by scoping to `rect[data-s]`.
+
 ## Open threads worth picking up
 
 - Screen recordings of agent actions ("Watch it" on receipts: the Slack decline, the Salesforce routing) for the brief's Beautiful goal.

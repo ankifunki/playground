@@ -5,7 +5,7 @@ import { C, Margin, Pile } from './Claim'
 import { ARRIVAL, AUTO, REFS, tierOf, type Mark } from './data'
 import { Icon, type IconName } from './Icon'
 import { RM } from './logic'
-import { Lines } from './Corpus'
+import { Bars, planBars, useWidth } from './Corpus'
 import { MarkdownView } from './Markdown'
 import { Sim } from './Sim'
 import { useW } from './store'
@@ -103,14 +103,14 @@ function PageStatus({ sents }: { sents: number[][] }) {
   const w = useW(), tiers = sents.map((ns) => tierOf(ns, w.cfg === 'changed')), checked = tiers.filter((t) => t === 'ok').length
   const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
   const P = AUTO.page, ready = w.learned ? 3 : 0, notyet = 100 - P.own - ready
-  // Same scale as Home: one line per 10 requests (this job: the Approvals agent's last 30 days).
-  const total = Math.round(P.ran / (P.own / 100)), L = (pct: number) => Math.round((pct * total) / 100 / 10)
-  const ticks: string[] = [...Array(L(P.own)).fill('own'), ...Array(L(ready)).fill('ready'), ...Array(L(notyet)).fill('shadow')]
+  // Same scale rule as Home: each bar is a round number of this job's requests in the last 30 days.
+  const total = Math.round(P.ran / (P.own / 100)), barEl = useRef<HTMLDivElement>(null), BW = useWidth(barEl)
+  const { ticks } = planBars([['own', P.own], ['ready', ready], ['shadow', notyet]], total, BW)
   return (
     <div className="ps" aria-label="How far to trust this page">
       <div className="ps-top">
         <p className="ps-own"><b>{P.own}%</b> of {P.job} run on their own<span>. A person undid {P.undone} of the last {P.ran}.{ready ? ` ${ready}% more is proven and needs your OK.` : ''}</span></p>
-        <div className="kn-bar ps-bar" role="img" aria-label={`${P.own}% runs on its own${ready ? `, ${ready}% proven and needs your OK` : ''}, ${notyet}% not yet.`}><Lines ticks={ticks} h={16} /></div>
+        <div className="kn-bar ps-bar" ref={barEl} role="img" aria-label={`${P.own}% runs on its own${ready ? `, ${ready}% proven and needs your OK` : ''}, ${notyet}% not yet.`}><Bars ticks={ticks} W={BW} h={16} /></div>
       </div>
       <dl className="ps-q">
         <div><dt className="tk">Is it complete?</dt><dd><b>5 of 5</b> automations. <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}</button></dd></div>

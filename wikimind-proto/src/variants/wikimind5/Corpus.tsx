@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { AUTO, CORPUS_TOTAL, INVENTORY, READS, SPOT } from './data'
 import { Icon } from './Icon'
 import { RM } from './logic'
@@ -16,36 +16,37 @@ const stateOf = (s: Seg): State => (s === 'own' || s === 'ready' ? s : 'notyet')
 const MEMBERS: Record<State, Seg[]> = { own: ['own'], ready: ['ready'], notyet: NOTYET }
 const SAYS: Record<State, string> = { own: 'runs on its own', ready: 'is proven and needs your OK', notyet: 'not yet' }
 
-/**
- * The lines, drawn as one SVG so they sit on whole pixels and keep an even rhythm at any density.
- * Upright and crisp for runs-on-its-own and not-yet; true diagonals for proven-and-waiting.
- */
-export function Lines({ ticks, lit, h }: { ticks: string[]; lit?: (s: never) => boolean; h: number }) {
-  const ref = useRef<SVGSVGElement>(null), [W, setW] = useState(0)
+/** Requests per bar: a round number, chosen so bars land about 5.5px apart and fill the width. */
+const NICE = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
+export function planBars(parts: [string, number][], total: number, W: number) {
+  const raw = total / Math.max(20, W / 5.5)
+  const unit = NICE.reduce((b, u) => (Math.abs(u - raw) < Math.abs(b - raw) ? u : b), NICE[0])
+  return { unit, ticks: parts.flatMap(([s, pct]) => Array.from({ length: Math.round((pct * total) / 100 / unit) }, () => s)) }
+}
+export function useWidth(ref: React.RefObject<HTMLElement | null>) {
+  const [W, setW] = useState(0)
   useLayoutEffect(() => {
-    const el = ref.current?.parentElement; if (!el) return
+    const el = ref.current; if (!el) return
     const set = () => setW(Math.floor(el.clientWidth)); set()
     const ro = new ResizeObserver(set); ro.observe(el); return () => ro.disconnect()
   }, [])
-  const N = ticks.length, step = W / N, sk = Math.min(10, h * 0.3)
+  return W
+}
+/**
+ * The bars, as one SVG. Each is 3px wide and upright, placed on whole device pixels. Proven-and-waiting bars are filled
+ * with one continuous diagonal hatch, so together they read as a striped block cut into bars.
+ */
+export function Bars({ ticks, W, h, lit }: { ticks: string[]; W: number; h: number; lit?: (s: never) => boolean }) {
+  const id = 'h' + useId().replace(/[^a-z0-9]/gi, ''), N = ticks.length, step = W / Math.max(1, N), bw = 3, dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1
   return (
-    <svg ref={ref} className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
+    <svg className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
+      <defs><pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect className="kh-bg" width="4" height="4" /><rect className="kh-ln" width="2.2" height="4" /></pattern></defs>
       {W > 0 && ticks.map((s, i) => {
-        const x = Math.round(i * step + step / 2) + 0.5, cls = lit && !lit(s as never) ? 'dim' : undefined, d = { animationDelay: Math.round((i / N) * 700) + 'ms' }
-        return s === 'ready'
-          ? <line key={i} data-s={s} className={cls} x1={x + sk / 2} y1={0} x2={x - sk / 2} y2={h} style={d} />
-          : <line key={i} data-s={s} className={cls} x1={x} y1={0} x2={x} y2={h} shapeRendering="crispEdges" style={d} />
+        const x = Math.round((i * step + (step - bw) / 2) * dpr) / dpr, cls = lit && !lit(s as never) ? 'dim' : undefined
+        return <rect key={i} data-s={s} className={cls} x={x} y={0} width={bw} height={h} fill={s === 'ready' ? `url(#${id})` : undefined} style={{ animationDelay: Math.round((i / N) * 700) + 'ms' }} />
       })}
     </svg>
   )
-}
-
-/** Requests per line: 10, or 25 on narrow screens so the lines stay distinct. */
-function useUnit() {
-  const q = () => (typeof matchMedia !== 'undefined' && matchMedia('(max-width: 640px)').matches ? 25 : 10)
-  const [u, setU] = useState(q)
-  useEffect(() => { const m = matchMedia('(max-width: 640px)'), f = () => setU(q()); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
-  return u
 }
 
 /** Eases a number to its target: from zero on mount and whenever `from0` changes (the tour replays it). */
@@ -77,9 +78,8 @@ export function Corpus() {
   const own = useTween(a.own, w.replayN)
   const share: Record<State, number> = { own: a.own, ready: a.ready, notyet: a.complete + a.current + a.unknown + a.shadow }
 
-  // One line per 10 completed requests from the last 30 days (20 on phones, so lines never merge). Shares stay in %.
-  const unit = useUnit(), lines = (pct: number) => Math.round((pct * AUTO.requests) / 100 / unit)
-  const ticks = ORDER.flatMap((s) => Array.from({ length: lines(a[s]) }, () => s)), N = ticks.length
+  // Each bar is a round number of the requests completed in the last 30 days, sized so bars sit ~5.5px apart. Shares stay in %.
+  const W = useWidth(bar), plan = planBars(ORDER.map((s) => [s, a[s]] as [string, number]), AUTO.requests, W), unit = plan.unit, ticks = plan.ticks as Seg[], N = Math.max(1, ticks.length)
   const lit = (s: Seg) => !hi || hi.includes(s)
   const hover = (h: Seg[] | null) => ({ onMouseEnter: () => setHi(h), onMouseLeave: () => setHi(null), onFocus: () => setHi(h), onBlur: () => setHi(null) })
   const toAsks = () => document.getElementById('asking-col')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
@@ -115,10 +115,10 @@ export function Corpus() {
         </div>
         <div className={'kn-bar' + (hi ? ' hl' : '')} key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
           role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${share.notyet}% not yet.`}>
-          <Lines ticks={ticks} lit={lit} h={40} />
+          <Bars ticks={ticks} W={W} lit={lit} h={40} />
         </div>
         {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{share[tip.s]}%</b> {SAYS[tip.s]} · {fmt((share[tip.s] * AUTO.requests) / 100)} requests</div>}
-        <p className="kn-unit">Each line is {unit} of the {fmt(AUTO.requests)} requests completed in the last 30 days.</p>
+        <p className="kn-unit">Each bar is {unit} of the {fmt(AUTO.requests)} requests completed in the last 30 days.</p>
       </div>
 
       <div className="kn-q">
