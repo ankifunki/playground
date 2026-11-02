@@ -41,14 +41,7 @@ export function Corpus() {
   const [hi, setHi] = useState<Seg[] | null>(null)
   const [tip, setTip] = useState<{ s: Seg; x: number } | null>(null)
   const bar = useRef<HTMLDivElement>(null)
-  const [slack, setSlack] = useState(READS[0].n)
-  const on = useRef(w.wireOn); on.current = w.wireOn
   const own = useTween(a.own, w.replayN)
-  // They are still reading.
-  useEffect(() => {
-    const t = window.setInterval(() => { if (on.current) setSlack((n) => n + 1 + Math.floor(Math.random() * 3)) }, 2200)
-    return () => window.clearInterval(t)
-  }, [])
 
   const ticks = ORDER.flatMap((s) => Array.from({ length: a[s] }, () => s))
   const lit = (s: Seg) => !hi || hi.includes(s)
@@ -113,10 +106,23 @@ export function Corpus() {
         </button>
       </div>
 
-      <p className="kn-foot">
-        <span className="kn-pile" aria-hidden="true">{READS.map((r) => <span key={r.what} className="pt"><Icon name={r.icon} size={12} /></span>)}</span>
-        <span>Built by the agents from {fmt(slack)} Slack messages, {fmt(READS[1].n)} tickets, six years of Salesforce changes, {READS[3].n} meetings and {READS[4].n} documents: {fmt(CORPUS_TOTAL)} pages, none typed by a person.</span>
-      </p>
     </section>
+  )
+}
+
+/** What the agents built it from, in the masthead: proof it was assembled automatically, not the anchor. Slack keeps ticking. */
+export function Built() {
+  const w = useW()
+  const [slack, setSlack] = useState(READS[0].n)
+  const on = useRef(w.wireOn); on.current = w.wireOn
+  useEffect(() => {
+    const t = window.setInterval(() => { if (on.current) setSlack((n) => n + 1 + Math.floor(Math.random() * 3)) }, 2200)
+    return () => window.clearInterval(t)
+  }, [])
+  return (
+    <p className="hm-built">
+      <span className="kn-pile" aria-hidden="true">{READS.map((r) => <span key={r.what} className="pt"><Icon name={r.icon} size={12} /></span>)}</span>
+      <span>Built by 6 agents from {fmt(slack)} Slack messages, {fmt(READS[1].n)} tickets, six years of Salesforce changes, {READS[3].n} meetings and {READS[4].n} documents: {fmt(CORPUS_TOTAL)} pages, none typed by a person.</span>
+    </p>
   )
 }

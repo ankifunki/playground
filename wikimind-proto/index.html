@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wikimind prototypes</title>
+<!-- Light by default, whatever the OS says; dark only when chosen with the toggle. Set before paint so there is no flash. -->
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('wikimind-theme')==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}</script>
 </head>
 <body>
 <div id="root"></div>

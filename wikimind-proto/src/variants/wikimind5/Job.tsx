@@ -46,11 +46,13 @@ function Dots({ on, off = 0 }: { on: number; off?: number }) {
 }
 
 /** "Updated 4s ago", ticking. Its own timer, so the page doesn't re-render every second. */
-export function Ago({ prefix = 'Updated' }: { prefix?: string }) {
+export function Ago({ prefix = 'Updated', bare }: { prefix?: string; bare?: boolean }) {
   const w = useW(), [, tick] = useState(0)
   useEffect(() => { const t = window.setInterval(() => tick((n) => n + 1), 1000); return () => window.clearInterval(t) }, [])
   const s = Math.max(1, Math.round((Date.now() - w.lastObs) / 1000))
-  return <span className="ago"><span className="pdot" />{prefix} {s < 60 ? s + 's' : Math.round(s / 60) + 'm'} ago</span>
+  const t = s < 60 ? s + 's' : Math.round(s / 60) + 'm'
+  if (bare) return <span className="ago">{t} ago</span>
+  return <span className="ago"><span className="pdot" />{prefix} {t} ago</span>
 }
 
 /** The open question lives where the doubt is. When Maria answers, the card rewrites itself in place. */
@@ -98,10 +100,10 @@ function TrustLine({ sents }: { sents: number[][] }) {
   const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
   return (
     <div className="tline" aria-label="How far to trust this page">
-      <div><span className="tk">Is it complete?</span><b>5 of 5 automations</b><small>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></small></div>
-      <div><span className="tk">Is it right?</span><b>{checked} of {checked} held up</b><small>every sentence Dana spot-checked here</small></div>
-      <div><span className="tk">Is it current?</span><b><Ago prefix="Re-read" /></b><small>1 sentence looks out of date: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></small></div>
-      <div><span className="tk">Is it used?</span><b>Cited {214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)} times</b><small>this month, by agents justifying what they did</small></div>
+      <div><span className="tk">Is it complete?</span><span className="kn-st"><b>5 of 5</b><span>automations explained. {gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></span></span></div>
+      <div><span className="tk">Is it right?</span><span className="kn-st"><b>{checked} of {checked}</b><span>sentences held up when Dana spot-checked them</span></span></div>
+      <div><span className="tk">Is it current?</span><span className="kn-st"><b><Ago bare /></b><span>last re-read. 1 sentence is out of date: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></span></span></div>
+      <div><span className="tk">Is it used?</span><span className="kn-st"><b>{214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)}</b><span>times agents cited it this month</span></span></div>
     </div>
   )
 }
@@ -109,10 +111,10 @@ function TrustLine({ sents }: { sents: number[][] }) {
 /* ---------- How it's configured: what touches the Opportunity object, and why each thing exists ---------- */
 function Config() {
   const w = useW(), ch = w.cfg !== 'idle'
-  const autos: { type: string; name: string; ns: number[]; does: string; st: [string, 'ok' | 'warn' | 'info' | 'stale']; ag: AgentId; mark?: Mark }[] = [
+  const autos: { type: string; name: string; ns: number[]; does: string; st?: [string, 'ok' | 'warn' | 'info' | 'stale']; ag: AgentId; mark?: Mark }[] = [
     { type: 'Approval process', name: 'Large Deal Approval', ns: ch ? [2, 15] : [2, 13], does: `Locks deals over $100,000 and routes them: the manager, Finance over ${w.fin}%, the CRO over 35%.`, st: ch ? ['Changed just now', 'info'] : ['Changed Oct 28', 'info'], ag: 'approvals' },
-    { type: 'Validation rule', name: 'Discount_Requires_Reason', ns: [16], does: 'Blocks a discount over 10% without a written reason.', st: ['Healthy', 'info'], ag: 'finance' },
-    { type: 'Validation rule', name: 'Amount_Locked_After_Approval', ns: [8], does: 'Lets only Deal Desk change the amount once a deal is approved.', st: ['Healthy', 'info'], ag: 'finance' },
+    { type: 'Validation rule', name: 'Discount_Requires_Reason', ns: [16], does: 'Blocks a discount over 10% without a written reason.', ag: 'finance' },
+    { type: 'Validation rule', name: 'Amount_Locked_After_Approval', ns: [8], does: 'Lets only Deal Desk change the amount once a deal is approved.', ag: 'finance' },
     { type: 'Flow', name: 'Notify_Deal_Desk', ns: [17], does: 'Posts approved deals over $500,000 to #deal-desk.', st: ['Stale', 'stale'], ag: 'approvals', mark: { t: 'Not seen since Aug 14', tone: 'stale' } },
     { type: 'Integration', name: 'CPQ quote sync', ns: [18], does: 'Sends approved discounts to CPQ quotes.', st: ['Failing for multi-currency', 'warn'], ag: 'integrations' },
   ]
@@ -125,7 +127,7 @@ function Config() {
       </div>
       <ul className="cfg-l">{autos.map((a) => (
         <li key={a.name}>
-          <div className="cfg-h"><span className="tk">{a.type}</span><span className={'tdone' + (a.st[1] === 'warn' ? ' wait' : a.st[1] === 'info' ? ' info' : a.st[1] === 'stale' ? ' stale' : '')}>{a.st[0]}</span></div>
+          <div className="cfg-h"><span className="tk">{a.type}</span>{a.st && <span className={'tdone' + (a.st[1] === 'warn' ? ' wait' : a.st[1] === 'info' ? ' info' : a.st[1] === 'stale' ? ' stale' : '')}>{a.st[0]}</span>}</div>
           <code className="cfg-n">{a.name}</code>
           <p><C ns={a.ns} mark={a.mark}>{a.does}</C></p>
           <div className="cfg-by"><Ag id={a.ag} name suffix=" agent watches it" /></div>

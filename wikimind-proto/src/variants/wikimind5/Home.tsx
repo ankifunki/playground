@@ -1,7 +1,7 @@
 import { QaSlot } from './Answer'
 import { AG, Ag } from './agents'
 import { Pile } from './Claim'
-import { Corpus } from './Corpus'
+import { Built, Corpus } from './Corpus'
 import { ASKS, CHANGED, LEARNED, type Story } from './data'
 import { Icon } from './Icon'
 import { Ago } from './Job'
@@ -32,7 +32,7 @@ function Lead() {
   return (
     <article className="hm-lead" id="lead">
       <div className="hm-k">
-        {live ? <span className="tdone info"><span className="pdot" />Just now</span> : <span className="tk">Oct 28</span>}
+        {live ? <span className="tdone info live">Just now</span> : <span className="tk">Oct 28</span>}
         <span className="tk">Changed in Salesforce</span>
       </div>
       <h2>{live ? 'Finance now reviews discounts over 25%, not 20%' : 'Discounts over 35% now go straight to the CRO'}</h2>
@@ -118,7 +118,8 @@ export function Home() {
       <div className="hm-mast">
         <div>
           <h1>Today at Northwind</h1>
-          <div className="hm-date"><span className="tk">{DATE}</span><span className="tk">Written live by 6 agents</span><span className="tk"><Ago prefix="Updated" /></span></div>
+          <div className="hm-date"><span className="tk">{DATE}</span><span className="tk"><Ago prefix="Updated" /></span></div>
+          <Built />
         </div>
         <div className="hm-side">
           <button className="hm-tour press" onClick={w.startTour}><Icon name="play" size={14} />Take the 1-minute tour</button>

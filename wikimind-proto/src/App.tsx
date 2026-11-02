@@ -13,6 +13,12 @@ export const VARIANTS: Variant[] = [
 ]
 const DEFAULT = 'h'
 
+type Theme = 'light' | 'dark'
+/** Light unless the visitor chose dark. Every variant styles both through :root[data-theme]. */
+function readTheme(): Theme {
+  try { return localStorage.getItem('wikimind-theme') === 'dark' ? 'dark' : 'light' } catch { return 'light' }
+}
+
 function readKey() {
   const k = new URLSearchParams(location.search).get('v') || (() => { try { return localStorage.getItem('wikimind-variant') } catch { return null } })()
   return VARIANTS.some((v) => v.key === k) ? (k as string) : DEFAULT
@@ -20,6 +26,11 @@ function readKey() {
 
 export default function App() {
   const [key, setKey] = useState(readKey)
+  const [theme, setTheme] = useState<Theme>(readTheme)
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try { localStorage.setItem('wikimind-theme', theme) } catch { /* private mode */ }
+  }, [theme])
   useEffect(() => {
     const u = new URL(location.href)
     if (u.searchParams.get('v') !== key) { u.searchParams.set('v', key); history.replaceState(null, '', u) }
@@ -42,6 +53,11 @@ export default function App() {
             </button>
           ))}
         </div>
+        <button className="vs-theme" onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} aria-pressed={theme === 'dark'} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+          {theme === 'dark'
+            ? <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+            : <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" /></svg>}
+        </button>
       </div>
       <Suspense fallback={<div className="vs-loading">Loading…</div>}>
         <V.Component key={V.key} />

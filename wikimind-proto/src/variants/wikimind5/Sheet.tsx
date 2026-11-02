@@ -85,7 +85,7 @@ function Body({ p }: { p: Pop }) {
     const [kind, text] = PREV[p.name] || ['Article', p.name + '.']
     return (
       <div className="pc">
-        <div className="pk">{kind}</div><div className="pq" style={{ fontWeight: 500 }}>{p.name}</div><div className="pu">{text}</div>
+        <div className="pk">{kind}</div><div className="pq">{p.name}</div><div className="pu">{text}</div>
         <div style={{ fontSize: 13, color: 'var(--ink2)' }}>Prototype: only Discount approvals has a full page.</div>
         {close}
       </div>

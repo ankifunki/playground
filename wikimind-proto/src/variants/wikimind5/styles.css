@@ -1101,3 +1101,81 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .rc li:last-child{border-bottom:1px solid var(--hl)}
 @media (max-width:560px){.tline{padding:16px 0}.obs{padding:16px 0}}
 .cfg-obj .cfg-f code{background:var(--panel)}
+
+/* =====================================================================================
+   The tightened system (council pass 2). Appended last so it wins.
+   ===================================================================================== */
+
+/* ---- Type: eight roles, nothing in between ----
+   Display serif 56 · Headline serif 32 · Title serif 20 · Body sans 16 · UI sans 14 · Meta sans 13 · Label mono 11/450 · Code mono 13.
+   Serif is always 400 (Geist Serif has one real cut). Prices and counts outside a stat are sans with tabular figures. */
+:root{--t-display:56px;--t-headline:32px}
+@media (max-width:640px){:root{--t-display:44px;--t-headline:28px}}
+/* Display */
+.kn-num .kn-big,.art-body h1.t{font-family:var(--serif);font-weight:400;font-size:var(--t-display);line-height:1.04;letter-spacing:-.025em}
+/* Headline */
+.hm-lead h2,.art-body h2,.kn-st b,.tline .kn-st b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.15;letter-spacing:-.015em}
+/* Title: short headlines */
+.hm-mast h1,.logo b,.kn-num .kn-what,.hm-st,.art-body .rc-did,.sim .sim-t,.cfg-obj b,.tour-t,.pc .pq{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.35;letter-spacing:-.005em}
+/* Title: reading lede and answers */
+#s-lead>p,.qa .qan,.arrive .qan,.qa .qrep p{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.55}
+#s-lead>p b,#s-lead>p .wl,.qa .qan .wl,.arrive .qan .wl,.pc .pq .wl{font-weight:400}
+/* Body */
+.art-body{font-size:16px;line-height:1.7}
+.art-body .cfg-l p,.sim .sim-b,.tour-b,.hm-deck,.sim .sim-rule p{font-family:var(--sans);font-size:16px;line-height:1.55}
+.qa .qq,.arrive .qq{font-size:16px;font-weight:500}
+/* UI */
+.sim{font-size:14px}
+.sim-rf .wl,.pvq,.pc .pvq{font-family:var(--sans);font-size:14px;line-height:1.5}
+.sim-r b{font:500 16px var(--sans);font-variant-numeric:tabular-nums}
+.pf-inv b{font:500 14px var(--sans);font-variant-numeric:tabular-nums}
+/* Meta */
+.tline small,.cfg-obj small,.pf-inv small,.hm-wire small,.hm-wire small .wl,.sim-nl small,.pvch small,.kn-st span,.tline .kn-st span,.tline .kn-st .wl{font-size:13px}
+.pc .pk,.agw,.hm-wire small b{font-size:13px;font-weight:500}
+.rec-amt{font:400 13px var(--sans);font-variant-numeric:tabular-nums}
+/* Code and Label */
+.cfg-n,.cfg-f code{font:450 13px var(--mono);letter-spacing:-.01em}
+.sim-spd,.pt.more,.mk,.mk2,.sim-dur{font-family:var(--mono);font-size:11px;font-weight:450;letter-spacing:.01em}
+.sim-dur{background:none;padding:0}
+/* The four questions look the same on Home and the page: question, serif stat, one body line. */
+.tline .kn-st{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.tline .kn-st span{color:var(--ink2);line-height:1.45}
+.tline>div{gap:0}
+
+/* ---- One status label: mono 11 in its tone, led by the same 2px bar the data uses. No fills, no outlines. ----
+   Green: checked by a person. Amber: unconfirmed or failing. Ink2: neutral facts (changed, stale). Neutral defaults are never marked. */
+.tdone,.tdone.wait,.tdone.info,.tdone.stale,.tdone[class*="cp-t-"]{display:inline-flex;align-items:center;gap:8px;background:none;box-shadow:none;padding:0;border-radius:0;font:450 11px var(--mono);letter-spacing:.01em;align-self:center}
+.tdone{color:var(--ok)}
+.tdone.wait,.tdone.cp-t-warn,.tdone.cp-t-open{color:var(--warn)}
+.tdone.info,.tdone.stale,.tdone.cp-t-obs,.tdone.cp-t-stale{color:var(--ink2)}
+.tdone.cp-t-ok{color:var(--ok)}
+.tdone::before,.obs .ok2::before{content:"";width:2px;height:12px;border-radius:0;background:currentColor;flex:none}
+.obs .ok2{gap:8px}
+
+/* ---- Live is the same bar, breathing. Thinking is three bars. No dots anywhere. ---- */
+.pdot{width:2px;height:12px;border-radius:0;background:var(--ink);animation:liveBar 1.6s ease-in-out infinite}
+.pdot::after{display:none}
+.tdone.live::before{animation:liveBar 1.6s ease-in-out infinite}
+@keyframes liveBar{0%,100%{opacity:1}50%{opacity:.25}}
+.typing i,.dots3 i{width:2px;height:12px;border-radius:0;background:var(--ink2)}
+.dots3 i{background:var(--ink2)}
+@media (prefers-reduced-motion:reduce){.pdot,.tdone.live::before{animation:none}}
+
+/* ---- Data marks: one ink at a few strengths. Colour carries meaning, never data. ---- */
+.dots i{background:var(--ink)}
+.dots i.n{background:color-mix(in srgb,var(--ink) 16%,transparent)}
+.thr-s.m{border-bottom-color:color-mix(in srgb,var(--ink) 30%,transparent)}
+.thr-s.f{border-bottom-color:color-mix(in srgb,var(--ink) 60%,transparent)}
+.thr-s.c{border-bottom-color:var(--ink)}
+
+/* ---- Source tiles: the ring that separates overlapping tiles matches whatever is underneath ---- */
+.page{--ring:var(--bg)}
+.kn,.hm-lead,.sim,.arrive,.qa,.pc,.note,.tour-c,.composer{--ring:var(--panel)}
+.pt,.pt.v::after{box-shadow:0 0 0 2px var(--ring,var(--panel))}
+
+/* ---- The masthead carries what the agents built it from ---- */
+.hm-built{display:flex;align-items:center;gap:12px;margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--ink2);text-wrap:pretty;max-width:60em}
+@media (max-width:640px){.hm-built{align-items:flex-start}}
+.kn-st b .ago{font:inherit;color:inherit}
+@media (max-width:640px){.sim-seg button{font-size:13px}}
+.ago .pdot,.hm-date .ago .pdot,.tdone .pdot,.dchip .pdot,.dchip.news .pdot{width:2px;height:12px;margin:0}
