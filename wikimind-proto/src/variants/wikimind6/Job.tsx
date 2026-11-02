@@ -112,26 +112,29 @@ function Arrival() {
  * One strip under the byline, so the page reads as a document first.
  */
 function PageStatus({ sents }: { sents: number[][] }) {
-  // Knowledge status, not operations: who keeps it, how fresh it is, how complete and right, how much it is used.
+  // Wikimind 4's scan: three cells, a value and one plain line each. Each opens its evidence.
   const w = useW(), tiers = sents.map((ns) => tierOf(ns, w.cfg === 'changed')), checked = tiers.filter((t) => t === 'ok').length
-  const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
-  const srcs = 16 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)
+  const gaps = w.learned ? 1 : 2
   return (
-    <div className="ps" aria-label="How far to trust this page">
-      <p className="ps-own">Written by the Approvals agent from <b>{srcs} sources</b>, re-read <b><Ago bare /></b>, rewritten {6 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)} times as Northwind changed.</p>
-      <dl className="ps-q">
-        <div><dt className="tk">Is it complete?</dt><dd><b>5 of 5</b> automations. <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}</button></dd></div>
-        <div><dt className="tk">Is it right?</dt><dd><b>{checked} of {checked}</b> checks held up</dd></div>
-        <div><dt className="tk">Is it current?</dt><dd>Re-read <b><Ago bare /></b>. <button className="wl" onClick={() => w.showClaims([17])}>1 out of date</button></dd></div>
-        <div><dt className="tk">Is it used?</dt><dd>Cited <b>{214 + (w.receipts.some((x) => x.id === 'r0') ? 1 : 0)}</b> times this month</dd></div>
-      </dl>
+    <div className="ps3" aria-label="How far to trust this page">
+      <button onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}><span className="tk">Complete</span><b>5 of 5</b><span>automations; {gaps} open {gaps === 1 ? 'question' : 'questions'}</span></button>
+      <button onClick={() => w.openBlame([...new Set(sents.flat())])}><span className="tk">Right</span><b>{checked} of {checked}</b><span>checks by a person held up</span></button>
+      <button onClick={() => w.showClaims([17])}><span className="tk">Current</span><b><Ago bare /></b><span>last re-read; 1 line out of date</span></button>
     </div>
   )
+}
+
+/** One live line under the byline, like Wikimind 4's "Reading 2 new Slack threads". */
+function LiveLine() {
+  const w = useW(), srcs = 16 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0), n = 6 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)
+  const now = w.cfg === 'changed' ? 'Rewriting after a Salesforce change' : 'Re-reading 2 new #deal-desk threads'
+  return <p className="pl-live"><i aria-hidden="true" /><span>{now}</span><span className="pl-m">Written from {srcs} sources · rewritten {n} times</span></p>
 }
 
 /** Evidence for a section, visible without asking: who wrote it, from how many sources, and who checked it. Opens the provenance. */
 function SecEv({ ns, ags = ['approvals'], children, tone }: { ns: number[]; ags?: AgentId[]; children: React.ReactNode; tone?: 'warn' }) {
   const w = useW(), n = new Set(ns).size
+  if (!w.lens) return null
   return (
     <button className={'sev' + (tone ? ' ' + tone : '')} onClick={(e) => w.openBlame([...new Set(ns)], e.currentTarget)}>
       <AgentPile ids={ags} size={20} /><Pile ns={[...new Set(ns)]} max={4} /><span>{n} sources · {children}</span>
@@ -220,6 +223,7 @@ export function Job() {
               <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span><span><i className="lg-stale" />Stale</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
             </div>
           )}
+          {!md && <LiveLine />}
           <PageStatus sents={sents} />
           {md ? <MarkdownView /> : <>
           <PageNav kind="chips" />

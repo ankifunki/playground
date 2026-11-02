@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Pile } from './Claim'
 import { buildRoute, money } from './route'
 import { useW } from './store'
-import { Thresholds } from './Thresholds'
 
 /**
  * Try a deal, reduced to what's needed. One active area (your deal: discount and size) and one read-only answer:
@@ -37,7 +36,6 @@ export function Sim() {
       <div className="sim-out" aria-live="polite">
         <span className="tk">Who approves</span>
         <p className="sim-ans"><b>{small ? 'No approval needed' : route.who}</b>{!small && <span>usually {route.time}</span>}</p>
-        <Thresholds fin={w.fin} mark={deal.disc} off={small} />
         <p className="sim-reason">{why}</p>
         <button className="sim-why" onClick={() => w.showClaims(ns)}><Pile ns={ns} max={3} /><span>See the rule</span></button>
       </div>

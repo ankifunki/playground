@@ -1426,3 +1426,26 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .pr .kn-q{margin-top:0}
 .hm-all{display:flex;align-items:center;gap:12px;margin:48px 0 0;padding-top:16px;border-top:1px solid var(--hl)}
 @media (max-width:640px){.td{padding:20px}.td-n{grid-template-columns:1fr;gap:16px}.td-live .td-lt{white-space:normal}}
+
+/* ---------- Wikimind 6: W4's scan. One live line, a 3-cell status card, a boxed flowchart ---------- */
+.pl-live{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin:4px 0 20px;font-size:14px;color:var(--ok)}
+.pl-live i{width:2px;height:14px;background:currentColor;border-radius:1px;animation:plb 2.4s ease-in-out infinite}
+.pl-live .pl-m{color:var(--ink2);font-size:13px}
+@keyframes plb{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.pl-live i{animation:none}}
+.ps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--panel);box-shadow:var(--sh);border-radius:12px;margin:0 0 36px}
+.ps3 button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:18px 24px;border:0;background:none;text-align:left;font:inherit;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:12px;transition:background-color .15s ease,transform .16s var(--eo)}
+.ps3 button+button{box-shadow:inset 1px 0 0 var(--hl);border-radius:0}
+.ps3 b{font-weight:500;font-size:16px;font-variant-numeric:tabular-nums}
+.ps3 button>span:last-child{font-size:13px;color:var(--ink2);line-height:1.4}
+.ps3 button:active{transform:scale(.98)}
+@media (hover:hover) and (pointer:fine){.ps3 button:hover>span:last-child{color:var(--ink)}}
+@media (max-width:640px){.ps3 button{padding:14px 12px}.ps3 button>span:last-child{font-size:13px}}
+.hfx{margin:8px 0 28px;padding:28px 16px;background:var(--panel);box-shadow:var(--sh);border-radius:12px}
+.hfx svg{display:block;width:100%;max-width:400px;height:auto;margin:0 auto;overflow:visible}
+.hfx .fb{fill:var(--panel);stroke:var(--hl);stroke-width:1px;vector-effect:non-scaling-stroke}
+.hfx .fb.ag{stroke:var(--link);stroke-opacity:.45}
+.hfx .ft{font:500 14px var(--sans);fill:var(--ink)}
+.hfx .fs{font:400 13px var(--sans);fill:var(--ink2)}
+.hfx .fe{fill:none;stroke:var(--hl);stroke-width:1px;vector-effect:non-scaling-stroke}
+.hfx .fd{fill:var(--link)}
