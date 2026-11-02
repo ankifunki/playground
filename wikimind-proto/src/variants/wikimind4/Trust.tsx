@@ -118,15 +118,31 @@ export function TrustVectors() {
           <div className="tk">Gaps and access</div>
           <div className="tn"><b>{blocked}%</b></div>
           <p>blocked by missing access or knowledge</p>
-          <ul className="tmini">
-            <li><span><b>Okta sign-in logs, read</b><small><b className="agw">Security</b> · 4% of its work</small></span>{btn(t.acc.okta, 'Grant', () => w.tvAcc('okta'))}</li>
-            <li><span><b>NetSuite, write</b><small><b className="agw">Finance ops</b> · 2% of its work</small></span>{btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite'))}</li>
-            <li><span><b>Why flat renewals skip approval</b><small><b className="agw">Approvals</b> · {w.learned ? 'Maria answered' : 'asked Maria Okafor'}</small></span>{w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button>}</li>
-          </ul>
+          <GapPager items={[
+            { t: 'Okta sign-in logs, read', ag: 'Security', s: '4% of its work', act: btn(t.acc.okta, 'Grant', () => w.tvAcc('okta')) },
+            { t: 'NetSuite, write', ag: 'Finance ops', s: '2% of its work', act: btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite')) },
+            { t: 'Why flat renewals skip approval', ag: 'Approvals', s: w.learned ? 'Maria answered' : 'asked Maria Okafor', act: w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button> },
+          ]} />
           <small className="tfoot">Close every gap: up to 81% on its own</small>
         </div>
       </div>
       <Agents />
     </section>
+  )
+}
+
+/** One gap at a time, in the same row style as the other cards, with previous / next and "2 of 3". Keeps the three cards the same height. */
+function GapPager({ items }: { items: { t: string; ag: string; s: string; act: React.ReactNode }[] }) {
+  const [i, setI] = useState(0), n = items.length, x = items[i]
+  const go = (d: number) => setI((v) => (v + d + n) % n)
+  return (
+    <div className="tpg">
+      <div className="tvb" key={i}><span><b>{x.t}</b><small><b className="agw">{x.ag}</b> · {x.s}</small></span>{x.act}</div>
+      <div className="tpg-n">
+        <button className="ibtn sm" onClick={() => go(-1)} aria-label="Previous gap" title="Previous"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+        <span className="tk" aria-live="polite">{i + 1} of {n}</span>
+        <button className="ibtn sm" onClick={() => go(1)} aria-label="Next gap" title="Next"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
+      </div>
+    </div>
   )
 }
