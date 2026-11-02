@@ -817,3 +817,112 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
  .sim-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-radius:14px;justify-self:stretch}
  .sim-seg button{border-radius:10px;padding:6px 6px;font-size:12px;line-height:1.3}
 }
+
+/* =====================================================================================
+   Council pass on Wikimind 5
+   ===================================================================================== */
+/* ---------- The corpus: flat, linked, replayable ---------- */
+.cp-n{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;font-size:14px;color:var(--ink2)}
+.cp-play{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--soft2);color:var(--ink);border-radius:999px;padding:5px 12px 5px 10px;font:500 13px var(--sans);cursor:pointer;transition:transform .16s var(--eo),background-color .2s var(--eo)}
+.cp-play:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.cp-play:hover{background:var(--hl)}}
+.cp-rep{display:flex;align-items:center;gap:12px;flex:1;min-width:280px;max-width:680px;margin-left:auto}
+.cp-rep input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:80px;height:20px;background:transparent;margin:0;cursor:pointer}
+.cp-rep input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(var(--ink),var(--ink)) 0/var(--p,0%) 100% no-repeat,var(--hl)}
+.cp-rep input[type=range]::-moz-range-track{height:2px;background:linear-gradient(var(--ink),var(--ink)) 0/var(--p,0%) 100% no-repeat,var(--hl)}
+.cp-rep input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--ink);margin-top:-6px}
+.cp-rep input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--ink)}
+.cp-day{font:450 12px var(--mono);color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cp-day b{font-weight:500;color:var(--ink)}
+.sim-play.sm{width:32px;height:32px}
+.cp-f{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 16px}
+.cp-f button{border:0;background:var(--soft);color:var(--ink2);border-radius:999px;padding:4px 12px;font:500 13px var(--sans);cursor:pointer;transition:background-color .2s var(--eo),color .2s var(--eo),transform .16s var(--eo)}
+.cp-f button span{font:450 11px var(--mono);margin-left:6px;opacity:.8}
+.cp-f button.on{background:var(--ink);color:var(--panel)}
+.cp-f button:active{transform:scale(.97)}
+.cp-box{position:relative}
+.cp-g{cursor:default}
+.cp-c{transition:background-color .8s var(--eo),opacity .3s var(--eo),transform .3s var(--eo)}
+.cp-c.cp-hid{opacity:0;transform:scale(.3)}
+.cp-c.cp-stale,.cp-leg .cp-stale{background:repeating-linear-gradient(135deg,var(--ink2) 0 1px,var(--soft2) 1px 3px)}
+.cp-c.cp-on{box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px var(--ink);transform:scale(1.25)}
+.cp-c.cp-lk{box-shadow:0 0 0 2px var(--link)}
+@media (hover:hover) and (pointer:fine){.cp-c{cursor:pointer}}
+.cp-g[data-a="0"] .cp-c:not(.a0),.cp-g[data-a="1"] .cp-c:not(.a1),.cp-g[data-a="2"] .cp-c:not(.a2),.cp-g[data-a="3"] .cp-c:not(.a3),.cp-g[data-a="4"] .cp-c:not(.a4),.cp-g[data-a="5"] .cp-c:not(.a5){opacity:.14}
+.cp-ln{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.cp-ln line{stroke:var(--link);stroke-width:1;stroke-opacity:.55;vector-effect:non-scaling-stroke}
+.cp-tip{position:absolute;transform:translate(-50%,calc(-100% - 14px));width:220px;background:var(--panel);box-shadow:var(--sh2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;z-index:6;pointer-events:none;animation:fade .15s var(--eo) both}
+.cp-tip b{font-weight:500;font-size:14px;line-height:1.3}
+.cp-tt{font-size:12px;color:var(--ink2)}
+.cp-tt.cp-t-ok{color:var(--ok)}.cp-tt.cp-t-warn,.cp-tt.cp-t-open{color:var(--warn)}
+.cp-leg{margin:16px 0 0}
+.tdone.cp-t-obs,.tdone.cp-t-stale{color:var(--ink2);background:var(--soft2)}
+.tdone.cp-t-warn,.tdone.cp-t-open{color:var(--warn);background:var(--warnb)}
+.pgm{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:4px 0 12px}
+@media (max-width:640px){.cp-rep{min-width:0;flex-basis:100%}.cp-day{white-space:normal}}
+
+/* ---------- Provenance: observed, reasoned, written, verified ---------- */
+.pvr{font-size:13px;color:var(--ink2);line-height:1.45;margin:6px 0 8px}
+.pvr .tk{display:block;margin-bottom:2px}
+.pvc{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.pvc li{font:450 11px var(--mono);letter-spacing:.01em;color:var(--ink2);background:var(--soft);border-radius:999px;padding:2px 8px}
+.pvc li+li::before{content:"›";margin:0 6px 0 -2px;opacity:.5}
+.pvc li:last-child{background:var(--soft2)}
+.pvc li.ok{color:var(--ok);background:var(--okb)}
+.pvc li.warn{color:var(--warn);background:var(--warnb)}
+.pvc li.stale{color:var(--ink2);background:none;box-shadow:inset 0 0 0 1px var(--hl)}
+
+/* ---------- Trust line: checked, complete, current, cited ---------- */
+.tline{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}
+.tline small .wl{font-size:12px;font-weight:400}
+@media (max-width:560px){.tline{grid-template-columns:1fr}}
+
+/* ---------- The rule, in place inside the simulator ---------- */
+.sim-rule{margin-top:12px;background:var(--soft);border-radius:14px;padding:14px 16px;animation:rise .25s var(--eo) both}
+.sim .sim-rule p{font-family:var(--serif);font-size:17px;line-height:1.45;margin:0 0 6px}
+.sim-rf{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+
+/* ---------- Stale, everywhere it can appear ---------- */
+.tdone.stale{color:var(--ink2);background:none;box-shadow:inset 0 0 0 1px var(--hl)}
+.mk.stale{color:var(--ink2)}
+.mk.stale::before{background:repeating-linear-gradient(var(--ink2) 0 3px,transparent 3px 5px)}
+.lens .cl.lz-stale{text-decoration-color:var(--ink2);text-decoration-style:wavy;text-decoration-thickness:1.5px}
+.lzleg .lg-stale{background:repeating-linear-gradient(90deg,var(--ink2) 0 3px,transparent 3px 5px)}
+@media (max-width:1099px){.cl[data-tone=stale]::after{background:none;color:var(--ink2);box-shadow:inset 0 0 0 1px var(--hl)}}
+
+/* ---------- One colour, one meaning ----------
+   Green: checked by a person. Amber: unconfirmed or re-checking. Indigo: links and agents. Ink: live and "you are here". */
+.pdot{background:var(--ink)}
+.pdot::after{border-color:var(--ink)}
+.byline .live,.hm-live{color:var(--ink)}
+.tdone.info{color:var(--ink2);background:var(--soft2)}
+.mk.info{color:var(--ink2)}
+@media (max-width:1099px){.cl[data-tone=info]::after{background:var(--soft2);color:var(--ink2)}}
+.newv{background:var(--soft2)}
+@keyframes fresh{0%{background:var(--soft2)}100%{background:transparent}}
+.lens .cl.lz-pend{text-decoration-color:var(--warn)}
+.lzleg .lg-pend{background:var(--warn)}
+.sim-n.done .sim-ic{background:var(--soft2);color:var(--ink)}
+.sim-n.done:not(:last-child)::after{background:var(--ink2)}
+.sim-n.cur button{background:var(--soft)}
+.sim-n.cur .sim-ic{background:var(--ink);color:var(--panel);box-shadow:0 0 0 4px var(--soft2)}
+.rec-path span.done{border-bottom-color:var(--ink2);color:var(--ink2)}
+.rec-path span.cur{border-bottom-color:var(--ink);color:var(--ink)}
+.rec-lock.on{background:var(--panel);color:var(--ink)}
+.sim-dots .done i{background:var(--ink2)}
+.sim-dots .cur i{background:var(--ink)}
+.tour-dots i.done{background:var(--ink2)}
+.tour-dots i.cur{background:var(--ink)}
+.sim-tg.on{background:var(--soft2)}
+.sim-tg.on i{background:var(--ink)}
+.sim input[type=range]::-webkit-slider-runnable-track{background:linear-gradient(var(--ink),var(--ink)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
+.sim input[type=range]::-moz-range-track{background:linear-gradient(var(--ink),var(--ink)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
+.sim input[type=range]::-webkit-slider-thumb{border-color:var(--ink)}
+.sim input[type=range]::-moz-range-thumb{border-color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.cp-c{transition:opacity .2s}.cp-c.cp-hid{transform:none}.cp-c.cp-on{transform:none}.sim-rule,.cp-tip{animation:fade .2s both}}
+@media (max-width:640px){
+ .cp h2{font-size:24px}
+ .cp-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:12px -20px 14px;padding:0 20px}
+ .cp-f::-webkit-scrollbar{display:none}
+ .cp-f button{flex:none}
+}

@@ -125,11 +125,11 @@ export function Home() {
         </div>
       </header>
       <QaSlot where="home" sec="home" />
+      <Corpus />
       <div className="hm-top">
         <Lead />
         <Wire />
       </div>
-      <Corpus />
       <div className="hm-cols">
         <StoryCol title="Changed" items={CHANGED} icon="pencil-line" />
         <StoryCol title="Learned" items={LEARNED} icon="eye" />

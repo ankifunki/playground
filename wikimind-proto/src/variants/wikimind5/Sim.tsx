@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pile } from './Claim'
+import { sentenceFor, tierOf, TIER_LABEL } from './data'
 import { Icon, type IconName } from './Icon'
 import { RM } from './logic'
 import { buildRoute, money, type Deal, type NodeK } from './route'
@@ -20,8 +21,12 @@ export function Sim() {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
+  const [rule, setRule] = useState(false)
   const route = useMemo(() => buildRoute(deal, w.fin, w.learned), [deal, w.fin, w.learned])
   const N = route.steps.length, at = Math.min(step, N - 1), st = route.steps[at], end = at === N - 1
+  // The rule behind the current step, shown in place so the demo keeps its place.
+  useEffect(() => setRule(false), [at, route])
+  const sents = st.rule ? [st.rule] : [...new Set(st.ns.map((n) => sentenceFor(n, w.fin, w.learned)))], tier = tierOf(st.ns, w.cfg === 'changed')
   const root = useRef<HTMLDivElement>(null), seen = useRef(false)
 
   // A deal handed over from the arrival card or the tour.
@@ -57,7 +62,6 @@ export function Sim() {
     else if (e.key === ' ' && tg === root.current) { e.preventDefault(); toggle() }
   }
   const stateOf = (id: string) => (st.done.includes(id) ? 'done' : st.node === id ? 'cur' : 'todo')
-  const ppl = route.nodes.filter((n) => n.k === 'person' || n.k === 'slack')
 
   return (
     <div className="sim" id="sim" ref={root} tabIndex={-1} onKeyDown={onKey} aria-label="Try a deal">
@@ -95,7 +99,6 @@ export function Sim() {
           <div className="rec-h"><span className="tk">Opportunity</span><b>Helios expansion</b><span className="rec-amt">{money(deal.amt)} · {deal.disc}% off</span></div>
           <div className="rec-path">{STAGES.map((s, i) => <span key={s} className={i < st.stage ? 'done' : i === st.stage ? 'cur' : ''}>{s}</span>)}</div>
           <div className={'rec-lock' + (st.lock ? ' on' : '')}><Icon name={st.lock ? 'lock' : 'lock-open'} size={14} />{st.banner || (st.lock ? 'Locked for approval' : 'Editable')}</div>
-          {ppl.length > 0 && <div className="rec-ap">{ppl.map((n) => <span key={n.id} className={stateOf(n.id) + (n.tone ? ' ' + n.tone : '')}>{n.label}{stateOf(n.id) === 'done' ? ' ✓' : stateOf(n.id) === 'cur' ? ' · reviewing' : ''}</span>)}</div>}
         </div>
       </div>
 
@@ -103,7 +106,13 @@ export function Sim() {
         <div className="sim-ch"><span className="tk">Step {at + 1} of {N}</span>{st.dur && <span className="tk sim-dur">{st.dur}</span>}</div>
         <p className="sim-t">{st.title}</p>
         <p className="sim-b">{st.body}</p>
-        <button className="sim-why" onClick={() => w.showClaims(st.ns)}><Pile ns={st.ns} max={3} /><span>See the rule</span></button>
+        <button className="sim-why" onClick={() => { setRule((v) => !v); setPlaying(false) }} aria-expanded={rule}><Pile ns={st.ns} max={3} /><span>{rule ? 'Hide the rule' : 'See the rule'}</span></button>
+        {rule && (
+          <div className="sim-rule">
+            {sents.map((t) => <p key={t}>{t}</p>)}
+            <div className="sim-rf"><span className={'tdone cp-t-' + (tier === 'pend' ? 'warn' : tier)}>{TIER_LABEL[tier]}</span><button className="wl" onClick={() => w.showClaims(st.ns)}>Show on page</button></div>
+          </div>
+        )}
       </div>
 
       <div className="sim-ctl" role="group" aria-label="Playback">

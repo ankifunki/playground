@@ -9,7 +9,7 @@ import { useW, type View, type W } from './store'
  */
 type Step = { v: View; sel: string; t: string; b: string; run?: (w: W) => void }
 const STEPS: Step[] = [
-  { v: 'home', sel: '#corpus', t: 'Assembled automatically', b: 'Six agents wrote all 1,284 pages by watching Northwind’s Slack, Salesforce, Jira and meetings. Each square is a page. It lights up when an agent updates it.' },
+  { v: 'home', sel: '#corpus', t: 'Assembled automatically, in days', b: 'Each square is a page. Watch the agents write them after Northwind connected Slack, Salesforce, Jira and meetings: most in the first four days. Yours could look like this by next week.', run: (w) => w.replay() },
   { v: 'home', sel: '#lead', t: 'What changed, at a glance', b: 'Like a front page: the biggest change in Northwind’s Salesforce, written up by the agent that noticed it, with its sources.' },
   { v: 'page', sel: '#s-lead', t: 'Proof, not claims', b: 'With Evidence on, every sentence shows what it came from. Green was checked by Dana, a sysadmin. Amber is still unconfirmed.', run: (w) => w.setLens(true) },
   { v: 'page', sel: '#sim', t: 'Anyone can see how it works', b: 'Try a deal and watch its real route, step by step. The demo is generated from the rules on the page and the live Salesforce setup.', run: (w) => { w.setLens(false); w.tryDeal(240000, 28) } },

@@ -6,7 +6,8 @@ export type Deal = { amt: number; disc: number; emea: boolean; kind: 'new' | 're
 export type NodeK = 'rep' | 'sf' | 'person' | 'slack' | 'done'
 export type RNode = { id: string; label: string; sub: string; k: NodeK; tone?: 'warn' | 'dash' }
 export type Appr = { id: string; n: string }
-export type RStep = { node: string; title: string; body: string; ns: number[]; dur?: string; stage: number; lock: boolean; done: string[]; cur?: string; banner?: string }
+/** rule: the exact rule this step rests on, when it isn't a single sentence on the page. */
+export type RStep = { node: string; title: string; body: string; ns: number[]; rule?: string; dur?: string; stage: number; lock: boolean; done: string[]; cur?: string; banner?: string }
 export type Route = { nodes: RNode[]; steps: RStep[]; who: string; time: string; appr: Appr[]; note?: [string, number[]] }
 
 export const money = (n: number) => '$' + (n >= 1e6 ? (n / 1e6).toFixed(n % 1e6 ? 1 : 0) + 'M' : Math.round(n / 1000) + 'k')
@@ -58,8 +59,8 @@ export function buildRoute(d: Deal, fin: number, learned: boolean): Route {
   appr.forEach((a, i) => {
     const why = a.id === 'cro' ? { t: 'Over 35%, the CRO approves directly', b: 'No manager step: the request goes straight to Marcus, the CRO.', ns: [3, 12], dur: '~3 h' }
       : a.id === 'fin' ? { t: `${d.disc}% is over ${fin}%, so Finance approves next`, b: 'Finance is the second approver for bigger discounts.', ns: [fin === 20 ? 13 : 15], dur: '~2 h' }
-        : { t: 'The sales manager approves', b: i === 0 && appr.length > 1 ? 'First of two approvals.' : `Up to ${fin}% off, the manager is the only approver.`, ns: [3], dur: '~2 h' }
-    steps.push({ node: a.id, title: why.t, body: why.b, ns: why.ns, dur: why.dur, stage: 2, lock: true, done: [...done], cur: a.id })
+        : { t: 'The sales manager approves', b: i === 0 && appr.length > 1 ? 'First of two approvals.' : `Up to ${fin}% off, the manager is the only approver.`, ns: [3, fin === 20 ? 13 : 15], dur: '~2 h', rule: `Up to ${fin}% off, the sales manager approves on their own. Over ${fin}%, Finance is added as a second approver.` }
+    steps.push({ node: a.id, title: why.t, body: why.b, ns: why.ns, rule: 'rule' in why ? why.rule : undefined, dur: why.dur, stage: 2, lock: true, done: [...done], cur: a.id })
     done.push(a.id)
   })
   steps.push({ node: 'neg', title: 'Approved. The record unlocks', body: d.amt > 500000 ? 'The deal moves to Negotiation, and a flow posts it to #deal-desk. Only Deal Desk can change the amount now.' : 'The deal moves to Negotiation. Only Deal Desk can change the amount now.', ns: d.amt > 500000 ? [8, 17] : [8], stage: 3, lock: false, done: [...done] })

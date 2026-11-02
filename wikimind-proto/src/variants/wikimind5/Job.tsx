@@ -89,13 +89,18 @@ function Arrival() {
   )
 }
 
-/** How a person can trust this page: how much a person checked, how fresh it is, and how much the agents rely on it. */
+/**
+ * How far to trust this page, as the brief's four questions: checked by a person? complete? current? relied on?
+ * Gaps and stale content are named, so "complete" and "current" are claims you can check.
+ */
 function TrustLine({ sents }: { sents: number[][] }) {
   const w = useW(), ok = sents.filter((ns) => tierOf(ns, w.cfg === 'changed') === 'ok').length
+  const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
   return (
     <div className="tline" aria-label="How far to trust this page">
-      <div><span className="tk">Checked by a person</span><b>{ok} of {sents.length}</b><small>sentences, by Dana Ruiz</small></div>
-      <div><span className="tk">Last observed</span><b><Ago prefix="" /></b><small>212 approvals watched this quarter</small></div>
+      <div><span className="tk">Checked by a person</span><b>{ok} of {sents.length} sentences</b><small>by Dana Ruiz, Northwind’s sysadmin</small></div>
+      <div><span className="tk">Complete</span><b>5 of 5 automations</b><small>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></small></div>
+      <div><span className="tk">Current</span><b><Ago prefix="Observed" /></b><small>1 stale sentence: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></small></div>
       <div><span className="tk">Cited by agents</span><b>{214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)} times</b><small>this month, to justify what they did</small></div>
     </div>
   )
@@ -104,11 +109,11 @@ function TrustLine({ sents }: { sents: number[][] }) {
 /* ---------- How it's configured: what touches the Opportunity object, and why each thing exists ---------- */
 function Config() {
   const w = useW(), ch = w.cfg !== 'idle'
-  const autos: { type: string; name: string; ns: number[]; does: string; st: [string, 'ok' | 'warn' | 'info']; ag: AgentId }[] = [
+  const autos: { type: string; name: string; ns: number[]; does: string; st: [string, 'ok' | 'warn' | 'info' | 'stale']; ag: AgentId; mark?: Mark }[] = [
     { type: 'Approval process', name: 'Large Deal Approval', ns: ch ? [2, 15] : [2, 13], does: `Locks deals over $100,000 and routes them: the manager, Finance over ${w.fin}%, the CRO over 35%.`, st: ch ? ['Changed just now', 'info'] : ['Changed Oct 28', 'info'], ag: 'approvals' },
-    { type: 'Validation rule', name: 'Discount_Requires_Reason', ns: [16], does: 'Blocks a discount over 10% without a written reason.', st: ['Healthy', 'ok'], ag: 'finance' },
-    { type: 'Validation rule', name: 'Amount_Locked_After_Approval', ns: [8], does: 'Lets only Deal Desk change the amount once a deal is approved.', st: ['Healthy', 'ok'], ag: 'finance' },
-    { type: 'Flow', name: 'Notify_Deal_Desk', ns: [17], does: 'Posts approved deals over $500,000 to #deal-desk.', st: ['Healthy', 'ok'], ag: 'approvals' },
+    { type: 'Validation rule', name: 'Discount_Requires_Reason', ns: [16], does: 'Blocks a discount over 10% without a written reason.', st: ['Healthy', 'info'], ag: 'finance' },
+    { type: 'Validation rule', name: 'Amount_Locked_After_Approval', ns: [8], does: 'Lets only Deal Desk change the amount once a deal is approved.', st: ['Healthy', 'info'], ag: 'finance' },
+    { type: 'Flow', name: 'Notify_Deal_Desk', ns: [17], does: 'Posts approved deals over $500,000 to #deal-desk.', st: ['Stale', 'stale'], ag: 'approvals', mark: { t: 'Not seen since Aug 14', tone: 'stale' } },
     { type: 'Integration', name: 'CPQ quote sync', ns: [18], does: 'Sends approved discounts to CPQ quotes.', st: ['Failing for multi-currency', 'warn'], ag: 'integrations' },
   ]
   return (
@@ -120,9 +125,9 @@ function Config() {
       </div>
       <ul className="cfg-l">{autos.map((a) => (
         <li key={a.name}>
-          <div className="cfg-h"><span className="tk">{a.type}</span><span className={'tdone' + (a.st[1] === 'warn' ? ' wait' : a.st[1] === 'info' ? ' info' : '')}>{a.st[0]}</span></div>
+          <div className="cfg-h"><span className="tk">{a.type}</span><span className={'tdone' + (a.st[1] === 'warn' ? ' wait' : a.st[1] === 'info' ? ' info' : a.st[1] === 'stale' ? ' stale' : '')}>{a.st[0]}</span></div>
           <code className="cfg-n">{a.name}</code>
-          <p><C ns={a.ns}>{a.does}</C></p>
+          <p><C ns={a.ns} mark={a.mark}>{a.does}</C></p>
           <div className="cfg-by"><Ag id={a.ag} name suffix=" agent watches it" /></div>
         </li>
       ))}</ul>
@@ -148,8 +153,7 @@ function Receipts() {
 export function Job() {
   const w = useW(), finNs = w.fin === 20 ? [13] : [15]
   const cfgMark: Mark | undefined = w.cfg === 'changed' ? { t: 'Changed just now · re-checking', tone: 'warn' } : w.cfg === 'verified' ? { t: 'Changed just now', tone: 'ok' } : undefined
-  const sents = [[1], [2], [3, ...finNs], [4], [5], finNs, [3, 12], [6], [7], [8], [16], [9, 10], w.learned ? [11, 14] : [11]]
-  const verified = Object.values(REFS).filter((r) => r.v).length
+  const sents = [[1], [2], [3, ...finNs], [4], [5], finNs, [3, 12], [6], [7], [8], [16], [9, 10], w.learned ? [11, 14] : [11], [17]]
   // Live events while you read: an agent cites this page; Salesforce changes; Maria answers. Presenter keys do the same (C, L).
   const fn = useRef(w); fn.current = w
   useEffect(() => {
@@ -170,12 +174,11 @@ export function Job() {
           <div className="byline">
             <span className="agline">Kept by <Ag id="approvals" name /></span>
             <span className="agline">Verified by <L to="Dana Ruiz" /></span>
-            <span className="live"><Ago /></span>
             <button className={'lensbtn' + (w.lens ? ' on' : '')} aria-pressed={w.lens} onClick={() => w.setLens(!w.lens)}><Icon name="scan-eye" size={16} />Evidence</button>
           </div>
           {w.lens && (
             <div className="lzleg" aria-label="Evidence key">
-              <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
+              <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span><span><i className="lg-stale" />Stale</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
             </div>
           )}
           <TrustLine sents={sents} />
@@ -221,7 +224,7 @@ export function Job() {
           <div className="colophon">
             <span className="colag"><AgentPile ids={['approvals', 'finance', 'integrations']} size={22} />3 agents</span>
             <Pile ns={[...Object.keys(REFS).map(Number), ...(w.learned ? [14] : []), ...(w.cfg !== 'idle' ? [15] : [])]} />
-            <span>{Object.keys(REFS).length + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)} sources · {verified} verified · rewritten {6 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)} times</span>
+            <span>{Object.keys(REFS).length + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)} sources · rewritten {6 + (w.learned ? 1 : 0) + (w.cfg !== 'idle' ? 1 : 0)} times</span>
           </div>
         </article>
         <Margin />

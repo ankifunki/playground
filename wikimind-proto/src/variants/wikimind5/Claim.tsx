@@ -69,7 +69,12 @@ export function Prov({ ns }: { ns: number[] }) {
           <div className="pv" key={n}>
             <div className="pvh"><Tile icon={KICON[r.k]} label={KIND[r.k]} ok={!!r.v} /><span className="pvs">{r.src}</span><span className="pvk">{r.d}</span></div>
             <div className="pvq">“{r.q}”</div>
-            <div className={'pvst ' + (r.v ? 'ok' : r.check ? 'warn' : '')}>{r.v ? `Verified · ${r.v}` : n === 15 && w.cfg === 'changed' ? 'Verification withdrawn · Dana is re-checking' : r.check || 'Not checked yet'}</div>
+            <div className="pvr"><span className="tk">Agent’s reasoning</span>{r.u}</div>
+            {/* The brief's chain: observation, reflection, edit, human verification (which can be withdrawn). */}
+            <ol className="pvc" aria-label="How this was learned">
+              <li>Observed</li><li>Reasoned</li><li>Written</li>
+              <li className={r.v ? 'ok' : n === 15 && w.cfg === 'changed' ? 'warn' : r.stale ? 'stale' : r.check ? 'warn' : 'no'}>{r.v ? `Verified · ${r.v}` : n === 15 && w.cfg === 'changed' ? 'Verification withdrawn · Dana is re-checking' : r.stale || r.check || 'Not checked yet'}</li>
+            </ol>
             {ch && <div className="pvch"><span className="pvk">Changed {ch.d} by {agentFor([n]).name}</span><del>{ch.was}</del></div>}
           </div>
         )

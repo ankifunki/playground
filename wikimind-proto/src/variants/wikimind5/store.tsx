@@ -16,7 +16,7 @@ export type QA = {
   t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
-export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string }
+export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }
 export type Toast = { id: number; msg: string; act?: ToastAct; label?: string; qa?: string }
@@ -64,6 +64,7 @@ function useWikimindState() {
   const [cfgAnim, setCfgAnim] = useState(false)
   const [tour, setTour] = useState<number | null>(null)
   const [simReq, setSimReq] = useState<SimReq | null>(null)
+  const [replayN, setReplayN] = useState(0)
   const [newQs, setNewQs] = useState<OpenQ[]>([])
   const [qas, setQas] = useState<QA[]>([])
   const [freshQa, setFreshQa] = useState<string | null>(null)
@@ -127,6 +128,8 @@ function useWikimindState() {
     }, 60)
   }
   const openPrev = (name: string, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'prev', name }) }
+  /** A page from the corpus grid. */
+  const openCell = (i: number) => { popFrom.current = null; setPop({ kind: 'page', i }) }
 
   /* ---------- provenance: every sentence knows where it came from ---------- */
   const hoverBlame = (ns: number[] | null, el?: HTMLElement) => {
@@ -214,6 +217,8 @@ function useWikimindState() {
   /** A new receipt: an agent just cited this page to justify what it did. */
   const addLiveReceipt = () => setReceipts((rs) => (rs.some((x) => x.id === RECEIPT_LIVE.id) ? rs : [RECEIPT_LIVE, ...rs]))
   const toggleWire = () => setWireOn((v) => !v)
+  /** Ask the corpus on Home to replay how it was built (used by the tour). */
+  const replay = () => setReplayN((n) => n + 1)
 
   /* ---------- the guided demo (tour) ---------- */
   const startTour = () => { closePop(); hideToast(); setBlame(null); setTour(0) }
@@ -331,11 +336,11 @@ function useWikimindState() {
 
   return {
     view, arrival, flash, learned, talkTyping, learnSeen, diffPlay, obs, asks, lastObs,
-    wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq,
+    wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq, replayN,
     newQs, qas, freshQa, files, text, listening, pop, blame, toast,
     setText, setLens, setTour,
-    go, openPrev, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
-    learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, startTour, endTour,
+    go, openPrev, openCell, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
+    learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, replay, startTour, endTour,
     ask, commitAsk, undoAsk, notNow, closeQa, resolveNewest, showQa,
     send, addFiles, removeFile, toggleMic, showToast, hideToast, runToastAct,
   }

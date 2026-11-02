@@ -7,7 +7,8 @@ import type { AgentId } from './agents'
    ========================================================================================= */
 
 export type RefKind = 'doc' | 'sf' | 'jira' | 'slack' | 'meet' | 'watch' | 'talk'
-export type Ref = { k: RefKind; src: string; d: string; q: string; u: string; v: string | null; check?: string }
+/** u is the agent's reasoning (the brief's "reflection"): why this observation changed the page. stale: not re-observed lately. */
+export type Ref = { k: RefKind; src: string; d: string; q: string; u: string; v: string | null; check?: string; stale?: string }
 
 export const KIND: Record<RefKind, string> = { doc: 'Policy document', sf: 'Salesforce change', jira: 'Jira ticket', slack: 'Slack', meet: 'Meeting recording', watch: 'Watched in practice', talk: 'Interview' }
 
@@ -27,7 +28,7 @@ export const REFS: Record<number, Ref> = {
   12: { k: 'slack', src: '#deal-desk, J. Patel', d: 'Oct 3', q: 'Anything over 35 goes straight to Marcus now.', u: 'An early signal of the threshold change.', v: null },
   13: { k: 'sf', src: 'Approval step Finance review', d: 'Sep 12', q: 'Entry criteria: Discount greater than 20%.', u: 'Added Finance as a second approver.', v: 'Dana Ruiz, Oct 12' },
   16: { k: 'sf', src: 'Validation rule Discount_Requires_Reason', d: 'Jul 2025', q: 'Discount over 10% requires Discount_Reason__c.', u: 'Finance asked for an audit trail on discounts.', v: 'Dana Ruiz, Oct 12' },
-  17: { k: 'sf', src: 'Flow Notify_Deal_Desk', d: 'Feb 2026', q: 'On approval, posts deals over $500,000 to #deal-desk.', u: 'Deal Desk wanted to see big deals the moment they clear.', v: null },
+  17: { k: 'sf', src: 'Flow Notify_Deal_Desk', d: 'Feb 2026', q: 'On approval, posts deals over $500,000 to #deal-desk.', u: 'Deal Desk wanted to see big deals the moment they clear. It hasn’t fired since Aug 14, so the agent is checking whether it was switched off.', v: null, stale: 'Not seen since Aug 14' },
   18: { k: 'sf', src: 'Integration CPQ quote sync', d: 'Oct 29', q: '412 sync errors: currency mismatch on multi-currency quotes.', u: 'Failing since a CPQ update.', v: null, check: 'Failing' },
 }
 /** Source 14 only exists once Maria has answered. */
@@ -51,15 +52,37 @@ export const CHANGES: Record<number, Change> = {
 }
 
 /** How a sentence reads in the margin when it needs attention. Solid sentences carry no mark. */
-export type Mark = { t: string; tone: 'warn' | 'ok' | 'info' }
+export type Mark = { t: string; tone: 'warn' | 'ok' | 'info' | 'stale' }
 
 /** The evidence tier of a set of sources, for the evidence lens. */
-export type Tier = 'ok' | 'obs' | 'warn' | 'pend'
+export type Tier = 'ok' | 'obs' | 'warn' | 'pend' | 'stale'
 export function tierOf(ns: number[], pending: boolean): Tier {
   if (pending && ns.includes(15)) return 'pend'
   const rs = ns.map(refFor)
   if (rs.some((r) => r.check)) return 'warn'
+  if (rs.some((r) => r.stale)) return 'stale'
   return rs.every((r) => r.v) ? 'ok' : 'obs'
+}
+export const TIER_LABEL: Record<Tier, string> = { ok: 'Checked by a person', obs: 'Written from what agents saw', warn: 'Unconfirmed', pend: 'Being re-checked', stale: 'Stale' }
+
+/** The page's own sentence for a source, so a rule can be shown in place (e.g. inside the simulator). */
+export function sentenceFor(n: number, fin: number, learned: boolean): string {
+  switch (n) {
+    case 1: return 'Discount approval is how Northwind reviews big deals before they move to Negotiation.'
+    case 2: return 'Any deal over $100,000 needs approval.'
+    case 3: case 12: return 'Over 35%, the CRO approves directly.'
+    case 13: case 15: return `Discounts over ${fin}% add Finance as a second approver.`
+    case 4: return 'EMEA deals reportedly go to the regional director first.'
+    case 5: return 'Most approvals finish in under four hours.'
+    case 6: return 'An approval request expires after 14 days, and the rep has to submit it again.'
+    case 7: return 'The rule exists because two deals closed on six-week-old prices in 2024.'
+    case 8: return 'Once a deal is approved, only Deal Desk can change its amount.'
+    case 9: case 10: return 'At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.'
+    case 11: case 14: return learned || n === 14 ? 'Flat renewals skip approval on purpose. It has been the policy since 2023.' : 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.'
+    case 16: return 'Discounts over 10% need a written reason.'
+    case 17: return 'Posts approved deals over $500,000 to #deal-desk.'
+    default: return 'Sends approved discounts to CPQ quotes.'
+  }
 }
 
 /**
@@ -126,29 +149,51 @@ export const PREV: Record<string, [string, string]> = {
   'Login policies': ['Page', 'Session, MFA and IP rules for Salesforce logins.'],
 }
 
-/* ---------- The corpus: every page the agents have written, by area ---------- */
-export type Area = { name: string; n: number; words: string[]; kinds: string[] }
+/* ---------- The corpus: a flat set of linked pages (no folders), each written by one agent ---------- */
+export type Area = { name: string; n: number; words: string[]; kinds: string[]; ag: AgentId }
 export const AREAS: Area[] = [
-  { name: 'Sales Cloud', n: 412, words: ['Opportunity', 'Lead', 'Account', 'Contact', 'Forecast', 'Territory', 'Campaign', 'Pipeline'], kinds: ['approvals', 'routing', 'validation rules', 'fields', 'page layouts', 'flows', 'sharing', 'record types', 'reports'] },
-  { name: 'Service Cloud', n: 236, words: ['Case', 'Entitlement', 'SLA', 'Queue', 'Knowledge', 'Omni-channel'], kinds: ['escalation', 'assignment', 'macros', 'fields', 'flows', 'milestones'] },
-  { name: 'CPQ', n: 188, words: ['Quote', 'Price book', 'Product', 'Discount schedule', 'Bundle'], kinds: ['rules', 'templates', 'approvals', 'sync', 'fields'] },
-  { name: 'Policies', n: 174, words: ['Discount', 'Security', 'Data retention', 'Travel', 'Contract', 'Access'], kinds: ['policy', 'exceptions', 'owners', 'history'] },
-  { name: 'People and teams', n: 153, words: ['Deal Desk', 'RevOps', 'Support', 'Finance', 'Sales', 'IT'], kinds: ['team', 'owners', 'on-call', 'handbook'] },
-  { name: 'Integrations', n: 121, words: ['NetSuite', 'Okta', 'Slack', 'Workday', 'CPQ', 'Zendesk'], kinds: ['sync', 'mappings', 'errors', 'credentials'] },
+  { name: 'Sales Cloud', n: 412, ag: 'approvals', words: ['Opportunity', 'Lead', 'Account', 'Contact', 'Forecast', 'Territory', 'Campaign', 'Pipeline'], kinds: ['approvals', 'routing', 'validation rules', 'fields', 'page layouts', 'flows', 'sharing', 'record types', 'reports'] },
+  { name: 'Service Cloud', n: 236, ag: 'support', words: ['Case', 'Entitlement', 'SLA', 'Queue', 'Knowledge', 'Omni-channel'], kinds: ['escalation', 'assignment', 'macros', 'fields', 'flows', 'milestones'] },
+  { name: 'CPQ', n: 188, ag: 'integrations', words: ['Quote', 'Price book', 'Product', 'Discount schedule', 'Bundle'], kinds: ['rules', 'templates', 'approvals', 'sync', 'fields'] },
+  { name: 'Policies', n: 174, ag: 'approvals', words: ['Discount', 'Security', 'Data retention', 'Travel', 'Contract', 'Access'], kinds: ['policy', 'exceptions', 'owners', 'history'] },
+  { name: 'People and teams', n: 153, ag: 'access', words: ['Deal Desk', 'RevOps', 'Support', 'Finance', 'Sales', 'IT'], kinds: ['team', 'owners', 'on-call', 'handbook'] },
+  { name: 'Integrations', n: 121, ag: 'integrations', words: ['NetSuite', 'Okta', 'Slack', 'Workday', 'CPQ', 'Zendesk'], kinds: ['sync', 'mappings', 'errors', 'credentials'] },
 ]
 export const CORPUS_TOTAL = AREAS.reduce((s, a) => s + a.n, 0)
+/** How many days ago the sources were connected. The replay runs from then to today. */
+export const DAYS = 31
 
 /** Deterministic pseudo-random, so the corpus looks the same on every load. */
 function rng(seed: number) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
-export type Cell = { title: string; tier: 'ok' | 'obs' | 'warn' | 'open'; main?: boolean }
-export const CELLS: Cell[][] = AREAS.map((a, ai) => {
-  const r = rng(7 + ai * 101)
-  return Array.from({ length: a.n }, (_, i) => {
-    if (ai === 0 && i === 0) return { title: 'Discount approvals', tier: 'ok', main: true }
-    const x = r(), title = `${a.words[i % a.words.length]} ${a.kinds[Math.floor(i / a.words.length) % a.kinds.length]}`
-    return { title, tier: x < 0.71 ? 'ok' : x < 0.93 ? 'obs' : x < 0.98 ? 'warn' : 'open' }
+export type CTier = 'ok' | 'obs' | 'warn' | 'open' | 'stale'
+export type PageCell = { title: string; area: number; tier: CTier; day: number; links: number[]; upd: string; main?: boolean }
+export const PAGES: PageCell[] = (() => {
+  const r = rng(42), out: PageCell[] = []
+  AREAS.forEach((a, ai) => {
+    for (let i = 0; i < a.n; i++) {
+      const x = r(), y = r()
+      const tier: CTier = x < 0.71 ? 'ok' : x < 0.9 ? 'obs' : x < 0.93 ? 'stale' : x < 0.98 ? 'warn' : 'open'
+      // Most pages were written in the first days after the sources were connected; the rest trickle in.
+      const day = y < 0.62 ? Math.floor(r() * 4) : y < 0.86 ? 4 + Math.floor(r() * 7) : 11 + Math.floor(r() * (DAYS - 11))
+      const h = 1 + Math.floor(r() * 70)
+      out.push({ title: `${a.words[i % a.words.length]} ${a.kinds[Math.floor(i / a.words.length) % a.kinds.length]}`, area: ai, tier, day, links: [], upd: h < 24 ? h + 'h ago' : Math.floor(h / 24) + 'd ago' })
+    }
   })
-})
+  out[0] = { ...out[0], title: 'Discount approvals', tier: 'ok', day: 0, upd: 'just now', main: true }
+  // Flat: shuffle so pages aren't filed by area, keeping Discount approvals near the start so it's easy to find.
+  for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]] }
+  const m = out.findIndex((p) => p.main); [out[m], out[9]] = [out[9], out[m]]
+  // Every page links to a few others, mostly in its own area, sometimes across.
+  out.forEach((p, i) => {
+    const n = 3 + Math.floor(r() * 3), set = new Set<number>()
+    while (set.size < n) { const j = Math.floor(r() * out.length); if (j !== i && (out[j].area === p.area || r() < 0.3)) set.add(j) }
+    p.links = [...set]
+  })
+  return out
+})()
+export const CT_LABEL: Record<CTier, string> = { ok: 'Checked by a person', obs: 'Written from what agents saw', warn: 'Unconfirmed', open: 'Open question', stale: 'Stale' }
+/** Share of each area's pages a person has checked. */
+export const AREA_PCT = AREAS.map((_, ai) => { const ps = PAGES.filter((p) => p.area === ai); return Math.round((ps.filter((p) => p.tier === 'ok').length / ps.length) * 100) })
 
 /* ---------- Asking people: how the agents close their own gaps ---------- */
 export type Ask = { ag: AgentId; q: string; who: string; s: string; sec?: string; page?: string }
