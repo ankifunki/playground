@@ -83,8 +83,8 @@ export function Corpus() {
 
       <div className="kn-meter">
         <div className="kn-togo"><span className="tk">{100 - a.own}% to go</span></div>
-        <div className="kn-bar" key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
-          role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${a.complete + a.current + a.unknown}% is held back by gaps in what the agents know, ${a.shadow}% is still done by people while the agents earn it. The goal is 100%.`}>
+        <div className={'kn-bar' + (hi ? ' hl' : '')} key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
+          role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, and ${a.complete + a.current + a.unknown + a.shadow}% is not yet: waiting on gaps in what the agents know, or still done by people while the agents earn it. The goal is 100%.`}>
           {ticks.map((s, i) => <i key={i} data-s={s} className={lit(s) ? '' : 'dim'} style={{ '--i': i } as React.CSSProperties} />)}
         </div>
         {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{a[tip.s]}%</b> {SAYS[tip.s]}</div>}
@@ -93,22 +93,22 @@ export function Corpus() {
       <div className="kn-q">
         <button {...hover(['complete'])} onClick={(e) => w.openProof('complete', e.currentTarget)}>
           <span className="tk">Is it complete?</span>
-          <b><span>{AUTOS.have} of {AUTOS.of}</span> automations</b>
+          <span className="kn-st"><b>{AUTOS.have} of {AUTOS.of}</b><span>automations explained</span></span>
           <span className="kn-more">What’s covered</span>
         </button>
         <button {...hover(['own', 'ready'])} onClick={(e) => w.openProof('right', e.currentTarget)}>
           <span className="tk">Is it right?</span>
-          <b><span>{SPOT.held} of {SPOT.checks}</span> checks held up</b>
+          <span className="kn-st"><b>{SPOT.held} of {SPOT.checks}</b><span>checks held up this month</span></span>
           <span className="kn-more">The {SPOT.checks - SPOT.held} corrections</span>
         </button>
         <button {...hover(['current'])} onClick={(e) => w.openProof('current', e.currentTarget)}>
           <span className="tk">Is it current?</span>
-          <b>Re-read <span>within a day</span></b>
+          <span className="kn-st"><b>Daily</b><span>every page re-read against its sources</span></span>
           <span className="kn-more">What’s out of date</span>
         </button>
         <button {...hover(['unknown'])} onClick={toAsks}>
           <span className="tk">What doesn’t it know?</span>
-          <b><span>{w.asks} open</span> questions</b>
+          <span className="kn-st"><b>{w.asks}</b><span>open questions, being asked now</span></span>
           <span className="kn-more">Who they’re asking</span>
         </button>
       </div>
