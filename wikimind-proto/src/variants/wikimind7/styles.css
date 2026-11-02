@@ -651,3 +651,8 @@ body{font-size:15.5px}
 @keyframes glow{0%,30%{background:color-mix(in srgb,var(--agent) 16%,transparent);box-shadow:none}100%{background:transparent;box-shadow:none}}
 @media (prefers-reduced-motion:reduce){.cursor-dots b{animation:none;opacity:.6}}
 @media (min-width:1101px) and (hover:hover){.cursor{left:auto;right:calc(100% + 6px);top:5px}.blk.editing>.why{opacity:0 !important}}
+/* Trace timeline: no row dividers; the connector runs between icons, never through them */
+.rail .tr-s{border-top:0;padding:0 0 20px;animation:none}
+.rail .tr-s.new{animation:rise .45s var(--eo) both}
+.tr-ic{position:relative;z-index:1}
+.tr-s:not(:last-child)::before{top:31px;bottom:5px;left:12px;background:var(--hair)}
