@@ -1351,3 +1351,34 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-lines path[data-s]{transform-box:fill-box;transform-origin:bottom;animation:knTick .5s var(--eo) backwards;transition:opacity .2s ease;fill:color-mix(in srgb,var(--ink) 45%,transparent)}
 .kn-lines path.dim{opacity:.18}
 @media (prefers-reduced-motion:reduce){.kn-lines path[data-s]{animation:none}}
+
+/* How it works: time to completion as a stat, then the four steps as an animated flow with where the time goes. */
+.hf{margin:8px 0 8px}
+.hf-stat{display:flex;flex-direction:column;gap:2px;margin-bottom:24px}
+.hf-stat b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.15;letter-spacing:-.015em;margin-top:4px}
+.hf-stat>span:last-child{font-size:14px;color:var(--ink2)}
+.hf-flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.hf-s{position:relative;display:flex;flex-direction:column;gap:10px;padding-right:16px}
+.hf-ic{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink2);position:relative;z-index:1;transition:background-color .35s var(--eo),color .35s var(--eo),box-shadow .35s var(--eo)}
+.hf-ic.ag{background:none}
+.hf-s.on .hf-ic:not(.ag){background:var(--ink);color:var(--panel)}
+.hf-s.cur .hf-ic{box-shadow:0 0 0 4px var(--soft2)}
+.hf-s.cur .hf-ic.ag{box-shadow:0 0 0 4px var(--soft2);border-radius:8px}
+.hf-t{display:flex;flex-direction:column;gap:2px;line-height:1.4}
+.hf-t b{font-size:14px;font-weight:500;color:var(--ink2);transition:color .35s var(--eo)}
+.hf-s.on .hf-t b{color:var(--ink)}
+.hf-t small{font-size:13px;color:var(--ink2)}
+.hf-leg{position:absolute;left:40px;right:8px;top:15px;height:2px}
+.hf-leg i{position:absolute;inset:0;background:var(--hl)}
+.hf-leg i::after{content:"";position:absolute;inset:0;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .9s var(--eo)}
+.hf-leg.on i::after{transform:none}
+.hf-leg em{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-style:normal;white-space:nowrap;color:var(--ink2)}
+.art-body #s-try h3{margin-top:40px}
+@media (max-width:640px){
+ .hf-flow{grid-template-columns:1fr;gap:18px}
+ .hf-s{flex-direction:row;align-items:flex-start;padding:0}
+ .hf-leg{left:15px;right:auto;top:36px;width:2px;height:18px}
+ .hf-leg i::after{transform:scaleY(0);transform-origin:top}
+ .hf-leg em{left:14px;top:2px;transform:none}
+}
+@media (prefers-reduced-motion:reduce){.hf-ic,.hf-leg i::after{transition:none}}

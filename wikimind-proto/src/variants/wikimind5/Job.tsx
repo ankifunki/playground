@@ -6,6 +6,7 @@ import { ARRIVAL, AUTO, REFS, tierOf, type Mark } from './data'
 import { Icon, type IconName } from './Icon'
 import { RM } from './logic'
 import { Bars, planBars, useWidth } from './Corpus'
+import { HowFlow } from './Flow'
 import { MarkdownView } from './Markdown'
 import { Sim } from './Sim'
 import { useW } from './store'
@@ -20,11 +21,23 @@ const goSec = (id: string) => document.getElementById('s-' + id)?.scrollIntoView
 /** Section nav with icons. A rail beside the page on wide screens, a sticky row of chips otherwise. */
 function PageNav({ kind }: { kind: 'rail' | 'chips' }) {
   const [on, setOn] = useState('lead')
+  // Reads the sections fresh on every scroll, so it keeps working after they are re-rendered (e.g. Page / Markdown).
   useEffect(() => {
-    if (!('IntersectionObserver' in window)) return
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) setOn(e.target.id.slice(2)) }), { rootMargin: '-120px 0px -65% 0px' })
-    document.querySelectorAll('.art-body section[id^="s-"]').forEach((x) => io.observe(x))
-    return () => io.disconnect()
+    let raf = 0
+    const spy = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const secs = Array.from(document.querySelectorAll<HTMLElement>('.art-body section[id^="s-"]'))
+        if (!secs.length) return
+        let cur = secs[0].id
+        for (const s of secs) if (s.getBoundingClientRect().top <= 160) cur = s.id
+        if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs[secs.length - 1].id
+        setOn(cur.slice(2))
+      })
+    }
+    spy(); addEventListener('scroll', spy, { passive: true }); addEventListener('resize', spy)
+    const mo = new MutationObserver(spy); const body = document.querySelector('.art-body'); if (body) mo.observe(body, { childList: true })
+    return () => { cancelAnimationFrame(raf); removeEventListener('scroll', spy); removeEventListener('resize', spy); mo.disconnect() }
   }, [])
   return (
     <nav className={'pnav ' + kind} aria-label="On this page">
@@ -224,6 +237,8 @@ export function Job() {
           </section>
           <section id="s-try">
             <h2>How it works</h2>
+            <HowFlow />
+            <h3>Try it out</h3>
             <Sim />
           </section>
           <section id="s-rules">
