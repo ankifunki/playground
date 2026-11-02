@@ -1344,5 +1344,5 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-lines rect.dim{opacity:.18}
 .kn-bar.hl .kn-lines rect:not(.dim):not([data-s="own"]):not([data-s="ready"]){fill:color-mix(in srgb,var(--ink) 50%,transparent)}
 .kn-lines .kh-bg{fill:color-mix(in srgb,var(--ink) 12%,transparent)}
-.kn-lines .kh-ln{fill:none;stroke:color-mix(in srgb,var(--ink) 55%,transparent);stroke-width:1}
+.kn-lines .kh-ln{fill:color-mix(in srgb,var(--ink) 55%,transparent);shape-rendering:crispEdges}
 @media (prefers-reduced-motion:reduce){.kn-lines rect[data-s]{animation:none}}
