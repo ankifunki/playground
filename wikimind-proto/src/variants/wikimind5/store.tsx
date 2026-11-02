@@ -16,7 +16,7 @@ export type QA = {
   t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
-export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'person'
+export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'shadow'
 export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }
@@ -84,7 +84,7 @@ function useWikimindState() {
   // Derived counts, so they can never drift out of sync.
   const asks = 9 - (learned ? 1 : 0) + newQs.filter((q) => !q.resolved).length
   // The automation split, derived so it always adds up: answering Maria releases 1% to "ready"; handing over moves ready to own.
-  const auto = { own: AUTO.own + handed, ready: AUTO.ready + (learned ? 1 : 0) - handed, complete: AUTO.gaps.complete, current: AUTO.gaps.current, unknown: AUTO.gaps.unknown - (learned ? 1 : 0), person: AUTO.person }
+  const auto = { own: AUTO.own + handed, ready: AUTO.ready + (learned ? 1 : 0) - handed, complete: AUTO.gaps.complete, current: AUTO.gaps.current, unknown: AUTO.gaps.unknown - (learned ? 1 : 0), shadow: AUTO.shadow }
 
   // Timers and callbacks read the latest state through this ref.
   const S = { view, learned, qas, newQs, text, files, pop, blame, cfg, wireOn, fin, ready: auto.ready }

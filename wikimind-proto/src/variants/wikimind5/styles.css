@@ -1000,9 +1000,6 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-q button:active{transform:scale(.98)}
 @media (hover:hover) and (pointer:fine){.kn-q button:hover{background:var(--soft2)}}
 .kn-q b{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.kn-q span:not(.tk):not(.kn-more):not(.ago){font-size:13px;color:var(--ink2);line-height:1.45}
-.kn-q .ago{display:inline;font-size:13px}
-.kn-q .ago .pdot{display:none}
 .kn-more{margin-top:auto;padding-top:8px;font:500 13px var(--sans);color:var(--link)}
 @media (max-width:900px){.kn-q{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){
@@ -1031,14 +1028,14 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-num{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 16px;margin-top:8px}
 .kn-num .kn-big{margin:0}
 .kn-head small{font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.5}
-.kn-meter{position:relative;margin-top:24px;padding-top:44px}
+.kn-meter{position:relative;margin-top:24px;padding-top:28px}
 .kn-bar{display:grid;grid-template-columns:repeat(100,minmax(0,1fr));height:40px;align-items:stretch;cursor:pointer;touch-action:pan-y}
 .kn-bar i{display:block;width:2px;justify-self:center;background:var(--hl);transition:background-color .6s var(--eo),opacity .2s ease;animation:knTick .5s var(--eo) backwards;animation-delay:calc(var(--i) * 7ms);transform-origin:bottom}
 /* One ink, four strengths: solid runs on its own, lighter is proven and waiting, dotted is held back by a gap, grey is off by policy. */
-.kn-bar i[data-s="own"],.kn-hold i[data-s="own"]{background:var(--ink)}
+.kn-bar i[data-s="own"]{background:var(--ink)}
 .kn-bar i[data-s="ready"]{background:color-mix(in srgb,var(--ink) 48%,transparent)}
-.kn-bar i[data-s="complete"],.kn-bar i[data-s="current"],.kn-bar i[data-s="unknown"],.kn-hold i[data-s="complete"],.kn-hold i[data-s="current"],.kn-hold i[data-s="unknown"]{background:color-mix(in srgb,var(--ink) 48%,transparent);-webkit-mask:repeating-linear-gradient(#000 0 3px,transparent 3px 6px);mask:repeating-linear-gradient(#000 0 3px,transparent 3px 6px)}
-.kn-bar i[data-s="person"]{background:color-mix(in srgb,var(--ink) 14%,transparent)}
+.kn-bar i[data-s="complete"],.kn-bar i[data-s="current"],.kn-bar i[data-s="unknown"]{background:color-mix(in srgb,var(--ink) 48%,transparent);-webkit-mask:repeating-linear-gradient(#000 0 3px,transparent 3px 6px);mask:repeating-linear-gradient(#000 0 3px,transparent 3px 6px)}
+.kn-bar i[data-s="shadow"]{background:color-mix(in srgb,var(--ink) 14%,transparent)}
 .kn-bar i.dim{opacity:.2}
 .kn-tip{position:absolute;top:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;background:var(--panel);box-shadow:var(--sh2);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--ink2);pointer-events:none;z-index:3;animation:knTip .16s var(--eo)}
 .kn-tip b{font:450 13px var(--mono);color:var(--ink);margin-right:4px}
@@ -1047,14 +1044,6 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-ready.on{color:var(--ink2);font-weight:400;cursor:default}
 @media (hover:hover) and (pointer:fine){button.kn-ready:hover{text-decoration-color:currentColor}}
 @keyframes knTick{from{transform:scaleY(.3);opacity:0}to{transform:none;opacity:1}}
-.kn-hold{display:flex;align-items:flex-start;gap:10px;margin-top:4px;font-size:13px;line-height:1.45;color:var(--ink2)}
-.kn-q .kn-hold b,.kn-hold b{font:500 13px/1.45 var(--sans);letter-spacing:0;color:var(--ink)}
-/* The grey part is a choice, not a limit: a bracket over it says whose. */
-.kn-pol{position:absolute;top:30px;right:0;height:8px;border-top:1px solid var(--hl);border-left:1px solid var(--hl);border-right:1px solid var(--hl);border-radius:2px 2px 0 0;transition:left .6s var(--eo)}
-.kn-pol button{position:absolute;right:0;bottom:calc(100% + 6px);white-space:nowrap;border:0;background:none;padding:0;cursor:pointer;font-size:13px;color:var(--ink2);text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .2s ease,color .2s ease}
-.kn-pol b{font-weight:500;color:var(--ink)}
-@media (hover:hover) and (pointer:fine){.kn-pol button:hover{color:var(--ink);text-decoration-color:var(--hl)}}
-.kn-hold i{width:2px;height:14px;display:block;flex-shrink:0;margin-top:3px}
 .kn-foot{display:flex;align-items:center;gap:12px;margin:24px 0 0;padding-top:20px;border-top:1px solid var(--hair);font-size:13px;line-height:1.5;color:var(--ink2);text-wrap:pretty}
 .kn-pile{display:flex;flex-shrink:0}
 .kn-pile .pt{width:22px;height:22px;margin:0 0 0 -6px;box-shadow:0 0 0 2px var(--panel)}
@@ -1067,4 +1056,13 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
  .kn-bar{height:32px}
  .kn-foot{align-items:flex-start}
 }
-@media (prefers-reduced-motion:reduce){.kn-bar i{animation:none}.kn-pol{transition:none}}
+@media (prefers-reduced-motion:reduce){.kn-bar i{animation:none}}
+
+/* Cards: question, status, action. Nothing else. */
+.kn-togo{position:absolute;top:0;right:0}
+.kn-togo .tk{color:var(--ink2)}
+.kn-q button{gap:10px;padding:18px 18px 16px}
+.kn-q b{font-size:22px;line-height:1.25;text-wrap:pretty}
+.kn-q b span{white-space:nowrap}
+.kn-q .kn-more{padding-top:12px}
+@media (max-width:640px){.kn-q b{font-size:19px}}

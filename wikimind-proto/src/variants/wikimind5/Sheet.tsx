@@ -49,12 +49,13 @@ function Body({ p }: { p: Pop }) {
         </div>
       )
     }
-    if (p.k === 'person') return (
+    if (p.k === 'shadow') return (
       <div className="pc">
-        <div className="pk">Stays with a person</div>
-        <div className="pq">These stay with a person because Northwind’s policy says so, not because the agents can’t do them. Change the policy and they can run on their own too.</div>
-        <ul className="pf-inv">{AUTO.byDesign.map((x) => <li key={x}><span>{x}</span><b>Policy</b></li>)}</ul>
-        <div className="pnote">The agents still prepare each one and cite the rule. A person makes the call.</div>
+        <div className="pk">Still done by people, for now</div>
+        <div className="pq">The hardest work. The agents prepare each one and compare it with what the person decided. When their record is strong enough, it moves to proven and you can hand it over.</div>
+        <ul className="pf-fix pf-ready">{AUTO.shadowing.map((x) => (
+          <li key={x.what}><div className="pf-h"><Ag id={x.ag} name /><span className="tk">{x.n}% of the work</span></div><b>{x.what}</b><span>{x.record}</span></li>
+        ))}</ul>
         {close}
       </div>
     )

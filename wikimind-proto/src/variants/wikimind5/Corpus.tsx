@@ -2,18 +2,17 @@ import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { AUTO, CORPUS_TOTAL, INVENTORY, READS, SPOT, TOTALS } from './data'
 import { Icon } from './Icon'
-import { Ago } from './Job'
 import { RM } from './logic'
 import { useW } from './store'
 
 const fmt = (n: number) => Math.round(n).toLocaleString()
-const AUTOS = INVENTORY[1], PRACTICES = INVENTORY[INVENTORY.length - 1]
-type Seg = 'own' | 'ready' | 'complete' | 'current' | 'unknown' | 'person'
-const ORDER: Seg[] = ['own', 'ready', 'complete', 'current', 'unknown', 'person']
+const AUTOS = INVENTORY[1]
+type Seg = 'own' | 'ready' | 'complete' | 'current' | 'unknown' | 'shadow'
+const ORDER: Seg[] = ['own', 'ready', 'complete', 'current', 'unknown', 'shadow']
 /** What each part of the bar is, said where the reader is looking (on hover or tap), instead of in a legend. */
 const SAYS: Record<Seg, string> = {
   own: 'of the work runs on its own', ready: 'is proven and needs your OK', complete: `waits while ${AUTO.confirming} practices are confirmed`,
-  current: `waits while ${TOTALS.stale} out-of-date pages are re-checked`, unknown: 'waits on answers to open questions', person: 'stays with a person, by your policy',
+  current: `waits while ${TOTALS.stale} out-of-date pages are re-checked`, unknown: 'waits on answers to open questions', shadow: 'still done by people while the agents earn it',
 }
 
 /** Eases a number to its target: from zero on mount and whenever `from0` changes (the tour replays it). */
@@ -35,7 +34,7 @@ function useTween(to: number, from0: number) {
  * The anchor of Home, in the CIO's terms: how much of Northwind's Salesforce admin work the agents are trusted to run
  * on their own, and what holds the rest back. One tick is 1% of last month's requests. The four questions below are
  * the levers: accuracy clears work to run alone, and gaps in completeness, currency and open questions hold it back.
- * It never reaches 100% by design, because Northwind's policy keeps some decisions with a person.
+ * The goal is 100%: the grey part is the hardest work, still done by people while the agents shadow it and earn it.
  */
 export function Corpus() {
   const w = useW(), a = w.auto
@@ -45,7 +44,6 @@ export function Corpus() {
   const [slack, setSlack] = useState(READS[0].n)
   const on = useRef(w.wireOn); on.current = w.wireOn
   const own = useTween(a.own, w.replayN)
-  const cleared = a.own + a.ready
   // They are still reading.
   useEffect(() => {
     const t = window.setInterval(() => { if (on.current) setSlack((n) => n + 1 + Math.floor(Math.random() * 3)) }, 2200)
@@ -66,7 +64,7 @@ export function Corpus() {
   const leave = () => { setTip(null); setHi(null) }
   const open = (e: React.MouseEvent) => {
     const { s } = segAt(e)
-    if (s === 'ready' || s === 'person' || s === 'complete' || s === 'current') w.openProof(s, e.currentTarget as HTMLElement)
+    if (s === 'ready' || s === 'shadow' || s === 'complete' || s === 'current') w.openProof(s, e.currentTarget as HTMLElement)
     else if (s === 'unknown') toAsks()
   }
 
@@ -84,11 +82,9 @@ export function Corpus() {
       </div>
 
       <div className="kn-meter">
-        <div className="kn-pol" style={{ left: 100 - a.person + '%' }}>
-          <button {...hover(['person'])} onClick={(e) => w.openProof('person', e.currentTarget)}><b>{a.person}%</b> stays with a person, by your policy</button>
-        </div>
+        <div className="kn-togo"><span className="tk">{100 - a.own}% to go</span></div>
         <div className="kn-bar" key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
-          role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${a.complete + a.current + a.unknown}% is held back by gaps in what the agents know, ${a.person}% stays with a person by policy.`}>
+          role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${a.complete + a.current + a.unknown}% is held back by gaps in what the agents know, ${a.shadow}% is still done by people while the agents earn it. The goal is 100%.`}>
           {ticks.map((s, i) => <i key={i} data-s={s} className={lit(s) ? '' : 'dim'} style={{ '--i': i } as React.CSSProperties} />)}
         </div>
         {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{a[tip.s]}%</b> {SAYS[tip.s]}</div>}
@@ -97,30 +93,22 @@ export function Corpus() {
       <div className="kn-q">
         <button {...hover(['complete'])} onClick={(e) => w.openProof('complete', e.currentTarget)}>
           <span className="tk">Is it complete?</span>
-          <b>{AUTOS.have} of {AUTOS.of}</b>
-          <span>automations in Salesforce explained, plus {PRACTICES.have} unwritten practices found so far</span>
-          <span className="kn-hold"><i data-s="complete" /><span><b>{a.complete}%</b> of the work waits while {AUTO.confirming} practices are confirmed</span></span>
+          <b><span>{AUTOS.have} of {AUTOS.of}</span> automations</b>
           <span className="kn-more">What’s covered</span>
         </button>
         <button {...hover(['own', 'ready'])} onClick={(e) => w.openProof('right', e.currentTarget)}>
           <span className="tk">Is it right?</span>
-          <b>{SPOT.held} of {SPOT.checks}</b>
-          <span>facts held up when {SPOT.by.split(' ')[0]} spot-checked them this month</span>
-          <span className="kn-hold"><i data-s="own" /><span><b>{cleared}%</b> of the work is cleared to run alone</span></span>
+          <b><span>{SPOT.held} of {SPOT.checks}</span> checks held up</b>
           <span className="kn-more">The {SPOT.checks - SPOT.held} corrections</span>
         </button>
         <button {...hover(['current'])} onClick={(e) => w.openProof('current', e.currentTarget)}>
           <span className="tk">Is it current?</span>
-          <b>Within a day</b>
-          <span>every page re-read against its sources, last one <Ago prefix="" /></span>
-          <span className="kn-hold"><i data-s="current" /><span><b>{a.current}%</b> of the work waits while {TOTALS.stale} out-of-date pages are re-checked</span></span>
-          <span className="kn-more">What’s flagged</span>
+          <b>Re-read <span>within a day</span></b>
+          <span className="kn-more">What’s out of date</span>
         </button>
         <button {...hover(['unknown'])} onClick={toAsks}>
           <span className="tk">What doesn’t it know?</span>
-          <b>{w.asks} questions</b>
-          <span>the agents are asking people right now, instead of guessing</span>
-          <span className="kn-hold"><i data-s="unknown" /><span><b>{a.unknown}%</b> of the work waits on their answers</span></span>
+          <b><span>{w.asks} open</span> questions</b>
           <span className="kn-more">Who they’re asking</span>
         </button>
       </div>

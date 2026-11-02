@@ -283,7 +283,7 @@ export const STALE_EG: { t: string; why: string }[] = [
    stays with a person by policy. Shares are % of last month's requests. Demo data.
    ===================================================================================== */
 export const AUTO = {
-  own: 64, ready: 6, person: 19, sept: 51, trend: [51, 53, 55, 58, 59, 62, 64],
+  own: 64, ready: 6, shadow: 19, sept: 51, trend: [51, 53, 55, 58, 59, 62, 64],
   /** Last 30 days: Salesforce admin requests the agents saw, and how many of those they ran alone were undone by a person. */
   requests: 2980, undone: 3,
   /** Held back by knowledge, by the question that would release it. */
@@ -298,6 +298,12 @@ export const AUTO = {
   ],
   /** Released when Maria answers the flat-renewals question. */
   readyLearned: { ag: 'approvals' as AgentId, what: 'Flat renewals', proof: 'Maria confirmed the rule today; 19 of 19 past renewals match it' },
-  /** Work that stays with a person, by policy, however good the agents get. */
-  byDesign: ['Approving discounts over 20%', 'Paying invoices', 'Wiping devices', 'Changing who has admin rights'],
+  /** The hardest work, still done by people for now. The agents shadow each one (prepare it, compare with what the person decided)
+   *  until their record earns it; then it moves to proven and can be handed over. The goal is all of it. */
+  shadowing: [
+    { ag: 'approvals' as AgentId, what: 'Discounts over 20%', record: '212 of 230 matched the approver', n: 8 },
+    { ag: 'finance' as AgentId, what: 'Paying invoices', record: '88 of 97 matched Finance', n: 6 },
+    { ag: 'access' as AgentId, what: 'Changing admin rights', record: '31 of 34 matched IT', n: 3 },
+    { ag: 'security' as AgentId, what: 'Wiping lost devices', record: '9 of 9 matched, too few to trust yet', n: 2 },
+  ],
 }
