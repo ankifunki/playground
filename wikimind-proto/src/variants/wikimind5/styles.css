@@ -1408,3 +1408,5 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .sim-reason{color:var(--ink2);font-size:14px;margin:12px 0 4px}
 .sim-in{padding:16px 20px 20px}
 @media (max-width:640px){.hf-stats{grid-template-columns:1fr 1fr;gap:8px 24px}.hf-t b{white-space:normal}}
+/* Try it out: the input panel is an outlined box (controls), not a filled one, so it doesn't read as a status block. */
+.sim-in{background:none;box-shadow:inset 0 0 0 1px var(--hl);border-radius:8px}
