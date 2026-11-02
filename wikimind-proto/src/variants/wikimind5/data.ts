@@ -166,7 +166,7 @@ export const DAYS = 31
 /** Deterministic pseudo-random, so the corpus looks the same on every load. */
 function rng(seed: number) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296) }
 export type CTier = 'ok' | 'obs' | 'warn' | 'open' | 'stale'
-export type PageCell = { title: string; area: number; tier: CTier; day: number; links: number[]; upd: string; main?: boolean }
+export type PageCell = { title: string; area: number; tier: CTier; day: number; links: number[]; upd: string; h: number; main?: boolean }
 export const PAGES: PageCell[] = (() => {
   const r = rng(42), out: PageCell[] = []
   AREAS.forEach((a, ai) => {
@@ -176,10 +176,10 @@ export const PAGES: PageCell[] = (() => {
       // Most pages were written in the first days after the sources were connected; the rest trickle in.
       const day = y < 0.62 ? Math.floor(r() * 4) : y < 0.86 ? 4 + Math.floor(r() * 7) : 11 + Math.floor(r() * (DAYS - 11))
       const h = 1 + Math.floor(r() * 70)
-      out.push({ title: `${a.words[i % a.words.length]} ${a.kinds[Math.floor(i / a.words.length) % a.kinds.length]}`, area: ai, tier, day, links: [], upd: h < 24 ? h + 'h ago' : Math.floor(h / 24) + 'd ago' })
+      out.push({ title: `${a.words[i % a.words.length]} ${a.kinds[Math.floor(i / a.words.length) % a.kinds.length]}`, area: ai, tier, day, links: [], h, upd: h < 24 ? h + 'h ago' : Math.floor(h / 24) + 'd ago' })
     }
   })
-  out[0] = { ...out[0], title: 'Discount approvals', tier: 'ok', day: 0, upd: 'just now', main: true }
+  out[0] = { ...out[0], title: 'Discount approvals', tier: 'ok', day: 0, upd: 'just now', h: 0, main: true }
   // Flat: shuffle so pages aren't filed by area, keeping Discount approvals near the start so it's easy to find.
   for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]] }
   const m = out.findIndex((p) => p.main); [out[m], out[9]] = [out[9], out[m]]
@@ -222,3 +222,17 @@ export const corpus = (fin: number): [number, string][] => [
   [8, 'Once a deal is approved, only Deal Desk can change its amount.'], [9, 'At quarter end, Deal Desk approves large deals in Slack first and logs them in Salesforce afterward. Unofficial.'],
   [11, 'Renewals with no price change skip approval. Open question.'], [16, 'Discounts over 10% need a written reason.'],
 ]
+
+/* ---------- Readable corpus: per-topic summaries and the growth curve ---------- */
+export type TopicStat = { ok: number; obs: number; stale: number; warn: number; open: number; n: number; recent: number[] }
+export const TOPICS: TopicStat[] = AREAS.map((_, ai) => {
+  const idx = PAGES.map((p, i) => [p, i] as const).filter(([p]) => p.area === ai)
+  const c = { ok: 0, obs: 0, stale: 0, warn: 0, open: 0 }
+  idx.forEach(([p]) => { c[p.tier]++ })
+  return { ...c, n: idx.length, recent: idx.sort((a, b) => a[0].h - b[0].h).slice(0, 5).map(([, i]) => i) }
+})
+export const TOTALS = { ok: PAGES.filter((p) => p.tier === 'ok').length, stale: PAGES.filter((p) => p.tier === 'stale').length, warn: PAGES.filter((p) => p.tier === 'warn' || p.tier === 'open').length }
+/** Pages written by the end of each day since the sources were connected. */
+export const GROWTH = Array.from({ length: DAYS + 1 }, (_, d) => PAGES.filter((p) => p.day <= d).length)
+/** What an agent just did to a page, for the live line on each topic. */
+export const VERBS = ['rewrote', 'verified with Dana', 'wrote a new page:', 'linked 3 more pages to', 'marked as changed:', 'answered a question on']

@@ -1,87 +1,83 @@
 import type React from 'react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AG } from './agents'
-import { AREA_PCT, AREAS, CORPUS_TOTAL, CT_LABEL, DAYS, PAGES } from './data'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Ag } from './agents'
+import { AREAS, CORPUS_TOTAL, CT_LABEL, DAYS, GROWTH, PAGES, TOPICS, TOTALS, VERBS } from './data'
 import { Icon } from './Icon'
 import { RM } from './logic'
 import { useW } from './store'
 
-/** Every page as one square. Rendered once; live updates, replay and hover are applied straight to the DOM. */
-const Cells = memo(function Cells() {
-  return <>{PAGES.map((c, i) => c.main
-    ? <button key={i} className={'cp-c cp-ok main a' + c.area} data-i={i} data-d={c.day} aria-label={'Open ' + c.title} />
-    : <span key={i} className={'cp-c cp-' + c.tier + ' a' + c.area} data-i={i} data-d={c.day} />)}</>
-})
-
 const START = Date.now() - DAYS * 864e5
-const dayLabel = (d: number) => (d >= DAYS ? 'Today' : new Date(START + d * 864e5).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
-const CUM = Array.from({ length: DAYS + 1 }, (_, d) => PAGES.filter((p) => p.day <= d).length)
-
-type Hov = { i: number; x: number; y: number; lines: [number, number][]; W: number; H: number }
+const dateOf = (d: number) => (d >= DAYS ? 'Today' : new Date(START + d * 864e5).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+const pct = (n: number, t: number) => Math.round((n / t) * 100)
+const D900 = GROWTH.findIndex((n) => n >= 900)
+/** Pages each topic had by the end of each day. */
+const AREA_GROWTH = AREAS.map((_, ai) => GROWTH.map((_, d) => PAGES.filter((p) => p.area === ai && p.day <= d).length))
 
 /**
- * Everything the agents know: a flat set of linked pages (no folders), each a square coloured by how far a
- * person has checked it. Squares light up as agents update them. Hover one to see what it links to; replay
- * shows how the whole thing was assembled after the sources were connected.
+ * How the corpus grew, day by day, since the sources were connected. Labelled at the moments that matter;
+ * hover (or drag) to read any day. During a replay it draws itself up to the current day.
+ */
+function Growth({ upto, onDay }: { upto: number; onDay: (d: number | null) => void }) {
+  const [hov, setHov] = useState<number | null>(null)
+  const xs = (d: number) => ((d + 1) / (DAYS + 1)) * 100, ys = (n: number) => 100 - (n / CORPUS_TOTAL) * 92
+  const pts = ['0,100', ...GROWTH.slice(0, upto + 1).map((n, d) => `${xs(d).toFixed(2)},${ys(n).toFixed(2)}`)]
+  const line = pts.join(' '), area = `${line} ${xs(upto).toFixed(2)},100`
+  const pick = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect(), d = Math.round(((e.clientX - r.left) / r.width) * (DAYS + 1)) - 1
+    const v = Math.max(0, Math.min(upto, d)); setHov(v); onDay(v)
+  }
+  const show = hov ?? null
+  return (
+    <div className="gr" onPointerMove={pick} onPointerDown={pick} onPointerLeave={() => { setHov(null); onDay(null) }} role="img"
+      aria-label={`Pages written since the sources were connected: none on ${dateOf(0)}, ${GROWTH[D900]} by ${dateOf(D900)}, ${CORPUS_TOTAL} today.`}>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <polygon className="gr-a" points={area} />
+        <polyline className="gr-l" points={line} />
+      </svg>
+      <span className="gr-m start" style={{ left: '0%', bottom: '0%' }}><i /><small>{dateOf(0)}<br />sources connected</small></span>
+      {upto >= D900 && <span className="gr-m" style={{ left: xs(D900) + '%', bottom: (100 - ys(GROWTH[D900])) + '%' }}><i /><small>{GROWTH[D900].toLocaleString()} pages<br />by {dateOf(D900)}</small></span>}
+      {upto >= DAYS && <span className="gr-m end" style={{ left: '100%', bottom: (100 - ys(CORPUS_TOTAL)) + '%' }}><i /><small>{CORPUS_TOTAL.toLocaleString()} today</small></span>}
+      {show !== null && <span className="gr-h" style={{ left: xs(show) + '%' }}><small>{dateOf(show)} · {GROWTH[show].toLocaleString()} pages</small></span>}
+    </div>
+  )
+}
+
+type Live = { i: number; v: string; at: number }
+
+/**
+ * Everything the agents know, in words: how much there is, how far a person has checked it, how it grew,
+ * and what is changing in each topic right now. Tap a topic to see its most recently updated pages.
  */
 export function Corpus() {
-  const w = useW(), box = useRef<HTMLDivElement>(null), cells = useRef<HTMLElement[]>([])
-  const count = useRef<HTMLSpanElement>(null), recent = useRef<number[]>([])
-  const [hov, setHov] = useState<Hov | null>(null)
-  const [flt, setFlt] = useState<number | null>(null)
+  const w = useW(), wr = useRef(w); wr.current = w
   const [rep, setRep] = useState<{ day: number; playing: boolean } | null>(null)
-  const live = useRef(true); live.current = w.wireOn && !rep
-  const wr = useRef(w); wr.current = w
+  const [hovDay, setHovDay] = useState<number | null>(null)
+  const [open, setOpen] = useState<number | null>(null)
+  const [lives, setLives] = useState<(Live | null)[]>(() => AREAS.map((_, ai) => ({ i: TOPICS[ai].recent[0], v: VERBS[ai % VERBS.length], at: Date.now() - (ai + 1) * 41000 })))
+  const on = useRef(true); on.current = w.wireOn && !rep
 
-  useEffect(() => { cells.current = Array.from(box.current?.querySelectorAll<HTMLElement>('.cp-c') || []) }, [])
-  // Live: a couple of pages update every second; now and then one is verified.
+  // Live: every few seconds an agent changes a page in one of the topics.
   useEffect(() => {
     const t = window.setInterval(() => {
-      if (!live.current || !cells.current.length) return
-      for (let k = 0; k < 2; k++) {
-        const c = cells.current[Math.floor(Math.random() * cells.current.length)]
-        c.classList.remove('pz'); void c.offsetWidth; c.classList.add('pz')
-        window.setTimeout(() => c.classList.remove('pz'), 1600)
-        if (c.classList.contains('cp-obs') && Math.random() < 0.25) c.classList.replace('cp-obs', 'cp-ok')
-      }
-      const now = Date.now(); recent.current = [...recent.current.filter((x) => now - x < 60000), now, now]
-      if (count.current) count.current.textContent = String(recent.current.length)
-    }, 1100)
+      if (!on.current) return
+      const ai = Math.floor(Math.random() * AREAS.length), pool = PAGES.map((p, i) => [p, i] as const).filter(([p]) => p.area === ai)
+      const i = pool[Math.floor(Math.random() * pool.length)][1]
+      setLives((ls) => ls.map((l, k) => (k === ai ? { i, v: VERBS[Math.floor(Math.random() * VERBS.length)], at: Date.now() } : l)))
+    }, 2800)
     return () => window.clearInterval(t)
   }, [])
-  // Replay: hide pages written after the current day, and step through the days.
+  // Replay: day by day from the day the sources were connected.
   useEffect(() => {
-    cells.current.forEach((c) => c.classList.toggle('cp-hid', !!rep && +c.dataset.d! > rep.day))
     if (!rep?.playing) return
     if (rep.day >= DAYS) { setRep({ day: DAYS, playing: false }); return }
-    const t = window.setTimeout(() => setRep((r) => (r ? { ...r, day: r.day + 1 } : r)), RM ? 120 : 210)
+    const t = window.setTimeout(() => setRep((r) => (r ? { ...r, day: r.day + 1 } : r)), RM ? 90 : 150)
     return () => window.clearTimeout(t)
   }, [rep])
-  useEffect(() => { if (w.replayN) { setHov(null); setRep({ day: 0, playing: true }) } }, [w.replayN])
+  useEffect(() => { if (w.replayN) setRep({ day: 0, playing: true }) }, [w.replayN])
 
-  const unlight = () => cells.current.forEach((c) => c.classList.remove('cp-lk', 'cp-on'))
-  const onOver = useCallback((e: React.MouseEvent) => {
-    if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return
-    const el = (e.target as HTMLElement).closest<HTMLElement>('.cp-c'), b = box.current
-    if (!el || !b || el.classList.contains('cp-hid')) return
-    const i = +el.dataset.i!, br = b.getBoundingClientRect(), mid = (n: HTMLElement): [number, number] => { const r = n.getBoundingClientRect(); return [r.left - br.left + r.width / 2, r.top - br.top + r.height / 2] }
-    unlight(); el.classList.add('cp-on')
-    const lines = PAGES[i].links.map((j) => { const c = cells.current[j]; c?.classList.add('cp-lk'); return c ? mid(c) : null }).filter(Boolean) as [number, number][]
-    const [x, y] = mid(el)
-    setHov({ i, x, y, lines, W: br.width, H: br.height })
-  }, [])
-  const onLeave = useCallback(() => { unlight(); setHov(null) }, [])
-  const onClick = useCallback((e: React.MouseEvent) => {
-    const el = (e.target as HTMLElement).closest<HTMLElement>('.cp-c'); if (!el || el.classList.contains('cp-hid')) return
-    const i = +el.dataset.i!
-    if (PAGES[i].main) wr.current.go('page'); else wr.current.openCell(i)
-  }, [])
-
-  const tip = useMemo(() => {
-    if (!hov) return null
-    const c = PAGES[hov.i], a = AREAS[c.area], left = Math.max(110, Math.min(hov.W - 110, hov.x))
-    return { c, a, left, top: hov.y }
-  }, [hov])
+  const day = rep ? rep.day : DAYS, shown = hovDay ?? day
+  const ago = (t: number) => { const s = Math.round((Date.now() - t) / 1000); return s < 5 ? 'just now' : s < 60 ? s + 's ago' : Math.round(s / 60) + 'm ago' }
+  const order = useMemo(() => AREAS.map((_, i) => i), [])
 
   return (
     <section className="cp" id="corpus" aria-label="Everything the agents know">
@@ -89,39 +85,56 @@ export function Corpus() {
         <h2>Everything the agents know</h2>
         {rep ? (
           <div className="cp-rep" role="group" aria-label="Replay how it was built">
-            <button className="sim-play sm" onClick={() => setRep((r) => (r ? (r.day >= DAYS ? { day: 0, playing: true } : { ...r, playing: !r.playing }) : r))} aria-label={rep.playing ? 'Pause' : rep.day >= DAYS ? 'Replay again' : 'Play'}><Icon name={rep.playing ? 'pause' : rep.day >= DAYS ? 'rotate-ccw' : 'play'} size={14} /></button>
-            <input type="range" min={0} max={DAYS} value={rep.day} onChange={(e) => setRep({ day: +e.target.value, playing: false })} aria-label="Day" style={{ '--p': (rep.day / DAYS) * 100 + '%' } as React.CSSProperties} />
-            <span className="cp-day"><b>{dayLabel(rep.day)}</b> · {CUM[rep.day].toLocaleString()} pages{rep.day === 0 ? ' · Slack, Salesforce, Jira and meetings connected' : ''}</span>
+            <span className="cp-day"><b>{dateOf(day)}</b> · {GROWTH[day].toLocaleString()} pages</span>
+            <button className="ibtn sm" onClick={() => setRep((r) => (r ? (r.day >= DAYS ? { day: 0, playing: true } : { ...r, playing: !r.playing }) : r))} aria-label={rep.playing ? 'Pause' : rep.day >= DAYS ? 'Replay again' : 'Play'} title={rep.playing ? 'Pause' : 'Play'}><Icon name={rep.playing ? 'pause' : rep.day >= DAYS ? 'rotate-ccw' : 'play'} size={14} /></button>
             <button className="ibtn sm" onClick={() => setRep(null)} aria-label="Back to today" title="Back to today"><Icon name="x" size={14} /></button>
           </div>
         ) : (
-          <div className="cp-n">
-            <span><b>{CORPUS_TOTAL.toLocaleString()}</b> pages · <b>{w.obs.toLocaleString()}</b> observations this week · <b><span ref={count}>0</span></b> updated in the last minute</span>
-            <button className="cp-play" onClick={() => { setHov(null); setRep({ day: 0, playing: true }) }}><Icon name="play" size={12} />Watch it being built</button>
-          </div>
+          <button className="cp-play" onClick={() => setRep({ day: 0, playing: true })}><Icon name="play" size={12} />Watch it being built</button>
         )}
       </div>
-      <div className="cp-f" role="group" aria-label="Highlight an area">
-        <button className={flt === null ? 'on' : ''} aria-pressed={flt === null} onClick={() => setFlt(null)}>All</button>
-        {AREAS.map((a, i) => <button key={a.name} className={flt === i ? 'on' : ''} aria-pressed={flt === i} onClick={() => setFlt(flt === i ? null : i)}>{a.name}<span>{AREA_PCT[i]}%</span></button>)}
-      </div>
-      <div className="cp-box" ref={box}>
-        <div className="cp-g" data-a={flt ?? ''} onMouseOver={onOver} onMouseLeave={onLeave} onClick={onClick}><Cells /></div>
-        {hov && (
-          <svg className="cp-ln" width={hov.W} height={hov.H} aria-hidden="true">
-            {hov.lines.map(([x, y], k) => <line key={k} x1={hov.x} y1={hov.y} x2={x} y2={y} />)}
-          </svg>
-        )}
-        {tip && (
-          <div className="cp-tip" style={{ left: tip.left, top: tip.top }} role="tooltip">
-            <b>{tip.c.title}</b>
-            <span className="tk">{tip.a.name} · {AG[tip.a.ag].name} agent</span>
-            <span className={'cp-tt cp-t-' + tip.c.tier}>{CT_LABEL[tip.c.tier]} · updated {tip.c.upd}</span>
-            <span className="tk">Links to {tip.c.links.length} pages</span>
-          </div>
-        )}
-      </div>
-      <div className="cp-leg"><span><i className="cp-ok" />Checked by a person</span><span><i className="cp-obs" />Written from what agents saw</span><span><i className="cp-stale" />Stale</span><span><i className="cp-warn" />Unconfirmed</span><span><i className="cp-open" />Open question</span><span><i className="cp-now" />Updating now</span></div>
+      <p className="cp-sum">
+        <b>{GROWTH[day].toLocaleString()} pages</b>, written by six agents from Northwind’s Slack, Salesforce, Jira and meetings.{' '}
+        <span className="cp-k ok">{pct(TOTALS.ok, CORPUS_TOTAL)}% checked by a person</span> · <span className="cp-k stale">{TOTALS.stale} stale</span> · <span className="cp-k warn">{TOTALS.warn} unconfirmed</span>
+      </p>
+      <Growth upto={day} onDay={setHovDay} />
+
+      <ol className="tp">
+        {order.map((ai) => {
+          const a = AREAS[ai], t = TOPICS[ai], n = AREA_GROWTH[ai][shown], l = lives[ai], isOpen = open === ai
+          const seg = [['ok', t.ok], ['obs', t.obs], ['stale', t.stale], ['warn', t.warn + t.open]] as const
+          return (
+            <li key={a.name} className={'tp-i' + (isOpen ? ' open' : '')}>
+              <button className="tp-r" onClick={() => setOpen(isOpen ? null : ai)} aria-expanded={isOpen}>
+                <span className="tp-n"><b>{a.name}</b><small>{n.toLocaleString()} pages</small></span>
+                <span className="tp-bar" role="img" aria-label={`${pct(t.ok, t.n)}% checked by a person, ${t.stale} stale, ${t.warn + t.open} unconfirmed`} style={{ '--g': n / t.n } as React.CSSProperties}>
+                  {seg.map(([k, v]) => v > 0 && <i key={k} className={'tp-' + k} style={{ flexGrow: v }} />)}
+                </span>
+                <span className="tp-pc"><b>{pct(t.ok, t.n)}%</b><small>checked</small></span>
+                {l && !rep && <span className="tp-live" key={l.at}><Ag id={a.ag} /><span><span className="tp-v">{AREAS[ai].ag === 'approvals' && l.i === PAGES.findIndex((p) => p.main) ? 'rewrote' : l.v}</span> {PAGES[l.i].title} <small>· {ago(l.at)}</small></span></span>}
+                <span className="tp-chev" aria-hidden="true"><Icon name="chevron-down" size={16} /></span>
+              </button>
+              {isOpen && (
+                <ul className="tp-pages">
+                  {(ai === 0 ? [PAGES.findIndex((p) => p.main), ...t.recent.filter((i) => !PAGES[i].main).slice(0, 4)] : t.recent).map((i) => {
+                    const p = PAGES[i]
+                    return (
+                      <li key={i}>
+                        <button onClick={() => (p.main ? wr.current.go('page') : wr.current.openCell(i))}>
+                          <span className="tp-t">{p.title}</span>
+                          <span className={'tdone cp-t-' + p.tier}>{CT_LABEL[p.tier]}</span>
+                          <small>updated {p.upd} · links to {p.links.length} pages</small>
+                        </button>
+                      </li>
+                    )
+                  })}
+                  <li className="tp-more">and {(t.n - 5).toLocaleString()} more {a.name} pages, kept by the <Ag id={a.ag} name suffix=" agent" /></li>
+                </ul>
+              )}
+            </li>
+          )
+        })}
+      </ol>
     </section>
   )
 }

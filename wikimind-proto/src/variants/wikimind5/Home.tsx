@@ -115,7 +115,7 @@ export function Home() {
   const w = useW()
   return (
     <div className="page enter hm">
-      <header className="hm-mast">
+      <div className="hm-mast">
         <div>
           <div className="hm-date"><span className="tk">{DATE}</span><span className="tk"><Ago prefix="Edition updated" /></span></div>
           <h1>What the agents learned about Northwind today</h1>
@@ -123,7 +123,7 @@ export function Home() {
         <div className="hm-side">
           <button className="hm-tour press" onClick={w.startTour}><Icon name="play" size={14} />Take the 1-minute tour</button>
         </div>
-      </header>
+      </div>
       <QaSlot where="home" sec="home" />
       <Corpus />
       <div className="hm-top">
