@@ -614,3 +614,21 @@ body{font-size:15.5px}
 @media (max-width:900px){.om{padding:0 20px}}
 .om-sug{flex-wrap:nowrap;align-items:stretch}
 .om-bar,.om-sug,.om-ans,.om-sug button{box-sizing:border-box}
+/* Presence capsule: the writing agent's avatar grows into a pill in place; no full-width bar */
+.pres{display:none}
+.here{min-width:0}
+.cap{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px 0 5px;border:0;border-radius:999px;background:transparent;color:var(--ink2);font:400 13px var(--sans);cursor:default;max-width:520px;transition:background-color .35s var(--eo),box-shadow .35s var(--eo),padding .35s var(--eo);-webkit-tap-highlight-color:transparent}
+.here.live .cap{background:var(--panel);box-shadow:0 0 0 1px color-mix(in srgb,var(--agent) 35%,var(--line)),0 4px 16px color-mix(in srgb,var(--agent) 14%,transparent);cursor:pointer;color:var(--ink)}
+.here.live .here-a:not(.w){opacity:0;width:0;margin-left:0;overflow:hidden}
+.here-a{transition:opacity .3s ease,width .35s var(--eo),margin .35s var(--eo)}
+.here.live .here-a.w{box-shadow:none;transform:none}
+.here.live .here-a.w .ag-t{background:var(--agent);color:#fff;animation:capPulse 1.6s ease-in-out infinite}
+@keyframes capPulse{50%{box-shadow:0 0 0 5px var(--agentb)}}
+.cap-t{display:inline-flex;align-items:center;gap:5px;max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .45s var(--eo),opacity .3s ease .05s}
+.here.live .cap-t{max-width:420px;opacity:1}
+.cap-t b{font-weight:600;color:var(--ink)}
+.cap-t .ic{color:var(--agent);flex:none}
+@media (hover:hover) and (pointer:fine){.here.live .cap:hover{box-shadow:0 0 0 1px var(--agent),0 6px 20px color-mix(in srgb,var(--agent) 20%,transparent)}}
+@media (max-width:640px){.here.live .cap-t{max-width:170px}.cap-t{overflow:hidden;text-overflow:ellipsis}}
+@media (prefers-reduced-motion:reduce){.cap,.cap-t,.here-a{transition:none}.here.live .here-a.w .ag-t{animation:none}}
+@media (max-width:640px){.cap-t b:nth-of-type(2){display:none}.here.live .cap-t{max-width:150px}}

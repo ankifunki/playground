@@ -60,18 +60,15 @@ function Top() {
         <div className="crumb">
           {p ? <><button onClick={() => w.go('home')}>Northwind</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name}</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>Home</b>}
         </div>
-        <div className="here" title="Agents on this page now">
-          <span className="here-p">{here.map((id) => <span key={id} className={'here-a' + (w.presence?.ag === id ? ' w' : '')}><Ag id={id} size={24} /></span>)}</span>
-          <span className="here-t">{here.length === 1 ? '1 agent here' : `${here.length} agents here`}</span>
+        <div className={'here' + (pr ? ' live' : '')}>
+          <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} agent is writing ${pr.label}: watch it` : `${here.length} agents on this page`}>
+            <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}><Ag id={id} size={24} /></span>)}</span>
+            <span className="cap-t" aria-hidden={!pr}>{pr && <><b>{AG[pr.ag].name}</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={13} /></>}</span>
+            {!pr && <span className="here-t">{here.length === 1 ? '1 agent here' : `${here.length} agents here`}</span>}
+          </button>
         </div>
         <button className="ib top-act" onClick={() => w.setRail(!w.rail)} aria-label="Live activity" aria-pressed={w.rail}><Icon name="activity" size={16} /></button>
       </div>
-      {pr && (
-        <div className="pres" role="status">
-          <Ag id={pr.ag} size={18} /><span className="pres-t"><b>{AG[pr.ag].name} agent</b> is writing <b>{pr.label}</b>{w.page === 'home' && <> in {PAGES[pr.page].title}</>}</span>
-          <button className="wl" onClick={() => w.jump(pr.block)}>Watch it</button>
-        </div>
-      )}
     </div>
   )
 }
