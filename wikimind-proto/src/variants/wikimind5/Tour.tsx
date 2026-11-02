@@ -9,7 +9,7 @@ import { useW, type View, type W } from './store'
  */
 type Step = { v: View; sel: string; t: string; b: string; run?: (w: W) => void }
 const STEPS: Step[] = [
-  { v: 'home', sel: '#corpus', t: 'How much you can hand over', b: '64% of Northwind’s Salesforce admin work already runs on its own, up from 51% in September. The four questions are what moves it: being right clears work to run alone, and gaps hold the rest back. The agents built all of it themselves from Slack, tickets and six years of Salesforce changes.', run: (w) => w.replay() },
+  { v: 'home', sel: '#corpus', t: 'How much you can hand over', b: '64% of Northwind’s Salesforce admin work already runs on its own, up from 51% in September. The four questions are what moves it: being right clears work to run alone, and each gap says how much work waits on it. The rest stays with a person because Northwind’s policy says so. The agents built all of it themselves from Slack, tickets and six years of Salesforce changes.', run: (w) => w.replay() },
   { v: 'home', sel: '#lead', t: 'What changed, at a glance', b: 'Like a front page: the biggest change in Northwind’s Salesforce, written up by the agent that noticed it, with its sources.' },
   { v: 'page', sel: '#s-lead', t: 'Proof, not claims', b: 'With Evidence on, every sentence shows what it came from. Green was checked by Dana, a sysadmin. Amber is still unconfirmed.', run: (w) => w.setLens(true) },
   { v: 'page', sel: '#sim', t: 'Anyone can see how it works', b: 'Try a deal and watch its real route, step by step. The demo is generated from the rules on the page and the live Salesforce setup.', run: (w) => { w.setLens(false); w.tryDeal(240000, 28) } },

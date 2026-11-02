@@ -258,7 +258,7 @@ export const INVENTORY: { what: string; have: number; of: number | null; note?: 
   { what: 'Profiles and permission sets', have: 96, of: 96 },
   { what: 'Integrations', have: 14, of: 14 },
   { what: 'Written policies', have: 41, of: 41 },
-  { what: 'Unwritten practices', have: 47, of: null, note: 'No total exists. The agents keep finding more in Slack and meetings.' },
+  { what: 'Unwritten practices', have: 47, of: null, note: 'No total exists. The agents keep finding more in Slack and meetings. 12 are still being confirmed with the people who follow them.' },
 ]
 /** Is it right? Accuracy by spot check, the way auditors measure it, with every miss shown. */
 export const SPOT = { checks: 412, held: 406, by: 'Dana Ruiz', fixes: [
@@ -288,6 +288,8 @@ export const AUTO = {
   requests: 2980, undone: 3,
   /** Held back by knowledge, by the question that would release it. */
   gaps: { complete: 3, current: 3, unknown: 5 },
+  /** Unwritten practices found but not yet confirmed: the work that touches them waits. */
+  confirming: 12,
   /** Proven in shadow runs, waiting for a person to hand it over (a second approver signs off). */
   readyItems: [
     { ag: 'access' as AgentId, what: 'License seat requests', proof: '58 of 60 matched what a person did' },

@@ -12,8 +12,8 @@ type Seg = 'own' | 'ready' | 'complete' | 'current' | 'unknown' | 'person'
 const ORDER: Seg[] = ['own', 'ready', 'complete', 'current', 'unknown', 'person']
 /** What each part of the bar is, said where the reader is looking (on hover or tap), instead of in a legend. */
 const SAYS: Record<Seg, string> = {
-  own: 'runs on its own', ready: 'proven, needs your OK', complete: 'waits on unwritten practice being written up',
-  current: 'waits on out-of-date pages being re-checked', unknown: 'waits on open questions', person: 'stays with a person, by policy',
+  own: 'of the work runs on its own', ready: 'is proven and needs your OK', complete: `waits while ${AUTO.confirming} practices are confirmed`,
+  current: `waits while ${TOTALS.stale} out-of-date pages are re-checked`, unknown: 'waits on answers to open questions', person: 'stays with a person, by your policy',
 }
 
 /** Eases a number to its target: from zero on mount and whenever `from0` changes (the tour replays it). */
@@ -31,19 +31,6 @@ function useTween(to: number, from0: number) {
   return Math.round(v)
 }
 
-/** Weekly share running on its own since September, ending at today's value. 1.5px trend. */
-function Spark({ pts }: { pts: number[] }) {
-  const W = 120, H = 36, lo = 45, hi = 75
-  const xy = pts.map((p, i) => [(i / (pts.length - 1)) * (W - 6) + 3, H - 3 - ((p - lo) / (hi - lo)) * (H - 6)])
-  const [ex, ey] = xy[xy.length - 1]
-  return (
-    <svg className="kn-spark" viewBox={`0 0 ${W} ${H}`} width={W} height={H} aria-hidden="true">
-      <polyline points={xy.map((p) => p.join(',')).join(' ')} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={ex} cy={ey} r="3" fill="currentColor" />
-    </svg>
-  )
-}
-
 /**
  * The anchor of Home, in the CIO's terms: how much of Northwind's Salesforce admin work the agents are trusted to run
  * on their own, and what holds the rest back. One tick is 1% of last month's requests. The four questions below are
@@ -58,7 +45,7 @@ export function Corpus() {
   const [slack, setSlack] = useState(READS[0].n)
   const on = useRef(w.wireOn); on.current = w.wireOn
   const own = useTween(a.own, w.replayN)
-  const reach = 100 - a.person, cleared = a.own + a.ready
+  const cleared = a.own + a.ready
   // They are still reading.
   useEffect(() => {
     const t = window.setInterval(() => { if (on.current) setSlack((n) => n + 1 + Math.floor(Math.random() * 3)) }, 2200)
@@ -69,12 +56,11 @@ export function Corpus() {
   const lit = (s: Seg) => !hi || hi.includes(s)
   const hover = (h: Seg[] | null) => ({ onMouseEnter: () => setHi(h), onMouseLeave: () => setHi(null), onFocus: () => setHi(h), onBlur: () => setHi(null) })
   const toAsks = () => document.getElementById('asking-col')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
-  const trend = [...AUTO.trend.slice(0, -1), a.own]
   // The bar explains itself: point at a part to name it, tap it to see its proof.
   const segAt = (e: React.PointerEvent | React.MouseEvent) => {
     const r = bar.current!.getBoundingClientRect(), i = Math.max(0, Math.min(99, Math.floor(((e.clientX - r.left) / r.width) * 100)))
     const s = ticks[i], start = ticks.indexOf(s), mid = ((start + a[s] / 2) / 100) * r.width
-    return { s, x: Math.max(96, Math.min(r.width - 96, mid)) }
+    return { s, x: Math.max(150, Math.min(r.width - 150, mid)) }
   }
   const point = (e: React.PointerEvent) => { const t = segAt(e); setTip(t); setHi([t.s]) }
   const leave = () => { setTip(null); setHi(null) }
@@ -95,12 +81,11 @@ export function Corpus() {
               : a.ready > 0 && <> <button className="kn-ready" {...hover(['ready'])} onClick={(e) => w.openProof('ready', e.currentTarget)}>{a.ready}% more is ready to hand over</button></>}
           </small>
         </div>
-        <div className="kn-trend"><Spark pts={trend} /><span className="tk">Up from {AUTO.sept}% in September</span></div>
       </div>
 
       <div className="kn-meter">
-        <div className="kn-reach" style={{ left: reach + '%' }}>
-          <button className="tk" {...hover(['person'])} onClick={(e) => w.openProof('person', e.currentTarget)}>{reach}% is the most it can reach</button>
+        <div className="kn-pol" style={{ left: 100 - a.person + '%' }}>
+          <button {...hover(['person'])} onClick={(e) => w.openProof('person', e.currentTarget)}><b>{a.person}%</b> stays with a person, by your policy</button>
         </div>
         <div className="kn-bar" key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
           role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${a.complete + a.current + a.unknown}% is held back by gaps in what the agents know, ${a.person}% stays with a person by policy.`}>
@@ -114,28 +99,28 @@ export function Corpus() {
           <span className="tk">Is it complete?</span>
           <b>{AUTOS.have} of {AUTOS.of}</b>
           <span>automations in Salesforce explained, plus {PRACTICES.have} unwritten practices found so far</span>
-          <span className="kn-hold"><i data-s="complete" />Holds back {a.complete}%</span>
+          <span className="kn-hold"><i data-s="complete" /><span><b>{a.complete}%</b> of the work waits while {AUTO.confirming} practices are confirmed</span></span>
           <span className="kn-more">What’s covered</span>
         </button>
         <button {...hover(['own', 'ready'])} onClick={(e) => w.openProof('right', e.currentTarget)}>
           <span className="tk">Is it right?</span>
           <b>{SPOT.held} of {SPOT.checks}</b>
           <span>facts held up when {SPOT.by.split(' ')[0]} spot-checked them this month</span>
-          <span className="kn-hold"><i data-s="own" />Cleared {cleared}% to run alone</span>
+          <span className="kn-hold"><i data-s="own" /><span><b>{cleared}%</b> of the work is cleared to run alone</span></span>
           <span className="kn-more">The {SPOT.checks - SPOT.held} corrections</span>
         </button>
         <button {...hover(['current'])} onClick={(e) => w.openProof('current', e.currentTarget)}>
           <span className="tk">Is it current?</span>
           <b>Within a day</b>
-          <span>every page re-read against its sources, last one <Ago prefix="" />. {TOTALS.stale} look out of date</span>
-          <span className="kn-hold"><i data-s="current" />Holds back {a.current}%</span>
+          <span>every page re-read against its sources, last one <Ago prefix="" /></span>
+          <span className="kn-hold"><i data-s="current" /><span><b>{a.current}%</b> of the work waits while {TOTALS.stale} out-of-date pages are re-checked</span></span>
           <span className="kn-more">What’s flagged</span>
         </button>
         <button {...hover(['unknown'])} onClick={toAsks}>
           <span className="tk">What doesn’t it know?</span>
           <b>{w.asks} questions</b>
           <span>the agents are asking people right now, instead of guessing</span>
-          <span className="kn-hold"><i data-s="unknown" />Holds back {a.unknown}%</span>
+          <span className="kn-hold"><i data-s="unknown" /><span><b>{a.unknown}%</b> of the work waits on their answers</span></span>
           <span className="kn-more">Who they’re asking</span>
         </button>
       </div>

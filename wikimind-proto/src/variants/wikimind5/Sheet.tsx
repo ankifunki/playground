@@ -52,7 +52,7 @@ function Body({ p }: { p: Pop }) {
     if (p.k === 'person') return (
       <div className="pc">
         <div className="pk">Stays with a person</div>
-        <div className="pq">Northwind’s policy keeps these with a person however good the agents get, so {100 - AUTO.person}% is the most that can run on its own.</div>
+        <div className="pq">These stay with a person because Northwind’s policy says so, not because the agents can’t do them. Change the policy and they can run on their own too.</div>
         <ul className="pf-inv">{AUTO.byDesign.map((x) => <li key={x}><span>{x}</span><b>Policy</b></li>)}</ul>
         <div className="pnote">The agents still prepare each one and cite the rule. A person makes the call.</div>
         {close}
