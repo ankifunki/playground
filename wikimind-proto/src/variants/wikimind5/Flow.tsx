@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from './Icon'
 import { RM } from './logic'
 import { useW } from './store'
 
@@ -20,10 +21,10 @@ export function HowFlow() {
     return () => window.clearInterval(t)
   }, [seen])
   const steps = [
-    { t: 'Rep moves the deal', s: 'to Negotiation' },
-    { t: 'Agent checks and routes it', s: 'against the rules, in seconds' },
-    { t: 'People approve', s: `manager, + Finance over ${w.fin}%, CRO over 35%` },
-    { t: 'Record unlocks', s: 'the deal moves on' },
+    { t: 'Rep moves the deal', s: 'to Negotiation', ic: 'user' },
+    { t: 'Agent checks and routes it', s: 'against the rules, in seconds', ic: 'stamp' },
+    { t: 'People approve', s: `manager, + Finance over ${w.fin}%, CRO over 35%`, ic: 'user' },
+    { t: 'Record unlocks', s: 'the deal moves on', ic: 'lock-open' },
   ]
   const legs = ['', '4 s', '~3 h 40 m']
   return (
@@ -32,7 +33,7 @@ export function HowFlow() {
       <ol className="hf-flow" aria-label="How a discount approval works">
         {steps.map((st, i) => (
           <li key={st.t} className={'hf-s' + (at > i ? ' on' : '') + (i === 1 ? ' agent' : '')}>
-            <span className="hf-dot" aria-hidden="true" />
+            <span className="hf-dot" aria-hidden="true"><Icon name={st.ic} size={14} /></span>
             {i < legs.length && <span className={'hf-leg' + (at > i + 1 ? ' on' : '')} aria-hidden="true"><i />{legs[i] && <em className="tk">{legs[i]}</em>}</span>}
             <span className="hf-t"><b>{st.t}</b><small>{st.s}</small></span>
           </li>
