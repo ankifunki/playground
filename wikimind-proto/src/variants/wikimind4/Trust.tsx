@@ -114,35 +114,44 @@ export function TrustVectors() {
             <div className="tnext"><span className="tdone">License seats handed over</span><small><b className="agw">Access</b> · next: offboarding, after 8 clean runs</small></div>
           )}
         </div>
-        <div className="tv">
-          <div className="tk">Gaps and access</div>
-          <div className="tn"><b>{blocked}%</b></div>
-          <p>blocked by missing access or knowledge</p>
-          <GapPager items={[
-            { t: 'Okta sign-in logs, read', ag: 'Security', s: '4% of its work', act: btn(t.acc.okta, 'Grant', () => w.tvAcc('okta')) },
-            { t: 'NetSuite, write', ag: 'Finance ops', s: '2% of its work', act: btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite')) },
-            { t: 'Why flat renewals skip approval', ag: 'Approvals', s: w.learned ? 'Maria answered' : 'asked Maria Okafor', act: w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button> },
-          ]} />
-          <small className="tfoot">Close every gap: up to 81% on its own</small>
-        </div>
+        <GapsCard blocked={blocked} items={[
+          { t: 'Okta sign-in logs, read', ag: 'Security', s: '4% of its work', act: btn(t.acc.okta, 'Grant', () => w.tvAcc('okta')) },
+          { t: 'NetSuite, write', ag: 'Finance ops', s: '2% of its work', act: btn(t.acc.netsuite, 'Grant', () => w.tvAcc('netsuite')) },
+          { t: 'Why flat renewals skip approval', ag: 'Approvals', s: w.learned ? 'Maria answered' : 'asked Maria Okafor', act: w.learned ? <span className="tdone">Done</span> : <button className="tgl press" onClick={() => w.go('page', { sec: 'practice' })}>Follow</button> },
+        ]} />
       </div>
       <Agents />
     </section>
   )
 }
 
-/** One gap at a time, in the same row style as the other cards, with previous / next and "2 of 3". Keeps the three cards the same height. */
-function GapPager({ items }: { items: { t: string; ag: string; s: string; act: React.ReactNode }[] }) {
-  const [i, setI] = useState(0), n = items.length, x = items[i]
-  const go = (d: number) => setI((v) => (v + d + n) % n)
+/**
+ * Gaps and access: one gap at a time. The pager sits in the card header ("2 of 3" and two round buttons), the row
+ * slides in from the side you moved toward, and the row also answers to swipe and the arrow keys.
+ */
+type Gap = { t: string; ag: string; s: string; act: React.ReactNode }
+function GapsCard({ blocked, items }: { blocked: number; items: Gap[] }) {
+  const [i, setI] = useState(0), [dir, setDir] = useState(0), n = items.length, x = items[i]
+  const go = (d: number) => { setDir(d); setI((v) => (v + d + n) % n) }
+  const sx = useRef<number | null>(null)
   return (
-    <div className="tpg">
-      <div className="tvb" key={i}><span><b>{x.t}</b><small><b className="agw">{x.ag}</b> · {x.s}</small></span>{x.act}</div>
-      <div className="tpg-n">
-        <button className="ibtn sm" onClick={() => go(-1)} aria-label="Previous gap" title="Previous"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
-        <span className="tk" aria-live="polite">{i + 1} of {n}</span>
-        <button className="ibtn sm" onClick={() => go(1)} aria-label="Next gap" title="Next"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
+    <div className="tv">
+      <div className="tv-h">
+        <div className="tk">Gaps and access</div>
+        <div className="tpg-n" role="group" aria-label="Gaps">
+          <span className="tk" aria-live="polite">{i + 1} of {n}</span>
+          <button className="tpg-b press" onClick={() => go(-1)} aria-label="Previous gap" title="Previous"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+          <button className="tpg-b press" onClick={() => go(1)} aria-label="Next gap" title="Next"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
+        </div>
       </div>
+      <div className="tn"><b>{blocked}%</b></div>
+      <p>blocked by missing access or knowledge</p>
+      <div className="tpg" tabIndex={0} aria-roledescription="carousel" aria-label={`Gap ${i + 1} of ${n}: ${x.t}`}
+        onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); go(1) } else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) } }}
+        onPointerDown={(e) => { sx.current = e.clientX }} onPointerUp={(e) => { if (sx.current !== null && Math.abs(e.clientX - sx.current) > 40) go(e.clientX < sx.current ? 1 : -1); sx.current = null }}>
+        <div className={'tvb' + (dir > 0 ? ' fwd' : dir < 0 ? ' back' : '')} key={i}><span><b>{x.t}</b><small><b className="agw">{x.ag}</b> · {x.s}</small></span>{x.act}</div>
+      </div>
+      <small className="tfoot">Close every gap: up to 81% on its own</small>
     </div>
   )
 }

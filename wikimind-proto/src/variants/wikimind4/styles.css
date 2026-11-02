@@ -558,11 +558,23 @@ b,strong{font-weight:500}
 .agn,.agw{font-weight:500}
 .scale b,.box .scale b{font-weight:450}
 .obs .ok2{font-size:11px;font-weight:450;letter-spacing:.01em;margin-bottom:8px}
-/* The three trust cards share one height; the gaps card shows one gap at a time with previous / next. */
+/* The three trust cards share one height. Gaps and access shows one gap at a time: the pager lives in the card header,
+   the row slides in from the side you moved toward. */
 .tvs{align-items:stretch}
-.tpg{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.tpg .tvb{margin-top:0;animation:fade .25s var(--eo) both}
+.tv-h{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:28px}
+.tpg-n{display:inline-flex;align-items:center;gap:4px}
+.tpg-n .tk{margin-right:6px;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.tpg-b{width:28px;height:28px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink);cursor:pointer;transition:background-color .2s var(--eo),transform .16s var(--eo);-webkit-tap-highlight-color:transparent}
+.tpg-b:active{transform:scale(.94)}
+.tpg-b:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+@media (hover:hover) and (pointer:fine){.tpg-b:hover{background:var(--soft2)}}
+.tpg{margin-top:8px;outline:none;touch-action:pan-y;border-radius:14px}
+.tpg:focus-visible{box-shadow:0 0 0 2px var(--link)}
+.tpg .tvb{margin-top:0}
 .tpg .tvb>span{display:flex;flex-direction:column;min-width:0}
-.tpg-n{display:flex;align-items:center;gap:6px}
-.tpg-n .tk{min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
-@media (prefers-reduced-motion:reduce){.tpg .tvb{animation:none}}
+.tpg .tvb.fwd{animation:tpgFwd .28s var(--eo) both}
+.tpg .tvb.back{animation:tpgBack .28s var(--eo) both}
+@keyframes tpgFwd{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes tpgBack{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tpg .tvb.fwd,.tpg .tvb.back{animation:fade .2s both}}
+.tv-h{min-height:0;margin:-5px 0}
