@@ -34,13 +34,13 @@ export function useWidth(ref: React.RefObject<HTMLElement | null>) {
 }
 /**
  * The bars, as one SVG. Each is 3px wide and upright, placed on whole device pixels. Proven-and-waiting bars are filled
- * with crisp 1px horizontal rules every 3px, so they read as in progress.
+ * as one ink bar with 1px cutouts every 5px, so they read as not quite complete.
  */
 export function Bars({ ticks, W, h, lit }: { ticks: string[]; W: number; h: number; lit?: (s: never) => boolean }) {
   const id = 'h' + useId().replace(/[^a-z0-9]/gi, ''), N = ticks.length, step = W / Math.max(1, N), bw = 3, dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1
   return (
     <svg className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
-      <defs><pattern id={id} width="4" height="3" patternUnits="userSpaceOnUse"><rect className="kh-bg" width="4" height="3" /><rect className="kh-ln" y="1" width="4" height="1" /></pattern></defs>
+      <defs><pattern id={id} width="4" height="5" patternUnits="userSpaceOnUse"><rect className="kh-ln" width="4" height="4" /></pattern></defs>
       {W > 0 && ticks.map((s, i) => {
         const x = Math.round((i * step + (step - bw) / 2) * dpr) / dpr, cls = lit && !lit(s as never) ? 'dim' : undefined
         return <rect key={i} data-s={s} className={cls} x={x} y={0} width={bw} height={h} fill={s === 'ready' ? `url(#${id})` : undefined} style={{ animationDelay: Math.round((i / N) * 700) + 'ms' }} />
