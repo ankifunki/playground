@@ -17,7 +17,7 @@ export type QA = {
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
 export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'notyet'
-export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof }
+export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof } | { kind: 'pages' }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }
 export type Toast = { id: number; msg: string; act?: ToastAct; label?: string; qa?: string }
@@ -136,6 +136,8 @@ function useWikimindState() {
   const openPrev = (name: string, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'prev', name }) }
   /** A page from the corpus grid. */
   const openCell = (i: number) => { popFrom.current = null; setPop({ kind: 'page', i }) }
+  /** The whole corpus as one flat list: no folders, any page can link to any other. */
+  const openPages = (from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'pages' }) }
   /** The proof behind one of the four trust answers. */
   const openProof = (k: Proof, from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'proof', k }) }
 
@@ -144,6 +146,8 @@ function useWikimindState() {
     if (!wide()) return
     setBlame((b) => (b?.pinned ? b : ns && el ? { ns, el, pinned: false } : null))
   }
+  /** Provenance for a source, always in the drawer (used where there is no sentence to anchor a margin note, e.g. Markdown footnotes). */
+  const openBlame = (ns: number[], from?: HTMLElement) => { popFrom.current = from || null; setPop({ kind: 'blame', ns }) }
   const pinBlame = (ns: number[], el: HTMLElement) => {
     if (!wide()) { popFrom.current = el; setPop({ kind: 'blame', ns }); return }
     setBlame((b) => (b?.pinned && b.el === el ? null : { ns, el, pinned: true }))
@@ -358,7 +362,7 @@ function useWikimindState() {
     wire, wireOn, receipts, lens, fin, cfg, cfgAnim, tour, simReq, replayN, hand, handed, auto,
     newQs, qas, freshQa, files, text, listening, pop, blame, toast,
     setText, setLens, setTour,
-    go, openPrev, openCell, openProof, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
+    go, openPrev, openCell, openPages, openBlame, openProof, closePop, hoverBlame, pinBlame, clearBlame, showClaims, arrive, leaveArrival, tryDeal,
     learn, showRenewal, observeChange, showCfg, addLiveReceipt, toggleWire, replay, handOver, startTour, endTour,
     ask, commitAsk, undoAsk, notNow, closeQa, resolveNewest, showQa,
     send, addFiles, removeFile, toggleMic, showToast, hideToast, runToastAct,

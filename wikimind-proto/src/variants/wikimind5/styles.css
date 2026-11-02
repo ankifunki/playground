@@ -1234,13 +1234,105 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .hm-ver.wait{color:var(--warn)}
 .hm-lead .hm-k .ago{font:450 11px var(--mono);letter-spacing:.01em}
 
-/* The page's overall status: Home's anchor at page scale, read-only, sitting with the four questions between hairlines. */
-.pm{padding:20px 0 0;border-top:1px solid var(--hl);margin-top:8px}
-.pm-row{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:8px 24px;margin-top:6px}
-.pm-num{display:flex;align-items:baseline;gap:10px;margin:0}
-.pm-num b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.1;letter-spacing:-.015em}
-.pm-num span{font-size:14px;color:var(--ink2)}
-.pm-bar{height:28px;cursor:default;margin-bottom:4px}
-.pm-meta{margin:8px 0 0;font-size:13px;color:var(--ink2)}
-.pm+.tline{border-top:0;padding-top:16px;margin-top:4px}
-@media (max-width:640px){.pm-row{grid-template-columns:1fr}.pm-bar{height:24px}}
+
+/* ---- The page as a document (Spec 6.1) ----
+   Top line: All pages (no folders). Byline: who keeps it, who checked it, the Evidence lens and the Page / Markdown view.
+   One compact status strip in Home's order, then the long-form document: headings, subsections, and under each heading
+   a quiet evidence line (agents, sources, who checked it) that opens the provenance. */
+.crumb-all{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.bl-ctl{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+.pmode{display:inline-flex;background:var(--soft2);border-radius:999px;padding:3px}
+.pmode button{display:inline-flex;align-items:center;gap:6px;border:0;background:none;border-radius:999px;padding:4px 12px;font:500 13px var(--sans);color:var(--ink2);cursor:pointer;transition:background-color .2s var(--eo),color .2s var(--eo)}
+.pmode button.on{background:var(--panel);color:var(--ink);box-shadow:var(--sh)}
+.ps{border-top:1px solid var(--hl);border-bottom:1px solid var(--hl);padding:16px 0;margin:8px 0 32px;display:flex;flex-direction:column;gap:14px}
+.ps-top{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:center;gap:8px 24px}
+.ps-own{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.ps-own b{font-weight:500}
+.ps-own span{color:var(--ink2)}
+.ps-bar{height:20px;cursor:default}
+.ps-q{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 20px;margin:0}
+.ps-q>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ps-q dd{margin:0;font-size:13px;line-height:1.45;color:var(--ink2)}
+.ps-q dd b{font-weight:500;color:var(--ink)}
+.ps-q .wl{font-size:13px}
+.art-body h3{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.35;margin:32px 0 8px;letter-spacing:-.005em}
+.art-body h2+.sev+h3,.art-body .sev+h3{margin-top:20px}
+.sev{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:2px 0;margin:0 0 4px;font:400 13px var(--sans);color:var(--ink2);cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}
+.sev .pile{padding-left:2px}
+.sev.warn span{color:var(--warn)}
+@media (hover:hover) and (pointer:fine){.sev:hover span{color:var(--ink);text-decoration:underline;text-decoration-color:var(--hl);text-underline-offset:3px}}
+#s-lead>.sev{margin-bottom:12px}
+@media (max-width:640px){.ps-top{grid-template-columns:1fr}.ps-q{grid-template-columns:repeat(2,minmax(0,1fr))}.bl-ctl{margin-left:0}}
+/* Markdown view: the file the agents keep. */
+.md{margin-top:8px}
+.md-h{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--soft);border-radius:8px 8px 0 0}
+.md-b{margin:0;padding:16px;background:var(--panel);box-shadow:var(--sh);border-radius:0 0 8px 8px;font:450 13px/1.75 var(--mono);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;letter-spacing:-.01em}
+.md-ln.fm,.md-ln.fn{color:var(--ink2)}
+.md-ln.hd{font-weight:450;color:var(--ink)}
+.md-ln.cm,.md-c{color:var(--ink2);opacity:.75}
+.md-l,.md-f{border:0;background:none;padding:0;font:inherit;color:var(--link);cursor:pointer}
+.md-f{color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){.md-l:hover,.md-f:hover{text-decoration:underline;text-underline-offset:3px}}
+/* All pages: one flat list. */
+.ap-s{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:8px;padding:8px 12px;margin:8px 0 12px;color:var(--ink2)}
+.ap-s input{flex:1;border:0;background:none;font:400 14px var(--sans);color:var(--ink);outline:none;min-width:0}
+.ap-l{list-style:none;margin:0;padding:0}
+.ap-h{display:block;padding:14px 0 6px;border-bottom:1px solid var(--hl)}
+.ap-l button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;border:0;border-bottom:1px solid var(--hair);background:none;padding:10px 0;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.ap-t{font-size:14px;font-weight:500}
+.ap-m{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2)}
+.ap-none{padding:12px 0;font-size:14px;color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){.ap-l button:hover .ap-t{color:var(--link)}}
+.ps-top{grid-template-columns:1fr}
+.ps-bar{height:16px}
+.art-body h3+.obs{border-top:0;padding-top:0}
+.art-body .obs:last-of-type{border-bottom:0}
+
+/* ---- Ask bar: aligned to the text column; a pill while reading, the full composer when asked for ----
+   The pill is the same composer, shrunk: its input stays focusable, so clicking it or pressing / grows it back. */
+.dw{max-width:var(--dwid,720px);margin:0 auto;margin-left:var(--dl,auto);transition:max-width .3s var(--eo)}
+.composer{max-width:100%;margin:0 auto;transition:max-width .32s var(--eo),border-radius .32s var(--eo),padding .32s var(--eo)}
+.dmini{display:none;color:var(--ink2);padding-left:10px}
+#dock.mini .composer{max-width:230px;border-radius:999px;padding:3px;cursor:text}
+#dock.mini .dmini{display:inline-flex}
+#dock.mini .composer .cbtn,#dock.mini .composer .datt,#dock.mini .composer .wave{display:none}
+#dock.mini #cin{font-size:14px;padding:8px 10px}
+@media (prefers-reduced-motion:reduce){.composer,.dw{transition:none}}
+
+/* ---- Denser lines, three shapes ----
+   One line per 10 completed requests (20 on phones). Proven-and-waiting lines are angled, so the three states differ by
+   shape as well as tone: upright solid (runs on its own), angled (proven, needs your OK), upright grey (not yet). */
+.kn-bar i{width:1.5px;animation-delay:inherit}
+.kn-bar i[data-s="ready"]{background:color-mix(in srgb,var(--ink) 70%,transparent);transform:skewX(-28deg);animation-name:knTickA}
+@keyframes knTickA{from{transform:skewX(-28deg) scaleY(.3);opacity:0}to{transform:skewX(-28deg);opacity:1}}
+.kn-unit{margin:8px 0 0;font-size:13px;color:var(--ink2)}
+@media (max-width:640px){.kn-bar i{width:1.5px}}
+
+/* ---- Side panels with structure: header (kicker, stat, one sentence) / scrolling sections / footer pinned to the bottom ---- */
+.pc.panel{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.pn-h{padding:28px 28px 16px;flex:none}
+.pn-stat{display:flex;flex-direction:column;gap:2px;margin:10px 0 0}
+.pn-stat b{font-family:var(--serif);font-weight:400;font-size:var(--t-headline);line-height:1.1;letter-spacing:-.015em}
+.pn-stat span{font-size:14px;color:var(--ink2)}
+.pn-lede{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--ink)}
+.pn-b{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 28px 24px}
+.pn-s{margin-top:16px}
+.pn-sh{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--hl);position:sticky;top:0;background:var(--panel);z-index:1}
+.pn-f{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--hl);background:var(--panel)}
+.pn-fn{font-size:13px;color:var(--ink2);line-height:1.4}
+.pn-f .qbtn{flex:none}
+.pc.panel .px{top:20px;right:20px}
+.pc.panel .pk{padding-right:44px}
+.pn-b .pnote{margin:12px 0 4px}
+@media (max-width:899px){.pc.panel{max-height:min(80vh,680px)}.pn-h{padding:22px 20px 12px}.pn-b{padding:0 20px 20px}.pn-f{padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}}
+
+/* The lines as SVG: one stroke per 10 requests, whole-pixel rhythm. */
+.kn-bar{display:block}
+.kn-lines{display:block;overflow:visible}
+.kn-lines line{stroke-width:1;stroke:color-mix(in srgb,var(--ink) 18%,transparent);transform-box:fill-box;transform-origin:bottom;animation:knTick .5s var(--eo) backwards;transition:stroke .6s var(--eo),opacity .2s ease}
+.kn-lines line[data-s="own"]{stroke:var(--ink)}
+.kn-lines line[data-s="ready"]{stroke:var(--ink);stroke-width:1.25}
+.kn-lines line.dim{opacity:.18}
+.kn-bar.hl .kn-lines line:not(.dim):not([data-s="own"]):not([data-s="ready"]){stroke:color-mix(in srgb,var(--ink) 55%,transparent)}
+@media (prefers-reduced-motion:reduce){.kn-lines line{animation:none}}
+.kn-lines{width:100%;max-width:100%}.ps-top{grid-template-columns:minmax(0,1fr)}

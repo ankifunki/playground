@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AUTO, CORPUS_TOTAL, INVENTORY, READS, SPOT } from './data'
 import { Icon } from './Icon'
 import { RM } from './logic'
@@ -15,6 +15,38 @@ const NOTYET: Seg[] = ['complete', 'current', 'unknown', 'shadow']
 const stateOf = (s: Seg): State => (s === 'own' || s === 'ready' ? s : 'notyet')
 const MEMBERS: Record<State, Seg[]> = { own: ['own'], ready: ['ready'], notyet: NOTYET }
 const SAYS: Record<State, string> = { own: 'runs on its own', ready: 'is proven and needs your OK', notyet: 'not yet' }
+
+/**
+ * The lines, drawn as one SVG so they sit on whole pixels and keep an even rhythm at any density.
+ * Upright and crisp for runs-on-its-own and not-yet; true diagonals for proven-and-waiting.
+ */
+export function Lines({ ticks, lit, h }: { ticks: string[]; lit?: (s: never) => boolean; h: number }) {
+  const ref = useRef<SVGSVGElement>(null), [W, setW] = useState(0)
+  useLayoutEffect(() => {
+    const el = ref.current?.parentElement; if (!el) return
+    const set = () => setW(Math.floor(el.clientWidth)); set()
+    const ro = new ResizeObserver(set); ro.observe(el); return () => ro.disconnect()
+  }, [])
+  const N = ticks.length, step = W / N, sk = Math.min(10, h * 0.3)
+  return (
+    <svg ref={ref} className="kn-lines" width={W || undefined} height={h} viewBox={`0 0 ${W || 1} ${h}`} aria-hidden="true">
+      {W > 0 && ticks.map((s, i) => {
+        const x = Math.round(i * step + step / 2) + 0.5, cls = lit && !lit(s as never) ? 'dim' : undefined, d = { animationDelay: Math.round((i / N) * 700) + 'ms' }
+        return s === 'ready'
+          ? <line key={i} data-s={s} className={cls} x1={x + sk / 2} y1={0} x2={x - sk / 2} y2={h} style={d} />
+          : <line key={i} data-s={s} className={cls} x1={x} y1={0} x2={x} y2={h} shapeRendering="crispEdges" style={d} />
+      })}
+    </svg>
+  )
+}
+
+/** Requests per line: 10, or 25 on narrow screens so the lines stay distinct. */
+function useUnit() {
+  const q = () => (typeof matchMedia !== 'undefined' && matchMedia('(max-width: 640px)').matches ? 25 : 10)
+  const [u, setU] = useState(q)
+  useEffect(() => { const m = matchMedia('(max-width: 640px)'), f = () => setU(q()); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
+  return u
+}
 
 /** Eases a number to its target: from zero on mount and whenever `from0` changes (the tour replays it). */
 function useTween(to: number, from0: number) {
@@ -45,14 +77,16 @@ export function Corpus() {
   const own = useTween(a.own, w.replayN)
   const share: Record<State, number> = { own: a.own, ready: a.ready, notyet: a.complete + a.current + a.unknown + a.shadow }
 
-  const ticks = ORDER.flatMap((s) => Array.from({ length: a[s] }, () => s))
+  // One line per 10 completed requests from the last 30 days (20 on phones, so lines never merge). Shares stay in %.
+  const unit = useUnit(), lines = (pct: number) => Math.round((pct * AUTO.requests) / 100 / unit)
+  const ticks = ORDER.flatMap((s) => Array.from({ length: lines(a[s]) }, () => s)), N = ticks.length
   const lit = (s: Seg) => !hi || hi.includes(s)
   const hover = (h: Seg[] | null) => ({ onMouseEnter: () => setHi(h), onMouseLeave: () => setHi(null), onFocus: () => setHi(h), onBlur: () => setHi(null) })
   const toAsks = () => document.getElementById('asking-col')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
   // Point at a part to name it, tap it to open what's behind it.
   const segAt = (e: React.PointerEvent | React.MouseEvent) => {
-    const r = bar.current!.getBoundingClientRect(), i = Math.max(0, Math.min(99, Math.floor(((e.clientX - r.left) / r.width) * 100)))
-    const s = stateOf(ticks[i]), start = ticks.findIndex((t) => stateOf(t) === s), mid = ((start + share[s] / 2) / 100) * r.width
+    const r = bar.current!.getBoundingClientRect(), i = Math.max(0, Math.min(N - 1, Math.floor(((e.clientX - r.left) / r.width) * N)))
+    const s = stateOf(ticks[i]), start = ticks.findIndex((t) => stateOf(t) === s), count = ticks.filter((t) => stateOf(t) === s).length, mid = ((start + count / 2) / N) * r.width
     return { s, x: Math.max(120, Math.min(r.width - 120, mid)) }
   }
   const point = (e: React.PointerEvent) => { const t = segAt(e); setTip(t); setHi(MEMBERS[t.s]) }
@@ -81,9 +115,10 @@ export function Corpus() {
         </div>
         <div className={'kn-bar' + (hi ? ' hl' : '')} key={w.replayN} ref={bar} onPointerMove={point} onPointerDown={point} onPointerLeave={leave} onClick={open}
           role="img" aria-label={`${a.own}% runs on its own, ${a.ready}% is proven and needs your OK, ${share.notyet}% not yet.`}>
-          {ticks.map((s, i) => <i key={i} data-s={s} className={lit(s) ? '' : 'dim'} style={{ '--i': i } as React.CSSProperties} />)}
+          <Lines ticks={ticks} lit={lit} h={40} />
         </div>
-        {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{share[tip.s]}%</b> {SAYS[tip.s]}</div>}
+        {tip && <div className="kn-tip" style={{ left: tip.x }} aria-hidden="true"><b>{share[tip.s]}%</b> {SAYS[tip.s]} · {fmt((share[tip.s] * AUTO.requests) / 100)} requests</div>}
+        <p className="kn-unit">Each line is {unit} of the {fmt(AUTO.requests)} requests completed in the last 30 days.</p>
       </div>
 
       <div className="kn-q">
@@ -127,27 +162,5 @@ export function Built() {
       <span className="kn-pile" aria-hidden="true">{READS.map((r) => <span key={r.what} className="pt"><Icon name={r.icon} size={12} /></span>)}</span>
       <span>Built by 6 agents from {fmt(slack)} Slack messages, {fmt(READS[1].n)} tickets, six years of Salesforce changes, {READS[3].n} meetings and {READS[4].n} documents: {fmt(CORPUS_TOTAL)} pages, none typed by a person.</span>
     </p>
-  )
-}
-
-/**
- * The same anchor as Home, at page scale: how much of this page's job runs on its own. Read-only: three looks, three
- * statuses, all named in the line under it. Maria's answer moves flat renewals (3%) from not yet to proven.
- */
-export function PageMeter() {
-  const w = useW(), P = AUTO.page
-  const ready = w.learned ? 3 : 0, own = P.own, notyet = 100 - own - ready
-  const ticks: string[] = [...Array(own).fill('own'), ...Array(ready).fill('ready'), ...Array(notyet).fill('shadow')]
-  return (
-    <div className="pm" aria-label="How much of this job runs on its own">
-      <span className="tk">Trusted to run on its own</span>
-      <div className="pm-row">
-        <p className="pm-num"><b>{own}%</b><span>of {P.job}</span></p>
-        <div className="kn-bar pm-bar" role="img" aria-label={`${own}% runs on its own${ready ? `, ${ready}% is proven and needs your OK` : ''}, ${notyet}% not yet.`}>
-          {ticks.map((s, i) => <i key={i} data-s={s} style={{ '--i': i } as React.CSSProperties} />)}
-        </div>
-      </div>
-      <p className="pm-meta">A person undid {P.undone} of the last {P.ran} the Approvals agent ran alone.{ready ? ` ${ready}% more is proven and needs your OK.` : ''} {notyet}% not yet.</p>
-    </div>
   )
 }

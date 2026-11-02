@@ -1,11 +1,12 @@
-import { PageMeter } from './Corpus'
 import { useEffect, useRef, useState } from 'react'
 import { QaSlot } from './Answer'
 import { Ag, AgentPile, type AgentId } from './agents'
 import { C, Margin, Pile } from './Claim'
-import { ARRIVAL, REFS, tierOf, type Mark } from './data'
+import { ARRIVAL, AUTO, REFS, tierOf, type Mark } from './data'
 import { Icon, type IconName } from './Icon'
 import { RM } from './logic'
+import { Lines } from './Corpus'
+import { MarkdownView } from './Markdown'
 import { Sim } from './Sim'
 import { useW } from './store'
 
@@ -13,7 +14,7 @@ const OLD_RENEWAL = 'Renewals with no price change skip approval, even over $100
 const SEEN_ONCE: Mark = { t: 'Seen once', tone: 'warn' }
 const CHANGED: Mark = { t: 'Changed Oct 28', tone: 'info' }
 
-const NAV: [string, string, IconName][] = [['lead', 'Summary', 'text'], ['try', 'Try a deal', 'play'], ['rules', 'The rules', 'shield-check'], ['practice', 'In practice', 'eye'], ['config', 'Configured', 'sliders'], ['used', 'Cited by agents', 'receipt']]
+const NAV: [string, string, IconName][] = [['lead', 'Summary', 'text'], ['try', 'How it works', 'play'], ['rules', 'The rules', 'shield-check'], ['practice', 'In practice', 'eye'], ['config', 'Configured', 'sliders'], ['used', 'Cited by agents', 'receipt']]
 const goSec = (id: string) => document.getElementById('s-' + id)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })
 
 /** Section nav with icons. A rail beside the page on wide screens, a sticky row of chips otherwise. */
@@ -94,16 +95,40 @@ function Arrival() {
  * How far to trust this page, as the brief's four questions: checked by a person? complete? current? relied on?
  * Gaps and stale content are named, so "complete" and "current" are claims you can check.
  */
-function TrustLine({ sents }: { sents: number[][] }) {
+/**
+ * The page's status, compact, in the same order as Home: how much of this job runs on its own, then the four questions.
+ * One strip under the byline, so the page reads as a document first.
+ */
+function PageStatus({ sents }: { sents: number[][] }) {
   const w = useW(), tiers = sents.map((ns) => tierOf(ns, w.cfg === 'changed')), checked = tiers.filter((t) => t === 'ok').length
   const gaps = w.learned ? ['EMEA routing'] : ['EMEA routing', 'flat renewals']
+  const P = AUTO.page, ready = w.learned ? 3 : 0, notyet = 100 - P.own - ready
+  // Same scale as Home: one line per 10 requests (this job: the Approvals agent's last 30 days).
+  const total = Math.round(P.ran / (P.own / 100)), L = (pct: number) => Math.round((pct * total) / 100 / 10)
+  const ticks: string[] = [...Array(L(P.own)).fill('own'), ...Array(L(ready)).fill('ready'), ...Array(L(notyet)).fill('shadow')]
   return (
-    <div className="tline" aria-label="How far to trust this page">
-      <div><span className="tk">Is it complete?</span><span className="kn-st"><b>5 of 5</b><span>automations explained. {gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}: <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.join(', ')}</button></span></span></div>
-      <div><span className="tk">Is it right?</span><span className="kn-st"><b>{checked} of {checked}</b><span>sentences held up when Dana spot-checked them</span></span></div>
-      <div><span className="tk">Is it current?</span><span className="kn-st"><b><Ago bare /></b><span>last re-read. 1 sentence is out of date: <button className="wl" onClick={() => w.showClaims([17])}>a flow that stopped firing</button></span></span></div>
-      <div><span className="tk">Is it used?</span><span className="kn-st"><b>{214 + (w.receipts.some((r) => r.id === 'r0') ? 1 : 0)}</b><span>times agents cited it this month</span></span></div>
+    <div className="ps" aria-label="How far to trust this page">
+      <div className="ps-top">
+        <p className="ps-own"><b>{P.own}%</b> of {P.job} run on their own<span>. A person undid {P.undone} of the last {P.ran}.{ready ? ` ${ready}% more is proven and needs your OK.` : ''}</span></p>
+        <div className="kn-bar ps-bar" role="img" aria-label={`${P.own}% runs on its own${ready ? `, ${ready}% proven and needs your OK` : ''}, ${notyet}% not yet.`}><Lines ticks={ticks} h={16} /></div>
+      </div>
+      <dl className="ps-q">
+        <div><dt className="tk">Is it complete?</dt><dd><b>5 of 5</b> automations. <button className="wl" onClick={() => w.go('page', { sec: w.learned ? 'lead' : 'practice' })}>{gaps.length} open {gaps.length === 1 ? 'question' : 'questions'}</button></dd></div>
+        <div><dt className="tk">Is it right?</dt><dd><b>{checked} of {checked}</b> checks held up</dd></div>
+        <div><dt className="tk">Is it current?</dt><dd>Re-read <b><Ago bare /></b>. <button className="wl" onClick={() => w.showClaims([17])}>1 out of date</button></dd></div>
+        <div><dt className="tk">Is it used?</dt><dd>Cited <b>{214 + (w.receipts.some((x) => x.id === 'r0') ? 1 : 0)}</b> times this month</dd></div>
+      </dl>
     </div>
+  )
+}
+
+/** Evidence for a section, visible without asking: who wrote it, from how many sources, and who checked it. Opens the provenance. */
+function SecEv({ ns, ags = ['approvals'], children, tone }: { ns: number[]; ags?: AgentId[]; children: React.ReactNode; tone?: 'warn' }) {
+  const w = useW(), n = new Set(ns).size
+  return (
+    <button className={'sev' + (tone ? ' ' + tone : '')} onClick={(e) => w.openBlame([...new Set(ns)], e.currentTarget)}>
+      <AgentPile ids={ags} size={20} /><Pile ns={[...new Set(ns)]} max={4} /><span>{n} sources · {children}</span>
+    </button>
   )
 }
 
@@ -152,7 +177,7 @@ function Receipts() {
 }
 
 export function Job() {
-  const w = useW(), finNs = w.fin === 20 ? [13] : [15]
+  const w = useW(), [md, setMd] = useState(false), finNs = w.fin === 20 ? [13] : [15]
   const cfgMark: Mark | undefined = w.cfg === 'changed' ? { t: 'Changed just now · re-checking', tone: 'warn' } : w.cfg === 'verified' ? { t: 'Changed just now', tone: 'ok' } : undefined
   const sents = [[1], [2], [3, ...finNs], [4], [5], finNs, [3, 12], [6], [7], [8], [16], [9, 10], w.learned ? [11, 14] : [11], [17]]
   // Live events while you read: an agent cites this page; Salesforce changes; Maria answers. Presenter keys do the same (C, L).
@@ -170,58 +195,74 @@ export function Job() {
       <div className="doc">
         <PageNav kind="rail" />
         <article className={'art-body' + (w.lens ? ' lens' : '')}>
-          <div className="crumb"><span className="tk">Sales Cloud · Opportunity · Process</span></div>
+          <div className="crumb"><button className="wl crumb-all" onClick={(e) => w.openPages(e.currentTarget)}><Icon name="library" size={14} />All pages</button></div>
           <h1 className="t">Discount approvals</h1>
           <div className="byline">
             <span className="agline">Kept by <Ag id="approvals" name /></span>
             <span className="agline">Verified by <L to="Dana Ruiz" /></span>
-            <button className={'lensbtn' + (w.lens ? ' on' : '')} aria-pressed={w.lens} onClick={() => w.setLens(!w.lens)}><Icon name="scan-eye" size={16} />Evidence</button>
+            <span className="bl-ctl">
+              {!md && <button className={'lensbtn' + (w.lens ? ' on' : '')} aria-pressed={w.lens} onClick={() => w.setLens(!w.lens)}><Icon name="scan-eye" size={16} />Evidence</button>}
+              <span className="pmode" role="group" aria-label="View">
+                <button aria-pressed={!md} className={!md ? 'on' : ''} onClick={() => setMd(false)}>Page</button>
+                <button aria-pressed={md} className={md ? 'on' : ''} onClick={() => { setMd(true); w.setLens(false) }}><Icon name="code" size={14} />Markdown</button>
+              </span>
+            </span>
           </div>
-          {w.lens && (
+          {w.lens && !md && (
             <div className="lzleg" aria-label="Evidence key">
               <span><i className="lg-ok" />Checked by a person</span><span><i className="lg-obs" />Written from what agents saw</span><span><i className="lg-warn" />Unconfirmed or unofficial</span><span><i className="lg-stale" />Stale</span>{w.cfg === 'changed' && <span><i className="lg-pend" />Being re-checked</span>}
             </div>
           )}
-          <PageMeter />
-          <TrustLine sents={sents} />
+          <PageStatus sents={sents} />
+          {md ? <MarkdownView /> : <>
           <PageNav kind="chips" />
           <Arrival />
           <section id="s-lead">
+            <SecEv ns={[1, 2, 3, 4, 5, ...finNs]}>checked by Dana Ruiz</SecEv>
             <p><C ns={[1]}><b>Discount approval</b> is how Northwind reviews big deals before they move to Negotiation.</C> <C ns={[2]}>Any deal over $100,000 needs approval,</C> <C ns={[3, ...finNs]}>and who approves depends on the discount, under the <L to="Discount policy" />.</C> <C ns={[4]} mark={SEEN_ONCE} cls="uns">EMEA deals reportedly go to the regional director first.</C> <C ns={[5]}>Most approvals finish in under four hours.</C></p>
             <QaSlot where="page" sec="lead" />
           </section>
           <section id="s-try">
-            <h2>Try a deal</h2>
+            <h2>How it works</h2>
             <Sim />
           </section>
           <section id="s-rules">
             <h2>The rules</h2>
+            {w.cfg === 'changed' ? <SecEv ns={[...finNs, 3, 12, 6, 7, 8, 16]} tone="warn">Dana is re-checking a change from just now</SecEv> : <SecEv ns={[...finNs, 3, 12, 6, 7, 8, 16]}>checked by Dana Ruiz</SecEv>}
+            <h3>Who approves</h3>
             <p>
               <C ns={finNs} mark={cfgMark} id="cfg-sentence">Discounts over {w.cfgAnim ? <><s className="oldv">20%</s> <span className="newv">25%</span></> : w.fin + '%'} add Finance as a second approver.</C>{' '}
               <C ns={[3, 12]} mark={CHANGED}>Over 35%, the CRO approves directly.</C>
             </p>
+            <h3>When a request expires</h3>
             <p><C ns={[6]}>An approval request expires after 14 days, and the rep has to submit it again.</C> <C ns={[7]}>The rule exists because two deals closed on six-week-old prices in 2024.</C></p>
+            <h3>After approval</h3>
             <p><C ns={[8]}>Once a deal is approved, only <L to="Deal Desk" /> can change its amount.</C> <C ns={[16]}>Discounts over 10% need a written reason.</C></p>
             <QaSlot where="page" sec="rules" />
           </section>
           <section id="s-practice">
             <h2>In practice</h2>
+            {w.learned ? <SecEv ns={[9, 10, 11, 14]}>one confirmed by Maria Okafor, one unofficial</SecEv> : <SecEv ns={[9, 10, 11]} tone="warn">not confirmed yet</SecEv>}
+            <h3>Quarter-end approvals in Slack</h3>
             <div className="obs">
               <p><C ns={[9, 10]} mark={{ t: 'Unofficial', tone: 'warn' }}>At <L to="Quarter-end close">quarter end</L>, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward.</C></p>
               <Dots on={9} off={3} />
               <div className="dl">9 of the last 12 quarter ends</div>
             </div>
+            <h3>Flat renewals</h3>
             <Renewal />
             <QaSlot where="page" sec="practice" />
           </section>
           <section id="s-config">
             <h2>How it’s configured</h2>
+            <SecEv ns={[2, ...finNs, 16, 8, 17, 18]} ags={['approvals', 'finance', 'integrations']}>read from Salesforce</SecEv>
             <Config />
           </section>
           <section id="s-used">
             <h2>Cited by the agents</h2>
             <Receipts />
           </section>
+          </>}
           <div className="colophon">
             <span className="colag"><AgentPile ids={['approvals', 'finance', 'integrations']} size={22} />3 agents</span>
             <Pile ns={[...Object.keys(REFS).map(Number), ...(w.learned ? [14] : []), ...(w.cfg !== 'idle' ? [15] : [])]} />
