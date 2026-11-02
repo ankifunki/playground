@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef } from 'react'
 import { Ag, agentFor } from './agents'
 import { Pile, Prov } from './Claim'
@@ -49,16 +50,29 @@ function Body({ p }: { p: Pop }) {
         </div>
       )
     }
-    if (p.k === 'shadow') return (
-      <div className="pc">
-        <div className="pk">Still done by people, for now</div>
-        <div className="pq">The hardest work. The agents prepare each one and compare it with what the person decided. When their record is strong enough, it moves to proven and you can hand it over.</div>
-        <ul className="pf-fix pf-ready">{AUTO.shadowing.map((x) => (
-          <li key={x.what}><div className="pf-h"><Ag id={x.ag} name /><span className="tk">{x.n}% of the work</span></div><b>{x.what}</b><span>{x.record}</span></li>
-        ))}</ul>
-        {close}
-      </div>
-    )
+    if (p.k === 'notyet') {
+      // Everything grey on the bar, with its reason. Two kinds: the agents are missing something, or they are still earning it.
+      const a = w.auto, gaps = a.complete + a.current + a.unknown
+      const go = (k: 'complete' | 'current', e: React.MouseEvent<HTMLButtonElement>) => w.openProof(k, e.currentTarget)
+      return (
+        <div className="pc">
+          <div className="pk">Not yet · {gaps + a.shadow}% of the work</div>
+          <div className="pq">Still done by people, for one of two reasons: the agents are missing something, or they are still earning it.</div>
+          <div className="pf-sec"><span className="tk">Missing something</span><span className="tk">{gaps}%</span></div>
+          <ul className="pf-inv">
+            <li><span>Waits while {AUTO.confirming} unwritten practices are confirmed <button className="wl" onClick={(e) => go('complete', e)}>See them</button></span><b>{a.complete}%</b></li>
+            <li><span>Waits while {TOTALS.stale} out-of-date pages are re-checked <button className="wl" onClick={(e) => go('current', e)}>See them</button></span><b>{a.current}%</b></li>
+            <li><span>Waits on answers to {w.asks} open questions <button className="wl" onClick={() => { w.closePop(); document.getElementById('asking-col')?.scrollIntoView({ block: 'center' }) }}>See who</button></span><b>{a.unknown}%</b></li>
+          </ul>
+          <div className="pf-sec"><span className="tk">Still earning it</span><span className="tk">{a.shadow}%</span></div>
+          <div className="pnote">The agents prepare each one and compare it with what the person decided. When their record is strong enough, it moves to proven and you can hand it over.</div>
+          <ul className="pf-fix pf-ready">{AUTO.shadowing.map((x) => (
+            <li key={x.what}><div className="pf-h"><Ag id={x.ag} name /><span className="tk">{x.n}% of the work</span></div><b>{x.what}</b><span>{x.record}</span></li>
+          ))}</ul>
+          {close}
+        </div>
+      )
+    }
     return (
       <div className="pc">
         <div className="pk">Is it current?</div>

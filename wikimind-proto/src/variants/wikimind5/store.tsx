@@ -16,7 +16,7 @@ export type QA = {
   t?: string; n?: number[]; note?: string; src?: 'local' | 'asoka'; pending?: boolean
   unknown?: boolean; cand?: Cand; qid?: string; qs?: QState; reply?: { who: string; ans: string }
 }
-export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'shadow'
+export type Proof = 'complete' | 'right' | 'current' | 'ready' | 'notyet'
 export type Pop = { kind: 'blame'; ns: number[] } | { kind: 'prev'; name: string } | { kind: 'page'; i: number } | { kind: 'proof'; k: Proof }
 /** The sentence whose provenance is showing in the margin. Pinned by a click, transient on hover. */
 export type Blame = { ns: number[]; el: HTMLElement; pinned: boolean }

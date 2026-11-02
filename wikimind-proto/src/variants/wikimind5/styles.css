@@ -1058,8 +1058,6 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 @media (prefers-reduced-motion:reduce){.kn-bar i{animation:none}}
 
 /* Stat cards: the question, a serif stat with one line of body text, an action. */
-.kn-togo{position:absolute;top:0;right:0}
-.kn-togo .tk{color:var(--ink2)}
 .kn-q button{gap:10px;padding:18px 18px 16px}
 .kn-st{display:flex;flex-direction:column;gap:2px}
 .kn-st b{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.15;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -1179,3 +1177,14 @@ span.tour-spot{outline-offset:4px;border-radius:4px}
 .kn-st b .ago{font:inherit;color:inherit}
 @media (max-width:640px){.sim-seg button{font-size:13px}}
 .ago .pdot,.hm-date .ago .pdot,.tdone .pdot,.dchip .pdot,.dchip.news .pdot{width:2px;height:12px;margin:0}
+
+/* The grey part names itself: a bracket over it, "30% not yet". Three looks, three statuses, all named without hovering. */
+.kn-ny{position:absolute;top:22px;right:0;height:8px;border:1px solid var(--hl);border-bottom:0;border-radius:2px 2px 0 0;transition:left .6s var(--eo)}
+.kn-ny button{position:absolute;right:0;bottom:calc(100% + 6px);white-space:nowrap;border:0;background:none;padding:0;cursor:pointer;font-size:13px;color:var(--ink2);text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .2s ease,color .2s ease}
+.kn-ny b{font-weight:500;color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.kn-ny button:hover{color:var(--ink);text-decoration-color:var(--hl)}}
+.kn-meter{padding-top:40px}
+.pf-sec{display:flex;justify-content:space-between;align-items:center;margin:20px 0 4px;padding-bottom:8px;border-bottom:1px solid var(--hl)}
+.pf-inv li .wl{margin-left:6px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.kn-ny{transition:none}}
+.pc .pnote{font-size:14px;line-height:1.5;color:var(--ink2);margin:8px 0 4px}
