@@ -175,7 +175,7 @@ function Home() {
           <h2>Discount approvals</h2>
           <p>Deals over $100,000 need approval before Negotiation. The discount decides who approves.</p>
           <span className="focus-by"><Ag id="approvals" name size={20} /><span>5 of 8 verified · rewritten Oct 28</span></span>
-          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal</span><Icon name="arrow-right" size={16} /></button>
+          <button className="btn soft focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal</span><Icon name="arrow-right" size={16} /></button>
         </section>
       </div>
       <section className="home-card">

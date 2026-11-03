@@ -69,7 +69,7 @@ export function Approvals() {
       <PathBar label={false} />
 
       <Block id="sum" cls="lede">
-        <p>Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</p>
+        <p><span className="lt">Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</span></p>
       </Block>
 
       <h2>How it works</h2>
@@ -80,11 +80,11 @@ export function Approvals() {
       <h2>Who approves</h2>
       <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves alone.`} /></li></ul></Block>
       <Block id="who-fin"><ul><li><LiveText id="who-fin" text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
-      <Block id="who-cro"><ul><li>Over 35%: the CRO approves directly.</li></ul></Block>
+      <Block id="who-cro"><ul><li><span className="lt">Over 35%: the CRO approves directly.</span></li></ul></Block>
 
       <h2>Rules</h2>
-      <Toggle id="r-exp" title="When a request expires"><p>Requests expire after 14 days, and the rep resubmits. Added in 2024, after two deals closed on six-week-old prices.</p></Toggle>
-      <Toggle id="r-after" title="After approval"><p>Once a deal is approved, only Deal Desk can change its amount. Discounts over 10% need a written reason.</p></Toggle>
+      <Toggle id="r-exp" title="When a request expires"><p><span className="lt">Requests expire after 14 days, and the rep resubmits. Added in 2024, after two deals closed on six-week-old prices.</span></p></Toggle>
+      <Toggle id="r-after" title="After approval"><p><span className="lt">Once a deal is approved, only Deal Desk can change its amount. Discounts over 10% need a written reason.</span></p></Toggle>
 
       <h2>In practice</h2>
       <h3>Quarter-end approvals in Slack</h3>

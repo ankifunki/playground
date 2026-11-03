@@ -270,7 +270,6 @@ button{font:inherit;color:inherit}
 @media (max-width:640px){.cap-t b:nth-of-type(2){display:none}.here.live .cap-t{max-width:150px}}
 .blk.editing,.blk.traced{background:none;box-shadow:none}
 .blk.editing .blk-c .lt{-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 58%,color-mix(in srgb,var(--agent) 16%,transparent) 58%);background-repeat:no-repeat}
-.blk.traced .blk-c .lt,.blk.traced .blk-c p{-webkit-box-decoration-break:clone;box-decoration-break:clone;background:linear-gradient(transparent 60%,color-mix(in srgb,var(--agent) 12%,transparent) 60%)}
 .cursor{top:-16px;left:6px;height:20px;padding:0 var(--s8) 0 var(--s4);gap:var(--s4);border-radius:1000px;background:var(--panel);box-shadow:0 2px 2px rgba(28,25,23,.06),0 4px 12px rgba(28,25,23,.08)}
 .cursor .ag-t{background:var(--agentb);color:var(--agent);border-radius:50%}
 .cursor-dots{display:inline-flex;gap:var(--s2);margin-left:var(--s2)}
@@ -813,8 +812,16 @@ input{font:inherit}
 /* Trace target: any content with a trace opens it on click. Hover, focus and an open trace show the highlighter, instantly. */
 .blk.trc>.blk-c,.blk.tbl.trc tbody tr{cursor:pointer;outline:none}
 .blk.trc>.blk-c:focus-visible,tr.trc:focus-visible{box-shadow:0 0 0 2px var(--linkb);border-radius:var(--r-xs)}
-.blk.traced .blk-c .lt,.blk.traced .blk-c p{background:none}
-.blk.trc:not(.tg):not(.tbl):hover>.blk-c,.blk.trc:not(.tbl)>.blk-c:focus-visible,.blk.traced:not(.tbl)>.blk-c,.blk.tg.trc:hover .tg-b,
 .blk.tbl.trc tbody tr:hover td,.blk.tbl.trc tbody tr.traced td,.blk.tbl.traced tbody td{
  text-decoration-line:underline;text-decoration-color:color-mix(in srgb,var(--agent) 16%,transparent);
- text-decoration-thickness:.5em;text-underline-offset:-.36em;text-decoration-skip-ink:none;transition:none}
+ text-decoration-thickness:.5em;text-underline-offset:-.36em;text-decoration-skip-ink:none}
+/* In focus: its action is the secondary CTA (soft pill), pinned to the bottom of the card */
+.focus .btn.focus-cta{width:auto;align-self:flex-start;margin-top:auto;padding:0 var(--s16);border:0;justify-content:center;gap:var(--s8);font:500 var(--fs-ui)/20px var(--sans)}
+.focus .focus-by{margin-bottom:var(--s24)}
+/* The highlighter sweeps in left to right under the text on hover (line by line on wrapped text) and stays while the
+   trace is open. Table rows fade it in instead. */
+.blk.trc .blk-c .lt{background-image:linear-gradient(color-mix(in srgb,var(--agent) 16%,transparent),color-mix(in srgb,var(--agent) 16%,transparent));
+ background-repeat:no-repeat;background-position:0 86%;background-size:0% .5em;transition:background-size 360ms var(--eo)}
+.blk.trc:not(.tg):hover .blk-c .lt,.blk.trc>.blk-c:focus-visible .lt,.blk.traced .blk-c .lt,.blk.tg.trc:hover .tg-b .lt{background-size:100% .5em}
+.blk.tbl.trc tbody td{text-decoration-line:underline;text-decoration-color:transparent;text-decoration-thickness:.5em;text-underline-offset:-.36em;text-decoration-skip-ink:none;transition:text-decoration-color 200ms ease}
+@media (prefers-reduced-motion:reduce){.blk.trc .blk-c .lt{transition:none}}
