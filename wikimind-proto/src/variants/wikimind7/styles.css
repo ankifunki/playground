@@ -741,3 +741,6 @@ body{font-family:var(--sans);font-size:15.5px;font-weight:400}
 .ask-who .ag{display:none}
 .tr-b blockquote{border-left:0;padding:8px 12px;border-radius:8px}
 .tbl tr.editing td{background:none}
+/* Edited note sits inline, right after the sentence it belongs to */
+.blk-c .chip-w{display:inline;margin-left:8px;white-space:nowrap}
+.blk-c .chip{display:inline;height:auto;padding:0;vertical-align:baseline;font-size:12.5px;line-height:inherit}

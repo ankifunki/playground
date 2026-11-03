@@ -50,8 +50,8 @@ export function Approvals() {
       <Flow />
 
       <h2>Who approves</h2>
-      <Block id="who-mgr"><ul><li><LiveText text={`Up to ${f}% off: the sales manager approves on their own.`} /></li></ul></Block>
-      <Block id="who-fin"><ul><li><LiveText text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
+      <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves on their own.`} /></li></ul></Block>
+      <Block id="who-fin"><ul><li><LiveText id="who-fin" text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
       <Block id="who-cro"><ul><li>Over 35%: the CRO approves directly.</li></ul></Block>
 
       <h2>Rules</h2>
@@ -60,11 +60,11 @@ export function Approvals() {
 
       <h2>In practice</h2>
       <h3>Quarter-end approvals in Slack</h3>
-      <Block id="qe"><p><LiveText text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /></p></Block>
+      <Block id="qe"><p><LiveText id="qe" text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /></p></Block>
       <h3>Flat renewals</h3>
       {w.renewal === 'asking'
         ? <Block id="renew" cls="callout ask"><span className="co-ic"><Icon name="circle-help" size={16} /></span><p>Renewals with no price change skip approval, even over $100,000, but no rule explains it. <span className="ask-who"><Ag id="approvals" size={16} />Asking Maria Okafor in RevOps</span></p></Block>
-        : <Block id="renew"><p><LiveText text="Flat renewals skip approval on purpose: it has been policy since 2023, because a flat renewal doesn’t change revenue risk." /></p></Block>}
+        : <Block id="renew"><p><LiveText id="renew" text="Flat renewals skip approval on purpose: it has been policy since 2023, because a flat renewal doesn’t change revenue risk." /></p></Block>}
 
       <h2>Configured in Salesforce</h2>
       <Block id="cfg" cls="tbl">

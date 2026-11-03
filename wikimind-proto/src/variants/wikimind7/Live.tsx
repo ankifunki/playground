@@ -18,14 +18,14 @@ export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?
  * Text that rewrites itself when the knowledge changes: the new sentence fades in over the old one, then keeps a soft
  * highlight for a moment so you can see what changed.
  */
-export function LiveText({ text }: { text: string }) {
+export function LiveText({ text, id }: { text: string; id?: string }) {
   const prev = useRef(text), [n, setN] = useState(0), [fresh, setFresh] = useState(false)
   useEffect(() => {
     if (prev.current === text) return
     prev.current = text; setN((x) => x + 1); setFresh(true)
     const t = window.setTimeout(() => setFresh(false), 2600); return () => window.clearTimeout(t)
   }, [text])
-  return <span key={n} className={'lt' + (n ? ' in' : '') + (fresh ? ' fresh' : '')}>{text}</span>
+  return <><span key={n} className={'lt' + (n ? ' in' : '') + (fresh ? ' fresh' : '')}>{text}</span>{id && <Chip id={id} />}</>
 }
 
 /** The chip on anything an agent changed: who and when. It opens the block's trace, like every "Why?" on the page. */
@@ -56,7 +56,6 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
       <Why id={id} />
       {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={14} /><span>{AG[w.presence!.ag].name}</span><i className="cursor-dots" aria-hidden="true"><b /><b /><b /></i></span>}
       <div className="blk-c">{children}</div>
-      <span className="blk-m"><Chip id={id} /></span>
     </div>
   )
 }
