@@ -20,7 +20,7 @@ export function Trace({ id }: { id: string }) {
   if (!base) return null
   const steps = [...base.steps, ...(w.extra[id] || [])]
   const tier: Tier = id === 'who-fin' && w.verify === 'checking' ? 'checking' : id === 'renew' && w.renewal === 'answered' ? 'verified' : id === 'cfg-cpq' && w.cpq === 'fixed' ? 'observed' : base.tier
-  const claim = id === 'flow' || id === 'cfg' ? '' : (el?.textContent || '').replace(/Edited.*$|Why\?|Asking .*$/g, '').replace(/\s+/g, ' ').trim().slice(0, 220)
+  const claim = id === 'flow' || id === 'cfg' ? '' : el instanceof HTMLTableRowElement ? [...el.cells].slice(0, 3).map((c) => c.textContent).join(' · ') : (el?.textContent || '').replace(/Edited.*$|Why\?|Asking .*$/g, '').replace(/\s+/g, ' ').trim().slice(0, 220)
   return (
     <div className="tr">
       <div className="tr-claim">
@@ -33,8 +33,9 @@ export function Trace({ id }: { id: string }) {
           <li key={i} className={'tr-s ' + s.k + (i >= base.steps.length ? ' new' : '')}>
             <span className="tr-ic" aria-hidden="true"><Icon name={KIND[s.k].ic} size={13} /></span>
             <div className="tr-b">
+              <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span className="tr-at">{s.at}</span></div>
               <p className="tr-t">{s.t}</p>
-              <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span>{s.by === 'person' ? s.name : `${AG[s.by].name} agent`}</span><span>{s.at}</span></div>
+              <span className="tr-by">{s.by === 'person' ? <span className="tr-pp" aria-hidden="true"><Icon name="user" size={10} /></span> : <Ag id={s.by} size={16} />}{s.by === 'person' ? s.name : `${AG[s.by].name} agent`}</span>
               {s.quote && <blockquote>{s.quote}</blockquote>}
               {s.before && <p className="tr-diff"><del>{s.before}</del>{s.after && <ins>{s.after}</ins>}</p>}
               {s.src && <span className="tr-src"><Icon name="file-text" size={12} />{s.src}</span>}

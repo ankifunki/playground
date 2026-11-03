@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import '@fontsource-variable/instrument-sans'
-import '@fontsource/fragment-mono/400.css'
+import '@fontsource-variable/schibsted-grotesk'
+import '@fontsource/dm-mono/400.css'
 import { useVariantCss } from '../../useVariantCss'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'

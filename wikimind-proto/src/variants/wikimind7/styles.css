@@ -1,13 +1,13 @@
 /* Wikimind 7 "Signal": contemporary and near-monochrome. Zinc neutrals, a light sidebar, near-black ink and buttons,
    and one warm signal colour (vermilion) that means "an agent is doing this" or "live". Links are ink with an underline.
-   Amber stays for warnings, so it never reads as agent activity. Instrument Sans + Fragment Mono (from the case-study
+   Amber stays for warnings, so it never reads as agent activity. Schibsted Grotesk + DM Mono (from the case-study
    type research). Radii 6 (controls) and 10 (cards). */
 :root{--hl:color-mix(in srgb,var(--ink) 16%,transparent);
  --bg:#FAF8F5;--panel:#FFFFFF;--soft:#F4F1EC;--soft2:#ECE7E0;--ink:#1C1917;--ink2:#6B635B;--line:#E6E0D7;--hair:#EFEAE3;
  --link:#18181B;--linkb:#F4F4F5;--agent:#E5482A;--agentb:#FDEEEA;--ok:#15803D;--okb:#E8F5EC;--warn:#A16207;--warnb:#FEF7E1;--del:#B42318;--delb:#FDE7E4;
  --nav:#F7F4EF;--nav2:#FFFFFF;--navink:#18181B;--navink2:#63636B;
  --sh:0 1px 2px rgba(24,24,27,.04),0 4px 14px rgba(24,24,27,.05);--sh2:0 2px 6px rgba(24,24,27,.06),0 16px 40px rgba(24,24,27,.12);
- --sans:"Instrument Sans Variable","Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Fragment Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--serif:var(--sans);
+ --sans:"Schibsted Grotesk Variable","Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--serif:var(--sans);
  --eo:cubic-bezier(.23,1,.32,1);
  color-scheme:light;box-sizing:border-box;
 }
@@ -679,3 +679,44 @@ body{font-size:15.5px}
 .tr-s.verified .tr-k{color:var(--ok)}.tr-s.revoked .tr-k{color:var(--warn)}.tr-s.edited .tr-k,.tr-s.new .tr-k{color:var(--agent)}
 .tr-b blockquote,.tr-diff,.tr-src{margin-top:4px}
 .tr-ic{margin-top:1px}
+/* Trace step, final: kind + time, statement, who, evidence. Flush left with the claim. */
+.rail .tr-steps{padding:18px 0 0}
+.tr-s{gap:14px}
+.tr-b{gap:0}
+.tr-h{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;height:25px}
+.tr-h>span+span::before{content:none}
+.tr-k{font:650 11px var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--ink2)}
+.tr-at{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-b p.tr-t{margin:2px 0 6px;font-size:15px;font-weight:550;line-height:1.4;letter-spacing:-.005em;color:var(--ink);text-wrap:pretty}
+.tr-by{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2)}
+.tr-by .ag-t{border-radius:4px}
+.tr-pp{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:var(--soft2);color:var(--ink2)}
+.tr-b blockquote,.tr-diff,.tr-src{margin-top:8px}
+.tr-ic{margin-top:0}
+.tr-s:not(:last-child)::before{top:30px}
+.tr-claim{gap:10px}
+.tr-claim p{font-size:17px;font-weight:550;line-height:1.4;letter-spacing:-.01em}
+
+/* =====================================================================================================
+   Type system (Wikimind 7). Nine roles, nothing in between. Mono is only for Salesforce identifiers.
+   Display 44/700 · Title 25/650 · Heading 16/650 · Lead 17/550 · Body 15.5/400 · UI 14/500
+   Meta 12.5/400 ink2 (who, when) · Label 11/650 caps +.07em ink2 (kickers, column heads, kinds) · Code mono 13
+   ===================================================================================================== */
+body{font-family:var(--sans);font-size:15.5px;font-weight:400}
+.doc p,.doc li,.tg-h,.tr-claim p{font-weight:400}
+.doc h1{font-size:44px;font-weight:700;letter-spacing:-.03em}
+.doc h2{font-size:25px;font-weight:650;letter-spacing:-.02em}
+.doc h3,.rail-t,.om-q,.home-c b,.fo-cur b,.sb-t{font-size:16px;font-weight:650}
+.sb-t{font-size:14px}
+.tr-claim p{font-size:17px;font-weight:550}
+.fo-k{font-weight:650}
+/* Label: every former mono kicker, column head and kind */
+.tk,.sb-l,.tbl th,.fx-col,.tr-tier,.tr-k,.pop-l,.home-cm,.om-who,.fo-band small,.fl-hint,.mk,.fl-live small,.fl-cnt,.fx-sub{font-family:var(--sans) !important;font-size:11px !important;font-weight:650 !important;text-transform:uppercase;letter-spacing:.07em}
+/* Meta: times, counts, hints */
+.tr-at,.sb-n,.sb-c,.om-sug button small,.fo-th em,.fo-ax em,.fo-deal span,.om-k,.rail small,.home-now small,.props-m{font-family:var(--sans) !important;font-size:12.5px !important;font-weight:400 !important;text-transform:none;letter-spacing:0;font-variant-numeric:tabular-nums}
+.om-k{font-size:11px !important}
+/* Values on the flow markers read as data, but they are not identifiers: sans, tabular */
+.fo-mk b{font-family:var(--sans);font-weight:650;font-variant-numeric:tabular-nums}
+.lt-g{font-family:var(--sans)}
+/* Code: Salesforce identifiers only */
+.code{font-family:var(--mono);font-size:13px}
