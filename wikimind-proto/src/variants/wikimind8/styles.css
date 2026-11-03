@@ -1079,3 +1079,9 @@ body{font-family:var(--sans);font-size:16px}
 @keyframes icBeat{0%,100%{transform:scaleX(1)}30%{transform:scaleX(1.15)}60%{transform:scaleX(.92)}}
 .doc ul.rules8,.doc ol.mv8{padding-left:0}
 .om-ags button .ag{flex:none}.om-ags button>span:not(.ag){flex:1;min-width:0}
+/* Path bars: 3px square bars, 3px gaps, grey for blocked */
+.path-bars{display:flex;gap:3px;justify-content:flex-start}
+.path-bars i{flex:none;width:3px;border-radius:0}
+.path-bars i.gap{background:color-mix(in srgb,var(--ink) 22%,transparent)}
+.path-l .gap::before{background:color-mix(in srgb,var(--ink) 22%,transparent)}
+.path-l span::before{border-radius:0}
