@@ -11,7 +11,7 @@ const STEPS: Step[] = [
   { page: 'discount-approvals', sel: '.byline', t: 'A page you can check', b: 'Who keeps it, who verified it, when it was last checked, and how much runs on its own.', go: (w) => w.setNav(false) },
   { page: 'discount-approvals', sel: '.hwk', t: 'How it works, played', b: 'A real deal runs through. The agent takes 4 seconds; people take the rest.' },
   { page: 'discount-approvals', sel: '.wt', t: 'Watch it happen', b: 'The agent working that deal in Salesforce, replayed from today’s config.' },
-  { page: 'discount-approvals', sel: '#b-who-fin', t: 'It notices change', b: 'Salesforce just changed. The agent rewrites the rule in place; Dana’s verification is paused until she re-checks.', go: (w) => w.change() },
+  { page: 'discount-approvals', sel: '#b-who-fin', t: 'It notices change', b: 'Salesforce just changed. The agent rewrites the rule in place; Dana’s verification is withdrawn until she re-checks.', go: (w) => w.change() },
   { page: 'discount-approvals', sel: '.rail', t: 'Proof for every sentence', b: 'Open any block’s trace: what was seen, the reasoning, the edit, and who verified it.', go: (w) => w.openTrace('who-fin') },
   { page: 'discount-approvals', sel: '.om-bar', t: 'Ask any agent', b: 'Type / to pick an agent. Nothing is guessed: unknowns go to a person.', go: (w) => { w.setRail(false); w.openTrace(null) } },
 ]

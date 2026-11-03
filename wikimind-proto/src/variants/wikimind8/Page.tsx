@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { AG, ago, PAGES, SPACES } from './data'
+import { AG, ago, PAGES } from './data'
 import { HowFlow, Sim } from './Flow'
 import { Watch } from './Watch'
 import { Icon } from './Icon'
@@ -12,7 +12,7 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   return (
     <dl className="props">
             <div><dt><Icon name="badge-check" size={15} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
-      <div><dt><Icon name="radio" size={15} />Last re-read</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">checked hourly against Salesforce</span></dd></div>
+      <div><dt><Icon name="radio" size={15} />Last checked</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
       {extra}
     </dl>
   )
@@ -79,7 +79,7 @@ export function Approvals() {
       <Watch />
 
       <h2>Who approves</h2>
-      <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves on their own.`} /></li></ul></Block>
+      <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves alone.`} /></li></ul></Block>
       <Block id="who-fin"><ul><li><LiveText id="who-fin" text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
       <Block id="who-cro"><ul><li>Over 35%: the CRO approves directly.</li></ul></Block>
 
@@ -118,14 +118,14 @@ export function Approvals() {
 
 /** Any other page: properties, its lede, and an honest note that the demo has one full page. */
 export function Stub({ id }: { id: string }) {
-  const w = useW(), p = PAGES[id], sp = SPACES.find((s) => s.ag === p.ag)!
+  const w = useW(), p = PAGES[id]
   return (
     <article className="doc">
       <div className="doc-ic" aria-hidden="true"><Icon name={AG[p.ag].icon} size={28} /></div>
       <h1>{p.title}</h1>
       <Props ag={p.ag} re={p.re} />
       <Block id={'stub-' + id} cls="callout"><span className="co-ic"><Icon name="file-text" size={16} /></span><p>{p.lede}</p></Block>
-      <p className="colo">One of {sp.total} pages in the {AG[p.ag].name} grove. This demo writes out one page in full: <button className="wl" onClick={() => w.go('discount-approvals')}>Open Discount approvals</button></p>
+      <p className="colo">This demo writes out one page in full. <button className="wl" onClick={() => w.go('discount-approvals')}>Open Discount approvals</button></p>
     </article>
   )
 }

@@ -18,16 +18,16 @@ export type PageMeta = { id: string; title: string; ag: AgentId; n: number; lede
 export const SPACES: { ag: AgentId; pages: PageMeta[]; total: number }[] = [
   { ag: 'approvals', total: 386, pages: [
     { id: 'discount-approvals', title: 'Discount approvals', ag: 'approvals', n: 0, re: 4, lede: '' },
-    { id: 'discount-policy', title: 'Discount policy', ag: 'approvals', n: 0, re: 3600, lede: 'What reps can discount on their own, and what needs approval. Three statements, all verified by Dana Ruiz.' },
-    { id: 'quarter-end', title: 'Quarter-end close', ag: 'approvals', n: 0, re: 420, lede: 'The rules for the last three business days of a quarter, including the approvals Deal Desk gives in Slack first.' },
+    { id: 'discount-policy', title: 'Discount policy', ag: 'approvals', n: 0, re: 3600, lede: 'What reps can discount alone, and what needs approval. All 3 statements verified by Dana Ruiz.' },
+    { id: 'quarter-end', title: 'Quarter-end close', ag: 'approvals', n: 0, re: 420, lede: 'Rules for a quarter’s last 3 business days, including approvals Deal Desk gives in Slack first.' },
     { id: 'renewals', title: 'Renewals', ag: 'approvals', n: 0, re: 1800, lede: 'How renewals are priced and approved. Flat renewals skip approval; price increases follow Discount approvals.' },
   ] },
   { ag: 'access', total: 153, pages: [
     { id: 'provisioning', title: 'User provisioning', ag: 'access', n: 0, re: 900, lede: 'How new hires get Salesforce users, profiles and permission sets, from the Workday start date.' },
-    { id: 'license-seats', title: 'License seats', ag: 'access', n: 0, re: 240, lede: 'Who gets a Sales Cloud seat, and how unused seats are reclaimed after 30 days of no sign-in.' },
+    { id: 'license-seats', title: 'License seats', ag: 'access', n: 0, re: 240, lede: 'Who gets a Sales Cloud seat, and how unused seats are reclaimed after 30 days without a sign-in.' },
   ] },
   { ag: 'security', total: 142, pages: [
-    { id: 'login-policies', title: 'Login policies', ag: 'security', n: 0, re: 1200, lede: 'Session, MFA and IP rules for Salesforce logins. MFA is required for every profile since March.' },
+    { id: 'login-policies', title: 'Login policies', ag: 'security', n: 0, re: 1200, lede: 'Session, MFA and IP rules for Salesforce logins. Every profile has required MFA since March.' },
     { id: 'access-reviews', title: 'Access reviews', ag: 'security', n: 0, re: 5400, lede: 'Quarterly review of admin and API users. The last review removed 14 stale API users.' },
   ] },
   { ag: 'finance', total: 174, pages: [

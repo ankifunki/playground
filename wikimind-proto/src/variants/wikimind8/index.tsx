@@ -43,7 +43,6 @@ function Sidebar() {
           </div>
         )
       })}
-      <p className="sb-foot">Each agent writes and keeps its own grove.</p>
     </nav>
   )
 }
@@ -126,7 +125,7 @@ function Home() {
   const w = useW(), last = w.acts[0], [open, setOpen] = useState<AgentId | null>(null)
   return (
     <article className="doc home wide">
-      <p className="home-k">Rippling, as the agents see it</p>
+      <p className="home-k">Rippling</p>
       <h1>What the agents run today, and what they still need.</h1>
       <div className="home-row">
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}

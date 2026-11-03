@@ -57,7 +57,7 @@ export function Provider({ children }: { children: ReactNode }) {
     setPresence({ ag, block, label, page })
     later(1400, () => {
       apply(); setWhy((m) => ({ ...m, [block]: { ...w, ag, at: Date.now() } })); act({ ag, t, page, block, kind: 'edit' })
-      add(block, { k: 'observed', by: ag, t: w.t, src: w.src, at: 'just now' }, { k: 'edited', by: ag, t: 'Rewrote this block', before: w.before, at: 'just now' })
+      add(block, { k: 'observed', by: ag, t: w.t, src: w.src, at: 'just now' }, { k: 'edited', by: ag, t: 'Rewrote it', before: w.before, at: 'just now' })
       later(2600, () => setPresence((p) => (p?.block === block ? null : p)))
     })
   }
@@ -67,18 +67,18 @@ export function Provider({ children }: { children: ReactNode }) {
     if (fin === 25) return
     act({ ag: 'approvals', t: 'Saw Priya Shah change Large Deal Approval in Salesforce', page: 'discount-approvals', block: 'who-fin', kind: 'read' })
     edit('approvals', 'who-fin', 'Who approves', 'discount-approvals', () => { setFin(25); setVerify('checking') },
-      { t: 'Priya Shah changed the Large Deal Approval process in Salesforce: Finance now joins over 25%, not 20%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'From 20% to 35%: the sales manager, then Finance.' }, 'Rewrote Who approves and the flow: Finance joins over 25%')
-    later(1400, () => setWhy((m) => ({ ...m, 'who-mgr': { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed the Large Deal Approval process in Salesforce: the sales manager now approves alone up to 25%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Up to 20% off: the sales manager approves on their own.' } })))
-    later(1400, () => setWhy((m) => ({ ...m, flow: { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed the Large Deal Approval process in Salesforce: Finance now joins over 25%, not 20%. The agent redrew the routes.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Sales manager up to 20%; Finance from 20% to 35%.' } })))
-    later(1500, () => { add('who-fin', { k: 'revoked', by: 'person', name: 'Dana Ruiz', t: 'Verification withdrawn automatically: the Salesforce config changed under it', at: 'just now' }); add('who-mgr', { k: 'observed', by: 'approvals', t: 'Sales manager limit moved from 20% to 25%', src: 'Setup audit trail · Large Deal Approval', at: 'just now' }); add('flow', { k: 'edited', by: 'approvals', t: 'Redrew the discount bands', before: 'Sales manager up to 20%; Finance from 20% to 35%', at: 'just now' }) })
-    later(9000, () => { add('who-fin', { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Re-checked the change and verified it again', at: 'just now' }); setVerify('ok'); act({ ag: 'person', who: 'Dana Ruiz', t: 'Verified the change to Who approves', page: 'discount-approvals', block: 'who-fin', kind: 'verify' }) })
+      { t: 'Priya Shah changed Large Deal Approval: Finance now joins over 25%, not 20%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'From 20% to 35%: the sales manager, then Finance.' }, 'Rewrote Who approves and the flow: Finance joins over 25%')
+    later(1400, () => setWhy((m) => ({ ...m, 'who-mgr': { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed Large Deal Approval: the sales manager now approves alone up to 25%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Up to 20% off: the sales manager approves alone.' } })))
+    later(1400, () => setWhy((m) => ({ ...m, flow: { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed Large Deal Approval: Finance now joins over 25%, not 20%. Redrew the routes.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Sales manager up to 20%; Finance from 20% to 35%.' } })))
+    later(1500, () => { add('who-fin', { k: 'revoked', by: 'person', name: 'Dana Ruiz', t: 'Withdrew verification: the Salesforce config changed', at: 'just now' }); add('who-mgr', { k: 'observed', by: 'approvals', t: 'Sales manager limit moved from 20% to 25%', src: 'Setup audit trail · Large Deal Approval', at: 'just now' }); add('flow', { k: 'edited', by: 'approvals', t: 'Redrew the discount bands', before: 'Sales manager up to 20%; Finance from 20% to 35%', at: 'just now' }) })
+    later(9000, () => { add('who-fin', { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Re-checked and verified the change', at: 'just now' }); setVerify('ok'); act({ ag: 'person', who: 'Dana Ruiz', t: 'Verified the change to Who approves', page: 'discount-approvals', block: 'who-fin', kind: 'verify' }) })
   }, [fin])
   const answer = useCallback(() => {
     if (renewal === 'answered') return
     act({ ag: 'person', who: 'Maria Okafor', t: 'Answered in Slack: flat renewals skip approval on purpose', page: 'discount-approvals', block: 'renew', kind: 'ask' })
-    add('renew', { k: 'verified', by: 'person', name: 'Maria Okafor', t: 'Answered the agent’s question', quote: '“Yes, on purpose. Policy since 2023: a flat renewal doesn’t change revenue risk.”', at: 'just now' })
+    add('renew', { k: 'verified', by: 'person', name: 'Maria Okafor', t: 'Answered in Slack', quote: '“Yes, on purpose. Policy since 2023: a flat renewal doesn’t change revenue risk.”', at: 'just now' })
     edit('approvals', 'renew', 'In practice', 'discount-approvals', () => setRenewal('answered'),
-      { t: 'Maria Okafor (RevOps) answered the agent’s question in Slack: it has been policy since 2023.', src: 'Slack DM with Maria Okafor · just now', before: 'Open question: do flat renewals skip approval on purpose?' }, 'Wrote Maria’s answer into Flat renewals')
+      { t: 'Maria Okafor answered in Slack: policy since 2023.', src: 'Slack DM with Maria Okafor · just now', before: 'Open question: do flat renewals skip approval on purpose?' }, 'Wrote Maria’s answer into Flat renewals')
   }, [renewal])
 
   // The script. Restarted by Replay.
@@ -87,12 +87,12 @@ export function Provider({ children }: { children: ReactNode }) {
     later(6000, () => {
       act({ ag: 'approvals', t: 'Read a #deal-desk thread: Orion platform approved in Slack first', page: 'discount-approvals', block: 'qe', kind: 'read' })
       edit('approvals', 'qe', 'Quarter-end approvals in Slack', 'discount-approvals', () => setQe([10, 13]),
-        { t: 'A new #deal-desk thread approved Orion platform in Slack before it was logged in Salesforce.', src: '#deal-desk · Sam Ortiz · just now', before: '9 of the last 12 quarter ends.' }, 'Updated Quarter-end approvals: 10 of the last 13')
+        { t: 'Orion platform was approved in #deal-desk before Salesforce.', src: '#deal-desk · Sam Ortiz · just now', before: '9 of the last 12 quarter ends.' }, 'Updated Quarter-end approvals: 10 of the last 13')
     })
     later(16000, () => change())
     later(34000, () => answer())
     later(44000, () => edit('integrations', 'cfg-cpq', 'Configured in Salesforce', 'discount-approvals', () => setCpq('fixed'),
-      { t: 'Ben Ito fixed the currency mapping in CPQ; the agent watched the next 40 quotes sync.', src: 'CPQ sync log · 40 of 40 quotes', before: 'Failing for multi-currency deals since Oct 29.' }, 'Marked CPQ quote sync as fixed'))
+      { t: 'Ben Ito fixed the CPQ currency mapping; the next 40 quotes synced.', src: 'CPQ sync log · 40 of 40 quotes', before: 'Failing for multi-currency deals since Oct 29.' }, 'Marked CPQ quote sync as fixed'))
     return () => { timers.current.forEach((t) => window.clearTimeout(t)); timers.current = [] }
   }, [run]) // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -37,12 +37,12 @@ export function Omni() {
     const m = t.match(/(\d{1,2})\s*%/), d = m ? +m[1] : null
     if (d !== null || /who approves|approv|discount/.test(t)) {
       const x = d ?? 30
-      const who = x <= f ? 'the sales manager approves on their own' : x <= 35 ? 'the sales manager approves, then Finance' : 'the CRO approves directly'
-      return { q: text, ag: 'approvals', body: <>On a deal over $100,000 at {x}% off, {who}. Finance joins over {f}%, from the Large Deal Approval process in Salesforce{w.why['who-fin'] ? ', changed just now' : ''}.</>, cite: { block: x <= f ? 'who-mgr' : x <= 35 ? 'who-fin' : 'who-cro', label: 'Who approves' } }
+      const who = x <= f ? 'the sales manager approves alone' : x <= 35 ? 'the sales manager approves, then Finance' : 'the CRO approves directly'
+      return { q: text, ag: 'approvals', body: <>At {x}% off a deal over $100,000, {who}. Finance joins over {f}%{w.why['who-fin'] ? ' (changed just now)' : ''}.</>, cite: { block: x <= f ? 'who-mgr' : x <= 35 ? 'who-fin' : 'who-cro', label: 'Who approves' } }
     }
     if (/chang|new|week|today|update/.test(t)) {
       const edits = w.acts.filter((a) => a.kind === 'edit').slice(0, 3)
-      return { q: text, ag: 'approvals', body: <>Most recent changes: {edits.map((a, i) => <span key={a.id}>{i > 0 && '; '}{a.ag === 'person' ? a.who : AG[a.ag].name} {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>)}.</>, cite: edits[0]?.block ? { block: edits[0].block!, label: 'the latest edit' } : undefined }
+      return { q: text, ag: 'approvals', body: <>Latest: {edits.map((a, i) => <span key={a.id}>{i > 0 && '; '}{a.ag === 'person' ? a.who : AG[a.ag].name} {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>)}.</>, cite: edits[0]?.block ? { block: edits[0].block!, label: 'the latest edit' } : undefined }
     }
     if (/unsure|don.?t know|question|gap|missing/.test(t)) {
       return { q: text, ag: 'approvals', body: w.renewal === 'asking'

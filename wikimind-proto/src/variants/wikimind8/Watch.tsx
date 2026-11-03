@@ -7,9 +7,9 @@ const LEN = 15000
 const CAPS: [number, string][] = [
   [0, 'A rep moves Helios expansion to Negotiation'],
   [2400, 'Salesforce locks the record for approval'],
-  [4200, 'The Approvals agent checks it against the rules'],
-  [7600, 'It submits the request to the right people'],
-  [9800, 'People approve, in order (sped up)'],
+  [4200, 'The Approvals agent checks the rules'],
+  [7600, 'It routes the request to the approvers'],
+  [9800, 'Approvers sign off in order (sped up)'],
   [12800, 'The record unlocks; a receipt is logged'],
 ]
 const fmt = (ms: number) => `0:${String(Math.floor(ms / 1000)).padStart(2, '0')}`

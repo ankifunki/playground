@@ -17,17 +17,17 @@ export function HowFlow() {
   const w = useW(), f = w.fin, root = useRef<HTMLDivElement>(null)
   const frames: Frame[] = [
     { s: 0, clk: '0 s', t: 'A rep moves Helios expansion to Negotiation', d: '$240,000 at 28% off' },
-    { s: 1, clk: '+1 s', t: 'Reads the Discount policy and the live Salesforce config', ag: true },
-    { s: 1, clk: '+2 s', t: `28% is over ${f}%, so Finance approves after the sales manager`, ag: true },
+    { s: 1, clk: '+1 s', t: 'Reads the policy and the live Salesforce config', ag: true },
+    { s: 1, clk: '+2 s', t: `28% is over ${f}%: the sales manager, then Finance`, ag: true },
     { s: 1, clk: '+4 s', t: 'Locks the record and routes it to the sales manager', ag: true },
     { s: 2, clk: '+1 h 10 m', t: 'The sales manager approves; Finance is next' },
     { s: 2, clk: '+3 h 40 m', t: 'Finance approves' },
-    { s: 3, clk: '+3 h 40 m', t: 'Unlocks the record, and the deal moves on', d: 'Logged as a receipt on this page', ag: true },
+    { s: 3, clk: '+3 h 40 m', t: 'Unlocks the record; the deal moves on', d: 'Receipt logged on this page', ag: true },
   ]
   const steps = [
     { t: 'Rep submits', s: 'deal over $100k', ic: 'user' },
-    { t: 'Agent routes', s: 'in about 4 seconds', ic: 'stamp' },
-    { t: 'People approve', s: 'about 3 h 40 m', ic: 'user' },
+    { t: 'Agent routes', s: 'in 4 seconds', ic: 'stamp' },
+    { t: 'People approve', s: '3 h 40 m', ic: 'user' },
     { t: 'Record unlocks', s: 'the deal moves on', ic: 'lock-open' },
   ]
   const last = frames.length - 1
@@ -92,7 +92,7 @@ export function Sim() {
   const small = deal.amt <= 100000, f = w.fin
   const who = small ? 'No approval needed' : deal.disc > 35 ? 'CRO' : deal.disc > f ? 'Sales manager → Finance' : 'Sales manager'
   const time = small ? '' : deal.disc > 35 ? '6 h 05 m' : deal.disc > f ? '3 h 40 m' : '1 h 10 m'
-  const why = small ? `${money(deal.amt)} is under $100,000, so no approval is needed.` : deal.disc > 35 ? `${deal.disc}% is over 35%, so the CRO approves directly.` : deal.disc > f ? `${deal.disc}% is over ${f}%, so Finance approves after the sales manager.` : `${deal.disc}% is ${f}% or less, so the sales manager approves alone.`
+  const why = small ? `${money(deal.amt)} is under $100,000.` : deal.disc > 35 ? `${deal.disc}% is over 35%.` : deal.disc > f ? `${deal.disc}% is over ${f}%, so Finance joins.` : `${deal.disc}% is ${f}% or less.`
   const set = (p: Partial<typeof deal>) => setDeal((d) => ({ ...d, ...p }))
   return (
     <div className="sim" id="sim" aria-label="Try a deal">
