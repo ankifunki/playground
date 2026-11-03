@@ -8,7 +8,7 @@ const STEPS: Step[] = [
   { page: 'home', sel: '.home h1', t: 'Assembled automatically', b: 'Six agents wrote every page from Slack, tickets and six years of Salesforce changes, and keep it current. Nobody typed it.' },
   { page: 'home', sel: '.path.card', t: 'Where automation stands', b: '64% runs on its own. The rest asks a person first or waits on a named gap.' },
   { page: 'home', sel: '.sb', t: 'Every agent keeps a grove', b: 'Like a Confluence space, kept by one agent. A page being written shows in the tree.', go: (w) => w.setNav(true) },
-  { page: 'discount-approvals', sel: '.byline', t: 'A page you can check', b: 'Who keeps it, who verified it, its sources, and when it was last checked.', go: (w) => w.setNav(false) },
+  { page: 'discount-approvals', sel: '.byline', t: 'A page you can check', b: 'Who keeps it, who verified it, when it was last checked, and how much runs on its own.', go: (w) => w.setNav(false) },
   { page: 'discount-approvals', sel: '.hwk', t: 'How it works, played', b: 'A real deal runs through. The agent takes 4 seconds; people take the rest.' },
   { page: 'discount-approvals', sel: '.wt', t: 'Watch it happen', b: 'The agent working that deal in Salesforce, replayed from today’s config.' },
   { page: 'discount-approvals', sel: '#b-who-fin', t: 'It notices change', b: 'Salesforce just changed. The agent rewrites the rule in place; Dana’s verification is withdrawn until she re-checks.', go: (w) => w.change() },

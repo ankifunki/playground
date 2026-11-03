@@ -6,7 +6,7 @@ Written by `improve-animations` at commit `da6b3f9`, against `src/variants/wikim
 
 | # | Plan | Severity | Status |
 |---|---|---|---|
-| 001 | [Morph the ask bar with clip-path, not width/height](001-ask-bar-morph-without-layout.md) | HIGH | DONE |
+| 001 | [Morph the ask bar with clip-path, not width/height](001-ask-bar-morph-without-layout.md) | HIGH | REVERTED (Ankit: the bar resizes to its pill again) |
 | 002 | [Give every `rise` entrance a reduced-motion fallback](002-reduced-motion-for-rise.md) | MEDIUM | DONE |
 | 003 | [Bring the path-bar entrance inside budget, and play it once](003-path-bar-entrance-budget.md) | MEDIUM | REVERTED (Ankit: bars grow in on every view) |
 | 004 | [Open the ask bar's suggestions instantly](004-instant-suggestions.md) | MEDIUM | REVERTED (Ankit: suggestions fade in, rows staggered 30ms, 4px rise, 240ms) |

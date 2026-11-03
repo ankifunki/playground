@@ -30,13 +30,14 @@ export function Watch() {
   useEffect(() => {
     if (!play) return
     let raf = 0, prev = performance.now()
-    const step = (now: number) => { const dt = now - prev; prev = now; setT((x) => { const n = x + dt; if (n >= LEN) { setPlay(false); return LEN - 1 } return n }); raf = requestAnimationFrame(step) }
+    // rAF's timestamp can be a little earlier than performance.now() above, so never step backwards.
+    const step = (now: number) => { const dt = Math.max(0, now - prev); prev = now; setT((x) => { const n = x + dt; if (n >= LEN) { setPlay(false); return LEN - 1 } return n }); raf = requestAnimationFrame(step) }
     raf = requestAnimationFrame(step); return () => cancelAnimationFrame(raf)
   }, [play])
 
   const neg = t > 1800, locked = t > 2400 && t < 12800, checking = t > 4200 && t < 7600, routed = t > 7600
   const ok1 = t > 10400, ok2 = t > 12000, receipt = t > 13200
-  const cap = [...CAPS].reverse().find(([at]) => t >= at)![1]
+  const cap = ([...CAPS].reverse().find(([at]) => t >= at) ?? CAPS[0])[1]
   const cur = t < 900 ? { x: 20, y: 70 } : t < 7600 ? { x: 37, y: 30 } : { x: 76, y: 34 }
   const pct = (t / LEN) * 100
   const toggle = () => { if (t >= LEN - 1) { setT(0); setPlay(true) } else setPlay(!play) }

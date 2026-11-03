@@ -32,7 +32,7 @@ function Toggle({ title, children, id }: { title: string; children: ReactNode; i
  * Path to full automation (Wikimind 4), for this page's job: upright bars, each one deal of the last 120. Solid runs on
  * its own, light asks a person first, amber is blocked by a gap. The legend names each look; what holds it back is said.
  */
-export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat renewals', card }: { own?: number; ask?: number; gaps?: string; card?: boolean }) {
+export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat renewals', card, label = true }: { own?: number; ask?: number; gaps?: string; card?: boolean; label?: boolean }) {
   // Bars are 4px wide with a 2px gap, always; as many as fit the width, so the spacing never varies.
   const ref = useRef<HTMLDivElement>(null), [n, setN] = useState(100)
   useLayoutEffect(() => {
@@ -43,7 +43,7 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
   const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a
   return (
     <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
-      <div className="path-h" style={{ width: n * 6 - 2 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
+      <div className="path-h" style={{ width: n * 6 - 2 }}>{label && <span className="tk">Path to full automation</span>}<span className="path-n">{o}%<small>runs on its own</small></span></div>
       <div className="path-bars" aria-hidden="true" ref={ref} style={{ width: n * 6 - 2 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
       <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked {g}%: {gaps}</span></p>
     </section>
@@ -63,6 +63,8 @@ export function Approvals() {
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
         <div><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num">214 times this month, by 3 agents</dd></div>
       </>} />
+
+      <PathBar label={false} />
 
       <Block id="sum" cls="lede">
         <p>Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</p>

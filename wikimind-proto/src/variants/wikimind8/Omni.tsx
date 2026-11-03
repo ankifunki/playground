@@ -124,17 +124,14 @@ export function Omni() {
           ))}
         </div>
       )}
-      <div className="om-shell">
-        <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
-          <span className="om-pill" aria-hidden="true"><Icon name="search" size={16} />Ask anything</span>
-          <Icon name="search" size={16} />
-          {scope && <span className="om-chip"><Ag id={scope} size={16} />{AG[scope].name}<button type="button" onClick={() => setScope(null)} aria-label="Ask any agent"><Icon name="x" size={12} /></button></span>}
-          <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={scope ? `Ask the ${AG[scope].name} agent` : narrow ? 'Ask anything' : 'Ask anything, or type / to pick an agent'} aria-label="Ask anything" />
-          <span className="om-scope tk">This workspace</span>
-          <kbd className="om-k">/</kbd>
-          <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>
-        </form>
-      </div>
+      <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
+        <Icon name="search" size={16} />
+        {scope && !mini && <span className="om-chip"><Ag id={scope} size={16} />{AG[scope].name}<button type="button" onClick={() => setScope(null)} aria-label="Ask any agent"><Icon name="x" size={12} /></button></span>}
+        <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini || narrow ? 'Ask anything' : scope ? `Ask the ${AG[scope].name} agent` : 'Ask anything, or type / to pick an agent'} aria-label="Ask anything" />
+        {!mini && <span className="om-scope tk">This workspace</span>}
+        {!mini && <kbd className="om-k">/</kbd>}
+        {!mini && <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>}
+      </form>
     </div>
   )
 }
