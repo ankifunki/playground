@@ -749,3 +749,14 @@ body{font-family:var(--sans);font-size:15.5px;font-weight:400}
 .tr-h{height:22px}
 .tr-b p.tr-t{margin-top:1px}
 .tr-tier::before{content:none}
+/* Live activity: a chevron per row opens one level deeper, in place */
+.rail li{align-items:flex-start}
+.rail-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.rail-ch{flex:none;width:26px;height:26px;margin:-2px -6px 0 0;color:var(--ink2)}
+.rail-ch .ic{transition:transform .25s var(--eo)}
+.rail-ch.open .ic{transform:rotate(90deg)}
+.rail-d{display:flex;flex-direction:column;gap:6px;margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--soft);animation:rise .3s var(--eo) both}
+.rail-dt{font-size:14px;line-height:1.5;color:var(--ink)}
+.rail-ds{font-size:12.5px;color:var(--ink2)}
+.rail-db{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ink2)}
+.rail-full{align-self:flex-start;font-size:13px}

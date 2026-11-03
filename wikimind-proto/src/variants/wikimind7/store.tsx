@@ -21,10 +21,10 @@ export const useW = () => useContext(Ctx)!
 export const RM = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const SEED = (t0: number): Act[] => [
-  { id: -1, ag: 'integrations', t: 'Asked Ben Ito why multi-currency quotes fail to sync', page: 'cpq-sync', at: t0 - 95e3, kind: 'ask' },
+  { id: -1, ag: 'integrations', t: 'Asked Ben Ito why multi-currency quotes fail to sync', page: 'discount-approvals', block: 'cfg-cpq', at: t0 - 95e3, kind: 'ask' },
   { id: -2, ag: 'access', t: 'Updated Deal Desk: Priya Shah now leads it', page: 'license-seats', at: t0 - 240e3, kind: 'edit' },
   { id: -3, ag: 'support', t: 'Linked 3 cases to the data-loss escalation rule', page: 'case-escalation', at: t0 - 410e3, kind: 'edit' },
-  { id: -4, ag: 'approvals', t: 'Re-read Discount approvals against Salesforce', page: 'discount-approvals', at: t0 - 4e3, kind: 'read' },
+  { id: -4, ag: 'approvals', t: 'Re-read Discount approvals against Salesforce', page: 'discount-approvals', block: 'sum', at: t0 - 4e3, kind: 'read' },
 ]
 
 /**
@@ -64,7 +64,7 @@ export function Provider({ children }: { children: ReactNode }) {
 
   const change = useCallback(() => {
     if (fin === 25) return
-    act({ ag: 'approvals', t: 'Saw Priya Shah change Large Deal Approval in Salesforce', page: 'discount-approvals', kind: 'read' })
+    act({ ag: 'approvals', t: 'Saw Priya Shah change Large Deal Approval in Salesforce', page: 'discount-approvals', block: 'who-fin', kind: 'read' })
     edit('approvals', 'who-fin', 'Who approves', 'discount-approvals', () => { setFin(25); setVerify('checking') },
       { t: 'Priya Shah changed the Large Deal Approval process in Salesforce: Finance now joins over 25%, not 20%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'From 20% to 35%: the sales manager, then Finance.' }, 'Rewrote Who approves and the flow: Finance joins over 25%')
     later(1400, () => setWhy((m) => ({ ...m, 'who-mgr': { ag: 'approvals', at: Date.now(), t: 'Priya Shah changed the Large Deal Approval process in Salesforce: the sales manager now approves alone up to 25%.', src: 'Salesforce setup audit trail · Large Deal Approval', before: 'Up to 20% off: the sales manager approves on their own.' } })))
@@ -74,7 +74,7 @@ export function Provider({ children }: { children: ReactNode }) {
   }, [fin])
   const answer = useCallback(() => {
     if (renewal === 'answered') return
-    act({ ag: 'person', who: 'Maria Okafor', t: 'Answered in Slack: flat renewals skip approval on purpose', page: 'discount-approvals', kind: 'ask' })
+    act({ ag: 'person', who: 'Maria Okafor', t: 'Answered in Slack: flat renewals skip approval on purpose', page: 'discount-approvals', block: 'renew', kind: 'ask' })
     add('renew', { k: 'verified', by: 'person', name: 'Maria Okafor', t: 'Answered the agent’s question', quote: '“Yes, on purpose. Policy since 2023: a flat renewal doesn’t change revenue risk.”', at: 'just now' })
     edit('approvals', 'renew', 'In practice', 'discount-approvals', () => setRenewal('answered'),
       { t: 'Maria Okafor (RevOps) answered the agent’s question in Slack: it has been policy since 2023.', src: 'Slack DM with Maria Okafor · just now', before: 'Open question: do flat renewals skip approval on purpose?' }, 'Wrote Maria’s answer into Flat renewals')
@@ -84,7 +84,7 @@ export function Provider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (RM) return
     later(6000, () => {
-      act({ ag: 'approvals', t: 'Read a #deal-desk thread: Orion platform approved in Slack first', page: 'discount-approvals', kind: 'read' })
+      act({ ag: 'approvals', t: 'Read a #deal-desk thread: Orion platform approved in Slack first', page: 'discount-approvals', block: 'qe', kind: 'read' })
       edit('approvals', 'qe', 'Quarter-end approvals in Slack', 'discount-approvals', () => setQe([10, 13]),
         { t: 'A new #deal-desk thread approved Orion platform in Slack before it was logged in Salesforce.', src: '#deal-desk · Sam Ortiz · just now', before: '9 of the last 12 quarter ends.' }, 'Updated Quarter-end approvals: 10 of the last 13')
     })
