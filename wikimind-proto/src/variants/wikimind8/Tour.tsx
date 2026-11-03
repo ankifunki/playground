@@ -7,7 +7,7 @@ type Step = { page: string; sel: string; t: string; b: string; go?: (w: ReturnTy
 const STEPS: Step[] = [
   { page: 'home', sel: '.home h1', t: 'Assembled automatically', b: 'Six agents wrote every page here from Slack, tickets and six years of Salesforce changes, and keep rewriting them. Nobody typed it.' },
   { page: 'home', sel: '.path.card', t: 'Where automation stands', b: '64% of the work runs on its own. The rest asks a person first or waits on a gap, and the gaps are named.' },
-  { page: 'home', sel: '.sb', t: 'Every agent keeps an edict', b: 'Like a Confluence space, but each edict belongs to the agent that keeps it. A page being written shows it in the tree.', go: (w) => w.setNav(true) },
+  { page: 'home', sel: '.sb', t: 'Every agent keeps a grove', b: 'Like a Confluence space, but each grove belongs to the agent that keeps it. A page being written shows it in the tree.', go: (w) => w.setNav(true) },
   { page: 'discount-approvals', sel: '.byline', t: 'A page you can check', b: 'Who keeps it, who verified it, when it was last re-read, and how far it is from running on its own.', go: (w) => w.setNav(false) },
   { page: 'discount-approvals', sel: '.hwk', t: 'How it works, played', b: 'A real deal runs through the flow. The agent’s part takes 4 seconds; people take the rest.' },
   { page: 'discount-approvals', sel: '.wt', t: 'Watch it happen', b: 'A recording of the agent working the deal in Salesforce, re-enacted live from today’s config.' },
