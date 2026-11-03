@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { AG, ago, PAGES } from './data'
-import { HowFlow, Sim } from './Flow'
-import { Watch } from './Watch'
+import { Sim } from './Flow'
+import { HELIOS, How, type Deal } from './How'
 import { Icon } from './Icon'
 import { Ag, Block, Chip, LivePulse, LiveText, Sources, Why } from './Live'
-import { useW } from './store'
+import { RM, useW } from './store'
 
 /** Notion-style properties: who keeps the page, who verified it, how fresh it is. Live values tick. */
 function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; verify?: ReactNode; extra?: ReactNode }) {
@@ -53,6 +53,8 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
 /** The demo page: Discount approvals, written and kept by the Approvals agent. */
 export function Approvals() {
   const w = useW(), f = w.fin
+  // How it works plays Helios by default; Try it out can hand it the visitor's own deal.
+  const [demo, setDemo] = useState<{ deal: Deal; run: number }>({ deal: HELIOS, run: 0 })
   const verify = w.verify === 'checking' ? <span className="re-check"><i aria-hidden="true" />Dana Ruiz is re-checking a change</span> : <>Dana Ruiz</>
   return (
     <article className="doc">
@@ -71,11 +73,9 @@ export function Approvals() {
       </Block>
 
       <h2>How it works</h2>
-      <HowFlow />
+      <How deal={demo.deal} run={demo.run} onReset={() => setDemo((d) => ({ deal: HELIOS, run: d.run + 1 }))} />
       <h3>Try it out</h3>
-      <Sim />
-      <h3>Watch it</h3>
-      <Watch />
+      <Sim onWatch={(d) => { setDemo((x) => ({ deal: { name: 'Your deal', ...d }, run: x.run + 1 })); document.querySelector('.hwk')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }) }} />
 
       <h2>Who approves</h2>
       <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves alone.`} /></li></ul></Block>

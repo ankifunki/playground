@@ -189,15 +189,15 @@ button{font:inherit;color:inherit}
 .w7{display:block}
 .main{min-width:0;min-height:100vh}
 .sb,.rail{position:fixed;z-index:50;top:var(--vtop,76px);bottom:12px;height:auto;width:248px;transition:transform .4s var(--ease-drawer),opacity .25s ease}
-.sb{left:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transform:translateX(calc(-100% - 24px));opacity:0;pointer-events:none}
+.sb{left:12px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transform:translateX(calc(-100% - 24px));opacity:0;pointer-events:none}
 .sb.open{transform:none;opacity:1;pointer-events:auto}
-.rail{right:12px;left:auto;max-width:calc(100vw - 24px);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transform:translateX(calc(100% + 24px));opacity:0;pointer-events:none}
+.rail{right:12px;left:auto;max-width:calc(100vw - 24px);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transform:translateX(calc(100% + 24px));opacity:0;pointer-events:none}
 .rail.open{transform:none;opacity:1;pointer-events:auto}
 .rail-h{border-bottom:1px solid var(--hair)}
 .top-menu{display:grid}
 .rail-h .ib{display:grid}
 .top-act{display:grid}
-.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--bg) 64%,transparent);border-bottom:0}
+.top{position:sticky;top:0;z-index:20;-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--bg) 76%,transparent);border-bottom:0}
 .top-r{margin:0 auto;height:56px}
 .doc{background:transparent}
 .w7 .main>.doc{padding-top:var(--s48)}
@@ -821,3 +821,9 @@ input{font:inherit}
  :root[data-theme="dark"] .om.mini .om-bar:hover{color:var(--ink2)}
  :root[data-theme="dark"] .om.mini .om-bar:hover input::placeholder{color:var(--ink2)}
 }
+.hwk .wt-win{margin-top:var(--s32)}
+.hwk .hwk-now{margin-top:var(--s16)}
+.hwk-s.skip{opacity:.4}
+.sim-watch{display:inline-flex;align-items:center;gap:var(--s6);margin-top:var(--s16);font-size:14px;line-height:20px}
+.hwk-deal{display:flex;justify-content:space-between;align-items:center;gap:var(--s12);margin:var(--s12) 0 0;font-size:12px;line-height:18px;color:var(--ink2)}
+@media (max-width:640px){.hwk .wt-win{margin-top:var(--s24)}}
