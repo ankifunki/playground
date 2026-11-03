@@ -75,44 +75,31 @@ function Top() {
 
 /** The right rail: live activity across the workspace, newest first. Each item links to the block it changed. */
 function Rail() {
-  const w = useW(), [openId, setOpenId] = useState<number | null>(null)
+  const w = useW(), [from, setFrom] = useState(false)
   return (
     <aside className={'rail' + (w.rail ? ' open' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace ? <span className="rail-t"><button className="ib" onClick={() => w.openTrace(null)} aria-label="Back to live activity"><Icon name="chevron-down" size={15} /></button>Trace</span>
+        {w.trace ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); w.openTrace(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={15} /></button><span className="rail-crumb">{from && <span>Live activity</span>}Trace</span></span>
           : <span className="rail-t"><i className={w.playing ? 'on' : ''} aria-hidden="true" />Live activity</span>}
         <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null) }} aria-label="Close"><Icon name="x" size={15} /></button>
       </div>
-      {w.trace ? <div className="rail-sc"><Trace id={w.trace} /></div> : <>
+      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : <div className="rail-list rail-pop">
       <ol>
         {w.acts.map((a) => {
-          // One level deeper: why it happened, where it came from, what it said before. From the live edit, else the block's trace.
-          const y = a.block ? w.why[a.block] : undefined, base = a.block ? TRACE[a.block] : undefined
-          const lastStep = base ? [...base.steps, ...(w.extra[a.block!] || [])].slice(-1)[0] : undefined
-          const detail = y ? { t: y.t, src: y.src, before: y.before } : lastStep ? { t: lastStep.t, src: lastStep.src, before: lastStep.before } : null
-          const open = openId === a.id
           return (
-            <li key={a.id} className={(a.id > 0 && w.now - a.at < 6000 ? 'in' : '') + (open ? ' open' : '')}>
+            <li key={a.id} className={a.id > 0 && w.now - a.at < 6000 ? 'in' : ''}>
               {a.ag === 'person' ? <span className="rail-p" aria-hidden="true"><Icon name="user" size={12} /></span> : <Ag id={a.ag} size={22} />}
               <span className="rail-m">
                 <span className="rail-x"><b>{a.ag === 'person' ? a.who : AG[a.ag].name}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
                 <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
-                {open && detail && (
-                  <span className="rail-d">
-                    <span className="rail-dt">{detail.t}</span>
-                    {detail.src && <span className="rail-ds">{detail.src}</span>}
-                    {detail.before && <span className="rail-db"><span className="tk">Before</span><del>{detail.before}</del></span>}
-                    {a.block && TRACE[a.block] && <button className="wl rail-full" onClick={() => w.openTrace(a.block!)}>Full trace</button>}
-                  </span>
-                )}
               </span>
-              {detail && <button className={'ib rail-ch' + (open ? ' open' : '')} onClick={() => setOpenId(open ? null : a.id)} aria-expanded={open} aria-label={open ? 'Hide details' : 'Show details'}><Icon name="chevron-right" size={14} /></button>}
+              {a.block && TRACE[a.block] && <button className="ib rail-ch" onClick={() => { setFrom(true); w.openTrace(a.block!) }} aria-label="Open the trace"><Icon name="chevron-right" size={15} /></button>}
             </li>
           )
         })}
       </ol>
       <p className="rail-demo"><span className="tk">Demo</span><button className="wl" onClick={w.replay}>Replay live updates</button></p>
-      </>}
+      </div>}
     </aside>
   )
 }

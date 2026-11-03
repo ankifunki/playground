@@ -760,3 +760,19 @@ body{font-family:var(--sans);font-size:15.5px;font-weight:400}
 .rail-ds{font-size:12.5px;color:var(--ink2)}
 .rail-db{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--ink2)}
 .rail-full{align-self:flex-start;font-size:13px}
+/* Nested panels: a row's chevron pushes its trace in from the right; Back pops it */
+.rail-list{flex:1;min-height:0;display:flex;flex-direction:column}
+.rail-list ol{flex:1;overflow-y:auto}
+.rail-push{animation:push .32s cubic-bezier(.32,.72,0,1) both}
+.rail-pop{animation:pop .32s cubic-bezier(.32,.72,0,1) both}
+@keyframes push{from{transform:translateX(24px);opacity:0}}
+@keyframes pop{from{transform:translateX(-24px);opacity:0}}
+.rail-back{margin-left:-8px;transform:rotate(180deg) !important}
+.rail-t .ib.rail-back{transform:rotate(180deg)}
+.rail-crumb{display:inline-flex;align-items:center;gap:6px}
+.rail-crumb span{font-weight:400;color:var(--ink2)}
+.rail-crumb span::after{content:"/";margin-left:6px;color:var(--line)}
+.rail-ch{align-self:center;margin:0 -6px 0 0}
+.rail-ch .ic{transition:transform .16s var(--eo)}
+@media (hover:hover) and (pointer:fine){.rail li:hover .rail-ch{color:var(--ink);background:var(--soft2)}}
+@media (prefers-reduced-motion:reduce){.rail-push,.rail-pop{animation:fade .2s both}}
