@@ -1176,3 +1176,61 @@ body{font-family:var(--sans);font-size:16px}
 @keyframes hwkFade{from{opacity:0}}
 .hwk-txt{min-height:42px;justify-content:center}
 .hwk-n{transition:background-color .3s ease,color .3s ease,box-shadow .3s ease}
+
+/* ===== Animation pass (animation-plans/ 001–005 + opportunities 1–4) ===== */
+/* 004: keyboard-initiated surface opens instantly */
+.om-sug{animation:none}
+/* 002: reduced motion keeps the fade, drops the movement */
+@media (prefers-reduced-motion:reduce){
+  .om-ans,.wt-lock,.wt-ah li.in,.wt-agent,.mv8 li.in,.ags8-d{animation:fade .2s ease both}
+  .tour-card{transform:none}
+  .tour-card.on{transition:opacity .2s ease}
+}
+/* 005: subtler press, hover gated to real pointers, hamburger inside budget */
+.ib:active,.why:active,.hwk-play:active,.om-go:not(:disabled):active{transform:scale(.97)}
+.srcs-i:hover{transform:none;background:var(--soft);color:var(--ink2)}
+.srcs-i:hover::after{opacity:0;transform:translate(-50%,4px)}
+.srcs-i:focus-visible{transform:translateY(-2px);background:var(--linkb);color:var(--link);z-index:2}
+.srcs-i:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+@media (hover:hover) and (pointer:fine){
+  .srcs-i:hover{transform:translateY(-2px);background:var(--linkb);color:var(--link);z-index:2}
+  .srcs-i:hover::after{opacity:1;transform:translate(-50%,0)}
+}
+.hb i{transition:transform 240ms var(--eo),opacity 160ms ease,top 240ms var(--eo)}
+/* Opportunity 4: press feedback on wide rows is an instant tint, never a scale */
+.ags8-r:active,.sb-p:active,.sb-i:active,.mv8-t:active{background:var(--soft2)}
+.focus-cta .ic{transition:transform 160ms var(--eo)}
+.focus-cta:active .ic{transform:translateX(2px)}
+/* 003: path bars, once per session, within 300ms */
+.path-bars i{animation:none}
+.path-bars.play i{animation:pbIn 240ms var(--eo) both}
+/* Opp 2: agent rows and rule toggles open in place (grid track 0fr → 1fr), content fades */
+.ags8-x,.tg-x{display:grid;grid-template-rows:0fr;transition:grid-template-rows 250ms var(--eo)}
+.ags8 li.open .ags8-x,.tg-x.open{grid-template-rows:1fr}
+.ags8-x>div,.tg-x>.tg-b{overflow:hidden;min-height:0}
+.ags8-d,.tg-x>.tg-b{animation:none;opacity:0;transition:opacity 200ms ease}
+.ags8 li.open .ags8-d,.tg-x.open>.tg-b{opacity:1}
+.tg-x>.tg-b{padding:0 0 0 22px}
+.tg-x>.tg-b>*{margin:2px 0 8px}
+@media (prefers-reduced-motion:reduce){.ags8-x,.tg-x{transition:none}}
+/* Opp 1: the open question resolves in place: the warm note eases into a plain paragraph */
+#b-renew{transition:background-color 600ms ease,padding 250ms var(--eo)}
+#b-renew.answered{background:transparent;padding:4px 10px}
+#b-renew .ask-who{display:flex}
+@media (prefers-reduced-motion:reduce){#b-renew{transition:background-color 600ms ease}}
+/* Opp 3: a change of trust tier crossfades, so it is noticed */
+.vf{display:inline-flex;animation:fade .2s ease both}
+/* 001: the ask bar morphs with clip-path + opacity only; its box never changes size */
+.om-shell{width:100%;filter:drop-shadow(0 1px 2px rgba(20,30,25,.06)) drop-shadow(0 14px 34px rgba(20,30,25,.1))}
+:root[data-theme="dark"] .om-shell{filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)) drop-shadow(0 14px 34px rgba(0,0,0,.35))}
+.om-bar{position:relative;width:100%;height:56px;border-radius:16px;box-shadow:none;clip-path:inset(0 0 0 0 round 16px);transition:clip-path 250ms var(--eo)}
+.om.mini .om-bar{width:100%;height:56px;padding:0 8px 0 16px;border-radius:16px;clip-path:inset(8px calc(50% - 98px) 8px calc(50% - 98px) round 999px)}
+.om-bar>*:not(.om-pill){transition:opacity 150ms ease}
+.om.mini .om-bar>*:not(.om-pill){opacity:0;pointer-events:none}
+.om-pill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;font:400 14px var(--sans);color:var(--ink2);opacity:0;pointer-events:none;transition:opacity 150ms ease}
+.om.mini .om-pill{opacity:1;transition-delay:80ms}
+.om.mini .om-bar{cursor:text}
+@media (prefers-reduced-motion:reduce){.om-bar{transition:none}}
+/* The ask bar's container never shrink-wraps: one fixed column width in both states */
+.om{box-sizing:border-box;width:100%;max-width:840px}
+.pg-home .om{max-width:1224px}

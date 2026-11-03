@@ -151,13 +151,13 @@ function Home() {
                 <span className="ags8-t">{(a.id !== 'approvals' || !w.why['renew']) && r.tag && <span className="ask-tag">{r.tag}</span>}</span>
                 <span className="ags8-ch" aria-hidden="true"><Icon name="chevron-down" size={15} /></span>
               </button>
-              {isOpen && (
+              <div className="ags8-x" inert={!isOpen}><div>
                 <div className="ags8-d">
                   <span className="tk">Needed to run more on its own</span>
                   <ul>{r.needs.map((n) => <li key={n}>{n}</li>)}</ul>
                   <button className="ags8-go" onClick={() => w.go(sp.pages[0].id)}>Go to the {a.name} grove<span>{sp.total} pages</span><Icon name="arrow-right" size={14} /></button>
                 </div>
-              )}
+              </div></div>
             </li>
           )
         })}</ul>

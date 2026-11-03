@@ -11,7 +11,7 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   const w = useW(), [t0] = useState(w.now)
   return (
     <dl className="props">
-            <div><dt><Icon name="badge-check" size={15} />Verified by</dt><dd>{verify ?? 'Dana Ruiz'}</dd></div>
+            <div><dt><Icon name="badge-check" size={15} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
       <div><dt><Icon name="radio" size={15} />Last re-read</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">re-read every hour against Salesforce</span></dd></div>
       {extra}
     </dl>
@@ -23,7 +23,7 @@ function Toggle({ title, children, id }: { title: string; children: ReactNode; i
   return (
     <Block id={id} cls="tg">
       <button className={'tg-h' + (open ? ' open' : '')} aria-expanded={open} onClick={() => setOpen(!open)}><Icon name="chevron-right" size={14} />{title}</button>
-      {open && <div className="tg-b">{children}</div>}
+      <div className={'tg-x' + (open ? ' open' : '')} inert={!open}><div className="tg-b">{children}</div></div>
     </Block>
   )
 }
@@ -40,11 +40,13 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
     const f = () => { const cs = getComputedStyle(el), w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setN(Math.max(20, Math.floor((w + 3) / 6))) }; f()
     const ro = new ResizeObserver(f); ro.observe(el); return () => ro.disconnect()
   }, [])
+  // The entrance plays once per browser session and stays inside 300ms; after that the bars are simply there.
+  const [play] = useState(() => { try { if (sessionStorage.getItem('w8-bars')) return false; sessionStorage.setItem('w8-bars', '1'); return true } catch { return false } })
   const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a
   return (
     <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
       <div className="path-h" style={{ width: n * 6 - 3 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
-      <div className="path-bars" aria-hidden="true" ref={ref} style={{ width: n * 6 - 3 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
+      <div className={'path-bars' + (play ? ' play' : '')} aria-hidden="true" ref={ref} style={{ width: n * 6 - 3 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={play ? { animationDelay: `${Math.round(i * 1.5)}ms` } : undefined} />)}</div>
       <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked by gaps {g}%: {gaps}</span></p>
     </section>
   )
@@ -89,9 +91,10 @@ export function Approvals() {
       <h3>Quarter-end approvals in Slack</h3>
       <Block id="qe"><p><LiveText id="qe" text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /></p></Block>
       <h3>Flat renewals</h3>
-      {w.renewal === 'asking'
-        ? <Block id="renew" cls="callout ask"><span className="co-ic"><Icon name="circle-help" size={16} /></span><p>Renewals with no price change skip approval, even over $100,000, but no rule explains it. <span className="ask-who"><Ag id="approvals" size={16} />Asking Maria Okafor in RevOps</span></p></Block>
-        : <Block id="renew"><p><LiveText id="renew" text="Flat renewals skip approval on purpose: it has been policy since 2023, because a flat renewal doesn’t change revenue risk." /></p></Block>}
+      <Block id="renew" cls={'callout' + (w.renewal === 'asking' ? ' ask' : ' answered')}>
+        <p><LiveText id="renew" text={w.renewal === 'asking' ? 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.' : 'Flat renewals skip approval on purpose: it has been policy since 2023, because a flat renewal doesn’t change revenue risk.'} />
+          {w.renewal === 'asking' && <span className="ask-who"><Ag id="approvals" size={16} />Asking Maria Okafor in RevOps</span>}</p>
+      </Block>
 
       <h2>What touches this</h2>
       <Block id="cfg" cls="tbl">
