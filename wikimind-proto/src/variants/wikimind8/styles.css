@@ -197,7 +197,7 @@ button{font:inherit;color:inherit}
 .top-menu{display:grid}
 .rail-h .ib{display:grid}
 .top-act{display:grid}
-.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:0}
+.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--bg) 64%,transparent);border-bottom:0}
 .top-r{margin:0 auto;height:56px}
 .doc{background:transparent}
 .w7 .main>.doc{padding-top:var(--s48)}
@@ -243,12 +243,12 @@ button{font:inherit;color:inherit}
 .callout{background:var(--soft)}
 .callout.ask .co-ic{color:var(--warn)}
 .tr-ic{color:var(--agent)}
-.hb{position:relative;width:16px;height:12px;display:block}
+.hb{position:relative;width:16px;height:14px;display:block}
 .hb i{position:absolute;left:0;right:0;height:2px;border-radius:2px;background:currentColor}
-.hb i:nth-child(1){top:0}.hb i:nth-child(2){top:4px}.hb i:nth-child(3){top:10px}
-.top-menu[aria-pressed="true"] .hb i:nth-child(1){top:4px;transform:rotate(45deg)}
+.hb i:nth-child(1){top:0}.hb i:nth-child(2){top:6px}.hb i:nth-child(3){top:12px}
+.top-menu[aria-pressed="true"] .hb i:nth-child(1){top:6px;transform:rotate(45deg)}
 .top-menu[aria-pressed="true"] .hb i:nth-child(2){opacity:0;transform:scaleX(.2)}
-.top-menu[aria-pressed="true"] .hb i:nth-child(3){top:4px;transform:rotate(-45deg)}
+.top-menu[aria-pressed="true"] .hb i:nth-child(3){top:6px;transform:rotate(-45deg)}
 .top-menu[aria-pressed="true"]{background:var(--soft2);color:var(--ink)}
 .om-sug{display:flex;flex-direction:column;gap:0;background:var(--panel)}
 .om-sug button{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .16s var(--eo);display:flex;align-items:center;gap:var(--s10);width:100%;border:0;border-radius:8px;box-shadow:none;padding:var(--s8) var(--s10);background:none;text-align:left;font-size:14px;line-height:20px;color:var(--ink)}
@@ -808,3 +808,16 @@ input{font:inherit}
 .tbl td.code{font-size:14px;line-height:20px}
 @media (max-width:640px){.doc h1{font-size:44px;line-height:48px}.w7 .focus h2{font-size:28px;line-height:32px;
 }}
+
+.om.mini .om-bar{background:var(--link);color:#fff;transition:width .35s var(--eo),height .35s var(--eo),border-radius .35s var(--eo),background-color .2s ease,color .2s ease}
+.om.mini .om-bar input::placeholder{color:#fff;transition:color .2s ease}
+@media (hover:hover) and (pointer:fine){
+ .om.mini .om-bar:hover{background:var(--panel);color:var(--ink2)}
+ .om.mini .om-bar:hover input::placeholder{color:var(--ink2)}
+}
+:root[data-theme="dark"] .om.mini .om-bar{color:var(--bg)}
+:root[data-theme="dark"] .om.mini .om-bar input::placeholder{color:var(--bg)}
+@media (hover:hover) and (pointer:fine){
+ :root[data-theme="dark"] .om.mini .om-bar:hover{color:var(--ink2)}
+ :root[data-theme="dark"] .om.mini .om-bar:hover input::placeholder{color:var(--ink2)}
+}
