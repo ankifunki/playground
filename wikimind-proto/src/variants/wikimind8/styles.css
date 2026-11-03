@@ -793,3 +793,10 @@ input{font:inherit}
 .hwk .rec{margin-top:0}
 .hwk .wt-ctl{margin-top:var(--s16)}
 @media (max-width:640px){.rec-f{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:var(--s16)}}
+/* Live status capsule: a 36px pill with the writing agent as a 28px circle inset 4px all round (concentric), light
+   indigo tint with a darker indigo icon, like agent tiles elsewhere; a soft ring breathes while it writes. */
+.here.live .cap{height:36px;padding:0 var(--s16) 0 var(--s4);gap:var(--s10)}
+.here.live .here-a.w{border-radius:50%}
+.here.live .here-a.w .ag-t{border-radius:50%;background:var(--linkb);color:var(--link);animation:capRing 1.6s ease-in-out infinite}
+@keyframes capRing{50%{box-shadow:0 0 0 2px color-mix(in srgb,var(--link) 24%,transparent)}}
+@media (prefers-reduced-motion:reduce){.here.live .here-a.w .ag-t{animation:none}}
