@@ -12,7 +12,7 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   return (
     <dl className="props">
             <div><dt><Icon name="badge-check" size={15} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
-      <div><dt><Icon name="radio" size={15} />Last re-read</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">re-read every hour against Salesforce</span></dd></div>
+      <div><dt><Icon name="radio" size={15} />Last re-read</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">checked hourly against Salesforce</span></dd></div>
       {extra}
     </dl>
   )
@@ -47,7 +47,7 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
     <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
       <div className="path-h" style={{ width: n * 6 - 3 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
       <div className={'path-bars' + (play ? ' play' : '')} aria-hidden="true" ref={ref} style={{ width: n * 6 - 3 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={play ? { animationDelay: `${Math.round(i * 1.5)}ms` } : undefined} />)}</div>
-      <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked by gaps {g}%: {gaps}</span></p>
+      <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked {g}%: {gaps}</span></p>
     </section>
   )
 }
@@ -62,13 +62,13 @@ export function Approvals() {
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
       <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals agent is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Props ag="approvals" re={4} verify={verify} extra={<>
-        <div><dt><Icon name="layers" size={15} />Sources</dt><dd>16 sources: Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
+        <div><dt><Icon name="layers" size={15} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
         <div><dt><Icon name="arrow-right" size={15} />Cited</dt><dd className="num">214 times this month, by 3 agents</dd></div>
       </>} />
       <PathBar />
 
       <Block id="sum" cls="lede">
-        <p>Discount approval is how Rippling reviews big deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Most approvals finish in under four hours.</p>
+        <p>Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</p>
       </Block>
 
       <h2>How it works</h2>
@@ -84,15 +84,15 @@ export function Approvals() {
       <Block id="who-cro"><ul><li>Over 35%: the CRO approves directly.</li></ul></Block>
 
       <h2>Rules</h2>
-      <Toggle id="r-exp" title="When a request expires"><p>An approval request expires after 14 days, and the rep has to submit it again. The rule exists because two deals closed on six-week-old prices in 2024.</p></Toggle>
+      <Toggle id="r-exp" title="When a request expires"><p>Requests expire after 14 days, and the rep resubmits. Added in 2024, after two deals closed on six-week-old prices.</p></Toggle>
       <Toggle id="r-after" title="After approval"><p>Once a deal is approved, only Deal Desk can change its amount. Discounts over 10% need a written reason.</p></Toggle>
 
       <h2>In practice</h2>
       <h3>Quarter-end approvals in Slack</h3>
-      <Block id="qe"><p><LiveText id="qe" text={`At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: ${w.qe[0]} of the last ${w.qe[1]} quarter ends.`} /></p></Block>
+      <Block id="qe"><p><LiveText id="qe" text={`At quarter end, Deal Desk approves large deals in #deal-desk, then logs them in Salesforce (${w.qe[0]} of the last ${w.qe[1]} quarter ends).`} /></p></Block>
       <h3>Flat renewals</h3>
       <Block id="renew" cls={'callout' + (w.renewal === 'asking' ? ' ask' : ' answered')}>
-        <p><LiveText id="renew" text={w.renewal === 'asking' ? 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.' : 'Flat renewals skip approval on purpose: it has been policy since 2023, because a flat renewal doesn’t change revenue risk.'} />
+        <p><LiveText id="renew" text={w.renewal === 'asking' ? 'Renewals with no price change skip approval, even over $100,000, but no rule explains it.' : 'Flat renewals skip approval on purpose: policy since 2023, because they don’t change revenue risk.'} />
           {w.renewal === 'asking' && <span className="ask-who"><Ag id="approvals" size={16} />Asking Maria Okafor in RevOps</span>}</p>
       </Block>
 
@@ -110,7 +110,7 @@ export function Approvals() {
       </Block>
 
       <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
-        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Rippling changed. Never typed by a person.
+        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements verified by a person. Rewritten 6 times as Rippling changed.
       </Sources>
     </article>
   )
@@ -125,7 +125,7 @@ export function Stub({ id }: { id: string }) {
       <h1>{p.title}</h1>
       <Props ag={p.ag} re={p.re} />
       <Block id={'stub-' + id} cls="callout"><span className="co-ic"><Icon name="file-text" size={16} /></span><p>{p.lede}</p></Block>
-      <p className="colo">One of {sp.total} pages in the {AG[p.ag].name} grove. This demo has one full page: <button className="wl" onClick={() => w.go('discount-approvals')}>Discount approvals</button>.</p>
+      <p className="colo">One of {sp.total} pages in the {AG[p.ag].name} grove. This demo writes out one page in full: <button className="wl" onClick={() => w.go('discount-approvals')}>Open Discount approvals</button></p>
     </article>
   )
 }

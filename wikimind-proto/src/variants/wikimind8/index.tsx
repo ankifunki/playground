@@ -43,7 +43,7 @@ function Sidebar() {
           </div>
         )
       })}
-      <p className="sb-foot">No folders, no typing: each agent writes and keeps its own grove.</p>
+      <p className="sb-foot">Each agent writes and keeps its own grove.</p>
     </nav>
   )
 }
@@ -107,12 +107,12 @@ function Rail() {
 /** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the agents, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
 /** Each agent's path to automation, and what is blocking or needed for the rest. Demo data. */
 const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string; needs: string[] }> = {
-  approvals: { rel: 99.0, own: 52, ask: 38, tag: 'Asking Maria', needs: ['Maria Okafor to confirm flat renewals skip approval on purpose (asked Oct 27)', 'One more EMEA deal to confirm regional-director routing (seen once)', 'Discounts over 20% stay with people until 30 more decisions match (26 of 56 so far)'] },
-  access: { rel: 98.1, own: 78, ask: 18, needs: ['License seat reclaims: 2 more matched decisions (58 of 60)', 'Admin-rights grants stay with people by policy'] },
-  security: { rel: 97.4, own: 41, ask: 40, tag: 'Needs Okta logs', needs: ['Read access to Okta sign-in logs (requested from IT, Nov 1)', 'Device wipes stay with people while it shadows 20 more'] },
-  finance: { rel: 99.3, own: 58, ask: 34, needs: ['NetSuite write access to fix invoice mismatches it already finds', 'Payments stay with people'] },
-  integrations: { rel: 98.4, own: 70, ask: 22, tag: 'Asking Ben Ito', needs: ['Ben Ito to explain why multi-currency CPQ quotes fail', 'Dev’s OK on a retry policy for NetSuite sync'] },
-  support: { rel: 98.9, own: 74, ask: 22, needs: ['Kim (Support) to confirm the data-loss escalation rule (11 of 11 so far)'] },
+  approvals: { rel: 99.0, own: 52, ask: 38, tag: 'Asking Maria', needs: ['Maria Okafor: confirm flat renewals skip approval on purpose (asked Oct 27)', 'One more EMEA deal, to confirm regional-director routing', 'Discounts over 20%: 30 more decisions that match a person'] },
+  access: { rel: 98.1, own: 78, ask: 18, needs: ['Seat reclaims: 2 more decisions that match a person', 'Admin rights stay with people, by policy'] },
+  security: { rel: 97.4, own: 41, ask: 40, tag: 'Needs Okta logs', needs: ['IT: grant read access to Okta sign-in logs (asked Nov 1)', 'Device wipes: shadow 20 more'] },
+  finance: { rel: 99.3, own: 58, ask: 34, needs: ['Finance: grant NetSuite write access, to fix the invoice mismatches it finds', 'Payments stay with people, by policy'] },
+  integrations: { rel: 98.4, own: 70, ask: 22, tag: 'Asking Ben Ito', needs: ['Ben Ito: explain why multi-currency CPQ quotes fail', 'Dev: approve a retry policy for NetSuite sync'] },
+  support: { rel: 98.9, own: 74, ask: 22, needs: ['Kim (Support): confirm the data-loss escalation rule'] },
 }
 
 /** A mini path bar: 3px square bars, 3px gaps, one bar per 2.5% of the work. */
@@ -126,17 +126,17 @@ function Home() {
   const w = useW(), last = w.acts[0], [open, setOpen] = useState<AgentId | null>(null)
   return (
     <article className="doc home wide">
-      <p className="home-k">Rippling, as the agents understand it</p>
-      <h1>What you can trust the agents with today, and what they still need.</h1>
+      <p className="home-k">Rippling, as the agents see it</p>
+      <h1>What the agents run today, and what they still need.</h1>
       <div className="home-row">
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
         <button className="tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={13} />Take the 1-minute tour</button>
       </div>
       <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card />
       <div className="home-3">
-        <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person across 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.go('discount-approvals')}>See the 3 misses</button></div>
+        <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.go('discount-approvals')}>See the 3 misses</button></div>
         <div className="hc"><span className="tk">Automation</span><b>64%</b><p>runs on its own, up from 51% in September</p></div>
-        <div className="hc"><span className="tk">Gaps</span><b>7%</b><p>blocked by missing access or knowledge: Okta sign-in logs, NetSuite write access</p></div>
+        <div className="hc"><span className="tk">Gaps</span><b>7%</b><p>blocked until they get Okta sign-in logs and NetSuite write access</p></div>
       </div>
       <section className="home-card">
         <div className="home-ch"><h2>The agents</h2><span className="tk">6 agents, one job each</span></div>
@@ -153,7 +153,7 @@ function Home() {
               </button>
               <div className="ags8-x" inert={!isOpen}><div>
                 <div className="ags8-d">
-                  <span className="tk">Needed to run more on its own</span>
+                  <span className="tk">To run more on its own</span>
                   <ul>{r.needs.map((n) => <li key={n}>{n}</li>)}</ul>
                   <button className="ags8-go" onClick={() => w.go(sp.pages[0].id)}>Go to the {a.name} grove<span>{sp.total} pages</span><Icon name="arrow-right" size={14} /></button>
                 </div>
@@ -174,21 +174,21 @@ function Home() {
         <section className="home-card focus">
           <span className="tk">In focus</span>
           <h2>Discount approvals</h2>
-          <p>How Rippling reviews large deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. 212 approvals watched this quarter.</p>
+          <p>Deals over $100,000 need approval before Negotiation. The discount decides who approves.</p>
           <span className="focus-by"><Ag id="approvals" name size={20} /><span>5 of 8 verified · rewritten Oct 28</span></span>
-          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal, and why</span><Icon name="arrow-right" size={15} /></button>
+          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal</span><Icon name="arrow-right" size={15} /></button>
         </section>
       </div>
       <section className="home-card">
         <span className="tk">Unwritten rules the agents found</span>
         <ul className="rules8 cols">
           <li><b>At quarter end, large deals are approved in Slack before Salesforce.</b><small>Approvals · 9 #deal-desk threads</small></li>
-          <li><b>Approval requests expire after 14 days because two deals once closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
+          <li><b>Approval requests expire after 14 days, since two deals closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
           <li><b>Cases that mention data loss get escalated by hand, whatever their priority.</b><small>Support · 11 of 11 cases</small></li>
         </ul>
       </section>
       <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
-        <b>1,284 pages</b>, <b>3,912</b> observations this week, written by 6 agents from Slack, tickets, Salesforce, meetings and documents. None typed by a person.
+        <b>1,284 pages</b> written by 6 agents from <b>3,912</b> observations this week. None typed by a person.
       </Sources>
     </article>
   )

@@ -46,10 +46,10 @@ export function Omni() {
     }
     if (/unsure|don.?t know|question|gap|missing/.test(t)) {
       return { q: text, ag: 'approvals', body: w.renewal === 'asking'
-        ? <>Two things: whether flat renewals skip approval on purpose (asking Maria Okafor in RevOps), and whether EMEA deals go to the regional director first (seen once, watching for the next one).</>
-        : <>One thing: whether EMEA deals go to the regional director first. It has been seen once; the agent is watching for the next one. Flat renewals were answered by Maria Okafor.</>, cite: { block: 'renew', label: 'In practice' } }
+        ? <>Two things: whether flat renewals skip approval on purpose (asking Maria Okafor), and whether EMEA deals go to the regional director first (seen once).</>
+        : <>One thing: whether EMEA deals go to the regional director first (seen once). Maria Okafor answered the flat-renewals question.</>, cite: { block: 'renew', label: 'In practice' } }
     }
-    if (/quarter|slack|deal.?desk/.test(t)) return { q: text, ag: 'approvals', body: <>At quarter end, Deal Desk approves large deals in #deal-desk first and logs them in Salesforce afterward: {w.qe[0]} of the last {w.qe[1]} quarter ends. It is unofficial; no policy says so.</>, cite: { block: 'qe', label: 'Quarter-end approvals in Slack' } }
+    if (/quarter|slack|deal.?desk/.test(t)) return { q: text, ag: 'approvals', body: <>At quarter end, Deal Desk approves large deals in #deal-desk, then logs them in Salesforce ({w.qe[0]} of the last {w.qe[1]} quarter ends). No policy says so.</>, cite: { block: 'qe', label: 'Quarter-end approvals in Slack' } }
     if (/cpq|sync|currency/.test(t)) return { q: text, ag: 'integrations', body: w.cpq === 'failing' ? <>CPQ quote sync is failing for multi-currency deals since Oct 29. The Integrations agent asked Ben Ito why.</> : <>CPQ quote sync is fixed: Ben Ito corrected the currency mapping, and the last 40 quotes synced.</>, cite: { block: 'cfg', label: 'Configured in Salesforce' } }
     return { q: text, ag: null, ask: true, body: <>No agent knows that yet, and none will guess.</> }
   }
@@ -93,9 +93,9 @@ export function Omni() {
             <div>
               {ans.ag && <span className="om-who">{AG[ans.ag].name} agent</span>}
               <p>{ans.body}</p>
-              {ans.cite && <button className="wl om-cite" onClick={() => w.jump(ans.cite!.block)}>See it on the page: {ans.cite.label}</button>}
+              {ans.cite && <button className="wl om-cite" onClick={() => w.jump(ans.cite!.block)}>Go to {ans.cite.label}</button>}
               {ans.ask && (asked
-                ? <p className="om-asked">Asked. The Approvals agent will write Maria’s answer into the page and tell you here.</p>
+                ? <p className="om-asked">Asked. Her answer will appear on the page and here.</p>
                 : <span className="om-acts"><button className="om-btn" onClick={askPerson}>Ask Maria Okafor</button><button className="om-btn ghost" onClick={() => setAns(null)}>Not now</button></span>)}
             </div>
           </div>

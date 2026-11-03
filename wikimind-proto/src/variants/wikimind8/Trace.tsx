@@ -43,7 +43,7 @@ export function Trace({ id }: { id: string }) {
           </li>
         ))}
       </ol>
-      <p className="tr-foot">Every link is kept. Nothing on this page was typed by a person; people verify, answer, and revoke.</p>
+      <p className="tr-foot">Every step is kept. Agents write; people verify, answer and revoke.</p>
     </div>
   )
 }

@@ -92,7 +92,7 @@ export function Sim() {
   const small = deal.amt <= 100000, f = w.fin
   const who = small ? 'No approval needed' : deal.disc > 35 ? 'CRO' : deal.disc > f ? 'Sales manager → Finance' : 'Sales manager'
   const time = small ? '' : deal.disc > 35 ? '6 h 05 m' : deal.disc > f ? '3 h 40 m' : '1 h 10 m'
-  const why = small ? `${money(deal.amt)} is under $100,000, so no approval is needed.` : deal.disc > 35 ? `${deal.disc}% is over 35%, so the CRO approves directly.` : deal.disc > f ? `${deal.disc}% is over ${f}%, so Finance approves after the sales manager.` : `Up to ${f}% off, the sales manager approves on their own.`
+  const why = small ? `${money(deal.amt)} is under $100,000, so no approval is needed.` : deal.disc > 35 ? `${deal.disc}% is over 35%, so the CRO approves directly.` : deal.disc > f ? `${deal.disc}% is over ${f}%, so Finance approves after the sales manager.` : `${deal.disc}% is ${f}% or less, so the sales manager approves alone.`
   const set = (p: Partial<typeof deal>) => setDeal((d) => ({ ...d, ...p }))
   return (
     <div className="sim" id="sim" aria-label="Try a deal">
