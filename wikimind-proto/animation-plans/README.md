@@ -29,8 +29,8 @@ Written by `improve-animations` at commit `da6b3f9`, against `src/variants/wikim
 - The "Verified by" value crossfades (200ms) when Dana's verification is withdrawn and restored.
 - Wide row buttons (agent rows, nav pages, feed items) get an instant press tint; the In focus CTA nudges its arrow 2px on press (160ms `--eo`).
 
-## Backlog (not planned)
+## Backlog (done)
 
-- **Cohesion:** `cubic-bezier(.32,.72,0,1)` is hand-typed 5 times and `cubic-bezier(.77,0,.175,1)` twice. Add `--ease-drawer` and `--ease-in-out` tokens next to `--eo`.
-- **Dead CSS:** about 162 rules for `.fo`, `.fx` and `.fl` came over from Wikimind 7. No Wikimind 8 component uses them; delete them.
-- **Missed opportunity (optional):** expanding an agent row on Home makes the rows below jump. A `grid-template-rows: 0fr → 1fr` transition at 250ms `--eo` would smooth it. It's a layout animation, but on a rare action, so it's acceptable if wanted.
+- **Cohesion:** `--ease-drawer` (`cubic-bezier(.32,.72,0,1)`) and `--ease-in-out` (`cubic-bezier(.77,0,.175,1)`) now sit next to `--eo`; the six hand-typed copies use the tokens.
+- **Dead CSS:** 167 rules and 4 keyframes (`foIn`, `foDeal`, `foPulse`, `foPop`) for Wikimind 7's `.fo`, `.fx` and `.fl` components are gone, and 14 mixed selectors were trimmed. Computed styles of every element on Home and the page match the old stylesheet (only mid-loop live-pulse opacity differs).
+- **Missed opportunity:** agent rows opening in place shipped with the opportunities above.
