@@ -75,7 +75,6 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
   const end = frames[frames.length - 1].at
   const neg = t > 1800, locked = !r.small && t > 2400 && t < end, checking = t > 4200 && t < 7600, routed = !r.small && t > 7600
   const receipt = t > end + 400
-  const cur = t < 900 ? { x: 20, y: 70 } : t < 7600 ? { x: 37, y: 30 } : { x: 76, y: 34 }
   const toggle = () => { started.current = true; if (t >= len - 1) { setT(0); setPlay(true) } else setPlay(!play) }
   const jump = (s: number) => { started.current = true; setPlay(false); const x = frames.find((y) => y.s === s); if (x) setT(x.at + 1) }
   // Chapter track: how far along the four steps the recording is.
@@ -106,26 +105,32 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
           </li>
         ))}
       </ol>
-      <div className="wt-win" aria-hidden="true">
-        <div className="wt-bar"><i /><i /><i /><span>rippling.lightning.force.com / Opportunity / {deal.name}</span></div>
-        <div className="wt-body">
-          <div className="wt-rec">
-            <div className="wt-h"><span className="wt-obj">Opportunity</span><b>{deal.name}</b>{locked && <span className="wt-lock"><Icon name="lock" size={12} />Locked for approval</span>}</div>
-            <ol className="wt-path">{['Qualify', 'Proposal', 'Negotiation', 'Closed'].map((s, i) => <li key={s} className={(i < (neg ? 2 : 1) ? 'done' : '') + (i === (neg ? 2 : 1) ? ' cur' : '')}>{s}</li>)}</ol>
-            <dl className="wt-f"><div><dt>Amount</dt><dd>{money(deal.amt)}</dd></div><div><dt>Discount</dt><dd>{deal.disc}%</dd></div><div><dt>Owner</dt><dd>Sam Ortiz</dd></div></dl>
-          </div>
-          <div className="wt-side">
-            <span className="wt-st">Approval history</span>
-            {!routed ? <p className="wt-empty">{r.small ? 'No approval needed' : 'No approvals yet'}</p> : (
-              <ul className="wt-ah">
-                <li className="in"><span>Submitted</span><small>Approvals agent</small></li>
-                {r.approvers.map((a, i) => { const ok = t > okAt[i]; return <li key={a.label} className={'in' + (ok ? ' ok' : '')}><span>{ok ? 'Approved' : 'Pending'}</span><small>{a.who}</small>{ok && <em>{a.at}</em>}</li> })}
-              </ul>
-            )}
-          </div>
-          {checking && <div className="wt-agent"><Ag id="approvals" size={18} /><span><b>Approvals agent</b> {r.reason}</span></div>}
-          {receipt && <div className="wt-agent ok"><Icon name="lock-open" size={14} /><span>{r.small ? 'Moved on · receipt logged' : 'Unlocked · receipt logged'} on Discount approvals</span></div>}
-          <span className={'wt-cur' + (t > 1500 && t < 1900 ? ' click' : '')} style={{ left: cur.x + '%', top: cur.y + '%' }} />
+      <div className="rec" aria-hidden="true">
+        <div className="rec-h">
+          <div><span className="tk">Opportunity</span><b className="rec-name">{deal.name}</b></div>
+          <span className={'rec-lock' + (locked ? ' on' : receipt ? ' done' : '')}>
+            <Icon name={locked ? 'lock' : 'lock-open'} size={14} />
+            {locked ? 'Locked for approval' : receipt ? (r.small ? 'Moved on · receipt logged' : 'Unlocked · receipt logged') : 'Open'}
+          </span>
+        </div>
+        <ol className="rec-stage" style={{ '--p': ((neg ? 2 : 1) + 1) / 4 } as React.CSSProperties}>
+          <span className="rec-fill" />
+          {['Qualify', 'Proposal', 'Negotiation', 'Closed'].map((s, i) => <li key={s} className={i < (neg ? 2 : 1) ? 'done' : i === (neg ? 2 : 1) ? 'cur' : ''}>{s}</li>)}
+        </ol>
+        <dl className="rec-f"><div><dt className="tk">Amount</dt><dd>{money(deal.amt)}</dd></div><div><dt className="tk">Discount</dt><dd>{deal.disc}%</dd></div><div><dt className="tk">Owner</dt><dd>Sam Ortiz</dd></div></dl>
+        <div className="rec-log">
+          <span className="tk">Approval history</span>
+          {t <= 4200 ? <p className="rec-empty">No approvals yet</p> : (
+            <ul className="rec-ah">
+              <li className="agent"><i className="rec-dot" /><span className="rec-what"><b>Approvals agent checked the rules</b><small>{r.reason}</small></span><em>+2 s</em></li>
+              {t > 7600 && (r.small
+                ? <li className="ok"><i className="rec-dot" /><span className="rec-what"><b>No approval needed</b><small>The deal moves on</small></span><em>+4 s</em></li>
+                : <li><i className="rec-dot" /><span className="rec-what"><b>Submitted</b><small>To {r.first}</small></span><em>+4 s</em></li>)}
+              {routed && r.approvers.map((a, i) => { const ok = t > okAt[i], wait = !ok && (i === 0 || t > okAt[i - 1]); return (
+                <li key={a.label} className={ok ? 'ok' : wait ? 'wait' : ''}><i className="rec-dot" /><span className="rec-what"><b>{ok ? 'Approved' : wait ? 'Waiting' : 'Next'}</b><small>{a.who}</small></span>{ok && <em>{a.at}</em>}</li>
+              ) })}
+            </ul>
+          )}
         </div>
       </div>
       <div className="wt-ctl">
