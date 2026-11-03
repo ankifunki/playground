@@ -131,7 +131,7 @@ function Home() {
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
         <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>
       </div>
-      <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card />
+      <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card label={false} />
       <div className="home-3">
         <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.go('discount-approvals')}>See the 3 misses</button></div>
         <div className="hc"><span className="tk">Automation</span><b>64%</b><p>runs on its own, up from 51% in September</p></div>
