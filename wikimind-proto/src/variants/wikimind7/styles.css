@@ -665,3 +665,8 @@ body{font-size:15.5px}
 @media (min-width:1101px) and (hover:hover){.blk.editing>.why{opacity:0 !important}}
 @media (max-width:640px){.blk:has(>.why){padding-right:30px}.blk>.why{right:2px;top:2px;width:24px;height:24px}}
 .doc h2::before{content:none}
+/* Live text: a quiet fade-in, then a soft highlight that fades */
+.lt.in{animation:ltIn .7s var(--eo) both}
+.lt.in.fresh{animation:ltIn .7s var(--eo) both,glow 2.6s ease-out both}
+@keyframes ltIn{from{opacity:0;filter:blur(3px)}}
+@media (prefers-reduced-motion:reduce){.lt.in,.lt.in.fresh{animation:fade .3s both}}

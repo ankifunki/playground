@@ -14,44 +14,19 @@ export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?
   )
 }
 
-const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#%&*+=<>/\\'
-const rnd = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
-
 /**
- * Text that rewrites itself when the knowledge changes, decoded letter by letter: a coloured lead letter sweeps left to
- * right, a short tail of scrambling glyphs behind it, the new text settled before it, the old text still waiting after
- * it. Then the sentence glows for a moment. Reduced motion swaps it with a fade.
+ * Text that rewrites itself when the knowledge changes: the new sentence fades in over the old one, then keeps a soft
+ * highlight for a moment so you can see what changed.
  */
 export function LiveText({ text }: { text: string }) {
-  const prev = useRef(text), [anim, setAnim] = useState<{ old: string; i: number; g: string[] } | null>(null), [fresh, setFresh] = useState(false)
+  const prev = useRef(text), [n, setN] = useState(0), [fresh, setFresh] = useState(false)
   useEffect(() => {
     if (prev.current === text) return
-    const old = prev.current; prev.current = text
-    if (RM) { setFresh(true); const t = window.setTimeout(() => setFresh(false), 2500); return () => window.clearTimeout(t) }
-    let i = 0
-    const t = window.setInterval(() => {
-      i += 1
-      if (i > text.length + TAIL) { window.clearInterval(t); setAnim(null); setFresh(true); window.setTimeout(() => setFresh(false), 2400); return }
-      setAnim({ old, i, g: Array.from({ length: TAIL }, rnd) })
-    }, 24)
-    return () => window.clearInterval(t)
+    prev.current = text; setN((x) => x + 1); setFresh(true)
+    const t = window.setTimeout(() => setFresh(false), 2600); return () => window.clearTimeout(t)
   }, [text])
-  if (anim) {
-    const { old, i, g } = anim, lead = Math.min(i, text.length), from = Math.max(0, i - TAIL)
-    const settled = text.slice(0, from)
-    // Positions from..lead scramble (the newest one is the coloured lead); beyond the lead, the old text remains.
-    const scr: string[] = []
-    for (let k = from; k < lead; k++) scr.push(text[k] === ' ' ? ' ' : g[k - from])
-    const rest = old.slice(lead)
-    return (
-      <span className="lt" aria-label={text}>
-        <span aria-hidden="true">{settled}{scr.map((c, k) => <span key={k} className={'lt-g' + (k === scr.length - 1 ? ' lead' : '')}>{c}</span>)}<span className="lt-old">{rest}</span></span>
-      </span>
-    )
-  }
-  return <span className={'lt' + (fresh ? ' fresh' : '')}>{text}</span>
+  return <span key={n} className={'lt' + (n ? ' in' : '') + (fresh ? ' fresh' : '')}>{text}</span>
 }
-const TAIL = 4
 
 /** The chip on anything an agent changed: who and when. It opens the block's trace, like every "Why?" on the page. */
 export function Chip({ id }: { id: string }) {
