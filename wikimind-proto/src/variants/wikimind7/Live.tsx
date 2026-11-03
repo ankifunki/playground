@@ -36,7 +36,7 @@ export function Chip({ id }: { id: string }) {
   return (
     <span className="chip-w">
       <button className={'chip' + (recent ? ' new' : '')} onClick={() => w.openTrace(id)} aria-label={`Edited ${recent ? 'just now' : ago(s)}: see why`}>
-        <Ag id={y.ag} size={16} /><span>Edited {recent ? 'just now' : ago(s)}</span>
+        <span>Edited {recent ? 'just now' : ago(s)}</span>
       </button>
     </span>
   )

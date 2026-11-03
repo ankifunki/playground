@@ -720,3 +720,24 @@ body{font-family:var(--sans);font-size:15.5px;font-weight:400}
 .lt-g{font-family:var(--sans)}
 /* Code: Salesforce identifiers only */
 .code{font-family:var(--mono);font-size:13px}
+/* Table: plain status text, its own trace column, no bars, no icons */
+.st{display:block;font-size:14px;font-weight:500;color:var(--ink2);text-transform:none;letter-spacing:0}
+.st.warn{color:var(--warn)}.st.ok{color:var(--ok)}
+.tbl td .chip-w{display:block;margin:4px 0 0}
+.tbl td .chip{height:auto;padding:0;font-size:12.5px}
+.tbl th:nth-child(1){width:29%}.tbl th:nth-child(2){width:17%}.tbl th:nth-child(3){width:30%}.tbl th:nth-child(4){width:18%}.tbl th:nth-child(5){width:6%}
+.tbl td.tc{text-align:right;padding-right:8px}
+.tbl td.tc .why{opacity:.7}
+.mk::before{content:none}
+.chip,.chip.new{padding:0}
+@media (max-width:640px){.tbl td.tc{position:absolute;right:0;top:8px}.tbl tr{position:relative}}
+/* No accent bars, no injected icons: the summary is a lede; the open question is a quiet warm note */
+.callout,.callout.ask{box-shadow:none}
+.co-ic{display:none}
+#b-sum.callout{background:none;padding:4px 10px;margin:4px -10px 8px}
+#b-sum.callout p{font-size:18px;line-height:1.6;color:var(--ink)}
+.callout.ask{background:var(--warnb);border-radius:10px;padding:14px 16px}
+.callout.ask .blk-c::before{content:"Open question";display:block;margin-bottom:4px;font:650 11px var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--warn)}
+.ask-who .ag{display:none}
+.tr-b blockquote{border-left:0;padding:8px 12px;border-radius:8px}
+.tbl tr.editing td{background:none}

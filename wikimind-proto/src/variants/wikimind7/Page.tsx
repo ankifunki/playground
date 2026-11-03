@@ -69,12 +69,12 @@ export function Approvals() {
       <h2>Configured in Salesforce</h2>
       <Block id="cfg" cls="tbl">
         <table>
-          <thead><tr><th>Automation</th><th>Type</th><th>What it does</th><th>Status</th></tr></thead>
+          <thead><tr><th>Automation</th><th>Type</th><th>What it does</th><th>Status</th><th aria-label="Trace" /></tr></thead>
           <tbody>
-            <tr><td className="code">Large Deal Approval</td><td>Approval process</td><td><LiveText text={`Routes deals over $100,000: manager, Finance over ${f}%, CRO over 35%`} /></td><td><span className="mk">Active</span></td></tr>
-            <tr><td className="code">Discount_Requires_Reason</td><td>Validation rule</td><td>Blocks a discount over 10% without a reason</td><td><span className="mk">Active</span></td></tr>
-            <tr><td className="code">Amount_Locked_After_Approval</td><td>Validation rule</td><td>Only Deal Desk can change an approved amount</td><td><span className="mk">Active</span></td></tr>
-            <tr id="b-cfg-cpq" className={w.presence?.block === 'cfg-cpq' ? 'editing' : ''}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="mk warn">Failing for multi-currency</span> : <span className="mk ok fresh">Fixed · 40 of 40 synced</span>} <Chip id="cfg-cpq" /> <Why id="cfg-cpq" /></td></tr>
+            <tr><td className="code">Large Deal Approval</td><td>Approval process</td><td><LiveText text={`Routes deals over $100,000: manager, Finance over ${f}%, CRO over 35%`} /></td><td><span className="st">Active</span></td><td /></tr>
+            <tr><td className="code">Discount_Requires_Reason</td><td>Validation rule</td><td>Blocks a discount over 10% without a reason</td><td><span className="st">Active</span></td><td /></tr>
+            <tr><td className="code">Amount_Locked_After_Approval</td><td>Validation rule</td><td>Only Deal Desk can change an approved amount</td><td><span className="st">Active</span></td><td /></tr>
+            <tr id="b-cfg-cpq" className={w.presence?.block === 'cfg-cpq' ? 'editing' : ''}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="st warn">Failing for multi-currency</span> : <span className="st ok">Fixed · 40 of 40 synced</span>}<Chip id="cfg-cpq" /></td><td className="tc"><Why id="cfg-cpq" /></td></tr>
           </tbody>
         </table>
       </Block>
