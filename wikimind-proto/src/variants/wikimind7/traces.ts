@@ -19,13 +19,13 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
   'who-mgr': { label: 'Who approves · sales manager', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Approval step 1 routes to the deal owner’s manager for every discount', src: 'Large Deal Approval · step 1', at: 'Mar 3' },
     { k: 'reasoned', by: 'approvals', t: 'Deals at or under the Finance threshold stopped after step 1 in 58 of 58 cases this month.', at: 'Oct 30' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified', at: 'Oct 28' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 28' },
   ] },
   'who-fin': { label: 'Who approves · Finance', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Approval step 2 entry criteria: Discount over 20%', src: 'Large Deal Approval · step 2', at: 'Mar 3' },
     { k: 'observed', by: 'approvals', t: 'Priya Shah in #deal-desk', src: 'Slack · #deal-desk', quote: '“Finance needs to sign off anything above 20, no exceptions.”', at: 'Sep 14' },
     { k: 'reasoned', by: 'approvals', t: 'Config and practice agree: 26 of 26 deals over 20% had a Finance approval.', at: 'Oct 30' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified', at: 'Oct 28' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 28' },
   ] },
   'who-cro': { label: 'Who approves · CRO', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Salesforce changed: CRO threshold lowered from 40% to 35%', src: 'Setup audit trail', at: 'Oct 28' },
@@ -36,11 +36,11 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
     { k: 'observed', by: 'approvals', t: 'Approval requests auto-recall after 14 days', src: 'Large Deal Approval · settings', at: 'Mar 3' },
     { k: 'observed', by: 'approvals', t: 'Found the reason in an old thread', src: 'Slack · #revops, 2024', quote: '“Two deals closed on six-week-old prices. We’re capping approvals at two weeks.”', at: 'Apr 2024' },
     { k: 'reasoned', by: 'approvals', t: 'The rule exists because of the stale-price deals; nothing newer contradicts it.', at: 'Oct 2' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified', at: 'Oct 3' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 3' },
   ] },
   'r-after': { label: 'After approval', tier: 'verified', steps: [
     { k: 'observed', by: 'finance', t: 'Validation rules Amount_Locked_After_Approval and Discount_Requires_Reason', src: 'Salesforce config', at: 'Mar 3' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified', at: 'Oct 3' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 3' },
   ] },
   qe: { label: 'Quarter-end approvals in Slack', tier: 'unofficial', steps: [
     { k: 'observed', by: 'approvals', t: 'Large deals approved in #deal-desk before Salesforce, at quarter end', src: 'Slack · 9 #deal-desk threads', at: 'last 12 quarters' },

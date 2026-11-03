@@ -33,8 +33,8 @@ export function Trace({ id }: { id: string }) {
           <li key={i} className={'tr-s ' + s.k + (i >= base.steps.length ? ' new' : '')}>
             <span className="tr-ic" aria-hidden="true"><Icon name={KIND[s.k].ic} size={13} /></span>
             <div className="tr-b">
-              <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span className="tr-by">{s.by === 'person' ? s.name : `${AG[s.by].name} agent`}</span><span className="tr-at">{s.at}</span></div>
-              <p>{s.t}</p>
+              <p className="tr-t">{s.t}</p>
+              <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span>{s.by === 'person' ? s.name : `${AG[s.by].name} agent`}</span><span>{s.at}</span></div>
               {s.quote && <blockquote>{s.quote}</blockquote>}
               {s.before && <p className="tr-diff"><del>{s.before}</del>{s.after && <ins>{s.after}</ins>}</p>}
               {s.src && <span className="tr-src"><Icon name="file-text" size={12} />{s.src}</span>}
