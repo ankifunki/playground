@@ -130,7 +130,7 @@ function Home() {
       <h1>What the agents run today, and what they still need.</h1>
       <div className="home-row">
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
-        <button className="tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={13} />Take the 1-minute tour</button>
+        <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={13} />Take the 1-minute tour</button>
       </div>
       <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card />
       <div className="home-3">
@@ -155,7 +155,7 @@ function Home() {
                 <div className="ags8-d">
                   <span className="tk">To run more on its own</span>
                   <ul>{r.needs.map((n) => <li key={n}>{n}</li>)}</ul>
-                  <button className="ags8-go" onClick={() => w.go(sp.pages[0].id)}>Go to the {a.name} grove<span>{sp.total} pages</span><Icon name="arrow-right" size={14} /></button>
+                  <button className="btn soft ags8-go" onClick={() => w.go(sp.pages[0].id)}>Go to the {a.name} grove<span>{sp.total} pages</span><Icon name="arrow-right" size={14} /></button>
                 </div>
               </div></div>
             </li>

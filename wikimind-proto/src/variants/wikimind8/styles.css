@@ -1070,3 +1070,42 @@ body{font-family:var(--sans);font-size:16px}
 /* The ask bar's container never shrink-wraps: one fixed column width in both states */
 .om{box-sizing:border-box;width:100%;max-width:840px}
 .pg-home .om{max-width:1224px}
+
+/* ---------- System: one scale, one tile, one button ----------
+   Type: Label mono 11 · Meta 13 · UI 14 · Body 16 · Title serif 20 · Headline serif 32 (28 phones) · Display serif 56 (44 phones).
+   Weights 400 / 500 (mono labels 450). Radius: 4 inline marks · 8 controls and inner panels · 12 cards and popovers ·
+   16 floating surfaces · 999 pills · 50% sources and dots. Agent tiles are a rounded square at 28% of their size. */
+:root{--fs-label:11px;--fs-meta:13px;--fs-ui:14px;--fs-body:16px;--fs-title:20px;--fs-head:32px;--fs-display:56px;
+ --r-xs:4px;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-pill:999px;--r-tile:28%}
+/* Meta */
+.rail-m small,.rail-m .wl,.sb-c,.sb-n,.om-sug small,.om-sug button small,.chip,.chip span,.wt-empty,.sb-foot,.tr-foot,.wt-path li,.sb-ws small,.tr-src,.tr-at,.tr-by,.rail small,.props-m,.srcs-i::after,.why{font-size:var(--fs-meta) !important}
+/* UI */
+.mv8-t,.focus-cta,.focus-cta span,.tr-b p.tr-t,.om-btn{font-size:var(--fs-ui)}
+/* Body */
+.ags8-d li,.om-ab p,.ag-row b,.sim-r b{font-size:var(--fs-body)}
+/* Title, Headline, Display */
+.wt-cap,.focus p,.lede p,#b-sum.callout p{font-size:var(--fs-title) !important}
+.rules8 b{font-size:var(--fs-title)}
+.focus h2{font-size:var(--fs-head) !important}
+.doc h1{font-size:var(--fs-display)}
+@media (max-width:640px){.doc h1{font-size:44px}.focus h2{font-size:28px !important}}
+/* Two weights */
+.cap-t b,.sb-logo,.om-q,.cursor{font-weight:500}
+.cursor{font-size:var(--fs-meta)}
+/* Radius */
+.ag-t,.sb .ag-t,.here-a .ag-t,.sb-logo,.om-none,.doc-ic{border-radius:var(--r-tile)}
+.sb-i,.sb-h,.sb-p,.sb-q,.why,.tr-src,.srcs-i::after,.callout,.blk,.props,.tbl table,.wt-win,.wt-agent{border-radius:var(--r-sm)}
+.callout.ask,.pop{border-radius:var(--r-md)}
+@media (max-width:640px){.tbl table{border-radius:0}}
+/* Button: one pill, three looks. Primary is ink (indigo means an agent, a link or live, never a generic action). */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 16px;border:0;border-radius:var(--r-pill);font:500 var(--fs-ui) var(--sans);white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 160ms var(--eo),background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--ink);color:var(--panel)}
+.btn.soft{background:var(--linkb);color:var(--link)}
+.btn.ghost{border:0;background:none;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (hover:hover) and (pointer:fine){
+ .btn.primary:hover{background:color-mix(in srgb,var(--ink) 86%,var(--panel))}
+ .btn.soft:hover{background:color-mix(in srgb,var(--link) 14%,var(--linkb))}
+ .btn.ghost:hover{background:var(--soft)}
+}
+.om-k{font:450 var(--fs-label) var(--mono) !important}

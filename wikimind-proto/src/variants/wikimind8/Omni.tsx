@@ -96,7 +96,7 @@ export function Omni() {
               {ans.cite && <button className="wl om-cite" onClick={() => w.jump(ans.cite!.block)}>Go to {ans.cite.label}</button>}
               {ans.ask && (asked
                 ? <p className="om-asked">Asked. Her answer will appear on the page and here.</p>
-                : <span className="om-acts"><button className="om-btn" onClick={askPerson}>Ask Maria Okafor</button><button className="om-btn ghost" onClick={() => setAns(null)}>Not now</button></span>)}
+                : <span className="om-acts"><button className="btn primary om-btn" onClick={askPerson}>Ask Maria Okafor</button><button className="btn ghost om-btn" onClick={() => setAns(null)}>Not now</button></span>)}
             </div>
           </div>
         </div>

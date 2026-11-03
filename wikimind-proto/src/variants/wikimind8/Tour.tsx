@@ -56,7 +56,7 @@ export function Tour() {
           <span className="tour-dots">{STEPS.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
           <button className="tour-x" onClick={() => w.setTour(null)}>Skip</button>
           {i > 0 && <button className="ib" onClick={() => w.setTour(i - 1)} aria-label="Back"><Icon name="arrow-right" size={14} /></button>}
-          <button className="tour-n" onClick={next}>{i < STEPS.length - 1 ? 'Next' : 'Done'}</button>
+          <button className="btn primary tour-n" onClick={next}>{i < STEPS.length - 1 ? 'Next' : 'Done'}</button>
         </div>
       </div>
     </>
