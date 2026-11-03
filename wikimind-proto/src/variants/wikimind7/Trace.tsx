@@ -18,7 +18,7 @@ const TIER: Record<Tier, string> = { verified: 'Verified by a person', observed:
 export function Trace({ id }: { id: string }) {
   const w = useW(), base = TRACE[id], el = typeof document !== 'undefined' ? (document.querySelector(`#b-${id} .blk-c`) ?? document.querySelector(`#b-${id}`)) : null
   if (!base) return null
-  const steps = [...base.steps, ...(w.extra[id] || [])]
+  const live = w.extra[id] || [], steps = [...base.steps.map((x) => ({ ...x, isNew: false })), ...live.map((x) => ({ ...x, isNew: true }))].reverse() // newest first
   const tier: Tier = id === 'who-fin' && w.verify === 'checking' ? 'checking' : id === 'renew' && w.renewal === 'answered' ? 'verified' : id === 'cfg-cpq' && w.cpq === 'fixed' ? 'observed' : base.tier
   const claim = id === 'flow' || id === 'cfg' ? '' : el instanceof HTMLTableRowElement ? [...el.cells].slice(0, 3).map((c) => c.textContent).join(' · ') : (el?.textContent || '').replace(/Edited.*$|Why\?|Asking .*$/g, '').replace(/\s+/g, ' ').trim().slice(0, 220)
   return (
@@ -30,7 +30,7 @@ export function Trace({ id }: { id: string }) {
       </div>
       <ol className="tr-steps">
         {steps.map((s, i) => (
-          <li key={i} className={'tr-s ' + s.k + (i >= base.steps.length ? ' new' : '')}>
+          <li key={i} className={'tr-s ' + s.k + (s.isNew ? ' new' : '')}>
             <span className="tr-ic" aria-hidden="true"><Icon name={KIND[s.k].ic} size={13} /></span>
             <div className="tr-b">
               <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span className="tr-at">{s.at}</span></div>

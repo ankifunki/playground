@@ -14,17 +14,17 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
     { k: 'observed', by: 'approvals', t: 'Read the Large Deal Approval process in Salesforce setup', src: 'Salesforce config · 6 years of changes', at: 'Mar 3' },
     { k: 'observed', by: 'approvals', t: 'Watched 1,912 approvals in the last 30 days', src: 'Approval history', at: 'ongoing' },
     { k: 'reasoned', by: 'approvals', t: 'Every deal over $100,000 that reached Negotiation was locked for approval (412 of 412). Median time to approve: 3 h 40 m.', at: 'Oct 30' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified the summary against the process', at: 'Oct 12' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified the summary against the process', at: 'Oct 31' },
   ] },
   'who-mgr': { label: 'Who approves · sales manager', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Approval step 1 routes to the deal owner’s manager for every discount', src: 'Large Deal Approval · step 1', at: 'Mar 3' },
-    { k: 'reasoned', by: 'approvals', t: 'Deals at or under the Finance threshold stopped after step 1 in 58 of 58 cases this month.', at: 'Oct 30' },
+    { k: 'reasoned', by: 'approvals', t: 'Deals at or under the Finance threshold stopped after step 1 in 58 of 58 cases this month.', at: 'Oct 27' },
     { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 28' },
   ] },
   'who-fin': { label: 'Who approves · Finance', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Approval step 2 entry criteria: Discount over 20%', src: 'Large Deal Approval · step 2', at: 'Mar 3' },
     { k: 'observed', by: 'approvals', t: 'Priya Shah in #deal-desk', src: 'Slack · #deal-desk', quote: '“Finance needs to sign off anything above 20, no exceptions.”', at: 'Sep 14' },
-    { k: 'reasoned', by: 'approvals', t: 'Config and practice agree: 26 of 26 deals over 20% had a Finance approval.', at: 'Oct 30' },
+    { k: 'reasoned', by: 'approvals', t: 'Config and practice agree: 26 of 26 deals over 20% had a Finance approval.', at: 'Oct 27' },
     { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Checked it against Salesforce and the policy', at: 'Oct 28' },
   ] },
   'who-cro': { label: 'Who approves · CRO', tier: 'verified', steps: [
@@ -62,6 +62,6 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
   ] },
   flow: { label: 'How it works', tier: 'verified', steps: [
     { k: 'observed', by: 'approvals', t: 'Drew the flow from Large Deal Approval and 30 days of approval history', src: 'Salesforce config · approval history', at: 'Oct 30' },
-    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified the routes', at: 'Oct 28' },
+    { k: 'verified', by: 'person', name: 'Dana Ruiz', t: 'Verified the routes', at: 'Oct 31' },
   ] },
 }
