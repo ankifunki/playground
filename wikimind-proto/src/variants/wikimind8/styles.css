@@ -620,7 +620,7 @@ body{font-weight:400;margin:0;background:var(--panel);color:var(--ink);-webkit-f
 .ic *{transform-box:fill-box;transform-origin:center}
 .ib,.why,.hwk-play,.tour-b,.wt-play,.om-go{transition:transform .16s var(--eo),background-color .15s ease,color .15s ease}
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
- .ib .ic,.why .ic,.hwk-play .ic,.tour-b .ic,.om-go .ic,.sb-i .ic,.sb-p .ic,.rail-ch .ic{transition:transform .32s var(--eo)}
+ .ib .ic,.why .ic,.hwk-play .ic,.tour-b .ic,.om-go .ic,.rail-ch .ic{transition:transform .32s var(--eo)}
  .ib:hover .ic-x{transform:rotate(90deg)}
  .ib:hover .ic-pause rect,.hwk-play:hover .ic-pause rect,.wt-play:hover .ic-pause rect{animation:icPulse .5s var(--eo)}
  .ib:hover .ic-pause rect:last-child,.hwk-play:hover .ic-pause rect:last-child{animation-delay:.06s}
@@ -630,9 +630,6 @@ body{font-weight:400;margin:0;background:var(--panel);color:var(--ink);-webkit-f
  .top-act:hover .ic-activity{animation:icBeat .6s var(--eo)}
  .why:hover .ic-trace circle{animation:icPop .5s var(--eo)}
  .why:hover .ic-trace circle:nth-of-type(2){animation-delay:.06s}.why:hover .ic-trace circle:nth-of-type(3){animation-delay:.12s}
- .sb-i:hover .ic-house{animation:icLift .45s var(--eo)}
- .sb-i:hover .ic-activity{animation:icBeat .6s var(--eo)}
- .sb-p:hover .ic-file{animation:icLift .45s var(--eo)}
  .props dt:hover .ic-badge-check,.mv8 li:hover .ic-circle-check{animation:icPop .45s var(--eo)}
  .mv8 li:hover .ic-pencil-line .pen{animation:icScribble .55s var(--eo);transform-origin:20% 80%}
  .mv8 li:hover .ic-eye{animation:icBlink .45s var(--eo)}
@@ -827,3 +824,5 @@ input{font:inherit}
 .sim-watch{display:inline-flex;align-items:center;gap:var(--s6);margin-top:var(--s16);font-size:14px;line-height:20px}
 .hwk-deal{display:flex;justify-content:space-between;align-items:center;gap:var(--s12);margin:var(--s12) 0 0;font-size:12px;line-height:18px;color:var(--ink2)}
 @media (max-width:640px){.hwk .wt-win{margin-top:var(--s24)}}
+/* Nav icons never animate: no hover motion, and the group chevron flips without a transition. Live marks still breathe. */
+.sb .ic,.sb .sb-ch{animation:none;transition:none}
