@@ -11,8 +11,8 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   const w = useW(), [t0] = useState(w.now)
   return (
     <dl className="props">
-            <div><dt><Icon name="badge-check" size={15} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
-      <div><dt><Icon name="radio" size={15} />Last checked</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
+            <div><dt><Icon name="badge-check" size={16} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
+      <div><dt><Icon name="radio" size={16} />Last checked</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
       {extra}
     </dl>
   )
@@ -33,20 +33,18 @@ function Toggle({ title, children, id }: { title: string; children: ReactNode; i
  * its own, light asks a person first, amber is blocked by a gap. The legend names each look; what holds it back is said.
  */
 export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat renewals', card }: { own?: number; ask?: number; gaps?: string; card?: boolean }) {
-  // Bars are 3px wide with a 3px gap, always; as many as fit the width, so the spacing never varies.
+  // Bars are 4px wide with a 2px gap, always; as many as fit the width, so the spacing never varies.
   const ref = useRef<HTMLDivElement>(null), [n, setN] = useState(100)
   useLayoutEffect(() => {
     const el = ref.current?.parentElement; if (!el) return
-    const f = () => { const cs = getComputedStyle(el), w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setN(Math.max(20, Math.floor((w + 3) / 6))) }; f()
+    const f = () => { const cs = getComputedStyle(el), w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setN(Math.max(20, Math.floor((w + 2) / 6))) }; f()
     const ro = new ResizeObserver(f); ro.observe(el); return () => ro.disconnect()
   }, [])
-  // The entrance plays once per browser session and stays inside 300ms; after that the bars are simply there.
-  const [play] = useState(() => { try { if (sessionStorage.getItem('w8-bars')) return false; sessionStorage.setItem('w8-bars', '1'); return true } catch { return false } })
   const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a
   return (
     <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
-      <div className="path-h" style={{ width: n * 6 - 3 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
-      <div className={'path-bars' + (play ? ' play' : '')} aria-hidden="true" ref={ref} style={{ width: n * 6 - 3 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={play ? { animationDelay: `${Math.round(i * 1.5)}ms` } : undefined} />)}</div>
+      <div className="path-h" style={{ width: n * 6 - 2 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
+      <div className="path-bars" aria-hidden="true" ref={ref} style={{ width: n * 6 - 2 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
       <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked {g}%: {gaps}</span></p>
     </section>
   )
@@ -62,10 +60,9 @@ export function Approvals() {
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
       <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals agent is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Props ag="approvals" re={4} verify={verify} extra={<>
-        <div><dt><Icon name="layers" size={15} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
-        <div><dt><Icon name="arrow-right" size={15} />Cited</dt><dd className="num">214 times this month, by 3 agents</dd></div>
+        <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
+        <div><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num">214 times this month, by 3 agents</dd></div>
       </>} />
-      <PathBar />
 
       <Block id="sum" cls="lede">
         <p>Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</p>

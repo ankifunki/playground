@@ -74,7 +74,7 @@ export function HowFlow() {
           <Icon name={play ? 'pause' : i >= last ? 'rotate-ccw' : 'play'} size={14} />
         </button>
         <div className="hwk-say" key={i} aria-live="polite">
-          {fr.ag ? <Ag id="approvals" /> : <span className="hwk-who" aria-hidden="true"><Icon name="user" size={13} /></span>}
+          {fr.ag ? <Ag id="approvals" /> : <span className="hwk-who" aria-hidden="true"><Icon name="user" size={12} /></span>}
           <span className="hwk-txt"><span>{fr.ag && <b className="agw">Approvals agent </b>}{fr.ag ? fr.t.charAt(0).toLowerCase() + fr.t.slice(1) : fr.t}</span>{fr.d && <small>{fr.d}</small>}</span>
         </div>
         <span className="hwk-clk tk">{fr.clk}</span>

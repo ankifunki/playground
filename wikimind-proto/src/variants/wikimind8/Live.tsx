@@ -9,7 +9,7 @@ export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?
   const a = AG[id]
   return (
     <span className={'ag' + (name ? ' named' : '')} title={a.name + ' agent'}>
-      <span className="ag-t" style={{ width: size, height: size }}><Icon name={a.icon} size={Math.round(size * 0.58)} /></span>
+      <span className="ag-t" style={{ width: size, height: size }}><Icon name={a.icon} size={Math.round(size * 0.29) * 2} /></span>
       {name && <span className="ag-n">{a.name} agent</span>}
     </span>
   )
@@ -46,7 +46,7 @@ export function Chip({ id }: { id: string }) {
 /** The one affordance for "why should I trust this?": a handle in the block's gutter that opens its trace. */
 export function Why({ id }: { id: string }) {
   const w = useW()
-  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="See why: the trace behind this" title="See why"><Icon name="trace" size={15} /></button>
+  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="See why: the trace behind this" title="See why"><Icon name="trace" size={16} /></button>
 }
 
 /** A page block. While an agent edits it, its cursor flag sits in the gutter and the block is outlined; afterwards the chip stays in the margin. */
@@ -63,14 +63,14 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
 
 /** The live mark: a small radio icon with a slow, soft pulse ring. Used wherever something is happening right now. */
 export function LivePulse({ on = true }: { on?: boolean }) {
-  return <span className={'lp' + (on ? ' on' : '')} aria-hidden="true"><Icon name="radio" size={13} /></span>
+  return <span className={'lp' + (on ? ' on' : '')} aria-hidden="true"><Icon name="radio" size={12} /></span>
 }
 
 /** Sources as an icon pile with a summary (Wikimind 4's footer). Each icon names its source on hover. */
 export function Sources({ items, children }: { items: { ic: 'hash' | 'ticket' | 'cloud' | 'video' | 'file-text'; name: string }[]; children: React.ReactNode }) {
   return (
     <footer className="srcs">
-      <span className="srcs-p">{items.map((x) => <span key={x.name} className="srcs-i" tabIndex={0} data-tip={x.name} aria-label={x.name}><Icon name={x.ic} size={13} /></span>)}</span>
+      <span className="srcs-p">{items.map((x) => <span key={x.name} className="srcs-i" tabIndex={0} data-tip={x.name} aria-label={x.name}><Icon name={x.ic} size={12} /></span>)}</span>
       <p>{children}</p>
     </footer>
   )

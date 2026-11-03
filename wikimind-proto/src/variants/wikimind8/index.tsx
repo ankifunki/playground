@@ -18,10 +18,10 @@ function Sidebar() {
   const editingPage = w.presence?.page
   return (
     <nav className={'sb' + (w.nav ? ' open' : '')} aria-label="Workspace">
-      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={15} /></button></div>
+      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
-      <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={15} />Home</button>
-      <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
+      <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={16} />Home</button>
+      <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={16} />Live activity<span className="sb-n">{w.acts.length}</span></button>
       <div className="sb-l">Groves</div>
       {SPACES.map((s) => {
         const pages = s.pages.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()))
@@ -62,7 +62,7 @@ function Top() {
         <div className={'here' + (pr ? ' live' : '')}>
           <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} agent is writing ${pr.label}: watch it` : `${here.length} agents on this page`}>
             <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}><Ag id={id} size={24} /></span>)}</span>
-            <span className="cap-t" aria-hidden={!pr}>{pr && <><b>{AG[pr.ag].name}</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={13} /></>}</span>
+            <span className="cap-t" aria-hidden={!pr}>{pr && <><b>{AG[pr.ag].name}</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
             {!pr && <span className="here-t">{here.length === 1 ? '1 agent here' : `${here.length} agents here`}</span>}
           </button>
         </div>
@@ -78,9 +78,9 @@ function Rail() {
   return (
     <aside className={'rail' + (w.rail ? ' open' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); w.openTrace(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={15} /></button><span className="rail-crumb">{from && <span>Live activity</span>}Trace</span></span>
+        {w.trace ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); w.openTrace(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}Trace</span></span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
-        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null) }} aria-label="Close"><Icon name="x" size={15} /></button>
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
       {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : <div className="rail-list rail-pop">
       <ol>
@@ -92,7 +92,7 @@ function Rail() {
                 <span className="rail-x"><b>{a.ag === 'person' ? a.who : AG[a.ag].name}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
                 <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
               </span>
-              {a.block && TRACE[a.block] && <button className="ib rail-ch" onClick={() => { setFrom(true); w.openTrace(a.block!) }} aria-label="Open the trace"><Icon name="chevron-right" size={15} /></button>}
+              {a.block && TRACE[a.block] && <button className="ib rail-ch" onClick={() => { setFrom(true); w.openTrace(a.block!) }} aria-label="Open the trace"><Icon name="chevron-right" size={16} /></button>}
             </li>
           )
         })}
@@ -114,10 +114,10 @@ const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string
   support: { rel: 98.9, own: 74, ask: 22, needs: ['Kim (Support): confirm the data-loss escalation rule'] },
 }
 
-/** A mini path bar: 3px square bars, 3px gaps, one bar per 2.5% of the work. */
+/** A mini path bar: 4px bars, 2px gaps, one bar per 2.5% of the work. */
 function MiniBar({ own, ask }: { own: number; ask: number }) {
   const n = 40, o = Math.round(n * own / 100), a = Math.round(n * ask / 100)
-  return <span className="mini" aria-label={`${own}% on its own, ${ask}% asks first, ${100 - own - ask}% blocked`}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < o ? 'own' : i < o + a ? 'ask' : 'gap'} />)}</span>
+  return <span className="mini-bar" aria-label={`${own}% on its own, ${ask}% asks first, ${100 - own - ask}% blocked`}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < o ? 'own' : i < o + a ? 'ask' : 'gap'} />)}</span>
 }
 
 /** Home (Wikimind 4's front page, at Wikimind 4's width): headline and live line, path to automation, three cards, the agents (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. Read-only. */
@@ -129,7 +129,7 @@ function Home() {
       <h1>What the agents run today, and what they still need.</h1>
       <div className="home-row">
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
-        <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={13} />Take the 1-minute tour</button>
+        <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>
       </div>
       <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card />
       <div className="home-3">
@@ -148,7 +148,7 @@ function Home() {
                 <span className="ags8-c"><span className="tk">Reliability</span><span className="num">{r.rel.toFixed(1)}%</span></span>
                 <span className="ags8-c own"><span className="tk">Path to automation</span><span className="ags8-b"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%</span></span></span>
                 <span className="ags8-t">{(a.id !== 'approvals' || !w.why['renew']) && r.tag && <span className="ask-tag">{r.tag}</span>}</span>
-                <span className="ags8-ch" aria-hidden="true"><Icon name="chevron-down" size={15} /></span>
+                <span className="ags8-ch" aria-hidden="true"><Icon name="chevron-down" size={16} /></span>
               </button>
               <div className="ags8-x" inert={!isOpen}><div>
                 <div className="ags8-d">
@@ -175,7 +175,7 @@ function Home() {
           <h2>Discount approvals</h2>
           <p>Deals over $100,000 need approval before Negotiation. The discount decides who approves.</p>
           <span className="focus-by"><Ag id="approvals" name size={20} /><span>5 of 8 verified · rewritten Oct 28</span></span>
-          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal</span><Icon name="arrow-right" size={15} /></button>
+          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal</span><Icon name="arrow-right" size={16} /></button>
         </section>
       </div>
       <section className="home-card">

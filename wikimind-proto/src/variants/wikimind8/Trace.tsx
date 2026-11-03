@@ -31,7 +31,7 @@ export function Trace({ id }: { id: string }) {
       <ol className="tr-steps">
         {steps.map((s, i) => (
           <li key={i} className={'tr-s ' + s.k + (s.isNew ? ' new' : '')}>
-            <span className="tr-ic" aria-hidden="true"><Icon name={KIND[s.k].ic} size={13} /></span>
+            <span className="tr-ic" aria-hidden="true"><Icon name={KIND[s.k].ic} size={12} /></span>
             <div className="tr-b">
               <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span className="tr-at">{s.at}</span></div>
               <p className="tr-t">{s.t}</p>

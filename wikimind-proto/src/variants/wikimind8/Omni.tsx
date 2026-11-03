@@ -32,6 +32,8 @@ export function Omni() {
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   }, [])
 
+  // Phones show the short placeholder so it never truncates; / still lists the agents.
+  const [narrow] = useState(() => typeof matchMedia !== 'undefined' && matchMedia('(max-width: 640px)').matches)
   const answer = (text: string): Ans => {
     const t = text.toLowerCase(), f = w.fin
     const m = t.match(/(\d{1,2})\s*%/), d = m ? +m[1] : null
@@ -105,7 +107,7 @@ export function Omni() {
         <div className="om-sug om-ags" role="listbox" aria-label="Ask an agent">
           <span className="om-sh tk">Ask an agent</span>
           {agents.map((a, i) => (
-            <button key={a.id} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => pick(a.id)}>
+            <button key={a.id} style={{ '--i': i } as React.CSSProperties} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => pick(a.id)}>
               <Ag id={a.id} size={22} /><span><b>{a.name}</b> {a.job}</span>{w.presence?.ag === a.id && <small>writing now</small>}
             </button>
           ))}
@@ -114,7 +116,7 @@ export function Omni() {
       {!ans && !mini && focus && !agentMode && rows.length > 0 && (
         <div className="om-sug" role="listbox" aria-label="Suggestions">
           {rows.map((r, i) => (
-            <button key={r.t} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => submit(r.t)}>
+            <button key={r.t} style={{ '--i': i } as React.CSSProperties} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => submit(r.t)}>
               <Icon name={r.kind === 'recent' ? 'rotate-ccw' : r.kind === 'live' ? 'radio' : 'search'} size={14} />
               <span>{r.t}</span>
               <small>{r.kind === 'recent' ? 'You asked' : r.kind === 'live' ? `Changed ${r.when}` : 'Try'}</small>
@@ -124,13 +126,13 @@ export function Omni() {
       )}
       <div className="om-shell">
         <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
-          <span className="om-pill" aria-hidden="true"><Icon name="search" size={15} />Ask anything</span>
+          <span className="om-pill" aria-hidden="true"><Icon name="search" size={16} />Ask anything</span>
           <Icon name="search" size={16} />
-          {scope && <span className="om-chip"><Ag id={scope} size={16} />{AG[scope].name}<button type="button" onClick={() => setScope(null)} aria-label="Ask any agent"><Icon name="x" size={11} /></button></span>}
-          <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={scope ? `Ask the ${AG[scope].name} agent` : 'Ask anything, or type / to pick an agent'} aria-label="Ask anything" />
+          {scope && <span className="om-chip"><Ag id={scope} size={16} />{AG[scope].name}<button type="button" onClick={() => setScope(null)} aria-label="Ask any agent"><Icon name="x" size={12} /></button></span>}
+          <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={scope ? `Ask the ${AG[scope].name} agent` : narrow ? 'Ask anything' : 'Ask anything, or type / to pick an agent'} aria-label="Ask anything" />
           <span className="om-scope tk">This workspace</span>
           <kbd className="om-k">/</kbd>
-          <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={15} /></button>
+          <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>
         </form>
       </div>
     </div>
