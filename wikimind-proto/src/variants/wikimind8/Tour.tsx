@@ -17,20 +17,24 @@ const STEPS: Step[] = [
 ]
 
 export function Tour() {
-  const w = useW(), i = w.tour, [box, setBox] = useState<DOMRect | null>(null)
+  const w = useW(), i = w.tour, [box, setBox] = useState<DOMRect | null>(null), [ready, setReady] = useState(false)
   const st = i === null ? null : STEPS[i]
   useEffect(() => {
     if (!st) return
+    setReady(false)
     if (w.page !== st.page) w.go(st.page)
+    // Move first, then show: scroll to the target, wait for the scroll and any panel to settle, then fade the card in place.
     const t = window.setTimeout(() => { st.go?.(w); const el = document.querySelector(st.sel); if (el && !el.closest('.rail,.sb,.om')) el.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, 120)
-    return () => window.clearTimeout(t)
+    const r = window.setTimeout(() => setReady(true), 720)
+    return () => { window.clearTimeout(t); window.clearTimeout(r) }
   }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (!st) return
     let raf = 0
-    const f = () => { const el = document.querySelector(st.sel); setBox(el ? el.getBoundingClientRect() : null); raf = requestAnimationFrame(f) }
+    // Track the target only once it has settled (and afterwards, if the reader scrolls), never mid-scroll.
+    const f = () => { if (ready) { const el = document.querySelector(st.sel); const r = el ? el.getBoundingClientRect() : null; setBox((b) => (b && r && Math.abs(b.top - r.top) < .5 && Math.abs(b.left - r.left) < .5 && Math.abs(b.height - r.height) < .5 ? b : r)) } raf = requestAnimationFrame(f) }
     raf = requestAnimationFrame(f); return () => cancelAnimationFrame(raf)
-  }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [i, ready]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (i === null) return
     const k = (e: KeyboardEvent) => { if (e.key === 'Escape') w.setTour(null); if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft' && i > 0) w.setTour(i - 1) }
@@ -43,8 +47,8 @@ export function Tour() {
   const top = box ? (below ? Math.min(innerHeight - 220, box.bottom + 14) : Math.max(16, box.top - 14 - 190)) : innerHeight / 2 - 100
   return (
     <>
-      {box && <div className="tour-ring" style={{ left: box.left - 6, top: box.top - 6, width: box.width + 12, height: box.height + 12 }} />}
-      <div className="tour-card" role="dialog" aria-label={st.t} style={{ left, top, width: W }} key={i}>
+      {box && ready && <div className="tour-ring" style={{ left: box.left - 6, top: box.top - 6, width: box.width + 12, height: box.height + 12 }} />}
+      <div className={'tour-card' + (ready ? ' on' : '')} role="dialog" aria-label={st.t} style={{ left, top, width: W }} key={i}>
         <span className="tk">{i + 1} of {STEPS.length}</span>
         <b>{st.t}</b>
         <p>{st.b}</p>

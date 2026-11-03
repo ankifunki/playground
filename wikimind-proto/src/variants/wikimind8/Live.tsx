@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AG, ago, type AgentId } from './data'
 import { Icon } from './Icon'
@@ -64,3 +65,14 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
 export function LivePulse({ on = true }: { on?: boolean }) {
   return <span className={'lp' + (on ? ' on' : '')} aria-hidden="true"><Icon name="radio" size={13} /></span>
 }
+
+/** Sources as an icon pile with a summary (Wikimind 4's footer). Each icon names its source on hover. */
+export function Sources({ items, children }: { items: { ic: 'hash' | 'ticket' | 'cloud' | 'video' | 'file-text'; name: string }[]; children: React.ReactNode }) {
+  return (
+    <footer className="srcs">
+      <span className="srcs-p">{items.map((x) => <span key={x.name} className="srcs-i" tabIndex={0} data-tip={x.name} aria-label={x.name}><Icon name={x.ic} size={13} /></span>)}</span>
+      <p>{children}</p>
+    </footer>
+  )
+}
+

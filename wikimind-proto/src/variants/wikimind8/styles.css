@@ -1097,3 +1097,76 @@ body{font-family:var(--sans);font-size:16px}
  opacity:0;transition:opacity .35s var(--eo)}
 .om.act::before{opacity:1}
 @media (prefers-reduced-motion:reduce){.om::before{transition:none}}
+
+/* ---------- Round: wide Home, aligned top bar, agents with mini bars, focus CTA, sources footer ---------- */
+.doc.wide{max-width:1144px}
+.top-r{box-sizing:content-box;max-width:760px;padding:0 40px}
+.pg-home .top-r{max-width:1144px}
+.pg-home .om{max-width:1144px}
+.w7.nav-on .top{z-index:20}
+@media (max-width:900px){.top-r{padding:0 20px}}
+/* The agents: each row expands to what blocks it */
+.ags8{list-style:none;margin:0;padding:0}
+.ags8>li{border-top:1px solid var(--hair)}
+.ags8>li:first-child{border-top:0}
+.ags8-r{width:100%;display:grid;grid-template-columns:minmax(220px,1.3fr) 110px minmax(240px,1.2fr) minmax(120px,auto) 24px;align-items:center;gap:16px;padding:16px 0;border:0;background:none;text-align:left;cursor:pointer;color:inherit;font:inherit;-webkit-tap-highlight-color:transparent}
+.ags8-c{display:flex;flex-direction:column;gap:4px}
+.ags8-b{display:flex;align-items:center;gap:12px}
+.ags8-t{text-align:right}
+.ags8-ch{display:grid;place-items:center;color:var(--ink2);transition:transform .3s var(--eo)}
+.ags8 li.open .ags8-ch{transform:rotate(180deg)}
+.ags8-d{padding:0 0 22px 42px;display:flex;flex-direction:column;gap:12px;animation:rise .3s var(--eo) both}
+.ags8-d ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ags8-d li{position:relative;padding-left:16px;font-size:15px;line-height:1.5;color:var(--ink)}
+.ags8-d li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;border-radius:1px;background:color-mix(in srgb,var(--ink) 22%,transparent)}
+.ags8-go{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;height:38px;padding:0 14px 0 16px;border:0;border-radius:999px;background:var(--linkb);color:var(--link);font:500 14px var(--sans);cursor:pointer;transition:transform .16s var(--eo),background-color .2s ease}
+.ags8-go span{font:450 11px var(--mono);color:color-mix(in srgb,var(--link) 70%,var(--ink2))}
+.ags8-go:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.ags8-r:hover .ag-row b{color:var(--link)}.ags8-go:hover .ic{animation:icNudgeR .45s var(--eo)}}
+.mini{display:inline-flex;gap:3px;height:14px}
+.mini i{width:3px;flex:none;background:var(--link)}
+.mini i.ask{background:color-mix(in srgb,var(--link) 30%,transparent)}
+.mini i.gap{background:color-mix(in srgb,var(--ink) 22%,transparent)}
+/* Agent icons move the way their job does, on hover */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .ags8-r:hover .ic-stamp{animation:agStamp .5s var(--eo)}
+ .ags8-r:hover .ic-key{animation:agKey .6s var(--eo)}
+ .ags8-r:hover .ic-shield-check{animation:icPop .5s var(--eo)}
+ .ags8-r:hover .ic-receipt{animation:icLift .5s var(--eo)}
+ .ags8-r:hover .ic-plug{animation:agPlug .55s var(--eo)}
+ .ags8-r:hover .ic-life-buoy{animation:agSpin .7s var(--eo)}
+}
+@keyframes agStamp{0%,100%{transform:none}35%{transform:translateY(2px) scaleY(.88)}60%{transform:translateY(-1px)}}
+@keyframes agKey{0%,100%{transform:none}40%{transform:rotate(-24deg)}70%{transform:rotate(8deg)}}
+@keyframes agPlug{0%,100%{transform:none}35%{transform:translate(-2px,2px)}65%{transform:translate(1px,-1px)}}
+@keyframes agSpin{from{transform:rotate(0)}to{transform:rotate(180deg)}}
+@media (max-width:900px){.ags8-r{grid-template-columns:minmax(0,1fr) 24px;gap:10px}.ags8-r>.ags8-c:not(.own),.ags8-t{display:none}.ags8-c.own{grid-column:1;grid-row:2}.ags8-ch{grid-row:1;grid-column:2}.ags8-d{padding-left:0}}
+/* In focus: the action is pinned to the bottom of the card */
+.home-2{align-items:stretch}
+.home-card.focus{display:flex;flex-direction:column}
+.focus-cta{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:18px 0 0;border:0;border-top:1px solid var(--hair);background:none;color:var(--link);font:500 15px var(--sans);text-align:left;cursor:pointer}
+.focus-by{margin-bottom:20px}
+@media (hover:hover) and (pointer:fine){.focus-cta:hover .ic{animation:icNudgeR .45s var(--eo)}}
+/* Unwritten rules across the width */
+.rules8.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 32px}
+.rules8.cols li{border-top:0;padding:8px 0}
+@media (max-width:900px){.rules8.cols{grid-template-columns:1fr}.rules8.cols li{border-top:1px solid var(--hair);padding:14px 0}.rules8.cols li:first-child{border-top:0}}
+/* Sources footer (Wikimind 4): an icon pile, each naming its source on hover, and a one-line summary */
+.srcs{display:flex;align-items:center;gap:16px;margin:56px 0 0;padding-top:20px;border-top:1px solid var(--hair)}
+.srcs-p{display:flex;flex:none}
+.srcs-i{position:relative;display:grid;place-items:center;width:30px;height:30px;margin-left:-6px;border-radius:50%;background:var(--soft);color:var(--ink2);box-shadow:0 0 0 2px var(--bg);cursor:default;outline:none;transition:transform .2s var(--eo),background-color .2s ease,color .2s ease}
+.srcs-i:first-child{margin-left:0}
+.srcs-i::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,4px);white-space:nowrap;padding:5px 9px;border-radius:6px;background:var(--ink);color:var(--panel);font:500 12px var(--sans);opacity:0;pointer-events:none;transition:opacity .15s ease,transform .2s var(--eo);z-index:5}
+.srcs-i:hover,.srcs-i:focus-visible{transform:translateY(-2px);background:var(--linkb);color:var(--link);z-index:2}
+.srcs-i:hover::after,.srcs-i:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+.srcs p{margin:0 !important;font-size:14px !important;line-height:1.55 !important;color:var(--ink2)}
+.srcs p b{font-weight:500;color:var(--ink)}
+.colo{display:none}
+@media (max-width:640px){.srcs{align-items:flex-start;flex-direction:column;gap:12px}}
+/* Tour: no sliding; the card and ring fade in once the target has settled */
+.tour-card,.tour-ring{transition:none}
+.tour-card{opacity:0;transform:translateY(4px);animation:none}
+.tour-card.on{opacity:1;transform:none;transition:opacity .22s ease,transform .3s var(--eo)}
+.tour-ring{animation:fade .22s ease both}
+.doc ul.ags8,.ags8-d ul{padding-left:0}
+.sb-ws>span:nth-child(2){flex:1;min-width:0}.sb-x{margin-left:auto}

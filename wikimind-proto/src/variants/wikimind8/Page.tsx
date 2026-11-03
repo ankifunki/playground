@@ -3,7 +3,7 @@ import { AG, ago, PAGES, SPACES } from './data'
 import { HowFlow, Sim } from './Flow'
 import { Watch } from './Watch'
 import { Icon } from './Icon'
-import { Ag, Block, Chip, LivePulse, LiveText, Why } from './Live'
+import { Ag, Block, Chip, LivePulse, LiveText, Sources, Why } from './Live'
 import { useW } from './store'
 
 /** Notion-style properties: who keeps the page, who verified it, how fresh it is. Live values tick. */
@@ -106,7 +106,9 @@ export function Approvals() {
         </table>
       </Block>
 
-      <p className="colo">Written by the <b>Approvals agent</b> from what it observed, never typed by a person. Every change is announced, typed in where you can see it, and kept with why it changed.</p>
+      <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
+        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Northwind changed. Never typed by a person.
+      </Sources>
     </article>
   )
 }

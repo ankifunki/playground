@@ -1,8 +1,9 @@
+import type React from 'react'
 import { useEffect, useState } from 'react'
 import { useVariantCss } from '../../useVariantCss'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag, LivePulse } from './Live'
+import { Ag, LivePulse, Sources } from './Live'
 import { Omni } from './Omni'
 import { Trace } from './Trace'
 import { TRACE } from './traces'
@@ -17,7 +18,7 @@ function Sidebar() {
   const editingPage = w.presence?.page
   return (
     <nav className={'sb' + (w.nav ? ' open' : '')} aria-label="Workspace">
-      <div className="sb-ws"><span className="sb-logo">N</span><span><b>Northwind</b><small>Wikimind · kept by 6 agents</small></span></div>
+      <div className="sb-ws"><span className="sb-logo">N</span><span><b>Northwind</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={15} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={15} />Home</button>
       <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
@@ -104,14 +105,27 @@ function Rail() {
 }
 
 /** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the agents, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
-const REL: Record<AgentId, { rel: number; own: number; ask?: string }> = {
-  approvals: { rel: 99.0, own: 52, ask: 'Asking Maria' }, access: { rel: 98.1, own: 78 }, security: { rel: 97.4, own: 41, ask: 'Needs Okta logs' },
-  finance: { rel: 99.3, own: 58 }, integrations: { rel: 98.4, own: 70, ask: 'Asking Ben Ito' }, support: { rel: 98.9, own: 74 },
+/** Each agent's path to automation, and what is blocking or needed for the rest. Demo data. */
+const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string; needs: string[] }> = {
+  approvals: { rel: 99.0, own: 52, ask: 38, tag: 'Asking Maria', needs: ['Maria Okafor to confirm flat renewals skip approval on purpose (asked Oct 27)', 'One more EMEA deal to confirm regional-director routing (seen once)', 'Discounts over 20% stay with people until 30 more decisions match (26 of 56 so far)'] },
+  access: { rel: 98.1, own: 78, ask: 18, needs: ['License seat reclaims: 2 more matched decisions (58 of 60)', 'Admin-rights grants stay with people by policy'] },
+  security: { rel: 97.4, own: 41, ask: 40, tag: 'Needs Okta logs', needs: ['Read access to Okta sign-in logs (requested from IT, Nov 1)', 'Device wipes stay with people while it shadows 20 more'] },
+  finance: { rel: 99.3, own: 58, ask: 34, needs: ['NetSuite write access to fix invoice mismatches it already finds', 'Payments stay with people'] },
+  integrations: { rel: 98.4, own: 70, ask: 22, tag: 'Asking Ben Ito', needs: ['Ben Ito to explain why multi-currency CPQ quotes fail', 'Dev’s OK on a retry policy for NetSuite sync'] },
+  support: { rel: 98.9, own: 74, ask: 22, needs: ['Kim (Support) to confirm the data-loss escalation rule (11 of 11 so far)'] },
 }
+
+/** A mini path bar: 3px square bars, 3px gaps, one bar per 2.5% of the work. */
+function MiniBar({ own, ask }: { own: number; ask: number }) {
+  const n = 40, o = Math.round(n * own / 100), a = Math.round(n * ask / 100)
+  return <span className="mini" aria-label={`${own}% on its own, ${ask}% asks first, ${100 - own - ask}% blocked`}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < o ? 'own' : i < o + a ? 'ask' : 'gap'} />)}</span>
+}
+
+/** Home (Wikimind 4's front page, at Wikimind 4's width): headline and live line, path to automation, three cards, the agents (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. Read-only. */
 function Home() {
-  const w = useW(), last = w.acts[0]
+  const w = useW(), last = w.acts[0], [open, setOpen] = useState<AgentId | null>(null)
   return (
-    <article className="doc home">
+    <article className="doc home wide">
       <p className="home-k">Northwind, as the agents understand it</p>
       <h1>What you can trust the agents with today, and what they still need.</h1>
       <div className="home-row">
@@ -126,13 +140,27 @@ function Home() {
       </div>
       <section className="home-card">
         <div className="home-ch"><h2>The agents</h2><span className="tk">6 agents, one job each</span></div>
-        <table className="ag-t8"><tbody>{AGENTS.map((a) => (
-          <tr key={a.id}>
-            <td><span className="ag-row"><Ag id={a.id} size={30} /><span><b>{a.name}</b><small>{a.job}</small></span></span></td>
-            <td><span className="tk">Reliability</span><span className="num">{REL[a.id].rel.toFixed(1)}%</span></td>
-            <td className="own"><span className="tk">On its own</span><span className="own-b"><i style={{ width: REL[a.id].own + '%' }} /></span><span className="num">{REL[a.id].own}%</span></td>
-            <td className="ask">{(a.id !== 'approvals' || !w.why['renew']) && REL[a.id].ask && <span className="ask-tag">{REL[a.id].ask}</span>}</td>
-          </tr>))}</tbody></table>
+        <ul className="ags8">{AGENTS.map((a) => {
+          const r = REL[a.id], isOpen = open === a.id, sp = SPACES.find((s) => s.ag === a.id)!
+          return (
+            <li key={a.id} className={isOpen ? 'open' : ''}>
+              <button className="ags8-r" onClick={() => setOpen(isOpen ? null : a.id)} aria-expanded={isOpen}>
+                <span className="ag-row"><Ag id={a.id} size={30} /><span><b>{a.name}</b><small>{a.job}</small></span></span>
+                <span className="ags8-c"><span className="tk">Reliability</span><span className="num">{r.rel.toFixed(1)}%</span></span>
+                <span className="ags8-c own"><span className="tk">Path to automation</span><span className="ags8-b"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%</span></span></span>
+                <span className="ags8-t">{(a.id !== 'approvals' || !w.why['renew']) && r.tag && <span className="ask-tag">{r.tag}</span>}</span>
+                <span className="ags8-ch" aria-hidden="true"><Icon name="chevron-down" size={15} /></span>
+              </button>
+              {isOpen && (
+                <div className="ags8-d">
+                  <span className="tk">Needed to run more on its own</span>
+                  <ul>{r.needs.map((n) => <li key={n}>{n}</li>)}</ul>
+                  <button className="ags8-go" onClick={() => w.go(sp.pages[0].id)}>Go to the {a.name} space<span>{sp.total} pages</span><Icon name="arrow-right" size={14} /></button>
+                </div>
+              )}
+            </li>
+          )
+        })}</ul>
       </section>
       <div className="home-2">
         <section className="home-card">
@@ -148,41 +176,41 @@ function Home() {
           <h2>Discount approvals</h2>
           <p>How Northwind reviews large deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. 212 approvals watched this quarter.</p>
           <span className="focus-by"><Ag id="approvals" name size={20} /><span>5 of 8 verified · rewritten Oct 28</span></span>
-          <button className="wl" onClick={() => w.go('discount-approvals')}>Open the page</button>
+          <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal, and why</span><Icon name="arrow-right" size={15} /></button>
         </section>
       </div>
-      <div className="home-2">
-        <section className="home-card">
-          <span className="tk">Unwritten rules the agents found</span>
-          <ul className="rules8">
-            <li><b>At quarter end, large deals are approved in Slack before Salesforce.</b><small>Approvals · 9 #deal-desk threads</small></li>
-            <li><b>Approval requests expire after 14 days because two deals once closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
-            <li><b>Cases that mention data loss get escalated by hand, whatever their priority.</b><small>Support · 11 of 11 cases</small></li>
-          </ul>
-        </section>
-        <section className="home-card">
-          <span className="tk">Spaces</span>
-          <div className="areas8">{SPACES.map((s) => (
-            <button key={s.ag} className={w.presence?.ag === s.ag ? 'busy' : ''} onClick={() => w.go(s.pages[0].id)}>
-              <b>{AG[s.ag].name}</b><small>{w.presence?.ag === s.ag ? <><LivePulse />writing now</> : `${s.total} pages`}</small>
-            </button>))}</div>
-        </section>
-      </div>
+      <section className="home-card">
+        <span className="tk">Unwritten rules the agents found</span>
+        <ul className="rules8 cols">
+          <li><b>At quarter end, large deals are approved in Slack before Salesforce.</b><small>Approvals · 9 #deal-desk threads</small></li>
+          <li><b>Approval requests expire after 14 days because two deals once closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
+          <li><b>Cases that mention data loss get escalated by hand, whatever their priority.</b><small>Support · 11 of 11 cases</small></li>
+        </ul>
+      </section>
+      <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
+        <b>1,284 pages</b>, <b>3,912</b> observations this week, written by 6 agents from Slack, tickets, Salesforce, meetings and documents. None typed by a person.
+      </Sources>
     </article>
   )
 }
 
 function Shell() {
   const w = useW()
+  // On wider screens the nav floats without a scrim: a click anywhere outside it closes it.
+  useEffect(() => {
+    if (!w.nav) return
+    const f = (e: MouseEvent) => { const t = e.target as HTMLElement; if (!t.closest('.sb') && !t.closest('.top-menu')) w.setNav(false) }
+    document.addEventListener('mousedown', f); return () => document.removeEventListener('mousedown', f)
+  }, [w.nav]) // eslint-disable-line react-hooks/exhaustive-deps
   // Floating panels sit below the variant bar until it scrolls away.
   useEffect(() => {
     const f = () => document.documentElement.style.setProperty('--vtop', Math.max(12, 76 - scrollY) + 'px')
     f(); addEventListener('scroll', f, { passive: true }); return () => { removeEventListener('scroll', f); document.documentElement.style.removeProperty('--vtop') }
   }, [])
   return (
-    <div className={'w7' + (w.nav ? ' nav-on' : '') + (w.rail ? ' rail-on' : '')}>
+    <div className={'w7' + (w.nav ? ' nav-on' : '') + (w.rail ? ' rail-on' : '') + (w.page === 'home' ? ' pg-home' : '')}>
       <Sidebar />
-      {w.nav && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
+      {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top />
         {w.page === 'home' ? <Home /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
