@@ -66,7 +66,7 @@ export function Approvals() {
       <PathBar />
 
       <Block id="sum" cls="lede">
-        <p>Discount approval is how Groves reviews big deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Most approvals finish in under four hours.</p>
+        <p>Discount approval is how Rippling reviews big deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Most approvals finish in under four hours.</p>
       </Block>
 
       <h2>How it works</h2>
@@ -107,7 +107,7 @@ export function Approvals() {
       </Block>
 
       <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
-        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Groves changed. Never typed by a person.
+        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Rippling changed. Never typed by a person.
       </Sources>
     </article>
   )

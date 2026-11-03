@@ -18,7 +18,7 @@ function Sidebar() {
   const editingPage = w.presence?.page
   return (
     <nav className={'sb' + (w.nav ? ' open' : '')} aria-label="Workspace">
-      <div className="sb-ws"><span className="sb-logo">G</span><span><b>Groves</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={15} /></button></div>
+      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={15} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={15} />Home</button>
       <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={15} />Live activity<span className="sb-n">{w.acts.length}</span></button>
@@ -58,7 +58,7 @@ function Top() {
       <div className="top-r">
         <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><span className="hb" aria-hidden="true"><i /><i /><i /></span></button>
         <div className="crumb">
-          {p ? <><button onClick={() => w.go('home')}>Groves</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>Home</b>}
+          {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>Home</b>}
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
           <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} agent is writing ${pr.label}: watch it` : `${here.length} agents on this page`}>
@@ -126,7 +126,7 @@ function Home() {
   const w = useW(), last = w.acts[0], [open, setOpen] = useState<AgentId | null>(null)
   return (
     <article className="doc home wide">
-      <p className="home-k">Groves, as the agents understand them</p>
+      <p className="home-k">Rippling, as the agents understand it</p>
       <h1>What you can trust the agents with today, and what they still need.</h1>
       <div className="home-row">
         {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
@@ -174,7 +174,7 @@ function Home() {
         <section className="home-card focus">
           <span className="tk">In focus</span>
           <h2>Discount approvals</h2>
-          <p>How Groves reviews large deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. 212 approvals watched this quarter.</p>
+          <p>How Rippling reviews large deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. 212 approvals watched this quarter.</p>
           <span className="focus-by"><Ag id="approvals" name size={20} /><span>5 of 8 verified · rewritten Oct 28</span></span>
           <button className="focus-cta" onClick={() => w.go('discount-approvals')}><span>See who approves your deal, and why</span><Icon name="arrow-right" size={15} /></button>
         </section>
