@@ -36,15 +36,15 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
   // Bars are 3px wide with a 3px gap, always; as many as fit the width, so the spacing never varies.
   const ref = useRef<HTMLDivElement>(null), [n, setN] = useState(100)
   useLayoutEffect(() => {
-    const el = ref.current; if (!el) return
-    const f = () => setN(Math.max(20, Math.floor((el.clientWidth + 3) / 6))); f()
+    const el = ref.current?.parentElement; if (!el) return
+    const f = () => { const cs = getComputedStyle(el), w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setN(Math.max(20, Math.floor((w + 3) / 6))) }; f()
     const ro = new ResizeObserver(f); ro.observe(el); return () => ro.disconnect()
   }, [])
   const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a
   return (
     <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
-      <div className="path-h"><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
-      <div className="path-bars" aria-hidden="true" ref={ref}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
+      <div className="path-h" style={{ width: n * 6 - 3 }}><span className="tk">Path to full automation</span><span className="path-n">{o}%<small>runs on its own</small></span></div>
+      <div className="path-bars" aria-hidden="true" ref={ref} style={{ width: n * 6 - 3 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
       <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked by gaps {g}%: {gaps}</span></p>
     </section>
   )
