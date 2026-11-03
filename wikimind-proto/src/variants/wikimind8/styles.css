@@ -818,3 +818,9 @@ input{font:inherit}
 @media (max-width:640px){.hwk .rec{padding:var(--s16);gap:var(--s20);margin-top:var(--s24)}.rec-stage li{font-size:var(--fs-meta)}}
 @media (prefers-reduced-motion:reduce){.rec-fill{transition:none}.rec-ah li{animation:fade .2s both}.rec-ah li.wait .rec-dot{animation:none}}
 @media (max-width:640px){.rec-stage{column-gap:var(--s4)}.rec-stage li.cur{font-weight:400}}
+/* Home cards: titles serif, body sans. In focus keeps its serif headline (the card-heading rule must not catch it). */
+.home .home-card.focus h2{font:400 var(--fs-head)/36px var(--serif);letter-spacing:-.015em}
+.w7 .focus p{font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.rules8 b{font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+@media (max-width:640px){.home .home-card.focus h2{font-size:28px;line-height:32px}}
+@media (max-width:640px){.focus-by{flex-direction:column;align-items:flex-start;gap:var(--s4)}}
