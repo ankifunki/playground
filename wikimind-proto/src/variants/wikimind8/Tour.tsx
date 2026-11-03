@@ -1,0 +1,60 @@
+import { useEffect, useLayoutEffect, useState } from 'react'
+import { Icon } from './Icon'
+import { useW } from './store'
+
+type Step = { page: string; sel: string; t: string; b: string; go?: (w: ReturnType<typeof useW>) => void }
+/** The 1-minute tour (Wikimind 5): the CIO's impressions from the brief, one at a time, each pointing at its proof. */
+const STEPS: Step[] = [
+  { page: 'home', sel: '.home h1', t: 'Assembled automatically', b: 'Six agents wrote every page here from Slack, tickets and six years of Salesforce changes, and keep rewriting them. Nobody typed it.' },
+  { page: 'home', sel: '.path.card', t: 'Where automation stands', b: '64% of the work runs on its own. The rest asks a person first or waits on a gap, and the gaps are named.' },
+  { page: 'home', sel: '.sb', t: 'Every agent keeps a space', b: 'Like Confluence, but each space belongs to the agent that keeps it. A page being written shows it in the tree.', go: (w) => w.setNav(true) },
+  { page: 'discount-approvals', sel: '.byline', t: 'A page you can check', b: 'Who keeps it, who verified it, when it was last re-read, and how far it is from running on its own.', go: (w) => w.setNav(false) },
+  { page: 'discount-approvals', sel: '.hwk', t: 'How it works, played', b: 'A real deal runs through the flow. The agent’s part takes 4 seconds; people take the rest.' },
+  { page: 'discount-approvals', sel: '.wt', t: 'Watch it happen', b: 'A recording of the agent working the deal in Salesforce, re-enacted live from today’s config.' },
+  { page: 'discount-approvals', sel: '#b-who-fin', t: 'It notices change', b: 'Salesforce just changed. The agent rewrites the rule where you can see it, and Dana’s verification is withdrawn until she re-checks.', go: (w) => w.change() },
+  { page: 'discount-approvals', sel: '.rail', t: 'Proof for every sentence', b: 'Any block opens its trace: what was observed, how it reasoned, what changed, and who verified it.', go: (w) => w.openTrace('who-fin') },
+  { page: 'discount-approvals', sel: '.om-bar', t: 'Ask any agent', b: 'Ask anything. Type / to pick which agent answers. Nothing is guessed; unknowns become questions to a person.', go: (w) => { w.setRail(false); w.openTrace(null) } },
+]
+
+export function Tour() {
+  const w = useW(), i = w.tour, [box, setBox] = useState<DOMRect | null>(null)
+  const st = i === null ? null : STEPS[i]
+  useEffect(() => {
+    if (!st) return
+    if (w.page !== st.page) w.go(st.page)
+    const t = window.setTimeout(() => { st.go?.(w); const el = document.querySelector(st.sel); if (el && !el.closest('.rail,.sb,.om')) el.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, 120)
+    return () => window.clearTimeout(t)
+  }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    if (!st) return
+    let raf = 0
+    const f = () => { const el = document.querySelector(st.sel); setBox(el ? el.getBoundingClientRect() : null); raf = requestAnimationFrame(f) }
+    raf = requestAnimationFrame(f); return () => cancelAnimationFrame(raf)
+  }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (i === null) return
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') w.setTour(null); if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft' && i > 0) w.setTour(i - 1) }
+    addEventListener('keydown', k); return () => removeEventListener('keydown', k)
+  })
+  if (!st || i === null) return null
+  const next = () => (i < STEPS.length - 1 ? w.setTour(i + 1) : w.setTour(null))
+  const W = 340, below = box ? box.bottom + 210 < innerHeight : true
+  const left = box ? Math.max(16, Math.min(innerWidth - W - 16, box.left + box.width / 2 - W / 2)) : innerWidth / 2 - W / 2
+  const top = box ? (below ? Math.min(innerHeight - 220, box.bottom + 14) : Math.max(16, box.top - 14 - 190)) : innerHeight / 2 - 100
+  return (
+    <>
+      {box && <div className="tour-ring" style={{ left: box.left - 6, top: box.top - 6, width: box.width + 12, height: box.height + 12 }} />}
+      <div className="tour-card" role="dialog" aria-label={st.t} style={{ left, top, width: W }} key={i}>
+        <span className="tk">{i + 1} of {STEPS.length}</span>
+        <b>{st.t}</b>
+        <p>{st.b}</p>
+        <div className="tour-f">
+          <span className="tour-dots">{STEPS.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
+          <button className="tour-x" onClick={() => w.setTour(null)}>Skip</button>
+          {i > 0 && <button className="ib" onClick={() => w.setTour(i - 1)} aria-label="Back"><Icon name="arrow-right" size={14} /></button>}
+          <button className="tour-n" onClick={next}>{i < STEPS.length - 1 ? 'Next' : 'Done'}</button>
+        </div>
+      </div>
+    </>
+  )
+}
