@@ -776,3 +776,12 @@ body{font-family:var(--sans);font-size:15.5px;font-weight:400}
 .rail-ch .ic{transition:transform .16s var(--eo)}
 @media (hover:hover) and (pointer:fine){.rail li:hover .rail-ch{color:var(--ink);background:var(--soft2)}}
 @media (prefers-reduced-motion:reduce){.rail-push,.rail-pop{animation:fade .2s both}}
+/* "new" only animates; the kind sets the tone */
+.tr-s.new .tr-ic{background:var(--panel);color:var(--agent);box-shadow:inset 0 0 0 1px var(--line)}
+.tr-s.new .tr-k{color:var(--ink2)}
+.tr-s.verified .tr-ic{background:var(--okb);color:var(--ok);box-shadow:none}
+.tr-s.verified .tr-k{color:var(--ok)}
+.tr-s.revoked .tr-ic{background:var(--warnb);color:var(--warn);box-shadow:none}
+.tr-s.revoked .tr-k{color:var(--warn)}
+.tr-s.edited .tr-ic{background:var(--agentb);color:var(--agent);box-shadow:none}
+.tr-s.edited .tr-k{color:var(--agent)}
