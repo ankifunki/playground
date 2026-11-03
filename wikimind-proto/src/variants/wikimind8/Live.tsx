@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AG, ago, type AgentId } from './data'
 import { Icon } from './Icon'
 import { RM, useW } from './store'
+import { TRACE } from './traces'
 
 /** An agent's mark: a square indigo tile, optionally with its name. */
 export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?: number }) {
@@ -29,7 +30,7 @@ export function LiveText({ text, id }: { text: string; id?: string }) {
   return <><span key={n} className={'lt' + (n ? ' in' : '') + (fresh ? ' fresh' : '')}>{text}</span>{id && <Chip id={id} />}</>
 }
 
-/** The chip on anything an agent changed: who and when. It opens the block's trace, like every "Why?" on the page. */
+/** The chip on anything an agent changed: who and when. It opens the block's trace, like clicking the block itself. */
 export function Chip({ id }: { id: string }) {
   const w = useW(), y = w.why[id]
   if (!y) return null
@@ -44,19 +45,27 @@ export function Chip({ id }: { id: string }) {
 }
 
 /** The one affordance for "why should I trust this?": a handle in the block's gutter that opens its trace. */
-export function Why({ id }: { id: string }) {
+/**
+ * Anything with a trace opens it when clicked: the whole sentence, block or table row is the target, so there is no
+ * separate icon to find. Hover shows the highlighter; clicks on links, buttons and inputs inside keep their own job.
+ */
+export function useTraceTarget(id: string) {
   const w = useW()
-  return <button className={'why' + (w.trace === id ? ' on' : '')} onClick={() => w.openTrace(w.trace === id ? null : id)} aria-label="See why: the trace behind this" title="See why"><Icon name="trace" size={16} /></button>
+  if (!TRACE[id]) return {}
+  const open = () => w.openTrace(w.trace === id ? null : id)
+  return {
+    tabIndex: 0, title: 'See why',
+    onClick: (e: React.MouseEvent) => { if ((e.target as HTMLElement).closest('button,a,input,label,.chip')) return; e.stopPropagation(); open() },
+    onKeyDown: (e: React.KeyboardEvent) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); open() } },
+  }
 }
 
-/** A page block. While an agent edits it, its cursor flag sits in the gutter and the block is outlined; afterwards the chip stays in the margin. */
 export function Block({ id, children, cls = '' }: { id: string; children: ReactNode; cls?: string }) {
-  const w = useW(), editing = w.presence?.block === id
+  const w = useW(), editing = w.presence?.block === id, target = useTraceTarget(id)
   return (
-    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '')}>
-      <Why id={id} />
+    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '') + (TRACE[id] ? ' trc' : '')}>
       {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={14} /><span>{AG[w.presence!.ag].name}</span><i className="cursor-dots" aria-hidden="true"><b /><b /><b /></i></span>}
-      <div className="blk-c">{children}</div>
+      <div className="blk-c" {...target}>{children}</div>
     </div>
   )
 }
