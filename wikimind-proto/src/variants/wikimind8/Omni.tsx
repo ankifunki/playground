@@ -84,7 +84,7 @@ export function Omni() {
   const askPerson = () => { setAsked(true); w.log({ ag: 'approvals', t: `Asked Maria Okafor: “${ans!.q}”`, page: 'discount-approvals', kind: 'ask' }) }
 
   return (
-    <div className={'om' + (mini ? ' mini' : '')}>
+    <div className={'om' + (mini ? ' mini' : '') + ((focus || ans) && !mini ? ' act' : '')}>
       {ans && (
         <div className="om-ans" role="region" aria-label="Answer">
           <div className="om-ah"><span className="om-q">{ans.q}</span><button className="ib" onClick={() => setAns(null)} aria-label="Close answer"><Icon name="x" size={14} /></button></div>
