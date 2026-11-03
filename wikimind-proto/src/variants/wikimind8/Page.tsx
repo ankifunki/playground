@@ -66,7 +66,7 @@ export function Approvals() {
       <PathBar />
 
       <Block id="sum" cls="lede">
-        <p>Discount approval is how Northwind reviews big deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Most approvals finish in under four hours.</p>
+        <p>Discount approval is how Edicts reviews big deals before they move to Negotiation. Any deal over $100,000 needs approval, and who approves depends on the discount. Most approvals finish in under four hours.</p>
       </Block>
 
       <h2>How it works</h2>
@@ -107,7 +107,7 @@ export function Approvals() {
       </Block>
 
       <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
-        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Northwind changed. Never typed by a person.
+        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements checked by a person; rewritten 6 times as Edicts changed. Never typed by a person.
       </Sources>
     </article>
   )
@@ -122,7 +122,7 @@ export function Stub({ id }: { id: string }) {
       <h1>{p.title}</h1>
       <Props ag={p.ag} re={p.re} />
       <Block id={'stub-' + id} cls="callout"><span className="co-ic"><Icon name="file-text" size={16} /></span><p>{p.lede}</p></Block>
-      <p className="colo">One of {sp.total} pages the {AG[p.ag].name} agent keeps. This demo has one full page: <button className="wl" onClick={() => w.go('discount-approvals')}>Discount approvals</button>.</p>
+      <p className="colo">One of {sp.total} pages in the {AG[p.ag].name} edict. This demo has one full page: <button className="wl" onClick={() => w.go('discount-approvals')}>Discount approvals</button>.</p>
     </article>
   )
 }

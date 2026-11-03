@@ -1170,3 +1170,9 @@ body{font-family:var(--sans);font-size:16px}
 .tour-ring{animation:fade .22s ease both}
 .doc ul.ags8,.ags8-d ul{padding-left:0}
 .sb-ws>span:nth-child(2){flex:1;min-width:0}.sb-x{margin-left:auto}
+/* How it works: no jumps. The narration row keeps one height; captions crossfade in place, no rise or blur */
+.hwk-now{min-height:76px;align-items:center}
+.hwk-say{animation:hwkFade .28s ease both}
+@keyframes hwkFade{from{opacity:0}}
+.hwk-txt{min-height:42px;justify-content:center}
+.hwk-n{transition:background-color .3s ease,color .3s ease,box-shadow .3s ease}

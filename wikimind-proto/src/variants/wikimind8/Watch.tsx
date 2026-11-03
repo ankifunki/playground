@@ -44,7 +44,7 @@ export function Watch() {
   return (
     <div className="wt" ref={root}>
       <div className="wt-win" aria-hidden="true">
-        <div className="wt-bar"><i /><i /><i /><span>northwind.lightning.force.com / Opportunity / Helios expansion</span></div>
+        <div className="wt-bar"><i /><i /><i /><span>edicts.lightning.force.com / Opportunity / Helios expansion</span></div>
         <div className="wt-body">
           <div className="wt-rec">
             <div className="wt-h"><span className="wt-obj">Opportunity</span><b>Helios expansion</b>{locked && <span className="wt-lock"><Icon name="lock" size={12} />Locked for approval</span>}</div>
