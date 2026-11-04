@@ -56,7 +56,7 @@ function Readiness() {
   ]
   return (
     <section className="home-card rd">
-      <div className="nh-h"><h2>Coming up</h2><span className="tk">How ready Asoka is</span></div>
+      <div className="nh-h"><h2>Coming up</h2></div>
       <ol>
         {evs.map((e) => {
           const ready = e.n >= e.of, state = ready ? 'Ready' : e.key === 'ns' ? 'Waiting' : e.n >= e.of - 1 && e.key === 'qe' ? 'Almost ready' : 'Blocked'
@@ -103,7 +103,10 @@ function GapsCarousel({ blocked }: { blocked: number }) {
 type Item = { key: string; title: string; dek: string; ag: AgentId; src?: IconName[]; open: () => void; who?: string }
 
 /** Asoka live, in three columns: what it changed, what it learned, what it is asking people. They follow the demo. */
-function LiveColumn({ only }: { only: 'ch' | 'le' | 'as' }) {
+export type FeedId = 'ch' | 'le' | 'as'
+export const FEED_LABEL: Record<FeedId, string> = { ch: 'Changed', le: 'Learned', as: 'Asking people' }
+/** The three update feeds: what Asoka changed, learned and is asking people. Newest first; they follow the demo. */
+export function useFeeds(): Record<FeedId, Item[]> {
   const w = useW()
   const changed: Item[] = [
     ...(w.fin === 25 ? [{ key: 'fin', title: 'Finance now signs off over 25%, not 20%', dek: `Priya Shah changed Large Deal Approval. Who approves rewritten; Dana Ruiz ${w.verify === 'checking' ? 'is re-checking it' : 'verified it again'}.`, ag: 'approvals' as AgentId, src: ['cloud' as IconName], open: () => w.jump('who-fin') }] : []),
@@ -112,12 +115,17 @@ function LiveColumn({ only }: { only: 'ch' | 'le' | 'as' }) {
       : { key: 'cpq-ok', title: 'CPQ quote sync is fixed', dek: 'Ben Ito corrected the currency mapping; the next 40 quotes synced.', ag: 'integrations', src: ['cloud'], open: () => w.jump('cfg-cpq') },
     { key: 'dd', title: 'Priya Shah now leads Deal Desk', dek: 'From the org chart and #announcements. 6 pages updated.', ag: 'access', src: ['hash'], open: () => w.go('license-seats') },
     { key: 'sla', title: 'New rule: high-priority cases need an SLA', dek: 'Validation rule Priority_Requires_SLA, added yesterday.', ag: 'support', src: ['cloud'], open: () => w.go('case-escalation') },
+    { key: 'cro', title: 'Discounts over 35% now go straight to the CRO', dek: 'The CRO threshold moved from 40% to 35% on Oct 28. Who approves rewritten.', ag: 'approvals', src: ['cloud'], open: () => w.jump('who-cro') },
+    { key: 'seats', title: '14 unused Sales Cloud seats reclaimed', dek: 'No sign-in for 30 days; each owner was told first.', ag: 'access', src: ['cloud'], open: () => w.go('license-seats') },
+    { key: 'api', title: '14 stale API users removed in the access review', dek: 'From the quarterly review; IT approved the list.', ag: 'security', src: ['cloud', 'ticket'], open: () => w.go('access-reviews') },
   ]
   const learned: Item[] = [
     ...(w.renewal === 'answered' ? [{ key: 'renew', title: 'Flat renewals skip approval on purpose', dek: 'Maria Okafor confirmed it in Slack: policy since 2023.', ag: 'approvals' as AgentId, src: ['hash' as IconName], open: () => w.jump('renew') }] : []),
     { key: 'qe', title: 'At quarter end, large deals are approved in Slack before Salesforce', dek: `${w.qe[0]} of the last ${w.qe[1]} quarter ends. Not in any policy.`, ag: 'approvals', src: ['hash', 'video'], open: () => w.jump('qe') },
     { key: 'exp', title: 'Approval requests expire after 14 days because of two stale-price deals', dek: 'The reason lived only in a 2024 #revops thread.', ag: 'approvals', src: ['cloud', 'hash'], open: () => w.jump('r-exp') },
     { key: 'loss', title: 'Cases that mention data loss are escalated by hand, whatever their priority', dek: '11 of 11 cases. Confirmed by Kim in Support.', ag: 'support', src: ['ticket'], open: () => w.go('case-escalation') },
+    { key: 'inv-own', title: 'Invoice mismatches go to Finance ops, not the deal owner', dek: 'Every mismatch in 6 months was fixed by Finance ops.', ag: 'finance', src: ['ticket'], open: () => w.go('invoices') },
+    { key: 'mfa', title: 'Every Salesforce profile has required MFA since March', dek: 'From the login policy history; no exceptions since.', ag: 'security', src: ['cloud'], open: () => w.go('login-policies') },
   ]
   const asking: Item[] = [
     ...(w.renewal === 'asking' ? [{ key: 'renew-q', title: 'Do flat renewals skip approval on purpose?', dek: 'Maria Okafor, RevOps · asked Oct 27', ag: 'approvals' as AgentId, open: () => w.jump('renew') }] : []),
@@ -125,24 +133,51 @@ function LiveColumn({ only }: { only: 'ch' | 'le' | 'as' }) {
     { key: 'emea', title: 'Do EMEA deals really go to Sofia first?', dek: 'Seen once · waiting for the next EMEA deal', ag: 'approvals', open: () => w.go('discount-approvals') },
     { key: 'okta', title: 'Who owns the Okta sign-in policy now?', dek: 'IT · asked Nov 1', ag: 'security', open: () => w.go('login-policies') },
     { key: 'inv', title: 'Should invoice mismatches under $50 be fixed automatically?', dek: 'Dana Ruiz · asked Oct 30', ag: 'finance', open: () => w.go('invoices') },
+    { key: 'loss-q', title: 'Is the data-loss escalation rule official?', dek: 'Kim in Support · asked Oct 29', ag: 'support', open: () => w.go('case-escalation') },
+    { key: 'seat-q', title: 'Should seats of contractors be reclaimed after 14 days?', dek: 'Priya Shah · asked Oct 25', ag: 'access', open: () => w.go('license-seats') },
   ]
+  return { ch: changed, le: learned, as: asking }
+}
+
+const FEED_IC: Record<FeedId, IconName> = { ch: 'pencil-line', le: 'eye', as: 'circle-help' }
+/** One feed item: title, description, then the job and its sources. */
+function FeedItem({ it }: { it: Item }) {
+  return (
+    <button onClick={it.open}>
+      <b>{it.title}</b>
+      <span className="lv-d">{it.dek}</span>
+      <span className="lv-f">{AG[it.ag].name}{it.src && <span className="lv-src" aria-label={`Sources: ${it.src.join(', ')}`}>{it.src.map((s) => <Icon key={s} name={s} size={12} />)}</span>}</span>
+    </button>
+  )
+}
+
+/** A whole feed, in the right panel ("Learn more" on its column). */
+export function FeedPanel({ id }: { id: FeedId }) {
+  const items = useFeeds()[id]
+  return (
+    <div className="ap lv one fd">
+      <div className="ms-h"><span className="tk">Updates</span><b>{FEED_LABEL[id]}</b><p>{items.length} {id === 'as' ? 'questions Asoka is asking people' : id === 'le' ? 'things Asoka learned this month' : 'changes this week'}, newest first.</p></div>
+      <ul>{items.map((it) => <li key={it.key}><FeedItem it={it} /></li>)}</ul>
+    </div>
+  )
+}
+
+/** One updates column on Home: the newest three, and Learn more for the rest. */
+function LiveColumn({ only }: { only: FeedId }) {
+  const w = useW(), f = useFeeds(), changed = f.ch, learned = f.le, asking = f.as
+
   const cols: { k: string; ic: IconName; label: string; items: Item[]; n?: number }[] = [
     { k: 'ch', ic: 'pencil-line', label: 'Changed', items: changed.slice(0, 3) },
     { k: 'le', ic: 'eye', label: 'Learned', items: learned.slice(0, 3) },
-    { k: 'as', ic: 'circle-help', label: 'Asking people', items: asking.slice(0, 3), n: asking.length + 4 },
+    { k: 'as', ic: 'circle-help', label: 'Asking people', items: asking.slice(0, 3), n: asking.length },
   ]
   return (
     <div className="lv one">
       {cols.filter((c) => c.k === only).map((c) => (
         <section key={c.k} className="lv-col" aria-label={c.label}>
           <div className="lv-h"><Icon name={c.ic} size={16} /><span className="tk">{c.label}</span>{c.n !== undefined && <span className="tk lv-n num">{c.n}</span>}</div>
-          <ul>{c.items.map((it) => (
-            <li key={it.key}><button onClick={it.open}>
-              <b>{it.title}</b>
-              <span className="lv-d">{it.dek}</span>
-              <span className="lv-f">{AG[it.ag].name}{it.src && <span className="lv-src" aria-label={`Sources: ${it.src.join(', ')}`}>{it.src.map((s) => <Icon key={s} name={s} size={12} />)}</span>}</span>
-            </button></li>
-          ))}</ul>
+          <ul>{c.items.map((it) => <li key={it.key}><FeedItem it={it} /></li>)}</ul>
+          <button className="wl lv-more" onClick={() => w.openFeed(c.k as FeedId)}>Learn more<Icon name="arrow-right" size={14} /></button>
         </section>
       ))}
     </div>
@@ -164,7 +199,7 @@ const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => 
   changed: { t: 'Changed', nav: 'Changed', body: () => <LiveColumn only="ch" /> },
   learned: { t: 'Learned', nav: 'Learned', body: () => <LiveColumn only="le" /> },
   asking: { t: 'Asking people', nav: 'Asking people', body: () => <LiveColumn only="as" /> },
-  jobs: { t: 'What Asoka knows and runs, by job', nav: 'What Asoka knows and runs, by job', body: () => <AgentsOverview /> },
+  jobs: { t: 'Jobs', nav: 'Jobs', body: () => <AgentsOverview /> },
   up: { t: 'Coming up', nav: 'Coming up', body: () => <Readiness /> },
   moving: { t: 'What’s moving and In focus', nav: 'What’s moving', body: () => <MovingFocus /> },
   rules: { t: 'Unwritten rules', nav: 'Unwritten rules Asoka found', body: () => <RulesCard /> },
@@ -172,7 +207,7 @@ const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => 
   stories: { t: 'Today’s stories', nav: 'Today’s stories', body: () => <Stories /> },
 }
 /** Modules that read as one section in the nav. */
-const GROUP: Partial<Record<ModId, string>> = { path: 'Status', rel: 'Status', runs: 'Status', gaps: 'Status', changed: 'Changed, learned and asking', learned: 'Changed, learned and asking', asking: 'Changed, learned and asking' }
+const GROUP: Partial<Record<ModId, string>> = { path: 'Status', rel: 'Status', runs: 'Status', gaps: 'Status', changed: 'Updates', learned: 'Updates', asking: 'Updates' }
 /** Widths on the page's 12-column grid come from where a module is dropped, never from a setting. */
 type W = 4 | 6 | 8 | 12
 type Slot = { id: ModId; w: W }
@@ -252,7 +287,6 @@ export function Home9() {
       <HomeLive />
       <div className="h9-bar">
         {layout.length > 0 && <Toc items={nav} />}
-        <button className={'btn ghost h9-cust' + (edit ? ' on' : '')} onClick={() => setEdit(!edit)} aria-expanded={edit}><Icon name="sliders" size={14} />{edit ? 'Done' : 'Customize'}</button>
       </div>
       {edit && (
         <div className="h9-tools" role="region" aria-label="Customize Home">

@@ -91,6 +91,12 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Cards in a shared row take the row's height** (grid `align-items:stretch`; cards are `box-sizing:border-box` so they never spill into the next row).
 - **Each module is a size container,** so its content follows its own width.
 - **Body type on Home:** every item uses three steps. The title is Body 16/26 at 500 in ink; the description is UI 14/20 in ink2; meta (job, scope, sources, dates) is Meta 12/18 in ink2. The Changed/Learned/Asking items lost their serif titles, job tiles and icon piles: the job is a Meta line with 12px source icons.
+- **Latest Home 9 changes:**
+  - No Customize button: drag still reorders and resizes, and the layout is kept. The hide, move and shelf controls are unused for now.
+  - Nav links are Status · Updates · Jobs · Coming up, with no "On this page" label on Home.
+  - "Changed / Learned / Asking people" are the **Updates** feeds (`useFeeds`). Each column shows its newest three and a **Learn more** link that opens the whole feed in the right panel (`FeedPanel`; store `feed`, `openFeed`), with older items the columns leave out.
+  - "What Asoka knows and runs, by job" is **Jobs** in Wikimind 9.
+  - Coming up has no subtitle.
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
   - Then what Asoka will do (UI 14), a segment meter with its count ("3 of 4 rules verified"), and the one thing missing with the action that closes it.

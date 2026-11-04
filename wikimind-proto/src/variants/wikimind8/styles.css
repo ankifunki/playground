@@ -1757,3 +1757,16 @@ button.km-t{cursor:pointer}
 .w7 .h9 .h9-s:not(:has(.lv)):not(.h9-edit *)>.h9-ctl .h9-grip{width:16px;height:16px;background:none}
 .w7 .h9 .h9-s:not(:has(.lv))>.h9-ctl{left:var(--s2);top:var(--s2)}
 .w7 .h9 .h9-s:not(:has(.lv))>.h9-ctl .h9-grip .ic{width:14px;height:14px}
+/* Updates columns: Learn more under each, opening the whole feed in the right panel. */
+.lv-more{display:inline-flex;align-items:center;gap:var(--s6);align-self:flex-start;margin-top:var(--s4);font:500 var(--fs-ui)/20px var(--sans);color:var(--link)}
+.lv.one .lv-col{display:flex;flex-direction:column}
+.fd ul{list-style:none;margin:0;padding:0}
+.fd li{border-top:1px solid var(--line)}
+.fd li:first-child{border-top:0}
+.rail .fd button{padding:var(--s12) 0 var(--s14)}
+.rail .fd b{font:500 var(--fs-ui)/20px var(--sans)}
+.lv .lv-more{display:inline-flex;flex-direction:row;align-items:center;width:auto;gap:var(--s6);margin-top:auto;padding:var(--s8) 0 0}
+.h9-s .lv.one,.h9-s .lv.one .lv-col{height:100%}
+.lv.one .lv-col>ul{margin-bottom:var(--s8)}
+.rail .lv.fd{display:flex;flex-direction:column;gap:var(--s16)}
+.w7 .h9 .toc-l{display:none}

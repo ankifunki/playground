@@ -40,6 +40,8 @@ type W = {
   startChat: (text: string, from?: DOMRect | null) => void; chatFrom: DOMRect | null
   /** Wikimind 9: the variant flag, and access grants that close a gap (Wikimind 4's controls): idle, asking Dev, granted. */
   v9: boolean; access: Record<Gap, 'idle' | 'asking' | 'done'>; grant: (g: Gap) => void
+  /** Wikimind 9: one updates feed in full, in the right panel. */
+  feed: 'ch' | 'le' | 'as' | null; openFeed: (f: 'ch' | 'le' | 'as' | null) => void
 }
 export type Gap = 'okta' | 'netsuite'
 /** What each access gap blocks, and what granting it unblocks (points of work Asoka can then run). */
@@ -80,6 +82,8 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   const [arrive, setArrive] = useState(false), [askedOwner, setAskedOwner] = useState(false), [search, setSearch] = useState('')
   const [chat, setChat] = useState<ChatMsg[]>([]), [chatOn, setChatOnS] = useState(false), [chatFrom, setChatFrom] = useState<DOMRect | null>(null)
   const cid = useRef(1)
+  const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null)
+  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setFeed(f); if (f) setRail(true) }
   const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
   // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
   const grant = (g: Gap) => {
@@ -173,10 +177,10 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
       else if (e.key === 's' || e.key === 'S') arriveSlack()
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed }}>{children}</Ctx.Provider>
 }
