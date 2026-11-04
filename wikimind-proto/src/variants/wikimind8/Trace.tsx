@@ -8,7 +8,7 @@ const KIND: Record<TStep['k'], { t: string; ic: IconName }> = {
   observed: { t: 'Observed', ic: 'eye' }, reasoned: { t: 'Reasoned', ic: 'git-branch' }, asked: { t: 'Asked', ic: 'circle-help' },
   edited: { t: 'Edited', ic: 'pencil-line' }, verified: { t: 'Verified', ic: 'badge-check' }, revoked: { t: 'Revoked', ic: 'rotate-ccw' },
 }
-const TIER: Record<Tier, string> = { verified: 'Verified by a person', observed: 'Read from Salesforce', unofficial: 'Unofficial practice', open: 'Open question', checking: 'Being re-checked' }
+const TIER: Record<Tier, string> = { verified: 'Verified by a person', observed: 'Read from Salesforce', unofficial: 'Unofficial practice', open: 'Open question', checking: 'Being re-checked', kb: 'From the knowledge base · not re-checked', manual: 'Written by hand' }
 
 /**
  * The trace behind one piece of knowledge: the claim, its trust tier, and the chain that produced it, oldest first:

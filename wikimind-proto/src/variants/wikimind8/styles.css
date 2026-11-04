@@ -1983,3 +1983,36 @@ button.km-t{cursor:pointer}
  .ti-stats{grid-template-columns:1fr}.ti-stats>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line)}
  .w7 .ti-find li{grid-template-columns:1fr;gap:var(--s8)}
 }
+/* Approval tiers traces: two more tiers in the trace header, and traced blocks that sit inside cards and callouts. */
+.tr-tier.kb{color:var(--warn)}.tr-tier.manual{color:var(--ink2)}
+.ti-hint{color:var(--ink2)}
+.ti-find .blk,.ti-gates+.blk{margin:0}
+.ti .callout.blk{display:block}
+.ti-tbl tr.trc{cursor:pointer}
+/* Two gates, simplified: two numbered rows between hairlines, then three one-line rules. */
+.ti-g2{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}
+.w7 .ti-g2 li{margin:0;display:grid;grid-template-columns:24px minmax(0,1fr);gap:var(--s12);align-items:start;padding:var(--s14) 0;border-bottom:1px solid var(--line);font:400 var(--fs-body)/26px var(--sans)}
+.ti-g2 .ti-n{margin-top:1px}
+.ti-g2 b,.ti-g2-rules b{font-weight:500}
+.ti-g2-rules{list-style:none;padding:0;margin:var(--s16) 0 0;display:flex;flex-direction:column;gap:var(--s8)}
+.w7 .ti-g2-rules li{margin:0;font:400 var(--fs-ui)/22px var(--sans);color:var(--ink2)}
+.w7 .ti-g2-rules b{color:var(--ink)}
+.doc ul.ti-g2-rules,.doc ol.ti-g2{margin-left:0;padding-left:0}
+.w7 .ti-lead{margin:0 0 var(--s16);font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+/* Approval tiers: spacing around Page / Markdown, and Confidence as one bar per statement. */
+.w7 .ti .liveln{margin-bottom:var(--s20)}
+.w7 .ti .ti-view{margin:0 0 var(--s24)}
+
+.ti-conf{display:flex;flex-direction:column;gap:var(--s8)}
+.ti-conf-h b{font-weight:500;font-variant-numeric:tabular-nums}
+.ti-conf-h .props-m{margin-left:var(--s8)}
+.ti-conf-bars{display:flex;gap:var(--s2);height:20px}
+.ti-conf-bars i{flex:none;width:4px;height:100%;background:var(--ink2)}
+.ti-conf-bars i.c-live,.ti-conf-l .c-live::before{background:var(--ok)}
+.ti-conf-bars i.c-kb,.ti-conf-l .c-kb::before{background:var(--warn)}
+.ti-conf-bars i.c-manual,.ti-conf-l .c-manual::before{background:color-mix(in srgb,var(--ink) 30%,transparent)}
+.ti-conf-bars i.c-open,.ti-conf-l .c-open::before{background:color-mix(in srgb,var(--warn) 35%,transparent)}
+.ti-conf-l{display:flex;flex-wrap:wrap;gap:var(--s4) var(--s16)}
+.ti-conf-l button{display:inline-flex;align-items:center;gap:var(--s6);padding:0;border:0;background:none;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);cursor:pointer}
+.ti-conf-l button::before{content:"";width:8px;height:8px}
+@media (hover:hover) and (pointer:fine){.ti-conf-l button:hover{color:var(--ink)}}
