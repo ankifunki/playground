@@ -1,3 +1,4 @@
+import { Tiers } from './Tiers'
 import { ArtView, SharePanel } from './Share'
 import type React from 'react'
 import { useEffect, useState } from 'react'
@@ -164,7 +165,7 @@ function Shell({ news }: { news?: boolean }) {
       {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top look={look} onLook={toggleLook} />
-        {w.page === 'home' ? (w.v9 ? <Home9 /> : news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : w.page.startsWith('art:') ? <ArtView id={w.page.slice(4)} /> : <Stub id={w.page} />}
+        {w.page === 'home' ? (w.v9 ? <Home9 /> : news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : w.page === 'approval-tiers' ? <Tiers /> : w.page.startsWith('art:') ? <ArtView id={w.page.slice(4)} /> : <Stub id={w.page} />}
         <Omni />
         <Tour />
       </main>

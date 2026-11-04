@@ -28,6 +28,7 @@ export const SPACES: { ag: AgentId; pages: PageMeta[]; total: number }[] = [
   ] },
   { ag: 'security', total: 142, pages: [
     { id: 'login-policies', title: 'Login policies', ag: 'security', n: 0, re: 1200, lede: 'Session, MFA and IP rules for Salesforce logins. Every profile has required MFA since March.' },
+    { id: 'approval-tiers', title: 'Approval tiers and the privilege surface', ag: 'security', n: 0, re: 7200, lede: 'Who signs off on what, the two gates every production change passes, and the riskiest access today. Mapped from approval-tiers.md.' },
     { id: 'access-reviews', title: 'Access reviews', ag: 'security', n: 0, re: 5400, lede: 'Quarterly review of admin and API users. The last review removed 14 stale API users.' },
   ] },
   { ag: 'finance', total: 174, pages: [
