@@ -128,7 +128,7 @@ export function AgentsOverview() {
   ]
   return (
     <section className={'home-card ov' + (filter ? ' f-' + filter : '')} aria-label={w.v9 ? 'Jobs' : 'What Asoka knows and runs, by job'}>
-      <div className="nh-h"><h2>{w.v9 ? 'Jobs' : 'What Asoka knows and runs, by job'}</h2></div>
+      {!w.v9 && <div className="nh-h"><h2>What Asoka knows and runs, by job</h2></div>}
       <ul className="ov-sum">
         {stats.map((s) => (
           <li key={s.t}>

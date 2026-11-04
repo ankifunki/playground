@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AgentsOverview, GrantBtn } from './Agents'
 import { AG, type AgentId } from './data'
 import { HomeLive, HomeSources, MovingFocus, RulesCard, useRun } from './Home'
@@ -18,22 +18,24 @@ import { Toc, type TocItem } from './Toc'
  */
 
 
-/** The CIO's cards: the path to full automation, then reliability, how much Asoka runs, and the gaps it can't close alone. */
-/** The CIO's numbers, each its own module: the path to full automation, reliability, how much Asoka runs, and gaps. */
-function PathMod() {
+/**
+ * Status, one card: the path to full automation, then Reliability and Gaps and access side by side under a hairline,
+ * split by a thin vertical rule (stacked when the module is narrow). The bar already says how much Asoka runs.
+ */
+function StatusMod() {
   const run = useRun()
   const gapNames = run.open.map((g) => `${GAPS[g].t} (${GAPS[g].scope})`).join(', ') || 'none'
-  return <PathBar own={run.own} ask={run.ask} gaps={gapNames} card label={false} />
+  return (
+    <div className="home-card st9">
+      <PathBar own={run.own} ask={run.ask} gaps={gapNames} label={false} />
+      <div className="st9-row"><RelCard /><GapsCarousel blocked={run.blocked} /></div>
+    </div>
+  )
 }
 function RelCard() {
   const w = useW()
-  return <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.openMisses('all')}>See the 3 misses</button></div>
+  return <div className="hc"><div className="gc-h"><span className="tk">Reliability</span></div><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.openMisses('all')}>See the 3 misses</button></div>
 }
-function RunsCard() {
-  const run = useRun()
-  return <div className="hc"><span className="tk">Asoka runs</span><b className="num">{run.own}%</b><p>of Rippling’s Salesforce admin work, up from 51% in September</p></div>
-}
-function GapsMod() { return <GapsCarousel blocked={useRun().blocked} /> }
 
 /**
  * Coming up, around readiness: each event says what Asoka will do and how ready it is (verified rules or steps, as
@@ -55,8 +57,7 @@ function Readiness() {
       n: 1, of: 2, unit: 'approvals', open: () => w.go('cpq-sync'), missing: <>Dev to approve the retry policy <span className="rd-who">asked Nov 2</span></> },
   ]
   return (
-    <section className="home-card rd">
-      <div className="nh-h"><h2>Coming up</h2></div>
+    <section className="home-card rd" aria-label="Coming up">
       <ol>
         {evs.map((e) => {
           const ready = e.n >= e.of, state = ready ? 'Ready' : e.key === 'ns' ? 'Waiting' : e.n >= e.of - 1 && e.key === 'qe' ? 'Almost ready' : 'Blocked'
@@ -84,8 +85,8 @@ function GapsCarousel({ blocked }: { blocked: number }) {
   const go = (d: number) => setI((x) => (x + d + n) % n)
   return (
     <div className="hc gaps9">
-      <div className="gc-h"><span className="tk">Gaps</span>
-        <span className="gc-pg" role="group" aria-label="Gaps"><span className="tk num">{i + 1} of {n}</span>
+      <div className="gc-h"><span className="tk">Gaps and access</span>
+        <span className="gc-pg" role="group" aria-label="Gaps and access"><span className="tk num">{i + 1} of {n}</span>
           <button className="gc-b" onClick={() => go(-1)} aria-label="Previous gap"><Icon name="chevron-right" size={14} /></button>
           <button className="gc-b" onClick={() => go(1)} aria-label="Next gap"><Icon name="chevron-right" size={14} /></button></span>
       </div>
@@ -190,12 +191,9 @@ function LiveColumn({ only }: { only: FeedId }) {
  * wait on a shelf to be added back. The layout is kept in this browser (localStorage `wm9-home`); Reset restores it.
  * The chip nav follows the order and what is shown.
  */
-type ModId = 'path' | 'rel' | 'runs' | 'gaps' | 'changed' | 'learned' | 'asking' | 'jobs' | 'up' | 'moving' | 'rules' | 'counts' | 'stories'
+type ModId = 'status' | 'changed' | 'learned' | 'asking' | 'jobs' | 'up' | 'moving' | 'rules' | 'counts' | 'stories'
 const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => ReactNode }> = {
-  path: { t: 'Status', nav: 'Status', body: () => <PathMod /> },
-  rel: { t: 'Reliability', nav: 'Reliability', body: () => <RelCard /> },
-  runs: { t: 'Asoka runs', nav: 'Asoka runs', body: () => <RunsCard /> },
-  gaps: { t: 'Gaps', nav: 'Gaps', body: () => <GapsMod /> },
+  status: { t: 'Status', nav: 'Status', body: () => <StatusMod /> },
   changed: { t: 'Changed', nav: 'Changed', body: () => <LiveColumn only="ch" /> },
   learned: { t: 'Learned', nav: 'Learned', body: () => <LiveColumn only="le" /> },
   asking: { t: 'Asking people', nav: 'Asking people', body: () => <LiveColumn only="as" /> },
@@ -207,15 +205,15 @@ const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => 
   stories: { t: 'Today’s stories', nav: 'Today’s stories', body: () => <Stories /> },
 }
 /** Modules that read as one section in the nav. */
-const GROUP: Partial<Record<ModId, string>> = { path: 'Status', rel: 'Status', runs: 'Status', gaps: 'Status', changed: 'Updates', learned: 'Updates', asking: 'Updates' }
+const GROUP: Partial<Record<ModId, string>> = { status: 'Status', jobs: 'Jobs', up: 'Coming up', changed: 'Updates', learned: 'Updates', asking: 'Updates' }
 /** Widths on the page's 12-column grid come from where a module is dropped, never from a setting. */
 type W = 4 | 6 | 8 | 12
 type Slot = { id: ModId; w: W }
 const DEFAULT: Slot[] = [
-  { id: 'path', w: 12 }, { id: 'rel', w: 4 }, { id: 'runs', w: 4 }, { id: 'gaps', w: 4 },
+  { id: 'status', w: 12 },
   { id: 'changed', w: 4 }, { id: 'learned', w: 4 }, { id: 'asking', w: 4 }, { id: 'jobs', w: 12 }, { id: 'up', w: 12 },
 ]
-const SUGGEST: Record<ModId, W> = { path: 12, rel: 4, runs: 4, gaps: 4, changed: 4, learned: 4, asking: 4, jobs: 12, up: 12, moving: 12, rules: 6, counts: 12, stories: 12 }
+const SUGGEST: Record<ModId, W> = { status: 12, changed: 4, learned: 4, asking: 4, jobs: 12, up: 12, moving: 12, rules: 6, counts: 12, stories: 12 }
 const ALL = Object.keys(MODS) as ModId[]
 function readLayout(): Slot[] {
   try {
@@ -272,9 +270,12 @@ export function Home9() {
   // One link per section, not per module: modules sharing a row (or a group like Status) can't be jumped to apart.
   const nav: TocItem[] = useMemo(() => {
     const out: TocItem[] = []
-    rows(layout).forEach((r) => { const id = layout[r[0]].id, t = GROUP[id] || MODS[id].nav; if (out[out.length - 1]?.t !== t) out.push({ id: 'h-' + id, t }) })
+    rows(layout).forEach((r) => { const id = layout[r[0]].id, t = GROUP[id] || MODS[id].nav; if (out[out.length - 1]?.t !== t) out.push({ id: 'sec-' + id, t }) })
     return out
   }, [layout.map((x) => x.id + x.w).join()]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Section titles, as on a page: one before each row that starts a new section (Status, Updates, Jobs, Coming up).
+  const heads = new Map<number, string>(); let last = ''
+  rows(view).forEach((r) => { const id = view[r[0]].id, t = GROUP[id] || MODS[id].t; if (t !== last) heads.set(r[0], t); last = t })
   const end = (commit: boolean) => { if (commit && drag && over && over.id !== drag) { setLayout(view); mark(drag) } setDrag(null); setOver(null) }
   const zoneOf = (e: React.DragEvent, el: HTMLElement): Zone => {
     const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height
@@ -299,10 +300,11 @@ export function Home9() {
       )}
       <div className="h9-grid" onDragOver={(e) => { if (drag) e.preventDefault() }} onDrop={(e) => { e.preventDefault(); end(true) }}>
         {view.map(({ id, w }, i) => {
-          const m = MODS[id], ghost = drag === id
+          const m = MODS[id], ghost = drag === id, head = heads.get(i)
           const cls = 'h9-s w' + w + (ghost ? ' ghost' : '') + (moved === id ? ' moved' : '')
-          return (
-            <section key={id} id={'h-' + id} className={cls} draggable
+          return (<Fragment key={id}>
+            {head && <h2 className="h9-sh" id={'sec-' + id} key={'t-' + id}>{head}</h2>}
+            <section id={'h-' + id} className={cls} draggable
               onDragStart={(e) => { setDrag(id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); e.dataTransfer.setDragImage(e.currentTarget, 40, 20) }}
               onDragOver={(e) => {
                 if (!drag) return; e.preventDefault(); if (id === drag) return
@@ -321,7 +323,7 @@ export function Home9() {
               </div>
               <div className="h9-body">{m.title && <h2 className="h9-t">{m.title}</h2>}{m.body()}</div>
             </section>
-          )
+          </Fragment>)
         })}
       </div>
       {!layout.length && <p className="h9-empty">Home is empty. <button className="wl" onClick={() => setEdit(true)}>Add a module</button></p>}

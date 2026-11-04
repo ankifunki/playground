@@ -118,6 +118,8 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Side panels stand alone:** only a trace opened from Live activity keeps the "Live activity / Trace" crumb and Back. Every other panel (blocker, question, rule, feed, job, misses, chat, a trace from the page) shows just its own title, and closing it (×, Esc) closes the rail. Store: `openTrace(id, fromActivity)`, `traceFrom`.
 - **Add a rule sits right of the Rules heading** (`.h2-row`).
 - **Updates are cards:** Changed, Learned and Asking people each sit in a white card like their Status neighbours (Look B gets its flat hairline through `--sh`); the grab cue sits in the card's corner.
+- **Status is one card** (`StatusMod`): the path bar, then Reliability | **Gaps and access** under a hairline, split by a thin vertical rule (stacked when the module is narrow), titles top-aligned. "Asoka runs" was dropped: the bar says it. Module id `status` (older saved layouts fall back to the default).
+- **Home section titles, as on a page:** a serif h2 over a light rule before each row that starts a section (Status, Updates, Jobs, Coming up; `heads` in `Home9`, ids `sec-<module>` for the nav). Cards no longer repeat the title (Jobs and Coming up lost theirs).
 - **Section rules on a page:** each h2 section starts with a 1px `--hair` rule, 48px above and below it (not on Home, the demo page or All pages).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.

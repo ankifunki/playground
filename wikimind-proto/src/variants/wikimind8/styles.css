@@ -1831,3 +1831,20 @@ button.km-t{cursor:pointer}
 .h9-s:has(.lv)>.h9-ctl{left:var(--s4);top:var(--s4)}
 @media (hover:hover) and (pointer:fine){.h9-s:has(.lv):hover .lv-h>.ic:first-child{visibility:visible}}
 @media (max-width:640px){.w7 .h9 .lv.one .lv-col{padding:var(--s4) var(--s20) var(--s20)}}
+/* Status: the path bar, then Reliability | Gaps and access under a hairline, split by a thin vertical rule. */
+.w7 .h9 .st9{gap:0}
+.st9-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:var(--s28);padding-top:var(--s28);border-top:1px solid var(--hair)}
+.w7 .h9 .st9-row>.hc{background:none;box-shadow:none;border-radius:0;padding:0 var(--s28) 0 0;justify-content:flex-start}
+.w7 .h9 .st9-row>.hc+.hc{padding:0 0 0 var(--s28);border-left:1px solid var(--hair)}
+.st9 .gc-h{min-height:28px}
+@container mod (max-width:600px){
+ .st9-row{grid-template-columns:1fr}
+ .w7 .h9 .st9-row>.hc{padding:0}
+ .w7 .h9 .st9-row>.hc+.hc{padding:var(--s24) 0 0;margin-top:var(--s24);border-left:0;border-top:1px solid var(--hair)}
+}
+.w7 .h9 .st9 .path{margin:0}
+/* Home 9 section titles, as on a page: serif headline over a light rule; the cards below carry no title of their own. */
+.w7 article.doc.h9 .h9-grid>h2.h9-sh{grid-column:1/-1;margin:var(--s40) 0 0;padding-top:var(--s40);border-top:1px solid var(--hair);scroll-margin-top:120px}
+.w7 article.doc.h9 .h9-grid>h2.h9-sh:first-child{margin-top:0;padding-top:0;border-top:0}
+.h9-dragging .h9-sh{pointer-events:none}
+.w7 .h9 .h9-grid .h9-body>.home-card{margin-bottom:0}
