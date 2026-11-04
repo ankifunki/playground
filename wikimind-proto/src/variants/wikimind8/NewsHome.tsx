@@ -4,7 +4,7 @@ import { Thresholds } from './Flow'
 import { AgentsOverview } from './Agents'
 import { HomeLive, HomeSources, RulesCard } from './Home'
 import { Icon } from './Icon'
-import { Ag } from './Live'
+import { Ag, LiveNum } from './Live'
 import { RM, useW } from './store'
 
 /*
@@ -16,7 +16,8 @@ import { RM, useW } from './store'
 /** Today: what the agents observed, learned and rewrote. Observed ticks while you watch; live events move the others. */
 function Today() {
   const w = useW(), [t0] = useState(w.now)
-  const observed = 1240 + Math.floor((w.now - t0) / 1600)
+  // Observed ticks every ~4 s, so each tick reads as an event rather than a blur.
+  const observed = 1240 + Math.floor((w.now - t0) / 4000) * 2
   const learned = 6 + (w.renewal === 'answered' ? 1 : 0)
   const rewrote = 23 + Object.keys(w.why).length
   const cells = [
@@ -26,7 +27,7 @@ function Today() {
   ]
   return (
     <section className="nh-today" aria-label="Today">
-      {cells.map((c) => <div key={c.k}><span className="tk">{c.k} today</span><b className="num" key={c.n}>{c.n}</b><span>{c.s}</span></div>)}
+      {cells.map((c) => <div key={c.k}><span className="tk">{c.k} today</span><b className="num"><LiveNum value={c.n} /></b><span>{c.s}</span></div>)}
     </section>
   )
 }

@@ -70,6 +70,16 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
   )
 }
 
+/**
+ * A number that changes while you watch: on each change it shows in the accent colour, then fades back to the text
+ * colour, so a live update draws the eye once without staying loud. Never on first render. Clocks don't use it.
+ */
+export function LiveNum({ value }: { value: string | number }) {
+  const prev = useRef(value), [n, setN] = useState(0)
+  useEffect(() => { if (prev.current !== value) { prev.current = value; setN((x) => x + 1) } }, [value])
+  return <span key={n} className={'ln' + (n ? ' on' : '')}>{value}</span>
+}
+
 /** The live mark: a small radio icon with a slow, soft pulse ring. Used wherever something is happening right now. */
 export function LivePulse({ on = true }: { on?: boolean }) {
   return <span className={'lp' + (on ? ' on' : '')} aria-hidden="true"><Icon name="radio" size={12} /></span>

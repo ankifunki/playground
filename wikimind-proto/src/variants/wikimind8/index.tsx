@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useVariantCss } from '../../useVariantCss'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag, LivePulse, Sources } from './Live'
+import { Ag, LiveNum, LivePulse, Sources } from './Live'
 import { Omni } from './Omni'
 import { Trace } from './Trace'
 import { TRACE } from './traces'
@@ -24,7 +24,7 @@ function Sidebar() {
       <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search 1,284 pages" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={16} />Home</button>
-      <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={16} />Live activity<span className="sb-n">{w.acts.length}</span></button>
+      <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={16} />Live activity<span className="sb-n"><LiveNum value={w.acts.length} /></span></button>
       <div className="sb-l">Groves</div>
       {SPACES.map((s) => {
         const pages = s.pages.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()))

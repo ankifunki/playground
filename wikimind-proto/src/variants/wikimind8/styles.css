@@ -1145,3 +1145,6 @@ button.km-t{cursor:pointer}
  .ov-now:empty{display:none}
 }
 .doc ul.ov-rows,.doc ul.ov-sum{margin-left:0;padding-left:0}.doc ul.ov-rows li{margin:0}
+/* Live numbers: accent on change, then back to the text colour. */
+.ln.on{animation:lnFlash 1.6s var(--eo) both}
+@keyframes lnFlash{from{color:var(--link)}}

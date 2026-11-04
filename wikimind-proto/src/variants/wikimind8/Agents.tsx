@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
 import { MiniBar, REL } from './Home'
 import { Icon } from './Icon'
-import { Ag, LivePulse } from './Live'
+import { Ag, LiveNum, LivePulse } from './Live'
 import { RM, useW } from './store'
 
 /*
@@ -119,8 +119,8 @@ export function AgentsOverview() {
       <ul className="ov-sum">
         {stats.map((s) => (
           <li key={s.t}>
-            {s.k ? <button className={filter === s.k ? 'on' : ''} aria-pressed={filter === s.k} onClick={() => setFilter(filter === s.k ? null : s.k)}><b className="num">{s.n}</b><span>{s.t}</span></button>
-              : <div><b className="num">{s.n}</b><span>{s.t}</span></div>}
+            {s.k ? <button className={filter === s.k ? 'on' : ''} aria-pressed={filter === s.k} onClick={() => setFilter(filter === s.k ? null : s.k)}><b className="num"><LiveNum value={s.n} /></b><span>{s.t}</span></button>
+              : <div><b className="num"><LiveNum value={s.n} /></b><span>{s.t}</span></div>}
           </li>
         ))}
       </ul>

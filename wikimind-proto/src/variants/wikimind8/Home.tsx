@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag, LivePulse, Sources } from './Live'
+import { Ag, LiveNum, LivePulse, Sources } from './Live'
 import { PathBar } from './Page'
 import { useW } from './store'
 
@@ -91,7 +91,7 @@ export function MovingFocus() {
     <>
       <div className="home-2">
         <section className="home-card">
-          <div className="home-ch"><h2>What’s moving</h2><span className="tk">{w.acts.length} today</span></div>
+          <div className="home-ch"><h2>What’s moving</h2><span className="tk"><LiveNum value={w.acts.length} /> today</span></div>
           <ol className="mv8">{w.acts.slice(0, 6).map((a) => (
             <li key={a.id} className={a.id > 0 && w.now - a.at < 6000 ? 'in' : ''}>
               <span className="mv8-ic" aria-hidden="true"><Icon name={a.kind === 'edit' ? 'pencil-line' : a.kind === 'ask' ? 'circle-help' : a.kind === 'verify' ? 'circle-check' : 'eye'} size={14} /></span>
