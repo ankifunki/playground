@@ -51,14 +51,17 @@ export function Tour() {
   return (
     <>
       {st.sel === '.asm' && <Assemble />}
+      {/* A click anywhere outside the card ends the tour, like Esc, the × and End tour. */}
+      <button className="tour-bg" aria-label="End tour" tabIndex={-1} onClick={() => w.setTour(null)} />
       {box && ready && <div className="tour-ring" style={{ left: box.left - 6, top: box.top - 6, width: box.width + 12, height: box.height + 12 }} />}
       <div className={'tour-card' + (ready ? ' on' : '')} role="dialog" aria-label={st.t} style={{ left, top, width: W }} key={i}>
+        <button className="ib tour-close" onClick={() => w.setTour(null)} aria-label="End tour" title="End tour (Esc)"><Icon name="x" size={16} /></button>
         <span className="tk">{i + 1} of {steps.length}</span>
         <b>{st.t}</b>
         <p>{st.b}</p>
         <div className="tour-f">
           <span className="tour-dots">{steps.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
-          <button className="tour-x" onClick={() => w.setTour(null)}>Skip</button>
+          <button className="tour-x" onClick={() => w.setTour(null)}>End tour</button>
           {i > 0 && <button className="ib" onClick={() => w.setTour(i - 1)} aria-label="Back"><Icon name="arrow-right" size={14} /></button>}
           <button className="btn primary tour-n" onClick={next}>{i < steps.length - 1 ? 'Next' : 'Done'}</button>
         </div>

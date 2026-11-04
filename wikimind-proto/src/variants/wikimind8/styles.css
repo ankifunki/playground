@@ -1349,3 +1349,5 @@ button.km-t{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.cx-m,.cx-in,.cx-next button{animation:fade .2s both}}
 .rail .cx ol{padding:0;overflow:visible;flex:none}
 .rail .cx li{border-top:0;padding:0}
+.tour-bg{position:fixed;inset:0;z-index:118;border:0;padding:0;background:none;cursor:default}
+.tour-close{position:absolute;top:var(--s12);right:var(--s12)}
