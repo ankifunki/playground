@@ -1931,3 +1931,5 @@ button.km-t{cursor:pointer}
 .w7 .h9 .ov-sum{margin-bottom:var(--s10)}
 .w7 .h9 .ov-head{padding:0 0 var(--s8);border-bottom:1px solid var(--line);align-items:end}
 .w7 .h9 .ov-rows>li:first-child{border-top:0}
+/* The ask bar (pill and full) centres on Home 9's content column, not the frame: same left offset as the content beside the nav rail. */
+@media (min-width:1200px){.w7.pg-home:has(.doc.h9) .om{padding-left:calc(var(--s40) + 192px)}}

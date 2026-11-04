@@ -132,6 +132,7 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Standalone How it works:** a self-contained page anyone can open (https://claude.ai/artifact/TDtjiYh85NrHoPZH4ebqf9): presets (each with a link, #helios #atlas #orion #kestrel), sliders, the record, the animated route, play/scrub, then the thresholds. Source in the session scratchpad (`how/index.html`), ported to plain JS from `How.tsx` and `Route.tsx`.
 - **No "On this page" label** on a page in Wikimind 9 (the rail stays).
 - **Jobs column heads** sit on their own rule, 24px under the totals; the last column is **Actions**.
+- **Ask bar centres on the content column:** on Home 9 at 1200px+ the content sits right of the nav rail, so `.om` takes the same left offset; pill and full bar both centre on the content (pages already did).
 - **Section rules on a page:** each h2 section starts with a 1px `--hair` rule, 48px above and below it (not on Home, the demo page or All pages).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
