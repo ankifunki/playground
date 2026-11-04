@@ -132,7 +132,7 @@ export function AgentsOverview() {
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
-                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages</small></span></span>
+                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages{g.counts.old ? <> · <span className="ov-x">{g.counts.old} out of date</span></> : null}{q.length ? <> · <span className="ov-x">{q.length} open {q.length === 1 ? 'question' : 'questions'}</span></> : null}</small></span></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
