@@ -65,17 +65,22 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
   const toggle = () => { started.current = true; if (t >= len - 1) { setT(0); setPlay(true) } else setPlay(!play) }
   const jump = (at: number) => { started.current = true; setPlay(false); setT(at + 1) }
   const custom = deal !== HELIOS
-  // The record's activity, oldest first; each item shows once the recording reaches it.
-  type Ev = { at: number; cls: string; b: string; small: string; em?: string }
+  // The record's activity, oldest first. Every event has a node on the track from the start; it fills when reached.
+  type Ev = { at: number; tone: string; s: string; d: string; em: string }
   const evs: Ev[] = [
-    { at: 1800, cls: '', b: 'Moved to Negotiation', small: `Sam Ortiz · ${money(deal.amt)} at ${deal.disc}% off`, em: '0 s' },
-    { at: 4200, cls: 'agent', b: 'Approvals agent checked the rules', small: r.reason, em: '+2 s' },
-    r.small ? { at: 7600, cls: 'ok', b: 'No approval needed', small: 'Receipt logged on this page', em: '+4 s' }
-      : { at: 7600, cls: '', b: 'Locked and submitted', small: `To ${r.first}`, em: '+4 s' },
-    ...r.approvers.map((a, i) => { const ok = t > okAt[i]; return { at: i === 0 ? 7600 : okAt[i - 1], cls: ok ? 'ok' : 'wait', b: ok ? `${a.label} approved` : `Waiting for ${a.label.toLowerCase() === 'cro' ? 'the CRO' : a.label === 'Finance' ? 'Finance' : 'the sales manager'}`, small: a.who, em: ok ? a.at : undefined } }),
-    ...(r.small ? [] : [{ at: end + 400, cls: 'ok', b: 'Unlocked', small: 'The deal moves on · receipt logged on this page', em: r.approvers[r.approvers.length - 1].at }]),
+    { at: 0, tone: '', s: 'Moved to Negotiation', d: `Sam Ortiz · ${money(deal.amt)} at ${deal.disc}% off`, em: '0 s' },
+    { at: 4200, tone: 'agent', s: 'Agent checked the rules', d: r.reason, em: '+2 s' },
+    r.small ? { at: 7600, tone: 'ok', s: 'No approval needed', d: 'The deal moves on · receipt logged on this page', em: '+4 s' }
+      : { at: 7600, tone: '', s: 'Locked and submitted', d: `Sent to ${r.first}`, em: '+4 s' },
+    ...r.approvers.map((a, i) => { const ok = t > okAt[i]; return { at: i === 0 ? 7600 + 1 : okAt[i - 1], tone: ok ? 'ok' : 'wait', s: ok ? `${a.label} approved` : `Waiting for ${a.label === 'CRO' ? 'the CRO' : a.label === 'Finance' ? 'Finance' : 'the manager'}`, d: a.who, em: ok ? a.at : 'waiting' } }),
+    ...(r.small ? [] : [{ at: end + 400, tone: 'ok', s: 'Unlocked', d: 'The deal moves on · receipt logged on this page', em: r.approvers[r.approvers.length - 1].at }]),
   ]
-  const shown = evs.filter((e) => t > e.at)
+  // Where the drawn line has reached: between the last reached node and the next, by time.
+  const reached = evs.reduce((n, e, i) => (t >= e.at ? i : n), -1)
+  const nextAt = reached + 1 < evs.length ? evs[reached + 1].at : len
+  const frac = reached < 0 ? 0 : reached >= evs.length - 1 ? 0 : Math.min(1, Math.max(0, (t - evs[reached].at) / (nextAt - evs[reached].at)))
+  const fill = evs.length > 1 ? Math.max(0, (reached + frac) / (evs.length - 1)) : 0
+  const cur = evs[Math.max(0, reached)]
 
   return (
     <div className="hwk" ref={root}>
@@ -99,15 +104,20 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
         </dl>
         <div className="rec-log">
           <span className="tk">Activity</span>
-          {!shown.length ? <p className="rec-empty">Nothing yet</p> : (
-            <ol className="rec-ah" aria-live="polite">
-              {shown.map((e) => (
-                <li key={e.at + e.b} className={e.cls}>
-                  <button onClick={() => jump(e.at)}><i className="rec-dot" aria-hidden="true" /><span className="rec-what"><b>{e.b}</b><small>{e.small}</small></span>{e.em && <em>{e.em}</em>}</button>
-                </li>
-              ))}
-            </ol>
-          )}
+          <ol className="rec-ah" style={{ '--n': evs.length, '--fill': fill } as React.CSSProperties}>
+            <span className="rec-line" aria-hidden="true"><i /></span>
+            {evs.map((e, i) => (
+              <li key={i} className={(i <= reached ? 'on ' + e.tone : 'next') + (i === reached ? ' cur' : '')}>
+                <button onClick={() => jump(e.at)} aria-current={i === reached ? 'step' : undefined}>
+                  <span className="rec-em">{i <= reached ? e.em : ''}</span>
+                  <i className="rec-dot" aria-hidden="true" />
+                  <b>{e.s}</b>
+                  <small>{e.d}</small>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <p className={'rec-now ' + cur.tone} key={reached + cur.s} aria-live="polite">{reached < 0 ? 'Waiting for the rep' : <><b>{cur.s}</b>{cur.d}</>}</p>
         </div>
       </div>
       <div className="wt-ctl">

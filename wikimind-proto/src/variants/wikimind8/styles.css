@@ -839,7 +839,7 @@ input{font:inherit}
 .related li{border-top:1px solid var(--line)}
 .related button{display:block;width:100%;padding:var(--s14) 0;border:0;background:none;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .related b{display:block;font:500 var(--fs-ui)/20px var(--sans);color:var(--link)}
-.related span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.related button>span:not(.ag){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
 @media (hover:hover) and (pointer:fine){.related button:hover b{text-decoration:underline;text-underline-offset:3px}}
 @media (max-width:640px){.related{grid-template-columns:1fr}}
 .doc ul.cites,.doc ul.related{margin:0;padding:0}.doc ul.cites li,.doc ul.related li{margin:0}
@@ -916,3 +916,52 @@ button.km-t{cursor:pointer}
 .ldot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--link);animation:ldot 2s var(--eo) infinite}
 @keyframes ldot{from{transform:scale(1);opacity:.5}to{transform:scale(2.6);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ldot::after{animation:none}}
+/* Activity as one horizontal track: a node per event, evenly spaced; an indigo line draws along it as the recording
+   plays and creeps while people approve. Short labels under the nodes; the current step's detail below the track. */
+.hwk .rec-ah{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));list-style:none;margin:var(--s16) 0 0;padding:0}
+.hwk .rec-ah li{padding:0;animation:none}
+.hwk .rec-ah li::after{content:none}
+.hwk .rec-ah li>button{display:flex;flex-direction:column;align-items:center;gap:var(--s6);padding:0 var(--s4) var(--s4);text-align:center;border-radius:var(--r-sm);background:none}
+.rec-em{display:block;height:18px;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);font-variant-numeric:tabular-nums}
+.rec-line{position:absolute;top:29px;height:2px;left:calc(100% / var(--n) / 2);right:calc(100% / var(--n) / 2);background:var(--line)}
+.rec-line i{position:absolute;inset:0;background:var(--link);transform-origin:left;transform:scaleX(var(--fill))}
+.hwk .rec-dot{position:relative;z-index:1;width:12px;height:12px;margin:0;border-radius:50%;background:var(--panel);box-shadow:inset 0 0 0 2px var(--line);transition:background-color .3s ease,box-shadow .3s ease}
+.hwk .rec-ah li.on .rec-dot{background:var(--ink2);box-shadow:none}
+.hwk .rec-ah li.on.agent .rec-dot{background:var(--link)}
+.hwk .rec-ah li.on.ok .rec-dot{background:var(--ok)}
+.hwk .rec-ah li.on.wait .rec-dot{background:var(--panel);box-shadow:inset 0 0 0 2px var(--link);animation:breathe 1.6s ease-in-out infinite}
+.hwk .rec-ah li.cur .rec-dot{box-shadow:0 0 0 4px color-mix(in srgb,var(--link) 16%,transparent)}
+.hwk .rec-ah li.cur.ok .rec-dot{box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 18%,transparent)}
+.hwk .rec-ah li.cur.wait .rec-dot{box-shadow:inset 0 0 0 2px var(--link),0 0 0 4px color-mix(in srgb,var(--link) 16%,transparent)}
+.hwk .rec-ah b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink);text-wrap:balance;transition:color .3s ease}
+.hwk .rec-ah li.next b{font-weight:400;color:var(--ink2)}
+.hwk .rec-ah li.on.agent b,.hwk .rec-ah li.on.wait b{color:var(--link)}
+.hwk .rec-ah li.on.ok b{color:var(--ok)}
+.hwk .rec-ah small{display:none}
+.rec-now{margin:var(--s20) 0 0;padding-top:var(--s16);border-top:1px solid var(--line);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2);animation:fade .3s ease both}
+.rec-now b{margin-right:var(--s8);font-weight:500;color:var(--ink)}
+.rec-now.agent b,.rec-now.wait b{color:var(--link)}
+.rec-now.ok b{color:var(--ok)}
+@media (max-width:640px){
+ .hwk .rec-ah{grid-template-columns:1fr}
+ .rec-line{display:none}
+ .hwk .rec-ah li{position:relative}
+ .hwk .rec-ah li:not(:last-child)::after{content:"";position:absolute;left:5px;top:24px;bottom:-4px;width:2px;background:var(--line)}
+ .hwk .rec-ah li.on:not(:last-child)::after{background:var(--link)}
+ .hwk .rec-ah li>button{display:grid;grid-template-columns:12px minmax(0,1fr) auto;grid-template-areas:"dot b em" "dot s em";column-gap:var(--s12);row-gap:0;align-items:start;text-align:left;padding:var(--s8) 0}
+ .hwk .rec-dot{grid-area:dot;margin-top:4px}
+ .hwk .rec-ah b{grid-area:b}
+ .hwk .rec-ah small{grid-area:s;display:block;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+ .hwk .rec-ah li.next small{display:none}
+ .rec-em{grid-area:em;height:auto}
+ .rec-now{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hwk .rec-ah li.on.wait .rec-dot{animation:none}}
+/* Try it out: band names on top, then the deal's percentage, then its tick standing on the axis. */
+#sim .thr-bar,#sim .thr-s{height:52px}
+#sim .thr-mark{top:auto;bottom:0;height:16px}
+#sim .thr-mark small{bottom:calc(100% + 2px)}
+/* Related pages: each page with its grove's agent tile. */
+.related button{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:var(--s12);align-items:start}
+.related b,.related button>span:not(.ag){grid-column:2}
+.related button>.ag{grid-column:1;grid-row:1 / span 2}
