@@ -52,7 +52,7 @@ function Sidebar() {
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { w.setSearch(q.trim()); w.go('all'); setQ('') } }} placeholder="Search 1,284 pages" aria-label="Search pages: Enter searches what they say" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={16} />Home</button>
       <button className={'sb-i' + (w.page === 'all' ? ' on' : '')} onClick={() => { w.setSearch(''); w.go('all') }}><Icon name="library" size={16} />All pages<span className="sb-n">1,284</span></button>
-      <button className={'sb-i' + (w.page === 'gen' ? ' on' : '')} onClick={() => w.go('gen')}><Icon name="pencil-line" size={16} />Watch Asoka write a page</button>
+      <button className={'sb-i' + (w.page === 'gen' ? ' on' : '')} onClick={() => w.go('gen')}><Icon name="pencil-line" size={16} />Watch Asoka in action</button>
       <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={16} />Live activity<span className="sb-n"><LiveNum value={w.acts.length} /></span></button>
       <div className="sb-l">Groves</div>
       {SPACES.map((s) => {
@@ -89,7 +89,7 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
       <div className="top-r">
         <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><span className="hb" aria-hidden="true"><i /><i /><i /></span></button>
         <div className="crumb">
-          {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>{w.page === 'all' ? 'All pages' : w.page === 'gen' ? 'Watch Asoka write a page' : 'Home'}</b>}
+          {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>{w.page === 'all' ? 'All pages' : w.page === 'gen' ? 'Watch Asoka in action' : 'Home'}</b>}
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
           <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `Asoka is writing ${pr.label}: watch it` : `${here.length} jobs touch this page`}>

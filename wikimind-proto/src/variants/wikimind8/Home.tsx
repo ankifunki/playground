@@ -47,8 +47,9 @@ export function HomeLive() {
   return (
     <>
       <div className="home-row">
-        {last && <p className="liveln"><Asoka size={20} state={w.presence ? 'writing' : last.kind === 'read' ? 'reading' : last.kind === 'ask' ? 'asking' : last.kind === 'edit' ? 'writing' : 'idle'} /><span><b>{last.ag === 'person' ? last.who : 'Asoka'}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
-        <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>
+        {last && <p className="liveln"><Asoka size={20} state={w.presence ? 'writing' : w.now - last.at > 4000 ? 'idle' : last.kind === 'read' ? 'reading' : last.kind === 'ask' ? 'asking' : last.kind === 'edit' ? 'writing' : 'idle'} /><span><b>{last.ag === 'person' ? last.who : 'Asoka'}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
+        {w.v9 ? <button className="btn primary tour-b" onClick={() => w.go('gen')}><Icon name="play" size={12} />Watch Asoka in action</button>
+          : <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>}
       </div>
     </>
   )
@@ -152,7 +153,7 @@ export function HomeSources() {
       <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
         <b>1,284 pages</b> written by Asoka across 6 jobs from <b>3,912</b> observations this week. None typed by a person.
       </Sources>
-      <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span><button className="wl" onClick={() => w.go('gen')}>Watch Asoka write a page</button></p>
+      <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span><button className="wl" onClick={() => w.go('gen')}>Watch Asoka in action</button></p>
     </>
   )
 }

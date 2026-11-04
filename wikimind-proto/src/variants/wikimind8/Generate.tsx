@@ -166,7 +166,7 @@ export function Generate() {
 
   return (
     <article className="doc gn">
-      <p className="home-k">Demo · watch Asoka write a page</p>
+      <p className="home-k">Watch Asoka in action · it writes a page live</p>
 
       {/* Access up top: what Asoka reads, and why. */}
       <section className={'gn-acc' + (phase === 'access' ? '' : ' on')} aria-label="Access Asoka needs">

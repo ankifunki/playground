@@ -1628,3 +1628,85 @@ button.km-t{cursor:pointer}
 .gn-cite:hover .gn-pop,.gn-cite:focus-visible .gn-pop{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.gn-pop{transition:opacity .15s ease;transform:translate(-50%,0)}}
 .h9-m,.h9-m *{-webkit-user-select:none;user-select:none}
+/* Home 9's nav is the page's On this page: at 1200px+ a rail in the left margin (content moves over to make room, as
+   on a page), below that the chip strip under the top bar. */
+@media (min-width:1200px){
+ .w7 .doc.h9{max-width:952px;padding-left:calc(var(--s40) + 192px)}
+ .w7 .h9 .toc{left:var(--s40);width:160px}
+ .h9-bar{position:static;display:flex;justify-content:flex-end;margin-top:var(--s24)}
+ .h9-cust{position:static}
+}
+@media (max-width:1199px){
+ .h9 .toc{margin-right:120px}
+ .h9-cust{top:var(--s48)}
+}
+/* Customize Home, in place: hover a module for its toolbar (grip, size, move, hide); drag by the grip. While dragging,
+   the layout reflows to show where the module lands, as a dashed slot at the size it will take; rows it joins or
+   leaves resize live. Customize opens the shelf (add, reset) and, on touch, keeps the toolbars showing. */
+.h9-s{position:relative}
+.h9-ctl{position:absolute;top:calc(var(--s16) * -1);right:0;z-index:12;display:flex;align-items:center;gap:var(--s2);padding:var(--s4);border-radius:var(--r-sm);background:var(--panel);box-shadow:var(--sh2);opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .15s ease,transform .2s var(--eo)}
+.h9-ctl .ib{width:28px;height:28px}
+.h9-ctl .ib:disabled{opacity:.3;cursor:default}
+.h9-grip{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:6px;background:none;color:var(--ink2);cursor:grab;touch-action:none}
+.h9-grip:active{cursor:grabbing}
+@media (hover:hover) and (pointer:fine){
+ .h9-s:hover>.h9-ctl,.h9-s:focus-within>.h9-ctl{opacity:1;transform:none;pointer-events:auto}
+ .h9-s:hover{outline:1px dashed var(--hl);outline-offset:var(--s8);border-radius:var(--r-md)}
+ .h9-grip:hover{background:var(--soft);color:var(--ink)}
+}
+.h9-edit .h9-ctl{opacity:1;transform:none;pointer-events:auto}
+.h9-dragging .h9-ctl{opacity:0;pointer-events:none}
+.h9-dragging .h9-s:hover{outline:0}
+/* The landing slot: the dragged module's place in the reflowed layout. */
+.h9-s.ghost{min-height:120px}
+.h9-s.ghost>.h9-body,.h9-s.ghost>.h9-ctl{visibility:hidden}
+.h9-slot{position:absolute;inset:0;z-index:2;display:grid;place-items:center;border-radius:var(--r-md);border:2px dashed var(--link);background:color-mix(in srgb,var(--link) 6%,transparent);font:500 var(--fs-ui)/20px var(--sans);color:var(--link);animation:fade .15s ease both}
+.h9-s.moved{outline:2px solid var(--link);outline-offset:var(--s8);border-radius:var(--r-md);transition:outline-color .6s ease}
+.h9-cust.on{background:var(--linkb);color:var(--link);box-shadow:none}
+@media (prefers-reduced-motion:reduce){.h9-ctl{transition:opacity .15s ease;transform:none}}
+/* Gaps as a carousel: one gap at a time, the pager in the header. */
+.gc-h{display:flex;align-items:center;justify-content:space-between}
+.gc-pg{display:inline-flex;align-items:center;gap:var(--s4)}
+.gc-pg .tk{margin-right:var(--s4)}
+.gc-b{width:28px;height:28px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink2);cursor:pointer;transition:transform 160ms var(--eo),background-color .15s ease}
+.gc-b:first-of-type svg{transform:rotate(180deg)}
+.gc-b:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){.gc-b:hover{background:var(--soft2);color:var(--ink)}}
+.gc-it{display:flex;align-items:center;justify-content:space-between;gap:var(--s12);margin-top:auto;padding-top:var(--s12);border-top:1px solid var(--line);outline:none;animation:fade .25s ease both}
+.gc-it>span{display:flex;flex-direction:column;min-width:0}
+.w7 .gc-it b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.gc-it small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.gc-it:focus-visible{box-shadow:0 -2px 0 var(--link)}
+.h9-ctl{top:0}
+.h9-s:has(>.h9-body>.h9-t)>.h9-ctl{top:0}
+.h9-s:not(:has(>.h9-body>.h9-t))>.h9-ctl{top:var(--s12);right:var(--s12)}
+.gc-it small{white-space:nowrap}
+/* Changed, learned and asking, to the type system's three steps: headline Body 16/26 sans 500 in ink; summary Meta
+   12/18 in ink2, at most two lines; one Meta line for the job and its sources as small icons. No tiles, no serif:
+   nine serif titles and three marks per item made the columns too heavy to scan. */
+.lv button{gap:var(--s4);padding:var(--s14) 0 var(--s16)}
+.w7 .lv b{font:500 var(--fs-body)/26px var(--sans);color:var(--ink);letter-spacing:0}
+.lv-d{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lv-f{display:flex;align-items:center;gap:var(--s8);margin-top:var(--s4);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.lv-src{display:inline-flex;gap:var(--s4);margin-left:0;color:var(--ink2)}
+.lv-src .ic{opacity:.8}
+@media (hover:hover) and (pointer:fine){.lv button:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;text-decoration-color:var(--hl)}}
+/* Home 9, one body type system for every item: title Body 16/26 500 ink; description UI 14/20 ink2; meta (job, scope,
+   sources, dates) Meta 12/18 ink2. */
+.w7 .h9 .gc-it b,.w7 .h9 .lv b,.w7 .h9 .nh-up b{font:500 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.h9 .lv-d,.w7 .h9 .hc p,.h9 .nh-up button>span:last-child{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.h9 .gc-it small,.h9 .lv-f{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+/* Individual modules: cards in a shared row take the row's height; one changed/learned/asking column per module. */
+.h9-grid{align-items:stretch}
+.h9-s>.h9-body{height:100%}
+.h9-s>.h9-body>.hc,.h9-s>.h9-body>.path.card{height:100%;margin:0}
+.h9-grid{row-gap:var(--s24)}
+.h9-s{margin:0}
+.lv.one{grid-template-columns:1fr}
+.h9-s>.h9-ctl{top:var(--s12);right:var(--s12)}
+.h9-s:not(.ghost){cursor:grab}
+.h9-s:not(.ghost):active{cursor:grabbing}
+.h9-s *{-webkit-user-drag:none}
+.h9-s{-webkit-user-drag:element;-webkit-user-select:none;user-select:none}
+.h9-grip{pointer-events:none}
+.h9-s>.h9-body>.hc,.h9-s>.h9-body>.path.card,.h9-s>.h9-body>.home-card{box-sizing:border-box}

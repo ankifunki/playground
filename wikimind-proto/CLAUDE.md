@@ -72,19 +72,26 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Asoka named:** "Run by Asoka" / "Asoka runs it" instead of "runs on its own" (`ownWord(v9)`: path bar, overview, profile, tour).
 - **How it works with Try it out folded in** (`DealControls` in `Flow.tsx`): one panel above the player with presets (Helios, Atlas, Orion, Kestrel), discount and size sliders, and the answer (who approves, usually how long, why). The player replays that deal's route right below. Slider moves settle for 300 ms first.
 
-**Customize Home** (Wikimind 9, `Home9.tsx`): every section is a module (`MODS`).
-- The default layout is Asoka today, Changed/learned/asking, By job and Coming up. The shelf adds What's moving and In focus, Unwritten rules, Today's counts and Today's stories.
-- **Customize** (beside the chip nav) opens edit mode. Each module becomes a card with:
-  - a grip (drag to reorder with HTML5 drag and drop; beside a narrow module the drop goes left or right, above or below a full-width one)
-  - a size control on the page's 12-column grid (⅓, ½, ⅔, Full)
-  - move earlier/later buttons for keyboards
-  - hide
-- **Reset** and **Done** close edit mode. The layout persists in `localStorage` `wm9-home`, and the chip nav follows it.
-- **Each module is a size container** (`container-type:inline-size`, `@container mod`), so its content follows its own width, not the window's:
-  - at 800px or less, grids stack and the by-job table switches to its compact rows
-  - at 600px or less, it shows less: two items per column, three totals
-  - at 420px or less, one item per column
-- At 900px or less, ⅓ and ½ become half; on phones, everything is full width.
+**Wikimind 9 Home, latest:**
+- **Headline and button:** "Asoka runs Rippling's Salesforce processes, with proof." The button "Watch Asoka in action" opens the live page-writing demo (nav item and crumb share the name). The tour stays on `T`.
+- **Navigation:** the page's On this page. At 1200px and up it is a rail at the frame's left edge, and the content shifts right to 952px, as on a page. Below that it becomes chips. Each label reads exactly like its module's title.
+- **Modules:** every module is individual and draggable (`MODS` in `Home9.tsx`):
+  - Path to full automation, Reliability, Asoka runs and Gaps.
+  - Changed, Learned and Asking people, one column each.
+  - What Asoka knows and runs, by job; and Coming up.
+  - On the shelf: What's moving, Unwritten rules, Today's counts and Today's stories.
+- **Gaps** is Wikimind 4's carousel: one access gap at a time, "1 of 2" and round buttons in the header, so it keeps its neighbours' height.
+- **Drag and drop** (no edit mode needed):
+  - Hovering a module shows a dashed outline and a small toolbar: a grip as the cue, move earlier/later, hide. There are no size controls.
+  - The whole module drags. Text inside modules isn't selectable, so a drag always picks up the module.
+  - While dragging, the layout reflows to show where the module lands: a dashed slot at the width it will take (`place()`).
+  - Dropped on another module's left or right quarter, it joins that row and the row shares the width equally (½ + ½ or ⅓ each, up to three). Dropped on the top or bottom half, it takes a full row. The row it left, if that row was full, closes up.
+  - Customize opens the shelf (add a module, Reset). On touch it also keeps the toolbars showing.
+  - The layout persists in `localStorage` `wm9-home`; layouts with unknown modules fall back to the default.
+- **Cards in a shared row take the row's height** (grid `align-items:stretch`; cards are `box-sizing:border-box` so they never spill into the next row).
+- **Each module is a size container,** so its content follows its own width.
+- **Body type on Home:** every item uses three steps. The title is Body 16/26 at 500 in ink; the description is UI 14/20 in ink2; meta (job, scope, sources, dates) is Meta 12/18 in ink2. The Changed/Learned/Asking items lost their serif titles, job tiles and icon piles: the job is a Meta line with 12px source icons.
+- **Asoka's mark rests as the triangle.** It takes a state only while Asoka is writing, or for about 4 s after new activity.
 
 **Demo page traces and sources:** on Watch Asoka write a page, a finished sentence that has a trace takes the page's highlighter on hover, and a click or Enter opens its trace (`Traced`, `tr` on script events). Each citation number shows its source on hover or focus (`Cite`: kind, what was read, source number).
 

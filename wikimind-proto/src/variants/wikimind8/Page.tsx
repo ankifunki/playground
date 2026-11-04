@@ -116,7 +116,7 @@ export function Approvals() {
     <article className="doc">
       <h1>Discount approvals</h1>
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
-      <p className="liveln"><Asoka size={20} state={w.presence?.page === 'discount-approvals' ? 'writing' : 'reading'} />{w.presence?.page === 'discount-approvals' ? <>Asoka is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
+      <p className="liveln"><Asoka size={20} state={w.presence?.page === 'discount-approvals' ? 'writing' : 'idle'} />{w.presence?.page === 'discount-approvals' ? <>Asoka is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Arrival />
       <Props ag="approvals" re={4} verify={verify} extra={<>
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
