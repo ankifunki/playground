@@ -99,6 +99,9 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
     - Access review: blocked on Okta sign-in logs, with Request.
     - NetSuite sync retries: waiting on Dev's approval.
   - It follows the demo: `L` readies quarter-end close; granting Okta readies the access review.
+- **Hover cue:** hovering a module shows only a quiet grab icon in its corner. Customize adds move earlier/later and hide.
+- **Nav, one link per section:** rows are grouped (Status covers the automation bar, Reliability, Asoka runs and Gaps; Changed, learned and asking covers the three columns), because modules in one row can't be jumped to separately. The first link reads **Status**.
+- **Live-number digits** take their number's own type (`.w7 .ln span{font:inherit…}`). A generic `.ov-sum span` rule had shrunk the changed digit to the 12px label and floated it above the line.
 - **Asoka's mark rests as the triangle.** It takes a state only while Asoka is writing, or for about 4 s after new activity.
 
 **Demo page traces and sources:** on Watch Asoka write a page, a finished sentence that has a trace takes the page's highlighter on hover, and a click or Enter opens its trace (`Traced`, `tr` on script events). Each citation number shows its source on hover or focus (`Cite`: kind, what was read, source number).

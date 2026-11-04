@@ -157,7 +157,7 @@ function LiveColumn({ only }: { only: 'ch' | 'le' | 'as' }) {
  */
 type ModId = 'path' | 'rel' | 'runs' | 'gaps' | 'changed' | 'learned' | 'asking' | 'jobs' | 'up' | 'moving' | 'rules' | 'counts' | 'stories'
 const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => ReactNode }> = {
-  path: { t: 'Path to full automation', nav: 'Path to full automation', body: () => <PathMod /> },
+  path: { t: 'Status', nav: 'Status', body: () => <PathMod /> },
   rel: { t: 'Reliability', nav: 'Reliability', body: () => <RelCard /> },
   runs: { t: 'Asoka runs', nav: 'Asoka runs', body: () => <RunsCard /> },
   gaps: { t: 'Gaps', nav: 'Gaps', body: () => <GapsMod /> },
@@ -171,6 +171,8 @@ const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => 
   counts: { t: 'Today’s counts', nav: 'Observed, learned, rewrote today', body: () => <Today /> },
   stories: { t: 'Today’s stories', nav: 'Today’s stories', body: () => <Stories /> },
 }
+/** Modules that read as one section in the nav. */
+const GROUP: Partial<Record<ModId, string>> = { path: 'Status', rel: 'Status', runs: 'Status', gaps: 'Status', changed: 'Changed, learned and asking', learned: 'Changed, learned and asking', asking: 'Changed, learned and asking' }
 /** Widths on the page's 12-column grid come from where a module is dropped, never from a setting. */
 type W = 4 | 6 | 8 | 12
 type Slot = { id: ModId; w: W }
@@ -232,8 +234,12 @@ export function Home9() {
   const shelf = ALL.filter((id) => !layout.some((x) => x.id === id))
   // While dragging, the page shows the layout as it would be if you let go now.
   const view = drag && over && over.id !== drag ? place(layout, drag, over.id, over.zone) : layout
-  const navKey = layout.map((x) => x.id).join(',')
-  const nav: TocItem[] = useMemo(() => layout.map((x) => ({ id: 'h-' + x.id, t: MODS[x.id].nav })), [navKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  // One link per section, not per module: modules sharing a row (or a group like Status) can't be jumped to apart.
+  const nav: TocItem[] = useMemo(() => {
+    const out: TocItem[] = []
+    rows(layout).forEach((r) => { const id = layout[r[0]].id, t = GROUP[id] || MODS[id].nav; if (out[out.length - 1]?.t !== t) out.push({ id: 'h-' + id, t }) })
+    return out
+  }, [layout.map((x) => x.id + x.w).join()]) // eslint-disable-line react-hooks/exhaustive-deps
   const end = (commit: boolean) => { if (commit && drag && over && over.id !== drag) { setLayout(view); mark(drag) } setDrag(null); setOver(null) }
   const zoneOf = (e: React.DragEvent, el: HTMLElement): Zone => {
     const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height
@@ -270,11 +276,14 @@ export function Home9() {
               }}
               onDragEnd={() => end(false)}>
               {ghost && <div className="h9-slot" aria-hidden="true"><span>{m.t}</span></div>}
+              {/* Hover shows only the grab cue; Customize adds hide. Order is also movable from the keyboard there. */}
               <div className="h9-ctl" role="toolbar" aria-label={`${m.t}: arrange`}>
                 <span className="h9-grip" aria-hidden="true" title="Drag to move"><Icon name="grip-vertical" size={16} /></span>
-                <button className="ib" onClick={() => move(id, i - 1)} disabled={i === 0} aria-label={`Move ${m.t} earlier`}><Icon name="chevron-up" size={16} /></button>
-                <button className="ib" onClick={() => move(id, i + 1)} disabled={i === view.length - 1} aria-label={`Move ${m.t} later`}><Icon name="chevron-down" size={16} /></button>
-                <button className="ib" onClick={() => hide(id)} aria-label={`Hide ${m.t}`} title="Hide"><Icon name="eye-off" size={16} /></button>
+                {edit && <>
+                  <button className="ib" onClick={() => move(id, i - 1)} disabled={i === 0} aria-label={`Move ${m.t} earlier`}><Icon name="chevron-up" size={16} /></button>
+                  <button className="ib" onClick={() => move(id, i + 1)} disabled={i === view.length - 1} aria-label={`Move ${m.t} later`}><Icon name="chevron-down" size={16} /></button>
+                  <button className="ib" onClick={() => hide(id)} aria-label={`Hide ${m.t}`} title="Hide"><Icon name="eye-off" size={16} /></button>
+                </>}
               </div>
               <div className="h9-body">{m.title && <h2 className="h9-t">{m.title}</h2>}{m.body()}</div>
             </section>
