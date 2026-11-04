@@ -77,7 +77,7 @@ function Stories() {
 }
 
 /** Coming up: the processes and priorities the jobs are preparing for. */
-function ComingUp() {
+export function ComingUp() {
   const w = useW()
   const items: { when: string; ag: AgentId; title: string; dek: string; go: string }[] = [
     { when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', dek: 'Approvals usually triple. Deal Desk approves in #deal-desk first; Asoka logs them after.', go: 'quarter-end' },

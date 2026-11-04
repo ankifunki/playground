@@ -1,12 +1,13 @@
 import type React from 'react'
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { AG, ago, PAGES } from './data'
-import { Sim } from './Flow'
+import { DealControls, Sim } from './Flow'
 import { HELIOS, How, type Deal } from './How'
 import { Icon } from './Icon'
-import { Ag, Block, Chip, LivePulse, LiveText, Sources, useTraceTarget } from './Live'
+import { Ag, Asoka, Block, Chip, LivePulse, LiveText, Sources, useTraceTarget } from './Live'
 import { RM, useW } from './store'
 import { Toc, type TocItem } from './Toc'
+import { ownWord } from './Home'
 
 /** Notion-style properties: who keeps the page, who verified it, how fresh it is. Live values tick. */
 function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; verify?: ReactNode; extra?: ReactNode }) {
@@ -42,12 +43,12 @@ export function PathBar({ own: o = 52, ask: a = 38, gaps = 'EMEA routing, flat r
     const f = () => { const cs = getComputedStyle(el), w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setN(Math.max(20, Math.floor((w + 2) / 6))) }; f()
     const ro = new ResizeObserver(f); ro.observe(el); return () => ro.disconnect()
   }, [])
-  const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a
+  const own = Math.round(n * o / 100), ask = Math.round(n * a / 100), g = 100 - o - a, ow = ownWord(useW().v9)
   return (
-    <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% runs on its own, ${a}% asks a person first, ${g}% blocked by gaps`}>
-      <div className="path-h" style={{ width: n * 6 - 2 }}>{label && <span className="tk">Path to full automation</span>}<span className="path-n">{o}%<small>runs on its own</small></span></div>
+    <section className={'path' + (card ? ' card' : '')} aria-label={`Path to full automation: ${o}% ${ow.line}, ${a}% asks a person first, ${g}% blocked by gaps`}>
+      <div className="path-h" style={{ width: n * 6 - 2 }}>{label && <span className="tk">Path to full automation</span>}<span className="path-n">{o}%<small>{ow.line}</small></span></div>
       <div className="path-bars" aria-hidden="true" ref={ref} style={{ width: n * 6 - 2 }}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < own ? 'own' : i < own + ask ? 'ask' : 'gap'} style={{ animationDelay: `${i * 5}ms` }} />)}</div>
-      <p className="path-l"><span className="own">Runs on its own {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked {g}%: {gaps}</span></p>
+      <p className="path-l"><span className="own">{ow.legend} {o}%</span><span className="ask">Asks a person first {a}%</span><span className="gap">Blocked {g}%: {gaps}</span></p>
     </section>
   )
 }
@@ -115,7 +116,7 @@ export function Approvals() {
     <article className="doc">
       <h1>Discount approvals</h1>
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
-      <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Asoka is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
+      <p className="liveln"><Asoka size={20} state={w.presence?.page === 'discount-approvals' ? 'writing' : 'reading'} />{w.presence?.page === 'discount-approvals' ? <>Asoka is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Arrival />
       <Props ag="approvals" re={4} verify={verify} extra={<>
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
@@ -131,9 +132,15 @@ export function Approvals() {
       <Toc items={w.proof ? SECTIONS : SECTIONS.filter((x) => x.id !== 'cited')} />
 
       <h2 id="how">How it works</h2>
-      <How deal={demo.deal} run={demo.run} onReset={() => setDemo((d) => ({ deal: HELIOS, run: d.run + 1 }))} />
-      <h3>Try it out</h3>
-      <Sim onWatch={(d) => { setDemo((x) => ({ deal: { name: 'Your deal', ...d }, run: x.run + 1 })); document.querySelector('.hwk')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }) }} />
+      {w.v9 ? <>
+        {/* Wikimind 9: one section. Pick or set a deal; the player replays its route right below. */}
+        <DealControls deal={demo.deal} onChange={(d) => setDemo((x) => ({ deal: d, run: x.run + 1 }))} />
+        <How deal={demo.deal} run={demo.run} />
+      </> : <>
+        <How deal={demo.deal} run={demo.run} onReset={() => setDemo((d) => ({ deal: HELIOS, run: d.run + 1 }))} />
+        <h3>Try it out</h3>
+        <Sim onWatch={(d) => { setDemo((x) => ({ deal: { name: 'Your deal', ...d }, run: x.run + 1 })); document.querySelector('.hwk')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }) }} />
+      </>}
 
       <h2 id="who">Who approves</h2>
       <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves alone.`} /></li></ul></Block>

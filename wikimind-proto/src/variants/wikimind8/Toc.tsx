@@ -9,7 +9,7 @@ export type TocItem = { id: string; t: string; blocks?: string[] }
  * that stays in view; narrower screens get a strip of section chips that sticks under the top bar. A section a job
  * is writing right now shows the live mark.
  */
-export function Toc({ items }: { items: TocItem[] }) {
+export function Toc({ items, chips }: { items: TocItem[]; chips?: boolean }) {
   const w = useW(), [active, setActive] = useState(items[0]?.id)
   useEffect(() => {
     let raf = 0
@@ -34,7 +34,7 @@ export function Toc({ items }: { items: TocItem[] }) {
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })
   const writing = w.presence?.page === 'discount-approvals' ? w.presence.block : null
   return (
-    <nav className="toc" aria-label="On this page">
+    <nav className={'toc' + (chips ? ' chips' : '')} aria-label="On this page">
       <div className="toc-in">
         <span className="tk toc-l">On this page</span>
         <ol>

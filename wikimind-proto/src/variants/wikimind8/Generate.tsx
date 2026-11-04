@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon, type IconName } from './Icon'
-import { Ag } from './Live'
+import { Ag, Asoka } from './Live'
 import { RM, useW } from './store'
 
 /*
@@ -139,6 +139,10 @@ export function Generate() {
     blocks.push({ key: e.k === 'p' || e.k === 'li' ? e.group : e.k + e.t, kind: e.k === 'li' ? 'ul' : e.k === 'row' ? 'table' : e.k, items: [e] })
   })
   const writing = phase === 'write'
+  // What Asoka is doing right now, for its mark: connecting is thinking; then whatever the newest event is.
+  const latestEv = [...SCRIPT].reverse().find((e) => e.t <= t)
+  const mood = phase === 'connect' ? 'thinking' : phase !== 'write' ? 'idle' : paused ? 'waiting'
+    : !latestEv || t - latestEv.t > 1600 ? 'thinking' : latestEv.k === 'read' ? 'reading' : latestEv.k === 'q' ? 'asking' : latestEv.k === 'verify' ? 'waiting' : 'writing'
   const sec = Math.round(t / 1000)
 
   return (
@@ -177,14 +181,14 @@ export function Generate() {
       {/* The live status: what it's reading now, and the counts. */}
       {(writing || phase === 'done') && (
         <div className="gn-now" aria-live="polite">
-          <span className="gn-who"><Ag id="approvals" size={20} /><span><b>Asoka</b> · Approvals job</span></span>
+          <span className="gn-who"><Asoka size={20} state={mood} /><span><b>Asoka</b> · Approvals job</span></span>
           <span className="gn-what">{phase === 'done' ? 'Done. Re-reads hourly from here on.' : nowRead ? <>Reading <b>{nowRead.what}</b></> : 'Starting'}</span>
           <span className="gn-ct num"><span>{reads.length} sources</span><span>{sentences} statements</span><span>{qs} {qs === 1 ? 'question' : 'questions'}</span><span>{sec}s</span></span>
           {writing && <button className="ib" onClick={() => setPaused((p) => !p)} aria-label={paused ? 'Resume' : 'Pause'}><Icon name={paused ? 'play' : 'pause'} size={14} /></button>}
         </div>
       )}
 
-      {phase === 'connect' && <p className="gn-wait">Connecting {chosen.length} {chosen.length === 1 ? 'source' : 'sources'}…</p>}
+      {phase === 'connect' && <p className="gn-wait"><Asoka size={20} state="thinking" />Connecting {chosen.length} {chosen.length === 1 ? 'source' : 'sources'}…</p>}
 
       {/* The page, as it's written. */}
       {(writing || phase === 'done') && (

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AG, DEALS, money, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag } from './Live'
+import { Ag, Asoka } from './Live'
 import { RM, useW, type ChatMsg, type ChatObj } from './store'
 
 /*
@@ -242,7 +242,7 @@ export function Chat() {
           <div key={m.id} data-cx={m.id} className={'cx-m ' + (m.who === 'you' ? 'you' : 'bot')}>
             {m.who === 'you' ? <p className="cx-you">{m.text}</p> : (
               <>
-                <span className="cx-who">{m.who === 'none' ? <span className="cx-none" aria-hidden="true"><Icon name="circle-help" size={12} /></span> : <Ag id={m.who as AgentId} size={20} />}<b>{m.who === 'none' ? 'Asoka' : 'Asoka · ' + AG[m.who as AgentId].name}</b></span>
+                <span className="cx-who">{m.id === lastAgent?.id && <Asoka size={20} state={m.typing ? 'thinking' : m.objs?.some((o) => o.k === 'action' && o.state === 'running') ? 'writing' : m.objs?.some((o) => (o.k === 'action' && o.state === 'ask') || ((o.k === 'slack' || o.k === 'person') && o.state === 'draft')) ? 'waiting' : m.objs?.some((o) => o.k === 'person' && o.state === 'sent') ? 'asking' : 'idle'} />}<b>{m.who === 'none' ? 'Asoka' : 'Asoka · ' + AG[m.who as AgentId].name}</b></span>
                 {m.typing ? <span className="cx-typing" aria-label="Writing"><i /><i /><i /></span> : <>
                   <p className="cx-t">{m.text}</p>
                   {m.objs?.map((o, i) => <div key={i} className="cx-in" style={{ animationDelay: `${120 + i * 90}ms` }}><Obj o={o} c={c} set={set} mid={m.id} /></div>)}

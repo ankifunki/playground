@@ -58,7 +58,7 @@ export function Tour() {
         <button className="ib tour-close" onClick={() => w.setTour(null)} aria-label="End tour" title="End tour (Esc)"><Icon name="x" size={16} /></button>
         <span className="tk">{i + 1} of {steps.length}</span>
         <b>{st.t}</b>
-        <p>{st.b}</p>
+        <p>{w.v9 ? st.b.replace('64% runs on its own', `${64 + (w.access.okta === 'done' ? 4 : 0) + (w.access.netsuite === 'done' ? 2 : 0)}% is run by Asoka`).replace('how much runs on its own', 'how much Asoka runs') : st.b}</p>
         <div className="tour-f">
           <span className="tour-dots">{steps.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
           <button className="tour-x" onClick={() => w.setTour(null)}>End tour</button>

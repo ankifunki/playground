@@ -38,6 +38,14 @@ type W = {
   chat: ChatMsg[]; setChat: React.Dispatch<React.SetStateAction<ChatMsg[]>>; chatOn: boolean; setChatOn: (b: boolean) => void
   /** Start (or continue) a chat from the ask bar; `from` is where the question was typed, for the hand-off motion. */
   startChat: (text: string, from?: DOMRect | null) => void; chatFrom: DOMRect | null
+  /** Wikimind 9: the variant flag, and access grants that close a gap (Wikimind 4's controls): idle, asking Dev, granted. */
+  v9: boolean; access: Record<Gap, 'idle' | 'asking' | 'done'>; grant: (g: Gap) => void
+}
+export type Gap = 'okta' | 'netsuite'
+/** What each access gap blocks, and what granting it unblocks (points of work Asoka can then run). */
+export const GAPS: Record<Gap, { t: string; scope: string; ag: AgentId; job: string; pts: number; jobPts: number }> = {
+  okta: { t: 'Okta sign-in logs', scope: 'read', ag: 'security', job: 'Security', pts: 4, jobPts: 8 },
+  netsuite: { t: 'NetSuite', scope: 'write', ag: 'finance', job: 'Finance ops', pts: 2, jobPts: 5 },
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -56,7 +64,7 @@ const SEED = (t0: number): Act[] => [
  * Each edit is announced first (presence: "Approvals job is editing Who approves"), then typed into the block.
  * Keys: C change, L answer, R replay.
  */
-export function Provider({ children }: { children: ReactNode }) {
+export function Provider({ children, v9 = false }: { children: ReactNode; v9?: boolean }) {
   const [page, setPage] = useState('home'), [tour, setTour] = useState<number | null>(null)
   const [fin, setFin] = useState<20 | 25>(20), [verify, setVerify] = useState<'ok' | 'checking'>('ok')
   const [qe, setQe] = useState<[number, number]>([9, 12]), [renewal, setRenewal] = useState<'asking' | 'answered'>('asking'), [cpq, setCpq] = useState<'failing' | 'fixed'>('failing')
@@ -72,6 +80,13 @@ export function Provider({ children }: { children: ReactNode }) {
   const [arrive, setArrive] = useState(false), [askedOwner, setAskedOwner] = useState(false), [search, setSearch] = useState('')
   const [chat, setChat] = useState<ChatMsg[]>([]), [chatOn, setChatOnS] = useState(false), [chatFrom, setChatFrom] = useState<DOMRect | null>(null)
   const cid = useRef(1)
+  const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
+  // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
+  const grant = (g: Gap) => {
+    if (access[g] !== 'idle') return
+    setAccess((a) => ({ ...a, [g]: 'asking' }))
+    later(2000, () => { setAccess((a) => ({ ...a, [g]: 'done' })); act({ ag: GAPS[g].ag, t: `Got ${GAPS[g].t} (${GAPS[g].scope}) after Dev approved: ${GAPS[g].pts} more points Asoka can run`, page: 'discount-approvals', kind: 'verify' }) })
+  }
   const setChatOn = (b: boolean) => { setChatOnS(b); if (b) { setTrace(null); setAgent(null); setMisses(null); setRail(true) } }
   const startChat = (text: string, from: DOMRect | null = null) => {
     setChatFrom(from); setChat((c) => [...c, { id: cid.current++, who: 'you', text }]); setChatOn(true)
@@ -163,5 +178,5 @@ export function Provider({ children }: { children: ReactNode }) {
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant }}>{children}</Ctx.Provider>
 }

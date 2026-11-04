@@ -425,12 +425,12 @@ body{font-weight:400;margin:0;background:var(--panel);color:var(--ink);-webkit-f
 .sim-r{display:grid;grid-template-columns:1fr auto;align-items:baseline;row-gap:var(--s10);font-size:14px;line-height:20px}
 .sim-r b{font:500 16px/26px var(--sans);font-variant-numeric:tabular-nums}
 .sim-r input{grid-column:1/-1}
-.sim input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:0;cursor:pointer}
-.sim input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(var(--link),var(--link)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
-.sim input[type=range]::-moz-range-track{height:2px;background:linear-gradient(var(--link),var(--link)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
-.sim input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--link);margin-top:calc(var(--s8) * -1);box-shadow:var(--sh);transition:transform .16s var(--eo)}
-.sim input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--panel);border:2px solid var(--link)}
-.sim input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+:is(.sim,.dc) input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:0;cursor:pointer}
+:is(.sim,.dc) input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(var(--link),var(--link)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
+:is(.sim,.dc) input[type=range]::-moz-range-track{height:2px;background:linear-gradient(var(--link),var(--link)) 0/var(--p,50%) 100% no-repeat,var(--hl)}
+:is(.sim,.dc) input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--link);margin-top:calc(var(--s8) * -1);box-shadow:var(--sh);transition:transform .16s var(--eo)}
+:is(.sim,.dc) input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--panel);border:2px solid var(--link)}
+:is(.sim,.dc) input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
 .sim-out{display:flex;flex-direction:column;gap:var(--s6)}
 .sim-ans{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s4) var(--s12)}
 .w7 .sim-ans{margin:0;
@@ -1154,7 +1154,8 @@ button.km-t{cursor:pointer}
 @media (min-width:901px){.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) 96px minmax(0,1.2fr)}}
 /* Live numbers roll like an odometer: only changed digits move, the old one up and out, the new one up into place. */
 .ln{font-variant-numeric:tabular-nums}
-.ln-r{position:relative;display:inline-block;overflow:hidden;vertical-align:top}
+.ln{white-space:nowrap}
+.ln-r{position:relative;display:inline-block;overflow:hidden;clip-path:inset(0);vertical-align:top}
 .ln-n{display:inline-block;animation:lnIn .5s var(--eo) both}
 .ln-o{position:absolute;left:0;top:0;animation:lnOut .5s var(--eo) both}
 @keyframes lnIn{from{transform:translateY(100%)}}
@@ -1245,7 +1246,7 @@ button.km-t{cursor:pointer}
    (500 for headings, no serif); IBM Plex Mono for evidence: labels, counts, sources, timestamps. Signature: numbered
    evidence marks on traced sentences, tabular figures, and one 2px signal line for anything live. */
 :root[data-look="b"]:not([data-theme="dark"]){
- --bg:#F5F7F8;--panel:#FFFFFF;--soft:#EEF2F5;--soft2:#E3E9EE;--ink:#0F1720;--ink2:#5B6672;--line:#DDE3E8;--hair:#E8EDF1;
+ --bg:#EBEFF3;--panel:#FFFFFF;--soft:#F1F4F7;--soft2:#E1E7ED;--ink:#0B1220;--ink2:#56616E;--line:#D6DDE4;--hair:#E5EAEF;
  --link:#1F5BD8;--linkb:#E6EEFC;--agent:#1F5BD8;--agentb:#E6EEFC;--ok:#15803D;--okb:#E3F4E8;--warn:#B45309;--warnb:#FDF0E1;
  --nav:#FFFFFF;--nav2:#F5F7F8;--navink:#0F1720;--navink2:#5B6672;
  --sh:0 0 0 1px #DDE3E8,0 1px 2px rgba(15,23,32,.04);--sh2:0 0 0 1px #DDE3E8,0 12px 32px rgba(15,23,32,.1)}
@@ -1254,7 +1255,7 @@ button.km-t{cursor:pointer}
  --link:#6EA0FF;--linkb:#16274A;--agent:#6EA0FF;--agentb:#16274A;--ok:#4ADE80;--okb:#12301E;--warn:#F5B35C;--warnb:#3A2812;
  --nav:#151B23;--nav2:#0D1117;--navink:#E6EDF3;--navink2:#9AA6B2;
  --sh:0 0 0 1px #2A3441,0 1px 2px rgba(0,0,0,.3);--sh2:0 0 0 1px #2A3441,0 12px 32px rgba(0,0,0,.4)}
-:root[data-look="b"]{--serif:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+:root[data-look="b"]{--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--serif:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;--r-md:6px;--r-lg:8px;--r-pill:6px}
 :root[data-look="b"] .w7{font-variant-numeric:tabular-nums}
 /* Headings: Geist 500, tight; no serif anywhere. */
 :root[data-look="b"] .w7 :is(h1,h2,.arv-t,.ap-h b,.rec-name){font-weight:500;letter-spacing:-.025em}
@@ -1423,3 +1424,102 @@ button.km-t{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.gn-in,.gn-w{animation:fade .2s both}.gn-caret,.gn-spin{animation:none}}
 .gn-acc.on .gn-src b small{display:none}
 .gn-page p{margin:0 0 var(--s12)}
+/* ---- Wikimind 9 ---- */
+/* Home's in-page nav: the page's chip strip, at every width, sticking under the top bar. */
+.w7 .toc.chips{position:sticky;top:56px;z-index:15;left:auto;bottom:auto;width:auto;margin:var(--s32) calc(var(--s40) * -1) var(--s8);padding:var(--s8) var(--s40);
+ -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--bg) 76%,transparent)}
+.w7 .toc.chips .toc-in{position:static}
+.w7 .toc.chips .toc-l{display:none}
+.w7 .toc.chips .toc-in ol{display:flex;gap:var(--s4);overflow-x:auto;scrollbar-width:none;border-left:0}
+.w7 .toc.chips .toc-in ol::-webkit-scrollbar{display:none}
+.w7 .toc.chips li{flex:none}
+.w7 .toc.chips li a{padding:var(--s6) var(--s12);margin:0;border-left:0;border-radius:var(--r-pill);white-space:nowrap}
+.w7 .toc.chips li.on a{background:var(--linkb);color:var(--link)}
+@media (max-width:640px){.w7 .toc.chips{margin:var(--s24) calc(var(--s20) * -1) var(--s8);padding:var(--s8) var(--s20)}}
+.h9-s{scroll-margin-top:120px;margin:0 0 var(--s48)}
+.w7 .h9-t{margin:0 0 var(--s16);font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+/* The Gaps card carries its controls: one row per access gap, request it, Dev approves, granted. */
+.gaps9 ul{list-style:none;margin:var(--s8) 0 0;padding:0}
+.gaps9 li{display:flex;align-items:center;justify-content:space-between;gap:var(--s12);padding:var(--s10) 0;border-top:1px solid var(--line)}
+.gaps9 li>span:first-child{display:flex;flex-direction:column;min-width:0}
+.w7 .gaps9 li b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.gaps9 li small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.gaps9 li.done b{color:var(--ink2)}
+.gr-b{height:32px;padding:0 var(--s12);font-size:var(--fs-meta);flex:none}
+.gr-b.busy{cursor:default;opacity:.85}
+.gr-spin{width:12px;height:12px;border-radius:50%;border:2px solid color-mix(in srgb,var(--link) 30%,transparent);border-top-color:var(--link);animation:gnspin .8s linear infinite}
+.gr-ok{display:inline-flex;align-items:center;gap:var(--s6);flex:none;font:500 var(--fs-meta)/18px var(--sans);color:var(--ok);animation:fade .3s ease both}
+.ap-list li .gr-b{align-self:flex-start;margin-top:var(--s6)}
+.gr-done{display:flex;align-items:center;gap:var(--s6);margin:0;font:400 var(--fs-meta)/18px var(--sans);color:var(--ok)}
+/* Changed, learned, asking: three columns between hairlines, serif headlines, the job and its sources at the foot. */
+.lv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s40)}
+.lv-h{display:flex;align-items:center;gap:var(--s8);padding:var(--s16) 0 var(--s4);border-top:1px solid var(--hl);color:var(--ink2)}
+.lv-n{margin-left:auto}
+.lv ul{list-style:none;margin:0;padding:0}
+.lv li{border-top:1px solid var(--line);animation:rise .35s var(--eo) both}
+.lv li:first-child{border-top:0}
+.lv button{display:flex;flex-direction:column;gap:var(--s8);width:100%;padding:var(--s16) 0 var(--s20);border:0;background:none;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lv b{font:400 var(--fs-title)/30px var(--serif);color:var(--ink);text-wrap:balance}
+.lv-d{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2);text-wrap:pretty}
+.lv-f{display:flex;align-items:center;gap:var(--s8)}
+.lv-j{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.lv-src{display:inline-flex;margin-left:var(--s4)}
+.lv-src i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink2);box-shadow:0 0 0 2px var(--bg)}
+.lv-src i+i{margin-left:calc(var(--s6) * -1)}
+@media (hover:hover) and (pointer:fine){.lv button:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}}
+@media (max-width:900px){.lv{grid-template-columns:1fr;gap:var(--s8)}}
+/* How it works with the deal controls in it: presets, two sliders, the answer; the player below replays the route. */
+.dc{display:flex;flex-direction:column;gap:var(--s16);padding:var(--s20) var(--s24);margin:0 0 var(--s24);border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line)}
+.dc-top{display:flex;flex-direction:column;gap:var(--s10)}
+.dc-pre{display:flex;flex-wrap:wrap;gap:var(--s8)}
+.dc-pre button{display:inline-flex;align-items:baseline;gap:var(--s6);height:32px;padding:0 var(--s12);border:0;border-radius:var(--r-pill);background:none;box-shadow:inset 0 0 0 1px var(--line);font:500 var(--fs-meta)/18px var(--sans);color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform 160ms var(--eo),background-color .15s ease}
+.dc-pre button small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.dc-pre button.on{background:var(--linkb);box-shadow:none;color:var(--link)}
+.dc-pre button:active{transform:scale(.97)}
+.dc-in{display:grid;grid-template-columns:1fr 1fr;gap:var(--s24)}
+.dc-ans{margin:0;padding-top:var(--s12);border-top:1px solid var(--line);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.dc-ans b{font:500 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.dc-why{display:block}
+@media (max-width:640px){.dc{padding:var(--s16)}.dc-in{grid-template-columns:1fr}}
+/* B, pushed further from today: IBM Plex Sans everywhere (no serif), a cool grey workspace with white panels, and
+   tight 6px corners on cards, panels and buttons instead of soft 12px cards and pills. */
+:root[data-look="b"] .w7 :is(.hc,.home-card,.path.card,.arv,.gn-acc,.dc,.sim,.rec,.lv-col,.tour-card,.asm){border-radius:6px}
+:root[data-look="b"] .w7 :is(.sb,.rail,.om-bar,.om-ans,.om-sug){border-radius:8px}
+:root[data-look="b"] .w7 :is(.btn,.cx-next button,.dc-pre button,.look,.toc.chips li a,.cap){border-radius:6px}
+:root[data-look="b"] .w7 .ag-t{border-radius:4px}
+:root[data-look="b"] .w7 .doc h1{font-weight:500}
+:root[data-look="b"] .w7 :is(.hc b,.ov-sum b,.nh-today b,.path-n,.ms-h b,.ap-stats dd){font-weight:500;letter-spacing:-.02em}
+
+/* Asoka's mark: an ink shape with the ring cut out. The shape is the state (every shape is six cubic segments, so
+   any one morphs into any other): a triangle when idle, a page when reading, a circle when thinking, a slanted block
+   when writing, a diamond when asking, a low block when waiting. The ring stays; it is what makes it Asoka. */
+.asoka{flex:none;display:inline-block;vertical-align:middle;overflow:visible}
+.asoka-tri{fill:var(--ink);d:path("M12 3.4C13.57 6.17 15.13 8.93 16.7 11.7C18.27 14.47 19.83 17.23 21.4 20C18.27 20 15.13 20 12 20C8.87 20 5.73 20 2.6 20C4.17 17.23 5.73 14.47 7.3 11.7C8.87 8.93 10.43 6.17 12 3.4Z");transition:d .6s var(--eo)}
+.asoka-eye{transform-box:fill-box;transform-origin:center}
+.asoka.reading .asoka-tri{d:path("M12 4C14.67 4 17.33 4 20 4C20 9.33 20 14.67 20 20C17.33 20 14.67 20 12 20C9.33 20 6.67 20 4 20C4 14.67 4 9.33 4 4C6.67 4 9.33 4 12 4Z")}
+.asoka.reading .asoka-eye{animation:asDrift 2.8s ease-in-out infinite alternate}
+@keyframes asDrift{from{transform:translateX(-.8px)}to{transform:translateX(.8px)}}
+.asoka.thinking .asoka-tri{d:path("M12 2.4C15.43 2.4 18.6 4.23 20.31 7.2C22.03 10.17 22.03 13.83 20.31 16.8C18.6 19.77 15.43 21.6 12 21.6C8.57 21.6 5.4 19.77 3.69 16.8C1.97 13.83 1.97 10.17 3.69 7.2C5.4 4.23 8.57 2.4 12 2.4Z")}
+.asoka.thinking .asoka-eye circle{stroke-dasharray:14 4.8;animation:asTurn 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes asTurn{to{transform:rotate(360deg)}}
+.asoka.writing .asoka-tri{d:path("M13 4.4C15.87 4.4 18.73 4.4 21.6 4.4C20.2 9.6 18.8 14.8 17.4 20C15.6 20 13.8 20 12 20C8.8 20 5.6 20 2.4 20C3.8 14.8 5.2 9.6 6.6 4.4C8.73 4.4 10.87 4.4 13 4.4Z")}
+.asoka.writing .asoka-eye{animation:asPulse .9s ease-in-out infinite alternate}
+@keyframes asPulse{to{transform:scale(.86)}}
+.asoka.asking .asoka-tri{d:path("M12 2.4C13.6 4 15.2 5.6 16.8 7.2C18.4 8.8 20 10.4 21.6 12C18.4 15.2 15.2 18.4 12 21.6C8.8 18.4 5.6 15.2 2.4 12C4 10.4 5.6 8.8 7.2 7.2C8.8 5.6 10.4 4 12 2.4Z")}
+.asoka.asking .asoka-eye{animation:asLift 2.4s var(--eo) infinite}
+@keyframes asLift{0%,100%{transform:none}30%,70%{transform:translateY(-.8px)}}
+.asoka.waiting .asoka-tri{d:path("M12 9C15.13 9 18.27 9 21.4 9C21.4 12.47 21.4 15.93 21.4 19.4C18.27 19.4 15.13 19.4 12 19.4C8.87 19.4 5.73 19.4 2.6 19.4C2.6 15.93 2.6 12.47 2.6 9C5.73 9 8.87 9 12 9Z")}
+.asoka.waiting{animation:asFade 3s ease-in-out infinite}
+@keyframes asFade{0%,100%{opacity:1}50%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.asoka,.asoka .asoka-tri,.asoka .asoka-eye,.asoka .asoka-eye circle{animation:none;transition:none}}
+.liveln .asoka{margin-right:var(--s2)}
+.gn-wait{display:flex;align-items:center;gap:var(--s10)}
+.ov-now .asoka{margin-right:var(--s2)}
+/* B, pushed further still: cobalt primary buttons, flat cards drawn with a hairline (no soft
+   shadow), uppercase tracked mono labels, square-ended bars, a ruled top bar. */
+:root[data-look="b"]:not([data-theme="dark"]){--sh:0 0 0 1px #D6DDE4;--sh2:0 0 0 1px #C9D2DB,0 12px 32px rgba(11,18,32,.12)}
+:root[data-look="b"] .w7 .btn.primary{background:var(--link);color:#fff}
+:root[data-look="b"] .w7 .tk{text-transform:uppercase;letter-spacing:.08em}
+:root[data-look="b"] .w7 :is(.path-bars i,.mini-bar i){border-radius:0}
+:root[data-look="b"] .w7 .doc h1{letter-spacing:-.04em}
+:root[data-look="b"] .w7 .top{border-bottom:1px solid var(--line)}

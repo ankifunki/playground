@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag, LiveNum, LivePulse, Sources } from './Live'
+import { Ag, Asoka, LiveNum, Sources } from './Live'
 import { PathBar } from './Page'
-import { useW } from './store'
+import { GAPS, useW, type Gap } from './store'
 
 /** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the jobs, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
 /** Each job's path to automation, and what is blocking or needed for the rest. Demo data. */
@@ -15,6 +15,24 @@ export const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?:
   integrations: { rel: 98.4, own: 70, ask: 22, tag: 'Asking Ben Ito', needs: ['Ben Ito: explain why multi-currency CPQ quotes fail', 'Dev: approve a retry policy for NetSuite sync'] },
   support: { rel: 98.9, own: 74, ask: 22, needs: ['Kim (Support): confirm the data-loss escalation rule'] },
 }
+
+/**
+ * The live picture of what Asoka runs: each granted access gap moves its job's share and the overall share up, and
+ * the blocked share down. Wikimind 8 / 8b never grant, so this is the static demo data there.
+ */
+export function useRun() {
+  const w = useW()
+  const done = (Object.keys(GAPS) as Gap[]).filter((g) => w.access[g] === 'done')
+  const rel = Object.fromEntries(Object.entries(REL).map(([k, r]) => {
+    const add = done.filter((g) => GAPS[g].ag === k).reduce((n, g) => n + GAPS[g].jobPts, 0)
+    return [k, { ...r, own: r.own + add, needs: r.needs.filter((n) => !done.some((g) => n.includes(GAPS[g].t))) }]
+  })) as typeof REL
+  const pts = done.reduce((n, g) => n + GAPS[g].pts, 0)
+  const open = (Object.keys(GAPS) as Gap[]).filter((g) => w.access[g] !== 'done')
+  return { rel, own: 64 + pts, ask: 29, blocked: 7 - pts, open, done }
+}
+/** How a share Asoka runs is said: Wikimind 9 names Asoka; 8 and 8b say "runs on its own". */
+export const ownWord = (v9: boolean) => (v9 ? { label: 'Run by Asoka', short: 'by Asoka', line: 'run by Asoka', legend: 'Asoka runs it' } : { label: 'Runs on its own', short: 'on its own', line: 'runs on its own', legend: 'Runs on its own' })
 
 /** A mini path bar: 4px bars, 2px gaps, one bar per 2.5% of the work. */
 export function MiniBar({ own, ask }: { own: number; ask: number }) {
@@ -29,7 +47,7 @@ export function HomeLive() {
   return (
     <>
       <div className="home-row">
-        {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : 'Asoka'}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
+        {last && <p className="liveln"><Asoka size={20} state={w.presence ? 'writing' : last.kind === 'read' ? 'reading' : last.kind === 'ask' ? 'asking' : last.kind === 'edit' ? 'writing' : 'idle'} /><span><b>{last.ag === 'person' ? last.who : 'Asoka'}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
         <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>
       </div>
     </>

@@ -14,8 +14,9 @@ export const VARIANTS: Variant[] = [
   { key: 'j', name: 'Wikimind 7', desc: 'Agent-first wiki, live flows', Component: lazy(() => import('./variants/wikimind7')) },
   { key: 'k', name: 'Wikimind 8', desc: 'Best of each, one workspace', Component: lazy(() => import('./variants/wikimind8')) },
   { key: 'l', name: 'Wikimind 8b', desc: 'Home as the front page', Component: lazy(() => import('./variants/wikimind8/news')) },
+  { key: 'm', name: 'Wikimind 9', desc: 'Asoka named, play any deal', Component: lazy(() => import('./variants/wikimind8/nine')) },
 ]
-const DEFAULT = 'l'
+const DEFAULT = 'm'
 /** The iterations before Wikimind (the Warden explorations), folded behind a chevron in the bar. */
 const EARLY = ['b', 'c']
 

@@ -86,13 +86,17 @@ export function LiveNum({ value }: { value: string | number }) {
     const old = cur.split('').map((ch, i) => { const j = a.length - (len - i); const was = j < 0 ? '' : a[j]; return was === ch ? null : was })
     prev.current = cur
     setState((x) => ({ n: x.n + 1, old }))
+    // Drop the outgoing digits on a timer as well as on animationend: in a background tab or in Safari the event can
+    // be missed, and a stray old digit would stay drawn above the number.
+    const id = window.setTimeout(() => setState((x) => ({ ...x, old: x.old.map((o) => (o === null ? null : '')) })), 700)
+    return () => window.clearTimeout(id)
   }, [cur])
   if (!state.n) return <span className="ln">{cur}</span>
   return (
     <span className="ln" key={state.n}>
       {cur.split('').map((ch, i) => state.old[i] === null || state.old[i] === undefined
         ? <span key={i}>{ch}</span>
-        : <span key={i} className="ln-r ln-c">{state.old[i] && <span className="ln-o" aria-hidden="true" onAnimationEnd={(e) => { (e.currentTarget as HTMLElement).remove() }}>{state.old[i]}</span>}<span className="ln-n">{ch}</span></span>)}
+        : <span key={i} className="ln-r ln-c">{state.old[i] && <span className="ln-o" aria-hidden="true">{state.old[i]}</span>}<span className="ln-n">{ch}</span></span>)}
     </span>
   )
 }
@@ -112,3 +116,27 @@ export function Sources({ items, children }: { items: { ic: 'hash' | 'ticket' | 
   )
 }
 
+
+export type AsokaState = 'idle' | 'reading' | 'thinking' | 'writing' | 'asking' | 'waiting'
+const AS_TITLE: Record<AsokaState, string> = { idle: 'Asoka', reading: 'Asoka is reading', thinking: 'Asoka is thinking', writing: 'Asoka is writing', asking: 'Asoka is asking a person', waiting: 'Asoka is waiting' }
+let asokaN = 0
+/**
+ * Asoka's mark: an ink shape with an open ring cut out of it, so it stands on its own on any background. The shape is
+ * the state, morphed by CSS (every shape is six cubic segments): a triangle when idle, a page when reading (the ring
+ * drifts), a circle when thinking (the ring's gap turns), a slanted block when writing (the ring pulses), a diamond
+ * when asking a person (the ring lifts), a low block when waiting (it fades). Browsers without CSS path morphing keep
+ * the triangle. Reduced motion keeps it still. Use it once per view, not per row.
+ */
+export function Asoka({ size = 20, state = 'idle', label }: { size?: number; state?: AsokaState; label?: string }) {
+  const [id] = useState(() => 'asoka-m' + ++asokaN)
+  return (
+    <svg className={'asoka ' + state} data-state={state} width={size} height={size} viewBox="0 0 24 24" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
+      <title>{label || AS_TITLE[state]}</title>
+      <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+        <rect width="24" height="24" fill="#fff" />
+        <g className="asoka-eye"><circle cx="12" cy="14.6" r="3" fill="none" stroke="#000" strokeWidth="2" /></g>
+      </mask>
+      <path className="asoka-tri" d="M12 3.4C13.57 6.17 15.13 8.93 16.7 11.7C18.27 14.47 19.83 17.23 21.4 20C18.27 20 15.13 20 12 20C8.87 20 5.73 20 2.6 20C4.17 17.23 5.73 14.47 7.3 11.7C8.87 8.93 10.43 6.17 12 3.4Z" mask={`url(#${id})`} />
+    </svg>
+  )
+}

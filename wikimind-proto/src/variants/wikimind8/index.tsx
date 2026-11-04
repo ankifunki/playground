@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react'
 import { useVariantCss } from '../../useVariantCss'
 import { AG, AGENTS, ago, PAGES, SPACES, type AgentId } from './data'
 import { Icon } from './Icon'
-import { Ag, LiveNum, LivePulse, Sources } from './Live'
+import { Ag, Asoka, LiveNum, LivePulse, Sources } from './Live'
 import { Omni } from './Omni'
 import { Trace } from './Trace'
 import { TRACE } from './traces'
 import { Approvals, Stub } from './Page'
 import { Home } from './Home'
 import { NewsHome } from './NewsHome'
+import { Home9 } from './Home9'
 import { AgentProfile } from './Agents'
 import { Chat } from './Chat'
 import { Generate } from './Generate'
@@ -20,9 +21,13 @@ import { Provider, useW } from './store'
 import css from './styles.css?inline'
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
+import '@fontsource/ibm-plex-sans/400.css'
+import '@fontsource/ibm-plex-sans/500.css'
 
 type Look = 'current' | 'b'
-/** Which look: today's, or Direction B (Calibrated instrument). ?look=b or the top-bar switch; remembered. */
+const LOOKS: Look[] = ['current', 'b']
+const LOOK_NAME: Record<Look, string> = { current: 'Current', b: 'B · Calibrated' }
+/** Which look: today's or Direction B (Calibrated instrument). ?look=b or the top-bar switch; remembered. */
 function useLook(): [Look, () => void] {
   const [look, setLook] = useState<Look>(() => {
     const u = new URLSearchParams(location.search).get('look')
@@ -30,11 +35,11 @@ function useLook(): [Look, () => void] {
     try { return localStorage.getItem('wm8-look') === 'b' ? 'b' : 'current' } catch { return 'current' }
   })
   useEffect(() => {
-    if (look === 'b') document.documentElement.dataset.look = 'b'; else delete document.documentElement.dataset.look
+    if (look !== 'current') document.documentElement.dataset.look = look; else delete document.documentElement.dataset.look
     try { localStorage.setItem('wm8-look', look) } catch { /* private mode */ }
     return () => { delete document.documentElement.dataset.look }
   }, [look])
-  return [look, () => setLook((l) => (l === 'b' ? 'current' : 'b'))]
+  return [look, () => setLook((l) => LOOKS[(LOOKS.indexOf(l) + 1) % LOOKS.length])]
 }
 
 /** Left sidebar: the workspace, search, and one space per job with its pages. A page Asoka is writing shows it. */
@@ -88,12 +93,12 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
           <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `Asoka is writing ${pr.label}: watch it` : `${here.length} jobs touch this page`}>
-            <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}><Ag id={id} size={pr && i === 0 ? 28 : 24} /></span>)}</span>
+            <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}>{pr && i === 0 ? <Asoka size={28} state="writing" /> : <Ag id={id} size={24} />}</span>)}</span>
             <span className="cap-t" aria-hidden={!pr}>{pr && <><b>Asoka</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
             {!pr && <span className="here-t">{here.length === 1 ? '1 job' : `${here.length} jobs`}</span>}
           </button>
         </div>
-        <button className="look" onClick={onLook} aria-pressed={look === 'b'} title="Switch between today’s look and Direction B"><Icon name="sliders" size={14} /><span>Look</span><b>{look === 'b' ? 'B · Calibrated' : 'Current'}</b></button>
+        <button className="look" onClick={onLook} aria-pressed={look !== 'current'} title="Switch between the current look and B · Calibrated"><Icon name="sliders" size={14} /><span>Look</span><b>{LOOK_NAME[look]}</b></button>
         <button className="ib top-act" onClick={() => w.setRail(!w.rail)} aria-label="Live activity" aria-pressed={w.rail}><Icon name="activity" size={16} /></button>
       </div>
     </div>
@@ -151,7 +156,7 @@ function Shell({ news }: { news?: boolean }) {
       {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top look={look} onLook={toggleLook} />
-        {w.page === 'home' ? (news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
+        {w.page === 'home' ? (w.v9 ? <Home9 /> : news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
         <Omni />
         <Tour />
       </main>
@@ -165,7 +170,7 @@ function Shell({ news }: { news?: boolean }) {
  * tables), made agent first: each job has a space, presence shows who is on a page, edits are announced and typed
  * in where you can see them, and How it works is a live diagram of the job's flow with its conditional routes.
  */
-export default function Wikimind8({ news }: { news?: boolean }) {
+export default function Wikimind8({ news, v9 }: { news?: boolean; v9?: boolean }) {
   useVariantCss(css)
-  return <Provider><Shell news={news} /></Provider>
+  return <Provider v9={v9}><Shell news={news} /></Provider>
 }

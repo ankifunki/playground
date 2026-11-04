@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
-import { MiniBar, REL } from './Home'
+import { MiniBar, ownWord, useRun } from './Home'
 import { Icon } from './Icon'
 import { Ag, LiveNum, LivePulse } from './Live'
-import { RM, useW } from './store'
+import { GAPS, RM, useW, type Gap } from './store'
 
 /*
  * Wikimind 8b: every job's full picture in one place. A strip of totals (each one a filter), one row per job with
@@ -28,6 +28,8 @@ function questions(ag: AgentId, renewalAnswered: boolean, cpqFixed: boolean) {
   return q[ag]
 }
 const BLOCKERS: Partial<Record<AgentId, string>> = { security: 'Okta sign-in logs, from IT', finance: 'NetSuite write access, from Finance' }
+/** The access gap behind each blocker, which Wikimind 9 can grant. */
+const BLOCK_GAP: Partial<Record<AgentId, Gap>> = { security: 'okta', finance: 'netsuite' }
 type Job = { t: string; st: 'own' | 'ask' | 'people'; n: number }
 const JOBS: Record<AgentId, Job[]> = {
   approvals: [{ t: 'Route large deals to approvers', st: 'own', n: 412 }, { t: 'Flat renewals over $100,000', st: 'ask', n: 14 }, { t: 'Discounts over 20%', st: 'people', n: 56 }],
@@ -38,6 +40,7 @@ const JOBS: Record<AgentId, Job[]> = {
   support: [{ t: 'Case triage', st: 'own', n: 410 }, { t: 'Escalations to engineering', st: 'ask', n: 36 }, { t: 'Data-loss escalations', st: 'people', n: 11 }],
 }
 const JOB_ST = { own: 'Runs on its own', ask: 'Asks a person first', people: 'People decide; it shadows' }
+const JOB_ST9 = { own: 'Asoka runs it', ask: 'Asoka asks a person first', people: 'People decide; Asoka shadows' }
 const MISSES: Record<AgentId, number> = { approvals: 1, access: 1, security: 1, finance: 0, integrations: 0, support: 0 }
 const NEWEST: Record<AgentId, string> = {
   approvals: 'Re-read Discount approvals against Salesforce', access: 'Updated Deal Desk: Priya Shah now leads it', security: 'Removed 14 stale API users from Access reviews',
@@ -101,14 +104,16 @@ type Filter = null | 'ver' | 'ask' | 'block' | 'own' | 'rel'
 
 /** The overview: totals (each a filter) and one row per job. Clicking a row opens the job's profile. */
 export function AgentsOverview() {
-  const w = useW(), groves = useGroves(), [filter, setFilter] = useState<Filter>(null)
+  const w = useW(), groves = useGroves(), [filter, setFilter] = useState<Filter>(null), run = useRun(), ow = ownWord(w.v9)
+  // A blocker is gone once its access is granted (Wikimind 9).
+  const blocked = (id: AgentId) => !!BLOCKERS[id] && !(BLOCK_GAP[id] && w.access[BLOCK_GAP[id]!] === 'done')
   const answered = w.renewal === 'answered', fixed = w.cpq === 'fixed'
   const total = groves.reduce((n, g) => n + g.total, 0), ver = groves.reduce((n, g) => n + g.counts.ver, 0)
-  const qs = AGENTS.reduce((n, a) => n + questions(a.id, answered, fixed).length, 0), blockers = Object.keys(BLOCKERS).length
+  const qs = AGENTS.reduce((n, a) => n + questions(a.id, answered, fixed).length, 0), blockers = AGENTS.filter((a) => blocked(a.id)).length
   const stats: { k: Filter; n: string; t: string }[] = [
     { k: null, n: total.toLocaleString('en-US'), t: 'pages' },
     { k: null, n: ver.toLocaleString('en-US'), t: 'verified by a person' },
-    { k: null, n: '64%', t: 'runs on its own' },
+    { k: null, n: `${run.own}%`, t: ow.line },
     { k: 'rel', n: '98.6%', t: 'reliability' },
     { k: 'ask', n: String(qs), t: 'open questions' },
     { k: 'block', n: String(blockers), t: 'blockers' },
@@ -125,16 +130,16 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Job</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Job</span><span>{ow.label}</span><span>Reliability</span><span>Right now</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
-          const g = groves.find((x) => x.ag === a.id)!, r = REL[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
-          const now = live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : BLOCKERS[a.id] ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
+          const g = groves.find((x) => x.ag === a.id)!, r = run.rel[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
+          const now = live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
           return (
-            <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
+            <li key={a.id} className={(q.length ? 'has-ask ' : '') + (blocked(a.id) ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
                 <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages{g.counts.old ? <> · <span className="ov-x">{g.counts.old} out of date</span></> : null}{q.length ? <> · <span className="ov-x">{q.length} open {q.length === 1 ? 'question' : 'questions'}</span></> : null}</small></span></span>
-                <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
+                <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> {ow.short}</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
               </button>
@@ -156,7 +161,7 @@ function Spark({ ag, rel }: { ag: AgentId; rel: number }) {
 
 /** One job's profile, in the right panel: what it knows, what it runs, what it needs, and what it did recently. */
 export function AgentProfile({ id }: { id: AgentId }) {
-  const w = useW(), a = AG[id], r = REL[id], g = useGroves().find((x) => x.ag === id)!
+  const w = useW(), a = AG[id], run = useRun(), r = run.rel[id], g = useGroves().find((x) => x.ag === id)!, ow = ownWord(w.v9), gap = BLOCK_GAP[id]
   const q = questions(id, w.renewal === 'answered', w.cpq === 'fixed'), acts = w.acts.filter((x) => x.ag === id).slice(0, 4)
   return (
     <div className="ap">
@@ -166,7 +171,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
       </div>
       <dl className="ap-stats">
         <div><dt className="tk">Pages</dt><dd className="num">{g.total}</dd></div>
-        <div><dt className="tk">Runs on its own</dt><dd className="num">{r.own}%</dd></div>
+        <div><dt className="tk">{ow.label}</dt><dd className="num">{r.own}%</dd></div>
         <div><dt className="tk">Reliability</dt><dd className="num">{r.rel.toFixed(1)}%</dd></div>
       </dl>
 
@@ -181,14 +186,15 @@ export function AgentProfile({ id }: { id: AgentId }) {
       <section>
         <h3>What it runs</h3>
         <MiniBar own={r.own} ask={r.ask} />
-        <div className="ap-ring"><span><b className="num">{r.own}%</b> runs on its own · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
-        <ul className="ap-jobs">{JOBS[id].map((j) => <li key={j.t} className={j.st}><span>{j.t}</span><small>{JOB_ST[j.st]} · {j.n.toLocaleString('en-US')} in 30 days</small></li>)}</ul>
+        <div className="ap-ring"><span><b className="num">{r.own}%</b> {ow.line} · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
+        <ul className="ap-jobs">{JOBS[id].map((j) => <li key={j.t} className={j.st}><span>{j.t}</span><small>{(w.v9 ? JOB_ST9 : JOB_ST)[j.st]} · {j.n.toLocaleString('en-US')} in 30 days</small></li>)}</ul>
         <div className="ap-rel"><span><b className="num">{r.rel.toFixed(1)}%</b> matched a person · {MISSES[id] ? <button className="wl pf" onClick={() => w.openMisses(id)}>{MISSES[id]} miss</button> : 'no misses'} in 30 days</span><Spark ag={id} rel={r.rel} /></div>
       </section>
 
       <section>
         <h3>What it needs</h3>
-        <ul className="ap-list">{r.needs.map((n) => <li key={n}><span>{n}</span></li>)}</ul>
+        <ul className="ap-list">{r.needs.map((n) => <li key={n}><span>{n}</span>{w.v9 && gap && n.includes(GAPS[gap].t) && <GrantBtn g={gap} />}</li>)}</ul>
+        {w.v9 && gap && w.access[gap] === 'done' && <p className="gr-done"><Icon name="circle-check" size={14} />{GAPS[gap].t} granted · {GAPS[gap].jobPts} more points Asoka runs</p>}
       </section>
 
       <section>
@@ -198,5 +204,16 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <div className="ap-foot"><button className="btn soft" onClick={() => w.go(g.pages[0].id)}>Go to the {a.name} grove<Icon name="arrow-right" size={16} /></button></div>
     </div>
+  )
+}
+
+/** Wikimind 4's access control, in the new button style: request, Dev approves, granted. */
+export function GrantBtn({ g, label = 'Request access' }: { g: Gap; label?: string }) {
+  const w = useW(), st = w.access[g]
+  if (st === 'done') return <span className="gr-ok"><Icon name="circle-check" size={14} />Granted</span>
+  return (
+    <button className={'btn soft gr-b' + (st === 'asking' ? ' busy' : '')} onClick={() => w.grant(g)} disabled={st === 'asking'} aria-live="polite">
+      {st === 'asking' ? <><i className="gr-spin" aria-hidden="true" />Asking Dev to approve</> : <><Icon name="key" size={14} />{label}</>}
+    </button>
   )
 }

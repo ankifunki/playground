@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { money } from './data'
 import { Icon } from './Icon'
 import { useW } from './store'
@@ -53,6 +53,44 @@ export function Thresholds({ fin, was, mark, off }: { fin: number; was?: { at: n
         {mark !== undefined && <span className="thr-mark" style={{ left: pct(mark) }}><small>{mark}%</small></span>}
       </div>
       <div className="thr-ax">{[0, 10, 20, 30, 40, 50].map((n) => <span key={n} style={{ left: pct(n) }}>{n}%</span>)}</div>
+    </div>
+  )
+}
+
+/**
+ * Wikimind 9: Try it out folded into How it works. Pick a deal or set your own size and discount; the answer updates
+ * at once and the player above replays that deal's route (slider moves settle for 300ms first, so dragging doesn't
+ * restart it on every step).
+ */
+const PRESETS = [
+  { name: 'Helios expansion', amt: 240000, disc: 28 },
+  { name: 'Atlas renewal', amt: 180000, disc: 12 },
+  { name: 'Orion platform', amt: 620000, disc: 38 },
+  { name: 'Kestrel new logo', amt: 64000, disc: 18 },
+]
+export function DealControls({ deal, onChange }: { deal: { name: string; amt: number; disc: number }; onChange: (d: { name: string; amt: number; disc: number }) => void }) {
+  const w = useW(), [d, setD] = useState(deal), f = w.fin
+  const timer = useRef(0)
+  useEffect(() => { setD(deal) }, [deal.name, deal.amt, deal.disc]) // eslint-disable-line react-hooks/exhaustive-deps
+  const push = (x: typeof d, now = false) => { setD(x); window.clearTimeout(timer.current); if (now) onChange(x); else timer.current = window.setTimeout(() => onChange(x), 300) }
+  const set = (p: Partial<typeof d>) => push({ ...d, ...p, name: 'Your deal' })
+  const small = d.amt <= 100000
+  const who = small ? 'No approval needed' : d.disc > 35 ? 'The CRO' : d.disc > f ? 'Sales manager, then Finance' : 'Sales manager'
+  const time = small ? '' : d.disc > 35 ? 'about 6 h' : d.disc > f ? 'about 3 h 40 m' : 'about 1 h'
+  const why = small ? `${money(d.amt)} is under $100,000.` : d.disc > 35 ? `${d.disc}% is over 35%.` : d.disc > f ? `${d.disc}% is over ${f}%, so Finance joins.` : `${d.disc}% is ${f}% or less.`
+  return (
+    <div className="dc" role="group" aria-label="Play a deal">
+      <div className="dc-top">
+        <span className="tk">Play a deal</span>
+        <div className="dc-pre">{PRESETS.map((p) => <button key={p.name} className={d.name === p.name ? 'on' : ''} aria-pressed={d.name === p.name} onClick={() => push(p, true)}>{p.name.split(' ')[0]}<small>{money(p.amt)} · {p.disc}%</small></button>)}</div>
+      </div>
+      <div className="dc-in">
+        <label className="sim-r"><span>Discount</span><b>{d.disc}%</b>
+          <input type="range" min={0} max={50} step={1} value={d.disc} onChange={(e) => set({ disc: +e.target.value })} aria-label="Discount" style={{ '--p': (d.disc / 50) * 100 + '%' } as React.CSSProperties} /></label>
+        <label className="sim-r"><span>Deal size</span><b>{money(d.amt)}</b>
+          <input type="range" min={50000} max={1000000} step={10000} value={d.amt} onChange={(e) => set({ amt: +e.target.value })} aria-label="Deal size" style={{ '--p': ((d.amt - 50000) / 950000) * 100 + '%' } as React.CSSProperties} /></label>
+      </div>
+      <p className="dc-ans" aria-live="polite"><b>{who}</b>{time && <span> · usually {time}</span>}<span className="dc-why">{why}</span></p>
     </div>
   )
 }
