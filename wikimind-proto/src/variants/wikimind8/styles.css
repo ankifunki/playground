@@ -1770,3 +1770,5 @@ button.km-t{cursor:pointer}
 .lv.one .lv-col>ul{margin-bottom:var(--s8)}
 .rail .lv.fd{display:flex;flex-direction:column;gap:var(--s16)}
 .w7 .h9 .toc-l{display:none}
+/* `triangle`: keep the triangle whatever the state; only the ring moves (the presence pill in the top bar). */
+.asoka.tri .asoka-tri{d:path("M12 3.4C13.57 6.17 15.13 8.93 16.7 11.7C18.27 14.47 19.83 17.23 21.4 20C18.27 20 15.13 20 12 20C8.87 20 5.73 20 2.6 20C4.17 17.23 5.73 14.47 7.3 11.7C8.87 8.93 10.43 6.17 12 3.4Z")}

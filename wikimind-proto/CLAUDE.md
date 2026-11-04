@@ -94,7 +94,7 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Latest Home 9 changes:**
   - No Customize button: drag still reorders and resizes, and the layout is kept. The hide, move and shelf controls are unused for now.
   - Nav links are Status · Updates · Jobs · Coming up, with no "On this page" label on Home.
-  - "Changed / Learned / Asking people" are the **Updates** feeds (`useFeeds`). Each column shows its newest three and a **Learn more** link that opens the whole feed in the right panel (`FeedPanel`; store `feed`, `openFeed`), with older items the columns leave out.
+  - "Changed / Learned / Asking people" are the **Updates** feeds (`useFeeds`). Each column shows its newest three and a **More** link that opens the whole feed in the right panel (`FeedPanel`; store `feed`, `openFeed`), with older items the columns leave out.
   - "What Asoka knows and runs, by job" is **Jobs** in Wikimind 9.
   - Coming up has no subtitle.
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):

@@ -127,10 +127,10 @@ let asokaN = 0
  * when asking a person (the ring lifts), a low block when waiting (it fades). Browsers without CSS path morphing keep
  * the triangle. Reduced motion keeps it still. Use it once per view, not per row.
  */
-export function Asoka({ size = 20, state = 'idle', label }: { size?: number; state?: AsokaState; label?: string }) {
+export function Asoka({ size = 20, state = 'idle', label, triangle }: { size?: number; state?: AsokaState; label?: string; triangle?: boolean }) {
   const [id] = useState(() => 'asoka-m' + ++asokaN)
   return (
-    <svg className={'asoka ' + state} data-state={state} width={size} height={size} viewBox="0 0 24 24" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
+    <svg className={'asoka ' + state + (triangle ? ' tri' : '')} data-state={state} width={size} height={size} viewBox="0 0 24 24" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
       <title>{label || AS_TITLE[state]}</title>
       <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
         <rect width="24" height="24" fill="#fff" />

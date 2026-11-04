@@ -93,7 +93,7 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
           <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `Asoka is writing ${pr.label}: watch it` : `${here.length} jobs touch this page`}>
-            <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}>{pr && i === 0 ? <Asoka size={28} state="writing" /> : <Ag id={id} size={24} />}</span>)}</span>
+            <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}>{pr && i === 0 ? <Asoka size={28} state="writing" triangle /> : <Ag id={id} size={24} />}</span>)}</span>
             <span className="cap-t" aria-hidden={!pr}>{pr && <><b>Asoka</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
             {!pr && <span className="here-t">{here.length === 1 ? '1 job' : `${here.length} jobs`}</span>}
           </button>

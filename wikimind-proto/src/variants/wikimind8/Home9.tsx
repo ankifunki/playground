@@ -177,7 +177,7 @@ function LiveColumn({ only }: { only: FeedId }) {
         <section key={c.k} className="lv-col" aria-label={c.label}>
           <div className="lv-h"><Icon name={c.ic} size={16} /><span className="tk">{c.label}</span>{c.n !== undefined && <span className="tk lv-n num">{c.n}</span>}</div>
           <ul>{c.items.map((it) => <li key={it.key}><FeedItem it={it} /></li>)}</ul>
-          <button className="wl lv-more" onClick={() => w.openFeed(c.k as FeedId)}>Learn more<Icon name="arrow-right" size={14} /></button>
+          <button className="wl lv-more" onClick={() => w.openFeed(c.k as FeedId)}>More<Icon name="arrow-right" size={14} /></button>
         </section>
       ))}
     </div>
