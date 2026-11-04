@@ -693,7 +693,7 @@ body{font-weight:400;margin:0;background:var(--panel);color:var(--ink);-webkit-f
 .cap-t b,.sb-logo,.om-q,.cursor{font-weight:500}
 .cursor{font-size:var(--fs-meta);line-height:18px}
 .ag-t,.sb .ag-t,.here-a .ag-t,.sb-logo,.om-none,.doc-ic{border-radius:var(--r-tile)}
-.sb-i,.sb-h,.sb-p,.sb-q,.tr-src,.srcs-i::after,.callout,.blk,.props,.tbl table{border-radius:var(--r-sm)}
+.sb-i,.sb-h,.sb-p,.sb-q,.tr-src,.srcs-i::after,.callout,.blk,.tbl table{border-radius:var(--r-sm)}
 .callout.ask{border-radius:var(--r-md)}
 @media (max-width:640px){.tbl table{border-radius:0}}
 .btn:active{transform:scale(.97)}
