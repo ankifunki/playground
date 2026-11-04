@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { money } from './data'
 import { Icon } from './Icon'
 import { RM, useW } from './store'
+import { Route } from './Route'
 
 export type Deal = { name: string; amt: number; disc: number }
 export const HELIOS: Deal = { name: 'Helios expansion', amt: 240000, disc: 28 }
@@ -65,7 +66,7 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
   const toggle = () => { started.current = true; if (t >= len - 1) { setT(0); setPlay(true) } else setPlay(!play) }
   const jump = (at: number) => { started.current = true; setPlay(false); setT(at + 1) }
   const custom = deal !== HELIOS
-  // The record's activity, oldest first. Every event has a node on the track from the start; it fills when reached.
+  // The record's activity, oldest first; the caption under the route map names the current step.
   type Ev = { at: number; tone: string; s: string; d: string; em: string }
   const evs: Ev[] = [
     { at: 0, tone: '', s: 'Moved to Negotiation', d: `Sam Ortiz · ${money(deal.amt)} at ${deal.disc}% off`, em: '0 s' },
@@ -75,11 +76,7 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
     ...r.approvers.map((a, i) => { const ok = t > okAt[i]; return { at: i === 0 ? 7600 + 1 : okAt[i - 1], tone: ok ? 'ok' : 'wait', s: ok ? `${a.label} approved` : `Waiting for ${a.label === 'CRO' ? 'the CRO' : a.label === 'Finance' ? 'Finance' : 'the manager'}`, d: a.who, em: ok ? a.at : 'waiting' } }),
     ...(r.small ? [] : [{ at: end + 400, tone: 'ok', s: 'Unlocked', d: 'The deal moves on · receipt logged on this page', em: r.approvers[r.approvers.length - 1].at }]),
   ]
-  // Where the drawn line has reached: between the last reached node and the next, by time.
   const reached = evs.reduce((n, e, i) => (t >= e.at ? i : n), -1)
-  const nextAt = reached + 1 < evs.length ? evs[reached + 1].at : len
-  const frac = reached < 0 ? 0 : reached >= evs.length - 1 ? 0 : Math.min(1, Math.max(0, (t - evs[reached].at) / (nextAt - evs[reached].at)))
-  const fill = evs.length > 1 ? Math.max(0, (reached + frac) / (evs.length - 1)) : 0
   const cur = evs[Math.max(0, reached)]
 
   return (
@@ -103,20 +100,8 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
           <div><dt className="tk">Owner</dt><dd>Sam Ortiz</dd></div>
         </dl>
         <div className="rec-log">
-          <span className="tk">Activity</span>
-          <ol className="rec-ah" style={{ '--n': evs.length, '--fill': fill } as React.CSSProperties}>
-            <span className="rec-line" aria-hidden="true"><i /></span>
-            {evs.map((e, i) => (
-              <li key={i} className={(i <= reached ? 'on ' + e.tone : 'next') + (i === reached ? ' cur' : '')}>
-                <button onClick={() => jump(e.at)} aria-current={i === reached ? 'step' : undefined}>
-                  <span className="rec-em">{i <= reached ? e.em : ''}</span>
-                  <i className="rec-dot" aria-hidden="true" />
-                  <b>{e.s}</b>
-                  <small>{e.d}</small>
-                </button>
-              </li>
-            ))}
-          </ol>
+          <span className="tk">Route</span>
+          <Route t={t} kind={r.kind as 'none' | 'mgr' | 'fin' | 'cro'} f={f} okAt={okAt} end={end} label={`${deal.name.split(' ')[0]} · ${deal.disc}%`} />
           <p className={'rec-now ' + cur.tone} key={reached + cur.s} aria-live="polite">{reached < 0 ? 'Waiting for the rep' : <><b>{cur.s}</b>{cur.d}</>}</p>
         </div>
       </div>
