@@ -1152,3 +1152,11 @@ button.km-t{cursor:pointer}
 .ov-x{color:var(--ink)}
 .ov-sum b .ln{font:inherit;color:inherit;text-decoration:none}
 @media (min-width:901px){.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) 96px minmax(0,1.2fr)}}
+/* Live numbers roll like an odometer: only changed digits move, the old one up and out, the new one up into place. */
+.ln{font-variant-numeric:tabular-nums}
+.ln-r{position:relative;display:inline-block;overflow:hidden;vertical-align:top}
+.ln-n{display:inline-block;animation:lnIn .5s var(--eo) both}
+.ln-o{position:absolute;left:0;top:0;animation:lnOut .5s var(--eo) both}
+@keyframes lnIn{from{transform:translateY(100%)}}
+@keyframes lnOut{to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){.ln-n,.ln-o{animation:none}.ln-o{display:none}}

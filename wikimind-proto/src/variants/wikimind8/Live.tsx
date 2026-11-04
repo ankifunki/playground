@@ -71,21 +71,30 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
 }
 
 /**
- * A number that changes while you watch: only the characters that changed show in the accent colour, hold for a moment,
- * then fade back to the text colour, so a live update draws the eye without the whole number shouting. Characters are
- * compared from the right (1,240 to 1,242 flashes only the last digit). Never on first render. Clocks don't use it.
+ * A number that changes while you watch. Only the characters that changed move: like an odometer, the old digit rolls up
+ * and out while the new one rises into place, then holds the accent colour for a moment and fades back to the text
+ * colour. Characters are compared from the right (1,240 to 1,242 rolls only the last digit). Never on first render;
+ * clocks don't use it. Reduced motion keeps the colour and drops the roll.
  */
 export function LiveNum({ value }: { value: string | number }) {
-  const cur = String(value), prev = useRef(cur), [state, setState] = useState<{ n: number; changed: boolean[] }>({ n: 0, changed: [] })
+  const cur = String(value), prev = useRef(cur)
+  const [state, setState] = useState<{ n: number; old: (string | null)[] }>({ n: 0, old: [] })
   useEffect(() => {
     if (prev.current === cur) return
     const a = prev.current, len = cur.length
-    const changed = cur.split('').map((ch, i) => { const j = a.length - (len - i); return j < 0 || a[j] !== ch })
+    // For each character: the character it replaces, or null when it didn't change.
+    const old = cur.split('').map((ch, i) => { const j = a.length - (len - i); const was = j < 0 ? '' : a[j]; return was === ch ? null : was })
     prev.current = cur
-    setState((x) => ({ n: x.n + 1, changed }))
+    setState((x) => ({ n: x.n + 1, old }))
   }, [cur])
   if (!state.n) return <span className="ln">{cur}</span>
-  return <span className="ln" key={state.n}>{cur.split('').map((ch, i) => <span key={i} className={state.changed[i] ? 'ln-c' : undefined}>{ch}</span>)}</span>
+  return (
+    <span className="ln" key={state.n}>
+      {cur.split('').map((ch, i) => state.old[i] === null || state.old[i] === undefined
+        ? <span key={i}>{ch}</span>
+        : <span key={i} className="ln-r ln-c">{state.old[i] && <span className="ln-o" aria-hidden="true" onAnimationEnd={(e) => { (e.currentTarget as HTMLElement).remove() }}>{state.old[i]}</span>}<span className="ln-n">{ch}</span></span>)}
+    </span>
+  )
 }
 
 /** The live mark: a small radio icon with a slow, soft pulse ring. Used wherever something is happening right now. */
