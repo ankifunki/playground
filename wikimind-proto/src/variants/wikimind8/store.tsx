@@ -14,6 +14,20 @@ export type ChatObj =
   | { k: 'action'; deal: string; state: 'ask' | 'running' | 'done' | 'cancel'; step: number }
   | { k: 'slack'; deal: string; state: 'draft' | 'sent' | 'cancel' }
   | { k: 'person'; q: string; state: 'draft' | 'sent' | 'cancel' }
+  | { k: 'make'; art: Art; state: 'running' | 'done'; step: number }
+  | { k: 'share'; art: string; state: 'draft' | 'sent' | 'cancel'; ch: string }
+/**
+ * An artifact: something shareable Asoka made from what it knows (an explainer, a one-pager, a checklist). It lives in a
+ * job's grove, cites its sources, and can be posted to Slack as a link that unfurls. `how` (How discount approvals
+ * work) is the page's How it works player; the rest are made on request in chat.
+ */
+export type ArtBlock = { k: 'text'; t: string } | { k: 'rows'; head: [string, string]; rows: [string, string][] } | { k: 'steps'; items: string[] }
+export type Art = { id: string; title: string; kind: string; ag: AgentId; from: string; lede: string; blocks: ArtBlock[]; sources: string[]; mine?: boolean }
+export const HOW_ART: Art = {
+  id: 'how', title: 'How discount approvals work', kind: 'Interactive explainer', ag: 'approvals', from: 'discount-approvals',
+  lede: 'Play any deal and watch the route it takes: who approves, and how long each step usually takes.',
+  blocks: [], sources: ['Salesforce config', '9 #deal-desk threads', '4 tickets'],
+}
 export type ChatMsg = { id: number; who: 'you' | AgentId | 'none'; text: string; objs?: ChatObj[]; next?: string[]; typing?: boolean }
 export type Presence = { ag: AgentId; block: string; label: string; page: string } | null
 
@@ -49,6 +63,9 @@ type W = {
   question: string | null; openQuestion: (q: string | null) => void
   /** Wikimind 9: rules people add (after Maria approves), and the New rule panel. */
   rules: UserRule[]; addRule: (r: UserRule) => void; rule: boolean; openRule: (b: boolean) => void
+  /** Wikimind 9: artifacts in the groves, where each was posted in Slack, and the Share in Slack panel. */
+  arts: Art[]; addArt: (a: Art) => void; shared: Record<string, string>; shareArt: (id: string, ch: string) => void
+  share: string | null; openShare: (id: string | null) => void
 }
 export type UserRule = { id: string; title: string; body: string; why: string; scope: string }
 export type Gap = 'okta' | 'netsuite'
@@ -97,10 +114,18 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null), [blocker, setBlocker] = useState<Gap | null>(null)
   const [question, setQuestion] = useState<string | null>(null), [rules, setRules] = useState<UserRule[]>([]), [rule, setRule] = useState(false)
   const addRule = (r: UserRule) => setRules((l) => [...l, r])
-  const openRule = (b: boolean) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(b); if (b) setRail(true); else setRailS(false) }
-  const openBlocker = (g: Gap | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setQuestion(null); setBlocker(g); if (g) setRail(true); else setRailS(false) }
-  const openQuestion = (q: string | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(q); if (q) setRail(true); else setRailS(false) }
-  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true); else setRailS(false) }
+  const [arts, setArts] = useState<Art[]>([HOW_ART]), [shared, setShared] = useState<Record<string, string>>({}), [share, setShare] = useState<string | null>(null)
+  const addArt = (a: Art) => setArts((l) => (l.some((x) => x.id === a.id) ? l : [...l, a]))
+  const shareArt = (id: string, ch: string) => {
+    setShared((m) => ({ ...m, [id]: ch }))
+    const a = arts.find((x) => x.id === id)
+    act({ ag: a?.ag || 'approvals', t: `Shared “${a?.title || 'an artifact'}” in ${ch}`, page: id === 'how' ? 'discount-approvals' : 'art:' + id, kind: 'edit' })
+  }
+  const openShare = (id: string | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setShare(id); if (id) setRail(true); else setRailS(false) }
+  const openRule = (b: boolean) => { setShare(null); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(b); if (b) setRail(true); else setRailS(false) }
+  const openBlocker = (g: Gap | null) => { setShare(null); setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setQuestion(null); setBlocker(g); if (g) setRail(true); else setRailS(false) }
+  const openQuestion = (q: string | null) => { setShare(null); setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(q); if (q) setRail(true); else setRailS(false) }
+  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setShare(null); setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true); else setRailS(false) }
   const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
   // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
   const grant = (g: Gap) => {
@@ -108,7 +133,7 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
     setAccess((a) => ({ ...a, [g]: 'asking' }))
     later(2000, () => { setAccess((a) => ({ ...a, [g]: 'done' })); act({ ag: GAPS[g].ag, t: `Got ${GAPS[g].t} (${GAPS[g].scope}) after Dev approved: ${GAPS[g].pts} more points Asoka can run`, page: 'discount-approvals', kind: 'verify' }) })
   }
-  const setChatOn = (b: boolean) => { setChatOnS(b); if (b) { setTrace(null); setAgent(null); setMisses(null); setRail(true) } }
+  const setChatOn = (b: boolean) => { setChatOnS(b); if (b) { setShare(null); setTrace(null); setAgent(null); setMisses(null); setRail(true) } }
   const startChat = (text: string, from: DOMRect | null = null) => {
     setChatFrom(from); setChat((c) => [...c, { id: cid.current++, who: 'you', text }]); setChatOn(true)
   }
@@ -117,12 +142,12 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   // A trace opened from Live activity goes back there when closed; one opened from the page closes the panel.
   const openTrace = (id: string | null, fromActivity = false) => {
     if (!proof) return
-    if (id) { setTraceFrom(fromActivity); setTrace(id); setMisses(null); setRail(true); return }
+    if (id) { setShare(null); setTraceFrom(fromActivity); setTrace(id); setMisses(null); setRail(true); return }
     setTrace(null); if (!traceFrom) setRailS(false)
   }
-  const openMisses = (m: AgentId | 'all' | null) => { setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) ; if (!m) setRailS(false) }
+  const openMisses = (m: AgentId | 'all' | null) => { setShare(null); setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) ; if (!m) setRailS(false) }
   // A job's profile shows in the right panel, like a trace; a trace opened from it shows on top.
-  const openAgent = (a: AgentId | null) => { setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) ; if (!a) setRailS(false) }
+  const openAgent = (a: AgentId | null) => { setShare(null); setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) ; if (!a) setRailS(false) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
   useEffect(() => { const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t) }, [])
@@ -202,12 +227,12 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
       else if (e.key === 's' || e.key === 'S') arriveSlack()
       else if (e.key === 'Escape') {
         if (trace && traceFrom) { setTrace(null); return }
-        if (trace || agent || misses || feed || blocker || question || rule || chatOn) { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(false); setChatOnS(false); setRailS(false); return }
+        if (trace || agent || misses || feed || blocker || question || rule || share || chatOn) { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(false); setShare(null); setChatOnS(false); setRailS(false); return }
         setRail(false); setNav(false)
       }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, traceFrom, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker, question, openQuestion, rules, addRule, rule, openRule }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, traceFrom, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker, question, openQuestion, rules, addRule, rule, openRule, arts, addArt, shared, shareArt, share, openShare }}>{children}</Ctx.Provider>
 }

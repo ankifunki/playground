@@ -56,6 +56,8 @@ const NEWEST: Record<AgentId, string> = {
 }
 
 /** Every grove's pages as states (seeded, stable). Named pages sit first; open-question tiles match the questions. */
+/** Short names for the Jobs row's blocker chip, so it stays on one line. */
+const CHIP: Record<Gap, string> = { okta: 'Okta logs', netsuite: 'NetSuite' }
 export function useGroves() {
   const w = useW(), answered = w.renewal === 'answered', fixed = w.cpq === 'fixed'
   return useMemo(() => SPACES.map((s, g) => {
@@ -121,15 +123,15 @@ export function AgentsOverview() {
   const stats: { k: Filter; n: string; t: string }[] = [
     { k: null, n: total.toLocaleString('en-US'), t: 'pages' },
     { k: null, n: ver.toLocaleString('en-US'), t: 'verified by a person' },
-    { k: null, n: `${run.own}%`, t: ow.line },
-    { k: 'rel', n: '98.6%', t: 'reliability' },
+    // Wikimind 9's Status card already shows how much Asoka runs and its reliability, so the totals leave them out.
+    ...(w.v9 ? [] : [{ k: null, n: `${run.own}%`, t: ow.line }, { k: 'rel' as Filter, n: '98.6%', t: 'reliability' }]),
     { k: 'ask', n: String(qs), t: 'open questions' },
     { k: 'block', n: String(blockers), t: 'blockers' },
   ]
   return (
     <section className={'home-card ov' + (filter ? ' f-' + filter : '')} aria-label={w.v9 ? 'Jobs' : 'What Asoka knows and runs, by job'}>
       {!w.v9 && <div className="nh-h"><h2>What Asoka knows and runs, by job</h2></div>}
-      <ul className="ov-sum">
+      <ul className={'ov-sum' + (w.v9 ? ' four' : '')}>
         {stats.map((s) => (
           <li key={s.t}>
             {s.k === 'rel' ? <button className="pf-b" onClick={() => w.openMisses('all')} aria-label="Reliability 98.6%: see the 3 misses"><b className="num"><LiveNum value={s.n} /></b><span>{s.t} · 3 misses</span></button>
@@ -144,7 +146,7 @@ export function AgentsOverview() {
           const g = groves.find((x) => x.ag === a.id)!, r = run.rel[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
           // Wikimind 9: a blocker shows first, as a clear chip that opens its panel (handled in the row's click).
           const bk = w.v9 && blocked(a.id) ? BLOCK_GAP[a.id] : undefined
-          const now = bk ? <span className="ov-blk" data-blk={bk}><Icon name="lock" size={12} />Blocked · {GAPS[bk].t}<Icon name="chevron-right" size={12} /></span> : live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? (w.v9 && QCTX[q[0].q] ? <span className="ov-qc" data-q={q[0].q}><Icon name="circle-help" size={12} />{q[0].who}<Icon name="chevron-right" size={12} /></span> : <><Icon name="circle-help" size={12} />{q[0].who}</>) : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
+          const now = bk ? <span className="ov-blk" data-blk={bk}><Icon name="lock" size={12} />Blocked · {CHIP[bk]}<Icon name="chevron-right" size={12} /></span> : live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? (w.v9 && QCTX[q[0].q] ? <span className="ov-qc" data-q={q[0].q}><Icon name="circle-help" size={12} />{q[0].who}<Icon name="chevron-right" size={12} /></span> : <><Icon name="circle-help" size={12} />{q[0].who}</>) : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (blocked(a.id) ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={(e) => { const b = (e.target as HTMLElement).closest('[data-blk]'); if (b) { w.openBlocker(b.getAttribute('data-blk') as Gap); return } const qq = (e.target as HTMLElement).closest('[data-q]'); if (qq) { w.openQuestion(qq.getAttribute('data-q')); return } w.openAgent(w.agent === a.id ? null : a.id) }} aria-expanded={w.agent === a.id}>

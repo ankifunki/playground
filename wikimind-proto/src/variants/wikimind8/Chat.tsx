@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AG, DEALS, money, type AgentId } from './data'
 import { Icon } from './Icon'
 import { Ag, Asoka } from './Live'
+import { CHANNELS, Unfurl, makeArt } from './Share'
 import { RM, useW, type ChatMsg, type ChatObj } from './store'
 
 /*
@@ -37,6 +38,16 @@ function reply(text: string, c: Ctx): Reply {
   if (/(can|could|will|would) you (just )?approve|approve it|approve this|override|skip (the )?(cro|approval|finance)/.test(t)) {
     if (d && d.amt < 100000) return { who: 'approvals', text: `${d.name} doesn’t need approval: it’s under $100,000. Move it to Negotiation in Salesforce.`, objs: [{ k: 'rule', block: 'sum' }] }
     return { who: 'approvals', text: `I can’t. People decide discounts over ${c.fin}%: I route the request, keep the record and chase the approvers. I can submit it for you.`, objs: [{ k: 'rule', block: d ? route(d, c.fin).block : 'who-fin' }], next: ['Submit it for approval', 'Ask Maria about an exception'] }
+  }
+  // Make something shareable: an artifact from what Asoka knows, kept in the job's grove. Unknown topics are declined.
+  if (/\b(make|create|generate|build|draw|put together|write up|draft)\b.*\b(artifact|diagram|explainer|one.?pager|cheat ?sheet|checklist|runbook|guide|summary|visual|overview)\b|\bartifact\b/.test(t)) {
+    const a = makeArt(t, c.fin)
+    if (a === 'how') return { who: 'approvals', text: 'That exists: How discount approvals work, in the Approvals grove. It plays any deal’s route with today’s thresholds. Want to share it?', objs: [{ k: 'share', art: 'how', state: 'draft', ch: CHANNELS[0] }] }
+    if (!a) return { who: 'none', text: 'I don’t know enough about that to make it, and I won’t make it up. I can make one on discount approvals, quarter end, CPQ sync, flat renewals or the access review.', next: ['Make a cheat sheet for discount approvals', 'Make a quarter-end checklist'] }
+    return { who: a.ag, text: `I’ll make it from what I know and keep it in the ${AG[a.ag].name} grove.`, objs: [{ k: 'make', art: a, state: 'running', step: 0 }] }
+  }
+  if (/share|post (it|the|this)|send (it|this) to/.test(t) && /how it works|explainer|artifact|slack/.test(t)) {
+    return { who: 'approvals', text: 'Here’s How discount approvals work as it will look in Slack.', objs: [{ k: 'share', art: 'how', state: 'draft', ch: CHANNELS[0] }] }
   }
   if (/submit|send (it )?(for|to)|route it|start (the )?approval|request approval|for approval/.test(t)) {
     if (!d) return { who: 'approvals', text: 'Which deal?', next: ['Submit Orion platform for approval', 'Submit Helios expansion for approval'] }
@@ -88,7 +99,7 @@ const RULE: Record<string, (f: number, c: Ctx) => { label: string; t: string }> 
 }
 
 /** One object pulled into the thread. */
-function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: ChatObj, patch: { state?: string; step?: number }) => void; mid: number }) {
+function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: ChatObj, patch: { state?: string; step?: number; ch?: string }) => void; mid: number }) {
   const w = useW()
   if (o.k === 'rule') {
     const r = RULE[o.block](c.fin, c)
@@ -156,6 +167,37 @@ function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: Cha
       </div>
     )
   }
+  if (o.k === 'make') {
+    const a = o.art, steps = [`Read ${a.sources.join(', ')}`, `Drafted the ${a.kind.toLowerCase()}`, `Cited ${a.sources.length} sources`, `Kept it in the ${AG[a.ag].name} grove`]
+    return (
+      <div className={'cx-o cx-act ' + o.state}>
+        <span className="tk">{a.kind} · {AG[a.ag].name} grove</span>
+        <b>{a.title}</b>
+        <ol>{steps.map((st, i) => {
+          const done = o.state === 'done' || i < o.step, now = o.state === 'running' && i === o.step
+          return <li key={st} className={done ? 'done' : now ? 'now' : ''}><span className="cx-ck" aria-hidden="true">{done ? <Icon name="check" size={12} /> : now ? <i /> : null}</span>{st}</li>
+        })}</ol>
+        {o.state === 'done' && <div className="cx-btns"><button className="btn soft" onClick={() => w.go('art:' + a.id)}>Open<Icon name="arrow-right" size={14} /></button></div>}
+      </div>
+    )
+  }
+  if (o.k === 'share') {
+    const a = w.arts.find((x) => x.id === o.art)
+    if (!a) return null
+    const posted = w.shared[a.id]
+    return (
+      <div className={'cx-o cx-share ' + o.state}>
+        <span className="tk"><Icon name="hash" size={12} />Share in Slack</span>
+        <Unfurl a={a} />
+        {o.state === 'draft' && !posted && <>
+          <span className="rl-sc cx-ch">{CHANNELS.map((ch) => <button type="button" key={ch} className={ch === o.ch ? 'on' : ''} aria-pressed={ch === o.ch} onClick={() => set(mid, o, { ch })}>{ch}</button>)}</span>
+          <div className="cx-btns"><button className="btn primary" onClick={() => { w.shareArt(a.id, o.ch); set(mid, o, { state: 'sent' }) }}>Post to {o.ch}</button><button className="btn ghost" onClick={() => set(mid, o, { state: 'cancel' })}>Not now</button></div>
+        </>}
+        {(o.state === 'sent' || posted) && <p className="cx-done"><Icon name="circle-check" size={14} />Posted in {posted || o.ch}</p>}
+        {o.state === 'cancel' && !posted && <p className="cx-note">Not posted.</p>}
+      </div>
+    )
+  }
   if (o.k === 'person') {
     return (
       <div className={'cx-o cx-person ' + o.state}>
@@ -191,7 +233,19 @@ export function Chat() {
     answered.current.add(last.id)
     const r = reply(last.text, c), id = Date.now() + 1
     w.setChat((m) => [...m, { id, who: r.who, text: '', typing: true }])
-    later(RM ? 200 : 650 + Math.min(900, r.text.length * 8), () => w.setChat((m) => m.map((x) => (x.id === id ? { ...r, id } : x))))
+    later(RM ? 200 : 650 + Math.min(900, r.text.length * 8), () => {
+      w.setChat((m) => m.map((x) => (x.id === id ? { ...r, id } : x)))
+      const mk = r.objs?.find((o) => o.k === 'make')
+      if (mk && mk.k === 'make') {
+        const a = mk.art, step = (p: { state?: 'running' | 'done'; step: number }) => w.setChat((ms) => ms.map((m) => (m.id !== id ? m : { ...m, objs: m.objs?.map((x) => (x.k === 'make' ? { ...x, ...p } : x)) })))
+        ;[1, 2, 3].forEach((n) => later(n * (RM ? 100 : 800), () => step({ step: n })))
+        later(4 * (RM ? 100 : 800), () => {
+          step({ state: 'done', step: 4 }); w.addArt(a)
+          w.log({ ag: a.ag, t: `Made “${a.title}” (${a.kind.toLowerCase()}) and kept it in the ${AG[a.ag].name} grove`, page: 'art:' + a.id, kind: 'edit' })
+          w.setChat((ms) => [...ms, { id: Date.now(), who: a.ag, text: `Done. “${a.title}” is in the ${AG[a.ag].name} grove, with its sources. Share it in Slack?`, objs: [{ k: 'share', art: a.id, state: 'draft', ch: CHANNELS[0] }] }])
+        })
+      }
+    })
   }, [last?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep the newest message in view.
@@ -214,8 +268,8 @@ export function Chat() {
   }, [w.chat.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /** Update one object in a message; confirming an action runs its steps and the job reports back. */
-  const set = (mid: number, o: ChatObj, patch: { state?: string; step?: number }) => {
-    const upd = (p: { state?: string; step?: number }) => w.setChat((ms) => ms.map((m) => (m.id !== mid ? m : { ...m, objs: m.objs?.map((x) => (x === o || (x.k === o.k && 'deal' in x && 'deal' in o && x.deal === o.deal) ? { ...x, ...p } as ChatObj : x)) })))
+  const set = (mid: number, o: ChatObj, patch: { state?: string; step?: number; ch?: string }) => {
+    const upd = (p: { state?: string; step?: number; ch?: string }) => w.setChat((ms) => ms.map((m) => (m.id !== mid ? m : { ...m, objs: m.objs?.map((x) => (x === o || (x.k === o.k && 'deal' in x && 'deal' in o && x.deal === o.deal) ? { ...x, ...p } as ChatObj : x)) })))
     upd(patch)
     if (o.k === 'action' && patch.state === 'running') {
       const d = DEALS.find((x) => x.name === o.deal)!, r = route(d, w.fin)
@@ -254,8 +308,10 @@ export function Chat() {
       </div>
       <div className="cx-foot">
         {next && <div className="cx-next">{next.map((n) => <button key={n} onClick={() => send(n)}>{n}</button>)}</div>}
-        <form className="cx-in-bar" onSubmit={(e) => { e.preventDefault(); send() }}>
-          <textarea ref={inp} rows={1} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }} placeholder="Ask, or ask Asoka to do something" aria-label="Message the jobs" />
+        <form className="om-bar cx-bar" onSubmit={(e) => { e.preventDefault(); send() }} onClick={() => inp.current?.focus()}>
+          <Icon name="search" size={16} />
+          <textarea ref={inp} rows={1} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }} placeholder="Ask anything" aria-label="Message the jobs" />
+          <span className="om-scope tk">This workspace</span>
           <button className="om-go" type="submit" aria-label="Send" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>
         </form>
         {!empty && <button className="wl cx-new" onClick={() => { w.setChat([]); inp.current?.focus() }}>New chat</button>}

@@ -47,7 +47,7 @@ function Readiness() {
   const answered = w.renewal === 'answered', okta = w.access.okta === 'done'
   type Ev = { key: string; when: string; ag: AgentId; title: string; will: string; n: number; of: number; unit: string; missing?: React.ReactNode; open?: () => void }
   const evs: Ev[] = [
-    { key: 'qe', when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', will: 'Logs the deals Deal Desk approves in #deal-desk, and flags any over 35% that skip the CRO.',
+    { key: 'qe', when: 'Nov 11', ag: 'approvals', title: 'Quarter-end close', will: 'Logs the deals Deal Desk approves in #deal-desk, and flags any over 35% that skip the CRO.',
       n: answered ? 4 : 3, of: 4, unit: 'rules verified', open: () => w.go('quarter-end'),
       missing: answered ? undefined : <>Do flat renewals skip approval on purpose? <span className="rd-who">Asking Maria Okafor</span></> },
     { key: 'ar', when: 'Nov 15', ag: 'security', title: 'Access review', will: 'Lists admin and API users idle for 90 days and drafts the removals for IT to approve.',

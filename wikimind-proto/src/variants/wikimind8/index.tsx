@@ -1,3 +1,4 @@
+import { ArtView, SharePanel } from './Share'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { useVariantCss } from '../../useVariantCss'
@@ -68,6 +69,11 @@ function Sidebar() {
               <Ag id={s.ag} size={18} /><span className="sb-t">{AG[s.ag].name} grove</span>
               {busy ? <span className="sb-busy" title="Writing now"><Icon name="pencil-line" size={12} /></span> : <span className="sb-c">{s.total}</span>}
             </button>
+            {isOpen && w.v9 && w.arts.filter((a) => a.ag === s.ag && a.id !== 'how' && (!q || a.title.toLowerCase().includes(q.toLowerCase()))).map((a) => (
+              <button key={a.id} className={'sb-p sb-art' + (w.page === 'art:' + a.id ? ' on' : '')} onClick={() => w.go('art:' + a.id)}>
+                <Icon name="layers" size={14} /><span>{a.title}</span>{a.mine && <span className="sb-new tk">New</span>}
+              </button>
+            ))}
             {isOpen && pages.map((p) => (
               <button key={p.id} className={'sb-p' + (w.page === p.id ? ' on' : '') + (editingPage === p.id ? ' live' : '')} onClick={() => w.go(p.id)}>
                 <Icon name="file" size={14} /><span>{p.title}</span>{editingPage === p.id && <i className="sb-pulse" aria-label="being written now" />}
@@ -82,7 +88,7 @@ function Sidebar() {
 
 /** The top bar: where you are, who is on this page right now, the activity rail. Below it, presence when a job is editing. */
 function Top({ look, onLook }: { look: Look; onLook: () => void }) {
-  const w = useW(), p = PAGES[w.page] || null
+  const w = useW(), art = w.page.startsWith('art:') ? w.arts.find((x) => x.id === w.page.slice(4)) : null, p = PAGES[w.page] || (art ? { ag: art.ag, title: art.title } : null)
   const here: AgentId[] = p ? (p.id === 'discount-approvals' ? ['approvals', 'finance', 'integrations'] : [p.ag]) : AGENTS.map((a) => a.id)
   const pr = w.presence && (w.page === 'home' || w.presence.page === w.page) ? w.presence : null
   return (
@@ -110,14 +116,14 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
 function Rail() {
   const w = useW()
   return (
-    <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses && !w.feed && !w.blocker && !w.question && !w.rule ? ' chat' : '')} aria-label="Live activity">
+    <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses && !w.feed && !w.blocker && !w.question && !w.rule && !w.share ? ' chat' : '')} aria-label="Live activity">
       <div className="rail-h">
         {w.trace && w.traceFrom ? <span className="rail-t"><button className="ib rail-back" onClick={() => w.openTrace(null)} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb"><span>Live activity</span>Trace</span></span>
-          : w.trace || w.agent || w.misses || w.feed || w.blocker || w.question || w.rule || w.chatOn ? <span className="rail-t rail-solo">{w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.blocker ? 'Blocked' : w.question ? 'Open question' : w.rule ? 'New rule' : w.agent ? 'Job' : 'Chat'}</span>
+          : w.trace || w.agent || w.misses || w.feed || w.blocker || w.question || w.rule || w.share || w.chatOn ? <span className="rail-t rail-solo">{w.share ? 'Share in Slack' : w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.blocker ? 'Blocked' : w.question ? 'Open question' : w.rule ? 'New rule' : w.agent ? 'Job' : 'Chat'}</span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
-        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.openFeed(null); w.openBlocker(null); w.openQuestion(null); w.openRule(false); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.openFeed(null); w.openBlocker(null); w.openQuestion(null); w.openRule(false); w.openShare(null); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
-      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.feed ? <div className="rail-sc rail-push" key={'f-' + w.feed}><FeedPanel id={w.feed} /></div> : w.blocker ? <div className="rail-sc rail-push" key={'b-' + w.blocker}><BlockerPanel g={w.blocker} /></div> : w.question ? <div className="rail-sc rail-push" key={'q-' + w.question}><QuestionPanel q={w.question} /></div> : w.rule ? <div className="rail-sc rail-push" key="rule"><RulePanel /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : w.chatOn ? <Chat /> : <div className="rail-list rail-pop">
+      {w.share ? <div className="rail-sc rail-push" key={'s-' + w.share}><SharePanel id={w.share} /></div> : w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.feed ? <div className="rail-sc rail-push" key={'f-' + w.feed}><FeedPanel id={w.feed} /></div> : w.blocker ? <div className="rail-sc rail-push" key={'b-' + w.blocker}><BlockerPanel g={w.blocker} /></div> : w.question ? <div className="rail-sc rail-push" key={'q-' + w.question}><QuestionPanel q={w.question} /></div> : w.rule ? <div className="rail-sc rail-push" key="rule"><RulePanel /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : w.chatOn ? <Chat /> : <div className="rail-list rail-pop">
       <ol>
         {w.acts.map((a) => {
           return (
@@ -125,7 +131,7 @@ function Rail() {
               {a.ag === 'person' ? <span className="rail-p" aria-hidden="true"><Icon name="user" size={12} /></span> : <Ag id={a.ag} size={22} />}
               <span className="rail-m">
                 <span className="rail-x"><b>{a.ag === 'person' ? a.who : 'Asoka'}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
-                <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
+                <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page]?.title ?? w.arts.find((x) => 'art:' + x.id === a.page)?.title}</button></small>
               </span>
               {a.block && TRACE[a.block] && w.proof && <button className="ib rail-ch" onClick={() => w.openTrace(a.block!, true)} aria-label="Open the trace"><Icon name="chevron-right" size={16} /></button>}
             </li>
@@ -158,7 +164,7 @@ function Shell({ news }: { news?: boolean }) {
       {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top look={look} onLook={toggleLook} />
-        {w.page === 'home' ? (w.v9 ? <Home9 /> : news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
+        {w.page === 'home' ? (w.v9 ? <Home9 /> : news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : w.page.startsWith('art:') ? <ArtView id={w.page.slice(4)} /> : <Stub id={w.page} />}
         <Omni />
         <Tour />
       </main>
