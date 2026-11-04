@@ -1088,3 +1088,15 @@ button.km-t{cursor:pointer}
 .ov.f-own .kb{opacity:.35}
 @media (prefers-reduced-motion:reduce){.kb-read{display:none}}
 .ap .kb{margin:var(--s2) 0 var(--s4)}
+/* Runs on its own as a ring (ink), so it never reads like the knowledge bar (indigo states). */
+.ring{flex:none;transform:rotate(-90deg)}
+.ring circle{fill:none}
+.ring-t{stroke:var(--line)}
+.ring-a{stroke:color-mix(in srgb,var(--ink) 28%,transparent)}
+.ring-o{stroke:var(--ink);transition:stroke-dasharray .6s var(--eo)}
+.ov-own{align-items:center}
+.ap-ring{display:flex;align-items:center;gap:var(--s12);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-ring b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ap-jobs li.own{border-left-color:var(--ink)}
+.ap-jobs li.ask{border-left-color:color-mix(in srgb,var(--ink) 28%,transparent)}
+.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,1.2fr) minmax(0,2.6fr) minmax(0,.8fr) 72px minmax(0,1.3fr)}

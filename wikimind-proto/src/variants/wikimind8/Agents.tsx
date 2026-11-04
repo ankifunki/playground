@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
-import { MiniBar, REL } from './Home'
+import { REL } from './Home'
 import { Icon } from './Icon'
 import { Ag, LivePulse } from './Live'
 import { RM, useW } from './store'
@@ -95,6 +95,18 @@ function KnowBar({ counts, total, max, size = 'm', delay = 0 }: { counts: Record
   )
 }
 
+/** How much of an agent's work runs on its own, as a ring: dark = on its own, light = asks a person first. */
+function Ring({ own, ask, size = 24 }: { own: number; ask: number; size?: number }) {
+  const sw = size >= 40 ? 4 : 3, r = (size - sw) / 2, c = 2 * Math.PI * r
+  return (
+    <svg className="ring" width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${own}% runs on its own, ${ask}% asks a person first`}>
+      <circle cx={size / 2} cy={size / 2} r={r} className="ring-t" strokeWidth={sw} />
+      <circle cx={size / 2} cy={size / 2} r={r} className="ring-a" strokeWidth={sw} strokeDasharray={`${(c * (own + ask)) / 100} ${c}`} />
+      <circle cx={size / 2} cy={size / 2} r={r} className="ring-o" strokeWidth={sw} strokeDasharray={`${(c * own) / 100} ${c}`} />
+    </svg>
+  )
+}
+
 type Filter = null | 'ver' | 'ask' | 'block' | 'own'
 
 /** The overview: totals (each a filter) and one row per agent. Clicking a row opens the agent's profile. */
@@ -106,7 +118,7 @@ export function AgentsOverview() {
   const stats: { k: Filter; n: string; t: string }[] = [
     { k: null, n: total.toLocaleString('en-US'), t: 'pages, all written by agents' },
     { k: 'ver', n: ver.toLocaleString('en-US'), t: 'verified by a person' },
-    { k: 'own', n: '64%', t: 'of the work runs on its own' },
+    { k: null, n: '64%', t: 'of the work runs on its own' },
     { k: null, n: '98.6%', t: 'reliability, 3 misses in 30 days' },
     { k: 'ask', n: String(qs), t: 'open questions to people' },
     { k: 'block', n: String(blockers), t: 'blockers' },
@@ -132,7 +144,7 @@ export function AgentsOverview() {
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
                 <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{g.total} pages · {a.job}</small></span></span>
                 <span className="ov-kb"><KnowBar counts={g.counts} total={g.total} max={Math.max(...groves.map((x) => x.total))} delay={AGENTS.indexOf(a) * 1.3} /></span>
-                <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
+                <span className="ov-own"><Ring own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
               </button>
@@ -181,7 +193,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it runs</h3>
-        <MiniBar own={r.own} ask={r.ask} />
+        <div className="ap-ring"><Ring own={r.own} ask={r.ask} size={48} /><span><b className="num">{r.own}%</b> runs on its own · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
         <ul className="ap-jobs">{JOBS[id].map((j) => <li key={j.t} className={j.st}><span>{j.t}</span><small>{JOB_ST[j.st]} · {j.n.toLocaleString('en-US')} in 30 days</small></li>)}</ul>
         <div className="ap-rel"><span><b className="num">{r.rel.toFixed(1)}%</b> matched a person · {MISSES[id] ? `${MISSES[id]} miss` : 'no misses'} in 30 days</span><Spark ag={id} rel={r.rel} /></div>
       </section>
