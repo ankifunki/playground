@@ -1710,3 +1710,4 @@ button.km-t{cursor:pointer}
 .h9-s{-webkit-user-drag:element;-webkit-user-select:none;user-select:none}
 .h9-grip{pointer-events:none}
 .h9-s>.h9-body>.hc,.h9-s>.h9-body>.path.card,.h9-s>.h9-body>.home-card{box-sizing:border-box}
+.w7 .h9 h1{max-width:none;text-wrap:pretty}
