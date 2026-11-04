@@ -14,7 +14,7 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   return (
     <dl className="props">
             <div><dt><Icon name="badge-check" size={16} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
-      <div><dt><Icon name="radio" size={16} />Last checked</dt><dd className="num"><LivePulse />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
+      <div><dt><Icon name="scan-eye" size={16} />Last checked</dt><dd className="num"><i className="ldot" aria-hidden="true" />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
       {extra}
     </dl>
   )
