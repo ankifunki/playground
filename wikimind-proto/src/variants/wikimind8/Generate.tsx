@@ -1,6 +1,7 @@
+import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { Icon, type IconName } from './Icon'
-import { Ag, Asoka } from './Live'
+import { Ag, Asoka, useTraceTarget } from './Live'
 import { RM, useW } from './store'
 
 /*
@@ -23,7 +24,7 @@ const SOURCES: { id: Src; ic: IconName; name: string; scope: string; got: string
 type Ev =
   | { t: number; k: 'read'; src: Src; n: number; what: string }
   | { t: number; k: 'title' | 'h'; text: string }
-  | { t: number; k: 'p' | 'li'; group: string; text: string; cite: number[]; src?: Src; label?: string }
+  | { t: number; k: 'p' | 'li'; group: string; text: string; cite: number[]; src?: Src; label?: string; tr?: string }
   | { t: number; k: 'q'; text: string; who: string; src: Src }
   | { t: number; k: 'row'; cells: [string, string, string]; warn?: boolean; src?: Src }
   | { t: number; k: 'gap'; src: Src; text: string }
@@ -34,22 +35,22 @@ const SCRIPT: Ev[] = [
   { t: 0, k: 'read', src: 'sf', n: 1, what: 'Approval process · Large Deal Approval' },
   { t: 500, k: 'title', text: 'Discount approvals' },
   { t: 1200, k: 'read', src: 'sf', n: 2, what: 'Opportunity · Stage, Amount and Discount fields' },
-  { t: 1600, k: 'p', group: 'sum', text: 'Deals over $100,000 need approval before they move to Negotiation.', cite: [1, 2] },
-  { t: 3000, k: 'p', group: 'sum', text: 'The discount decides who approves.', cite: [1] },
+  { t: 1600, k: 'p', group: 'sum', text: 'Deals over $100,000 need approval before they move to Negotiation.', cite: [1, 2], tr: 'sum' },
+  { t: 3000, k: 'p', group: 'sum', text: 'The discount decides who approves.', cite: [1], tr: 'sum' },
   { t: 3900, k: 'h', text: 'Who approves' },
   { t: 4100, k: 'read', src: 'sf', n: 3, what: 'Approval steps 1 to 3 · entry criteria' },
-  { t: 4500, k: 'li', group: 'who', text: 'Up to 20% off: the sales manager approves alone.', cite: [3] },
-  { t: 5600, k: 'li', group: 'who', text: 'From 20% to 35%: the sales manager, then Finance.', cite: [3] },
-  { t: 6700, k: 'li', group: 'who', text: 'Over 35%: the CRO approves directly.', cite: [3] },
+  { t: 4500, k: 'li', group: 'who', text: 'Up to 20% off: the sales manager approves alone.', cite: [3], tr: 'who-mgr' },
+  { t: 5600, k: 'li', group: 'who', text: 'From 20% to 35%: the sales manager, then Finance.', cite: [3], tr: 'who-fin' },
+  { t: 6700, k: 'li', group: 'who', text: 'Over 35%: the CRO approves directly.', cite: [3], tr: 'who-cro' },
   { t: 7700, k: 'h', text: 'Rules' },
   { t: 7800, k: 'read', src: 'sf', n: 4, what: 'Validation rules · Discount_Requires_Reason, Amount_Locked_After_Approval' },
-  { t: 8200, k: 'p', group: 'rules', text: 'Discounts over 10% need a written reason. Once a deal is approved, only Deal Desk can change its amount.', cite: [4] },
+  { t: 8200, k: 'p', group: 'rules', text: 'Discounts over 10% need a written reason. Once a deal is approved, only Deal Desk can change its amount.', cite: [4], tr: 'r-after' },
   { t: 10200, k: 'read', src: 'slack', n: 5, what: '#revops · a 2024 thread on expired approvals' },
-  { t: 10600, k: 'p', group: 'rules2', text: 'Requests expire after 14 days, added after two deals closed on six-week-old prices.', cite: [5], src: 'slack' },
+  { t: 10600, k: 'p', group: 'rules2', text: 'Requests expire after 14 days, added after two deals closed on six-week-old prices.', cite: [5], src: 'slack', tr: 'r-exp' },
   { t: 10600, k: 'gap', src: 'slack', text: 'Why the rules exist is usually argued in Slack: grant #revops to add it.' },
   { t: 12300, k: 'h', text: 'In practice' },
   { t: 12400, k: 'read', src: 'slack', n: 6, what: '#deal-desk · 9 quarter-end threads' },
-  { t: 12800, k: 'p', group: 'qe', label: 'Unwritten rule', text: 'At quarter end, Deal Desk approves large deals in #deal-desk first, then logs them in Salesforce (9 of the last 12 quarter ends).', cite: [6], src: 'slack' },
+  { t: 12800, k: 'p', group: 'qe', label: 'Unwritten rule', text: 'At quarter end, Deal Desk approves large deals in #deal-desk first, then logs them in Salesforce (9 of the last 12 quarter ends).', cite: [6], src: 'slack', tr: 'qe' },
   { t: 12800, k: 'gap', src: 'slack', text: 'Unwritten practice, like quarter-end approvals in #deal-desk, needs Slack.' },
   { t: 14800, k: 'read', src: 'meet', n: 7, what: 'RevOps weekly · Oct 21 transcript' },
   { t: 15200, k: 'p', group: 'time', text: 'Most approvals finish in under four hours; Finance is the slowest step.', cite: [7], src: 'meet' },
@@ -70,14 +71,31 @@ const END = 24800, WORD_MS = 42
 
 const SRC_IC: Record<Src, IconName> = { sf: 'cloud', slack: 'hash', tickets: 'ticket', meet: 'video' }
 
+/** A finished sentence with a trace: hover sweeps the highlighter in under it, click or Enter opens the trace. */
+function Traced({ id, children }: { id?: string; children: React.ReactNode }) {
+  const w = useW(), target = useTraceTarget(id || '')
+  if (!id || !('tabIndex' in target)) return <>{children}</>
+  return <span className={'gn-trc' + (w.trace === id ? ' traced' : '')} {...target}><span className="lt">{children}</span></span>
+}
+
+const SRC_NAME: Record<Src, string> = { sf: 'Salesforce', slack: 'Slack', tickets: 'Tickets', meet: 'Meetings' }
+/** A citation mark; hover or focus shows its source: the kind, what was read, and where it came from. */
+function Cite({ n, r }: { n: number; r?: Extract<Ev, { k: 'read' }> }) {
+  return (
+    <sup className="gn-cite" tabIndex={r ? 0 : undefined} aria-label={r ? `Source ${n}: ${r.what}` : undefined}>{n}
+      {r && <span className="gn-pop" role="tooltip"><span className="gn-pop-k"><Icon name={SRC_IC[r.src]} size={12} />{SRC_NAME[r.src]}</span><b>{r.what}</b><small>Source {n} · read just now</small></span>}
+    </sup>
+  )
+}
+
 /** A sentence that types in word by word, then its citation marks appear. */
-function Typed({ text, ms, cite }: { text: string; ms: number; cite?: number[] }) {
+function Typed({ text, ms, cite, src }: { text: string; ms: number; cite?: number[]; src?: (n: number) => Extract<Ev, { k: 'read' }> | undefined }) {
   const words = text.split(' '), n = Math.min(words.length, Math.floor(ms / WORD_MS) + 1), done = n >= words.length
   return (
     <>
       {words.slice(0, n).map((w, i) => <span key={i} className="gn-w">{w}{i < words.length - 1 ? ' ' : ''}</span>)}
       {!done && <i className="gn-caret" aria-hidden="true" />}
-      {done && cite?.map((c) => <sup key={c} className="gn-cite">{c}</sup>)}
+      {done && cite?.map((c) => <Cite key={c} n={c} r={src?.(c)} />)}
     </>
   )
 }
@@ -127,6 +145,7 @@ export function Generate() {
   // Renumber citations to the sources actually read, in order.
   const num = new Map(reads.map((r, i) => [r.n, i + 1]))
   const cites = (c: number[]) => c.map((x) => num.get(x)).filter((x): x is number => !!x)
+  const srcOf = (n: number) => reads[n - 1]
 
   // Group the body: consecutive sentences of one paragraph or list share an element; rows share one table.
   type Block = { key: string; kind: 'title' | 'h' | 'p' | 'ul' | 'q' | 'gap' | 'table'; items: Ev[] }
@@ -202,11 +221,11 @@ export function Generate() {
               return (
                 <p key={b.key} className={'gn-in' + (b.key === 'sum' ? ' gn-lede' : '')}>
                   {first.label && <span className="gn-lab tk">{first.label}</span>}
-                  {b.items.map((e, i) => { const x = e as Extract<Ev, { k: 'p' | 'li' }>; return <span key={i}>{i > 0 && ' '}<Typed text={x.text} ms={age(x)} cite={cites(x.cite)} /></span> })}
+                  {b.items.map((e, i) => { const x = e as Extract<Ev, { k: 'p' | 'li' }>; const done = age(x) >= x.text.split(' ').length * WORD_MS; return <span key={i}>{i > 0 && ' '}{done ? <><Traced id={x.tr}>{x.text}</Traced>{cites(x.cite).map((c) => <Cite key={c} n={c} r={srcOf(c)} />)}</> : <Typed text={x.text} ms={age(x)} cite={cites(x.cite)} src={srcOf} />}</span> })}
                 </p>
               )
             }
-            if (b.kind === 'ul') return <ul key={b.key} className="gn-in">{b.items.map((e, i) => { const x = e as Extract<Ev, { k: 'p' | 'li' }>; return <li key={i} className="gn-in"><Typed text={x.text} ms={age(x)} cite={cites(x.cite)} /></li> })}</ul>
+            if (b.kind === 'ul') return <ul key={b.key} className="gn-in">{b.items.map((e, i) => { const x = e as Extract<Ev, { k: 'p' | 'li' }>; const done = age(x) >= x.text.split(' ').length * WORD_MS; return <li key={i} className="gn-in">{done ? <><Traced id={x.tr}>{x.text}</Traced>{cites(x.cite).map((c) => <Cite key={c} n={c} r={srcOf(c)} />)}</> : <Typed text={x.text} ms={age(x)} cite={cites(x.cite)} src={srcOf} />}</li> })}</ul>
             if (b.kind === 'q') { const e = b.items[0] as Extract<Ev, { k: 'q' }>; return <div key={b.key} className="gn-q gn-in"><span className="tk">Open question</span><p><Typed text={e.text} ms={age(e)} /></p>{age(e) > 1200 && <span className="gn-ask"><Ag id="approvals" size={16} />{e.who}</span>}</div> }
             if (b.kind === 'gap') { const e = b.items[0] as Extract<Ev, { k: 'gap' }>; return <div key={b.key} className="gn-gap gn-in"><Icon name={SRC_IC[e.src]} size={14} /><span><b>Needs {SOURCES.find((s) => s.id === e.src)!.name}</b> {e.text}</span></div> }
             if (b.kind === 'table') return (

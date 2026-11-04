@@ -1533,3 +1533,98 @@ button.km-t{cursor:pointer}
  .ov-rows li>button:hover{background:color-mix(in srgb,var(--soft) 60%,transparent)}
  .ov-rows li:hover,.ov-rows li:hover+li{border-top-color:transparent}
 }
+/* Customize Home (Wikimind 9): Customize sits beside the chip nav; edit mode collapses modules into draggable cards. */
+.h9-bar{position:relative}
+.h9-cust{position:absolute;right:0;top:var(--s32);height:32px;padding:0 var(--s12);font-size:var(--fs-meta);z-index:16}
+.h9 .h9-bar .toc.chips{padding-right:120px}
+.h9-tools{position:relative;z-index:16;display:flex;flex-direction:column;gap:var(--s12);margin:var(--s32) 0 var(--s24);padding:var(--s16) var(--s20);border-radius:var(--r-md);background:color-mix(in srgb,var(--panel) 92%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:var(--sh2);animation:rise .3s var(--eo) both}
+.h9-tools-h{display:flex;align-items:center;justify-content:space-between;gap:var(--s16);flex-wrap:wrap}
+.h9-tools-h>span:first-child{display:flex;flex-direction:column;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.h9-tools-h b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.h9-tools-b{display:flex;gap:var(--s8)}
+.h9-shelf{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s8);padding-top:var(--s12);border-top:1px solid var(--line)}
+.h9-shelf .tk{margin-right:var(--s4)}
+.h9-shelf button{display:inline-flex;align-items:center;gap:var(--s6);height:32px;padding:0 var(--s12);border:0;border-radius:var(--r-pill);background:none;box-shadow:inset 0 0 0 1px var(--line);font:500 var(--fs-meta)/18px var(--sans);color:var(--ink);cursor:pointer;transition:background-color .15s ease,transform 160ms var(--eo)}
+.h9-shelf button:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.h9-shelf button:hover{background:var(--soft)}}
+/* A module in edit mode: a card with a header (grip, name, move, hide) and a short, faded preview of its content. */
+.h9-m{position:relative;margin:0 0 var(--s16);padding:0;border-radius:var(--r-md);background:var(--panel);box-shadow:var(--sh);cursor:grab;transition:box-shadow .2s ease,opacity .2s ease,transform .2s var(--eo)}
+.h9-m:active{cursor:grabbing}
+.h9-mh{display:flex;align-items:center;gap:var(--s10);padding:var(--s10) var(--s12) var(--s10) var(--s16);border-bottom:1px solid var(--line)}
+.h9-mh b{flex:1;min-width:0;font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.h9-grip{display:grid;place-items:center;color:var(--ink2)}
+.h9-mb{display:flex;gap:var(--s2)}
+.h9-mb .ib:disabled{opacity:.3;cursor:default}
+.h9-m .h9-body{max-height:200px;overflow:hidden;padding:var(--s16) var(--s20) 0;pointer-events:none;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent);transform-origin:top center}
+.h9-m .h9-body>*{zoom:.8}
+.h9-m.dragging{opacity:.4}
+.h9-m.moved{box-shadow:0 0 0 2px var(--link),var(--sh2)}
+.h9-m.drop-before::before,.h9-m.drop-after::after{content:"";position:absolute;left:0;right:0;height:2px;border-radius:1px;background:var(--link)}
+.h9-m.drop-before::before{top:calc(var(--s8) * -1)}
+.h9-m.drop-after::after{bottom:calc(var(--s8) * -1)}
+.h9-empty{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+@media (max-width:640px){.h9-cust{position:static;margin-top:var(--s16)}.h9 .h9-bar .toc.chips{padding-right:var(--s20)}.h9-tools{top:56px}}
+@media (prefers-reduced-motion:reduce){.h9-tools{animation:fade .2s both}.h9-m{transition:none}}
+/* Home 9's grid: 12 columns; a module spans a third, a half, two thirds or all of it. Each module is a size container,
+   so what it shows follows its own width, not the window's. */
+.h9-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--s24);align-items:start}
+.h9-s{grid-column:span 12;min-width:0;container-type:inline-size;container-name:mod}
+.h9-s.w4{grid-column:span 4}.h9-s.w6{grid-column:span 6}.h9-s.w8{grid-column:span 8}
+@media (max-width:900px){.h9-s.w4,.h9-s.w6{grid-column:span 6}.h9-s.w8{grid-column:span 12}}
+@media (max-width:640px){.h9-s.w4,.h9-s.w6,.h9-s.w8{grid-column:span 12}}
+.h9-sz{display:inline-flex;padding:2px;border-radius:var(--r-sm);background:var(--soft)}
+.h9-sz button{height:28px;min-width:36px;padding:0 var(--s8);border:0;border-radius:6px;background:none;font:500 var(--fs-meta)/18px var(--sans);color:var(--ink2);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.h9-sz button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.h9-m.side.drop-before::before,.h9-m.side.drop-after::after{left:auto;right:auto;top:0;bottom:0;width:2px;height:auto}
+.h9-m.side.drop-before::before{left:calc(var(--s12) * -1)}
+.h9-m.side.drop-after::after{right:calc(var(--s12) * -1)}
+.h9-mh{flex-wrap:wrap}
+/* Content follows the module's width. */
+@container mod (max-width:800px){
+ .home-3,.home-2,.nh-news,.lv{grid-template-columns:1fr}
+ .lv{gap:var(--s8)}
+ .nh-side{padding:var(--s24) 0 0;border-left:0;border-top:1px solid var(--line)}
+ .rules8.cols{grid-template-columns:1fr}
+ .nh-up ol{grid-template-columns:1fr 1fr}
+ .ov-sum{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ov-sum li:nth-child(4){border-left:0}
+ .ov-sum li:nth-child(n+4){border-top:1px solid var(--line)}
+ .ov-sum li:nth-child(4)>*{padding-left:0}
+ .ov-head{display:none}
+ .h9-s .ov-rows li>button{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"ag rel" "own own" "now now";row-gap:var(--s12)}
+ .ov-ag{grid-area:ag}.ov-own{grid-area:own}.ov-rel{grid-area:rel}.ov-now{grid-area:now}
+ .ov-now:empty{display:none}
+ .ov-k{display:inline}
+}
+/* Narrow modules show less: two items a column, the first two stories, three totals. */
+@container mod (max-width:600px){
+ .nh-today,.nh-up ol{grid-template-columns:1fr}
+ .nh-today>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+ .lv li:nth-child(n+3),.nh-side li:nth-child(n+3),.mv8 li:nth-child(n+5),.nh-up li:nth-child(n+3){display:none}
+ .ov-sum{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ov-sum li:nth-child(n+4){display:none}
+ .hc{padding:var(--s20)}
+ .w7 .home .home-card,.home-card{padding:var(--s20)}
+ .nh-lead h2{font-size:28px;line-height:32px}
+}
+@container mod (max-width:420px){
+ .lv li:nth-child(n+2),.rules8 li:nth-child(n+3),.nh-side{display:none}
+ .gaps9 li small{display:none}
+}
+.h9-mh b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@container mod (max-width:480px){.h9-mh .h9-sz{order:3;flex-basis:100%;justify-content:space-between}.h9-mh .h9-sz button{flex:1}}
+/* Watch Asoka write a page: a finished sentence with a trace takes the page's highlighter on hover; click opens it. */
+.gn-trc{cursor:pointer;outline:none}
+.gn-trc .lt{-webkit-box-decoration-break:clone;box-decoration-break:clone;background-image:linear-gradient(color-mix(in srgb,var(--agent) 16%,transparent),color-mix(in srgb,var(--agent) 16%,transparent));background-size:0 .5em;background-position:0 88%;background-repeat:no-repeat;transition:background-size .36s cubic-bezier(.23,1,.32,1)}
+.gn-trc:hover .lt,.gn-trc:focus-visible .lt,.gn-trc.traced .lt{background-size:100% .5em}
+@media (prefers-reduced-motion:reduce){.gn-trc .lt{transition:none}}
+/* Citation marks on the demo page show their source on hover or focus. */
+.gn-cite{position:relative;cursor:default;outline:none}
+.gn-cite[tabindex]{cursor:help}
+.gn-cite:focus-visible{box-shadow:0 0 0 2px var(--link)}
+.gn-pop{position:absolute;left:50%;bottom:calc(100% + var(--s8));z-index:30;width:240px;display:flex;flex-direction:column;gap:var(--s4);padding:var(--s10) var(--s12);border-radius:var(--r-sm);background:var(--panel);box-shadow:var(--sh2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);text-align:left;white-space:normal;opacity:0;transform:translate(-50%,4px);pointer-events:none;transition:opacity .15s ease,transform .2s var(--eo)}
+.gn-pop-k{display:inline-flex;align-items:center;gap:var(--s6);font:450 var(--fs-label)/16px var(--mono)}
+.gn-pop b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.gn-cite:hover .gn-pop,.gn-cite:focus-visible .gn-pop{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.gn-pop{transition:opacity .15s ease;transform:translate(-50%,0)}}
+.h9-m,.h9-m *{-webkit-user-select:none;user-select:none}

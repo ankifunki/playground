@@ -1,9 +1,10 @@
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AgentsOverview, GrantBtn } from './Agents'
 import { AG, type AgentId } from './data'
-import { HomeLive, HomeSources, useRun } from './Home'
+import { HomeLive, HomeSources, MovingFocus, RulesCard, useRun } from './Home'
 import { Icon, type IconName } from './Icon'
 import { Ag } from './Live'
-import { ComingUp } from './NewsHome'
+import { ComingUp, Stories, Today } from './NewsHome'
 import { PathBar } from './Page'
 import { GAPS, useW, type Gap } from './store'
 import { Toc, type TocItem } from './Toc'
@@ -15,12 +16,6 @@ import { Toc, type TocItem } from './Toc'
  * runs, by job, and what's coming up. A chip nav under the top bar moves within the page, like a page's On this page.
  */
 
-const SECTIONS: TocItem[] = [
-  { id: 'h-today', t: 'Asoka today' },
-  { id: 'h-live', t: 'Changed, learned, asking' },
-  { id: 'h-jobs', t: 'By job' },
-  { id: 'h-up', t: 'Coming up' },
-]
 
 /** The CIO's cards: the path to full automation, then reliability, how much Asoka runs, and the gaps it can't close alone. */
 function TodayCards() {
@@ -96,17 +91,112 @@ function LiveColumns() {
   )
 }
 
+/*
+ * Customize Home: every section is a module. Customize opens an edit mode where each module collapses to a card with
+ * a grip (drag to reorder; arrow buttons do the same from the keyboard) and a hide control; hidden and extra modules
+ * wait on a shelf to be added back. The layout is kept in this browser (localStorage `wm9-home`); Reset restores it.
+ * The chip nav follows the order and what is shown.
+ */
+type ModId = 'today' | 'live' | 'jobs' | 'up' | 'moving' | 'rules' | 'counts' | 'stories'
+const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => ReactNode }> = {
+  today: { t: 'Asoka today', nav: 'Asoka today', title: 'Asoka today', body: () => <TodayCards /> },
+  live: { t: 'Changed, learned and asking', nav: 'Changed, learned, asking', title: 'Changed, learned and asking', body: () => <LiveColumns /> },
+  jobs: { t: 'What Asoka knows and runs, by job', nav: 'By job', body: () => <AgentsOverview /> },
+  up: { t: 'Coming up', nav: 'Coming up', body: () => <ComingUp /> },
+  moving: { t: 'What’s moving and In focus', nav: 'What’s moving', body: () => <MovingFocus /> },
+  rules: { t: 'Unwritten rules', nav: 'Unwritten rules', body: () => <RulesCard /> },
+  counts: { t: 'Today’s counts: observed, learned, rewrote', nav: 'Today', body: () => <Today /> },
+  stories: { t: 'Today’s stories', nav: 'Stories', body: () => <Stories /> },
+}
+/** Widths on the page's 12-column grid: a third, a half, two thirds, or the full width. Phones stack everything. */
+type W = 4 | 6 | 8 | 12
+const SIZES: { w: W; label: string; name: string }[] = [{ w: 4, label: '⅓', name: 'a third' }, { w: 6, label: '½', name: 'half' }, { w: 8, label: '⅔', name: 'two thirds' }, { w: 12, label: 'Full', name: 'full width' }]
+type Slot = { id: ModId; w: W }
+const DEFAULT: Slot[] = [{ id: 'today', w: 12 }, { id: 'live', w: 12 }, { id: 'jobs', w: 12 }, { id: 'up', w: 12 }]
+const SUGGEST: Record<ModId, W> = { today: 12, live: 12, jobs: 12, up: 12, moving: 12, rules: 6, counts: 6, stories: 8 }
+const ALL = Object.keys(MODS) as ModId[]
+function readLayout(): Slot[] {
+  try {
+    const v = JSON.parse(localStorage.getItem('wm9-home') || 'null')
+    if (Array.isArray(v)) {
+      const slots = v.map((x) => (typeof x === 'string' ? { id: x, w: 12 } : x)).filter((x) => ALL.includes(x.id) && [4, 6, 8, 12].includes(x.w))
+      if (slots.length === v.length) return slots as Slot[]
+    }
+  } catch { /* private mode */ }
+  return DEFAULT
+}
+
 export function Home9() {
+  const [layout, setLayout] = useState<Slot[]>(readLayout), [edit, setEdit] = useState(false)
+  const [drag, setDrag] = useState<ModId | null>(null), [over, setOver] = useState<{ id: ModId; after: boolean; side: boolean } | null>(null)
+  const [moved, setMoved] = useState<ModId | null>(null), flash = useRef(0), dragRef = useRef<ModId | null>(null)
+  useEffect(() => { try { localStorage.setItem('wm9-home', JSON.stringify(layout)) } catch { /* private mode */ } }, [layout])
+  const mark = (id: ModId) => { setMoved(id); window.clearTimeout(flash.current); flash.current = window.setTimeout(() => setMoved(null), 900) }
+  const move = (id: ModId, to: number) => { setLayout((o) => { const it = o.find((x) => x.id === id)!, a = o.filter((x) => x.id !== id); a.splice(Math.max(0, Math.min(a.length, to)), 0, it); return a }); mark(id) }
+  const resize = (id: ModId, w: W) => { setLayout((o) => o.map((x) => (x.id === id ? { ...x, w } : x))); mark(id) }
+  const hide = (id: ModId) => setLayout((o) => o.filter((x) => x.id !== id))
+  const add = (id: ModId) => { setLayout((o) => [...o, { id, w: SUGGEST[id] }]); mark(id) }
+  const shelf = ALL.filter((id) => !layout.some((x) => x.id === id))
+  const navKey = layout.map((x) => x.id).join(',')
+  const nav: TocItem[] = useMemo(() => layout.map((x) => ({ id: 'h-' + x.id, t: MODS[x.id].nav })), [navKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const drop = () => {
+    const d = dragRef.current
+    if (d && over && d !== over.id) {
+      const it = layout.find((x) => x.id === d)!, a = layout.filter((x) => x.id !== d), i = a.findIndex((x) => x.id === over.id)
+      a.splice(over.after ? i + 1 : i, 0, it); setLayout(a); mark(d)
+    }
+    dragRef.current = null; setDrag(null); setOver(null)
+  }
   return (
-    <article className="doc home wide h9">
+    <article className={'doc home wide h9' + (edit ? ' h9-edit' : '')}>
       <p className="home-k">Rippling</p>
       <h1>What Asoka runs today, and what still needs people.</h1>
       <HomeLive />
-      <Toc items={SECTIONS} chips />
-      <section id="h-today" className="h9-s"><h2 className="h9-t">Asoka today</h2><TodayCards /></section>
-      <section id="h-live" className="h9-s"><h2 className="h9-t">Changed, learned and asking</h2><LiveColumns /></section>
-      <section id="h-jobs" className="h9-s"><AgentsOverview /></section>
-      <section id="h-up" className="h9-s"><ComingUp /></section>
+      <div className="h9-bar">
+        {!edit && layout.length > 0 && <Toc items={nav} chips />}
+        {!edit && <button className="btn ghost h9-cust" onClick={() => setEdit(true)}><Icon name="sliders" size={14} />Customize</button>}
+      </div>
+      {edit && (
+        <div className="h9-tools" role="region" aria-label="Customize Home">
+          <div className="h9-tools-h">
+            <span><b>Customize Home</b>Drag modules to reorder, size them on the grid, or hide what you don’t need.</span>
+            <span className="h9-tools-b"><button className="btn ghost" onClick={() => setLayout(DEFAULT)}>Reset</button><button className="btn primary" onClick={() => setEdit(false)}>Done</button></span>
+          </div>
+          {shelf.length > 0 && <div className="h9-shelf"><span className="tk">Add a module</span>{shelf.map((id) => <button key={id} onClick={() => add(id)}><Icon name="plus" size={14} />{MODS[id].t}</button>)}</div>}
+        </div>
+      )}
+      <div className="h9-grid">
+        {layout.map(({ id, w }, i) => {
+          const m = MODS[id]
+          const cls = 'h9-s w' + w + (edit ? ' h9-m' : '') + (drag === id ? ' dragging' : '') + (moved === id ? ' moved' : '') + (over?.id === id && drag !== id ? (over.after ? ' drop-after' : ' drop-before') + (over.side ? ' side' : '') : '')
+          return (
+            <section key={id} id={'h-' + id} className={cls}
+              draggable={edit} onDragStart={(e) => { dragRef.current = id; setDrag(id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id) }}
+              onDragOver={(e) => {
+                if (!dragRef.current) return; e.preventDefault()
+                // Beside a narrow module, drop to its left or right; above or below a full-width one.
+                const r = e.currentTarget.getBoundingClientRect(), side = w < 12
+                setOver({ id, side, after: side ? e.clientX > r.left + r.width / 2 : e.clientY > r.top + r.height / 2 })
+              }}
+              onDrop={(e) => { e.preventDefault(); drop() }} onDragEnd={() => { dragRef.current = null; setDrag(null); setOver(null) }}>
+              {edit && (
+                <div className="h9-mh">
+                  <span className="h9-grip" aria-hidden="true"><Icon name="grip-vertical" size={16} /></span>
+                  <b>{m.t}</b>
+                  <span className="h9-sz" role="group" aria-label={`Size of ${m.t}`}>{SIZES.map((z) => <button key={z.w} className={z.w === w ? 'on' : ''} aria-pressed={z.w === w} aria-label={z.name} title={z.name} onClick={() => resize(id, z.w)}>{z.label}</button>)}</span>
+                  <span className="h9-mb">
+                    <button className="ib" onClick={() => move(id, i - 1)} disabled={i === 0} aria-label={`Move ${m.t} earlier`}><Icon name="chevron-up" size={16} /></button>
+                    <button className="ib" onClick={() => move(id, i + 1)} disabled={i === layout.length - 1} aria-label={`Move ${m.t} later`}><Icon name="chevron-down" size={16} /></button>
+                    <button className="ib" onClick={() => hide(id)} aria-label={`Hide ${m.t}`} title="Hide"><Icon name="eye-off" size={16} /></button>
+                  </span>
+                </div>
+              )}
+              <div className="h9-body" inert={edit}>{m.title && <h2 className="h9-t">{m.title}</h2>}{m.body()}</div>
+            </section>
+          )
+        })}
+      </div>
+      {!layout.length && <p className="h9-empty">Home is empty. <button className="wl" onClick={() => { setEdit(true) }}>Add a module</button></p>}
       <HomeSources />
     </article>
   )

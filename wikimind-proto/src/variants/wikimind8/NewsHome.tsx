@@ -15,7 +15,7 @@ import { RM, useW } from './store'
  */
 
 /** Today: what the jobs observed, learned and rewrote. Observed ticks while you watch; live events move the others. */
-function Today() {
+export function Today() {
   const w = useW(), [t0] = useState(w.now)
   // Observed ticks every ~4 s, so each tick reads as an event rather than a blur.
   const observed = 1240 + Math.floor((w.now - t0) / 4000) * 2
@@ -34,7 +34,7 @@ function Today() {
 }
 
 /** The lead story (today's biggest change) and three smaller stories. All of them follow the live demo. */
-function Stories() {
+export function Stories() {
   const w = useW(), moved = w.fin === 25, when = w.why['who-fin'] ? ago((w.now - w.why['who-fin'].at) / 1000) : 'Oct 28'
   const lead = moved
     ? { kick: `Changed in Salesforce · ${when}`, title: 'Finance now signs off on discounts over 25%, not 20%',
