@@ -1742,3 +1742,7 @@ button.km-t{cursor:pointer}
 .h9-edit .h9-ctl{padding:var(--s4);background:var(--panel);box-shadow:var(--sh2);border-radius:var(--r-sm)}
 .h9-s:hover{outline-color:transparent}
 .h9-edit .h9-s:hover{outline-color:var(--hl)}
+/* The grab cue sits in the left gutter beside the module's top-left corner, never over its content. Customize keeps
+   the toolbar (with hide) at the top right. */
+.h9-s>.h9-ctl{right:auto;left:calc(var(--s24) * -1 - var(--s2));top:var(--s8)}
+.h9-edit .h9-s>.h9-ctl{left:auto;right:var(--s12);top:var(--s12)}
