@@ -52,8 +52,8 @@ export function Omni() {
         : <>One thing: whether EMEA deals go to the regional director first (seen once). Maria Okafor answered the flat-renewals question.</>, cite: { block: 'renew', label: 'In practice' } }
     }
     if (/quarter|slack|deal.?desk/.test(t)) return { q: text, ag: 'approvals', body: <>At quarter end, Deal Desk approves large deals in #deal-desk, then logs them in Salesforce ({w.qe[0]} of the last {w.qe[1]} quarter ends). No policy says so.</>, cite: { block: 'qe', label: 'Quarter-end approvals in Slack' } }
-    if (/cpq|sync|currency/.test(t)) return { q: text, ag: 'integrations', body: w.cpq === 'failing' ? <>CPQ quote sync is failing for multi-currency deals since Oct 29. The Integrations job asked Ben Ito why.</> : <>CPQ quote sync is fixed: Ben Ito corrected the currency mapping, and the last 40 quotes synced.</>, cite: { block: 'cfg', label: 'Configured in Salesforce' } }
-    return { q: text, ag: null, ask: true, body: <>No job knows that yet, and none will guess.</> }
+    if (/cpq|sync|currency/.test(t)) return { q: text, ag: 'integrations', body: w.cpq === 'failing' ? <>CPQ quote sync is failing for multi-currency deals since Oct 29. Asoka asked Ben Ito why.</> : <>CPQ quote sync is fixed: Ben Ito corrected the currency mapping, and the last 40 quotes synced.</>, cite: { block: 'cfg', label: 'Configured in Salesforce' } }
+    return { q: text, ag: null, ask: true, body: <>Asoka doesn’t know that yet, and won’t guess.</> }
   }
   const submit = (text = q) => {
     const s = text.replace(/^\//, '').trim(); if (!s) return
@@ -73,7 +73,7 @@ export function Omni() {
   const seen = new Set<string>(), term = q.replace(/^\//, '').trim().toLowerCase()
   const rows: { t: string; kind: 'recent' | 'live' | 'try'; when?: string }[] = [
     ...hist.map((t) => ({ t, kind: 'recent' as const })), ...live.map((x) => ({ ...x, kind: 'live' as const })),
-    ...['Who approves a 30% discount?', 'What changed today?', 'What are the jobs unsure about?', 'Is CPQ quote sync working?'].map((t) => ({ t, kind: 'try' as const })),
+    ...['Who approves a 30% discount?', 'What changed today?', 'What is Asoka unsure about?', 'Is CPQ quote sync working?'].map((t) => ({ t, kind: 'try' as const })),
   ].filter((r) => { const k = r.t.toLowerCase(); if (seen.has(k) || (term && !k.includes(term))) return false; seen.add(k); return true }).slice(0, 6)
   // Typing "/" lists the jobs, so you can choose who answers. Filter by name or job after the slash.
   const agentMode = q.startsWith('/') && !q.includes(' ')
@@ -102,7 +102,7 @@ export function Omni() {
           <div className="om-ab">
             {ans.ag ? <Ag id={ans.ag} size={24} /> : <span className="om-none" aria-hidden="true"><Icon name="circle-help" size={14} /></span>}
             <div>
-              {ans.ag && <span className="om-who">{AG[ans.ag].name} job</span>}
+              {ans.ag && <span className="om-who">Asoka · {AG[ans.ag].name}</span>}
               <p>{ans.body}</p>
               {ans.cite && <button className="wl om-cite" onClick={() => w.jump(ans.cite!.block)}>Go to {ans.cite.label}</button>}
               {ans.ask && (asked
@@ -113,8 +113,8 @@ export function Omni() {
         </div>
       )}
       {!ans && !mini && focus && agentMode && agents.length > 0 && (
-        <div className="om-sug om-ags" role="listbox" aria-label="Ask a job">
-          <span className="om-sh tk">Ask a job</span>
+        <div className="om-sug om-ags" role="listbox" aria-label="Pick a job">
+          <span className="om-sh tk">Pick a job</span>
           {agents.map((a, i) => (
             <button key={a.id} style={{ '--i': i } as React.CSSProperties} role="option" aria-selected={i === sel} className={i === sel ? 'on' : ''} onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setSel(i)} onClick={() => pick(a.id)}>
               <Ag id={a.id} size={22} /><span><b>{a.name}</b> {a.job}</span>{w.presence?.ag === a.id && <small>writing now</small>}
@@ -136,7 +136,7 @@ export function Omni() {
       <form className="om-bar" onSubmit={(e) => { e.preventDefault(); submit() }} onClick={() => { if (mini) { setMini(false); inp.current?.focus() } }}>
         <Icon name="search" size={16} />
         {scope && !mini && <span className="om-chip"><Ag id={scope} size={16} />{AG[scope].name}<button type="button" onClick={() => setScope(null)} aria-label="Ask about any job"><Icon name="x" size={12} /></button></span>}
-        <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini || narrow ? 'Ask anything' : scope ? `Ask the ${AG[scope].name} job` : 'Ask anything, or type / to pick a job'} aria-label="Ask anything" />
+        <input ref={inp} value={q} onChange={(e) => { setQ(e.target.value); setSel(-1) }} onKeyDown={onKey} onFocus={() => { setMini(false); setFocus(true) }} onBlur={() => window.setTimeout(() => setFocus(false), 150)} placeholder={mini || narrow ? 'Ask anything' : scope ? `Ask about ${AG[scope].name}` : 'Ask anything, or type / to pick a job'} aria-label="Ask anything" />
         {!mini && <span className="om-scope tk">This workspace</span>}
         {!mini && <kbd className="om-k">/</kbd>}
         {!mini && <button className="om-go" type="submit" aria-label="Ask" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>}

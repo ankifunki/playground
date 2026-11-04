@@ -38,10 +38,10 @@ function Stories() {
   const w = useW(), moved = w.fin === 25, when = w.why['who-fin'] ? ago((w.now - w.why['who-fin'].at) / 1000) : 'Oct 28'
   const lead = moved
     ? { kick: `Changed in Salesforce · ${when}`, title: 'Finance now signs off on discounts over 25%, not 20%',
-      dek: <>Priya Shah changed Large Deal Approval. The Approvals job rewrote Who approves and the flow on Discount approvals; Dana Ruiz {w.verify === 'checking' ? 'is re-checking it' : 'verified it again'}.</>,
+      dek: <>Priya Shah changed Large Deal Approval. Asoka rewrote Who approves and the flow on Discount approvals; Dana Ruiz {w.verify === 'checking' ? 'is re-checking it' : 'verified it again'}.</>,
       thr: <Thresholds fin={25} />, go: 'who-fin', cta: 'Read Who approves' }
     : { kick: 'Changed in Salesforce · Oct 28', title: 'Discounts over 35% now go straight to the CRO',
-      dek: <>The CRO threshold moved from 40% to 35%. The Approvals job rewrote the rule and 3 other pages within the hour; Dana Ruiz verified it.</>,
+      dek: <>The CRO threshold moved from 40% to 35%. Asoka rewrote the rule and 3 other pages within the hour; Dana Ruiz verified it.</>,
       thr: <Thresholds fin={w.fin} />, go: 'who-cro', cta: 'Read Who approves' }
   const side: { ag: AgentId; kick: string; title: string; dek: string; open: () => void; tone?: string }[] = [
     w.cpq === 'failing'
@@ -80,13 +80,13 @@ function Stories() {
 function ComingUp() {
   const w = useW()
   const items: { when: string; ag: AgentId; title: string; dek: string; go: string }[] = [
-    { when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', dek: 'Approvals usually triple. Deal Desk approves in #deal-desk first; the Approvals job logs them after.', go: 'quarter-end' },
+    { when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', dek: 'Approvals usually triple. Deal Desk approves in #deal-desk first; Asoka logs them after.', go: 'quarter-end' },
     { when: 'Nov 15', ag: 'security', title: 'Access review due', dek: 'Admin and API users. The last review removed 14 stale API users.', go: 'access-reviews' },
-    { when: 'Waiting on Dev', ag: 'integrations', title: 'Retry policy for NetSuite sync', dek: 'The Integrations job retries failed syncs once Dev approves it.', go: 'cpq-sync' },
+    { when: 'Waiting on Dev', ag: 'integrations', title: 'Retry policy for NetSuite sync', dek: 'Asoka retries failed syncs once Dev approves it.', go: 'cpq-sync' },
   ]
   return (
     <section className="home-card nh-up">
-      <div className="nh-h"><h2>Coming up</h2><span className="tk">What the jobs are preparing for</span></div>
+      <div className="nh-h"><h2>Coming up</h2><span className="tk">What Asoka is preparing for</span></div>
       <ol>
         {items.map((it) => (
           <li key={it.title}><button onClick={() => w.go(it.go)}>

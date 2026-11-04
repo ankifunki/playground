@@ -58,7 +58,7 @@ const SECTIONS: TocItem[] = [
   { id: 'rules', t: 'Rules', blocks: ['r-exp', 'r-after'] },
   { id: 'practice', t: 'In practice', blocks: ['qe', 'renew'] },
   { id: 'touches', t: 'What touches this', blocks: ['cfg', 'cfg-cpq'] },
-  { id: 'cited', t: 'Cited by the jobs' },
+  { id: 'cited', t: 'Cited by Asoka' },
   { id: 'related', t: 'Related pages' },
 ]
 
@@ -87,7 +87,7 @@ function Arrival() {
       </div>
       <div className="arv-msg">
         <p><span className="arv-av" aria-hidden="true"><Icon name="user" size={12} /></span><span><b>Sam Ortiz</b>Can we close Orion platform at 38% off today? They want to sign.</span></p>
-        <p><Ag id="approvals" size={20} /><span><b>Approvals job</b>Not without the CRO: over 35% off, the CRO approves directly.</span></p>
+        <p><Ag id="approvals" size={20} /><span><b>Asoka</b>Not without the CRO: over 35% off, the CRO approves directly.</span></p>
       </div>
       <h2 className="arv-t">Discounts over 35% need the CRO</h2>
       <p className="arv-why">They carry the most revenue risk, so Rippling’s CRO signs them off directly. Set in Salesforce (Large Deal Approval) and verified by Dana Ruiz.</p>
@@ -97,7 +97,7 @@ function Arrival() {
       </dl>
       <div className="arv-f">
         {w.askedOwner
-          ? <p className="arv-done"><Icon name="circle-check" size={16} />Asked Maria. The Approvals job will reply in your Slack thread with her answer.</p>
+          ? <p className="arv-done"><Icon name="circle-check" size={16} />Asked Maria. Asoka will reply in your Slack thread with her answer.</p>
           : <button className="btn soft" onClick={w.askOwner}>Think it’s wrong? Ask Maria<Icon name="arrow-right" size={16} /></button>}
         <button className="btn ghost" onClick={show}>Show the rule</button>
       </div>
@@ -115,7 +115,7 @@ export function Approvals() {
     <article className="doc">
       <h1>Discount approvals</h1>
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
-      <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals job is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
+      <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Asoka is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Arrival />
       <Props ag="approvals" re={4} verify={verify} extra={<>
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
@@ -166,7 +166,7 @@ export function Approvals() {
         </table>
       </Block>
 
-      <h2 id="cited" className="pf">Cited by the jobs</h2>
+      <h2 id="cited" className="pf">Cited by Asoka</h2>
       <ul className="cites pf">
         {CITES.map((c) => (
           <li key={c.where}>
@@ -184,7 +184,7 @@ export function Approvals() {
       </ul>
 
       <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
-        Written by the <b>Approvals job</b> from <b>16 sources</b>. 5 of 8 statements verified by a person. Rewritten 6 times as Rippling changed.
+        Written by <b>Asoka</b> (Approvals job) from <b>16 sources</b>. 5 of 8 statements verified by a person. Rewritten 6 times as Rippling changed.
       </Sources>
     </article>
   )

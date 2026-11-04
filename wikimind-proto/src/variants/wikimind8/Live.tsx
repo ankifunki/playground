@@ -11,7 +11,7 @@ export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?
   return (
     <span className={'ag' + (name ? ' named' : '')} title={a.name + ' job'}>
       <span className="ag-t" style={{ width: size, height: size }}><Icon name={a.icon} size={Math.round(size * 0.29) * 2} /></span>
-      {name && <span className="ag-n">{a.name} job</span>}
+      {name && <span className="ag-n">Asoka · {a.name}</span>}
     </span>
   )
 }

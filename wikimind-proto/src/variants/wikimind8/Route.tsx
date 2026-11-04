@@ -94,7 +94,7 @@ export function Route({ t, kind, f, okAt, end, label }: { t: number; kind: Kind;
         )
       }))}
       <span className="rt-node rt-start" style={{ left: x0, top: mid }}><small>Rep</small></span>
-      <span className={'rt-node rt-agent' + (checking ? ' busy' : '')} style={{ left: ax, top: mid }}><Icon name="stamp" size={14} /><small>Approvals job</small></span>
+      <span className={'rt-node rt-agent' + (checking ? ' busy' : '')} style={{ left: ax, top: mid }}><Icon name="stamp" size={14} /><small>Asoka</small></span>
       <span className={'rt-node rt-end' + (done ? ' ok' : '')} style={{ left: xe, top: mid }}><Icon name={done ? 'lock-open' : 'lock'} size={14} /></span>
       <span className={'rt-tok' + (waiting >= 0 ? ' wait' : '') + (done ? ' gone' : '')} style={{ transform: `translate(${at.x}px, ${at.y}px)` } as React.CSSProperties}>
         <b className="rt-clock">{clock}</b>

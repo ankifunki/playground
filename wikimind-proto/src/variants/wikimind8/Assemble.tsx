@@ -34,7 +34,7 @@ export function Assemble() {
   const asked = Math.min(6, Math.floor(d * 9))
   const verified = Math.round(212 * ease((d - 0.4) / 0.6))
   return (
-    <div className="asm" role="img" aria-label={`Your org's first day: Salesforce, Slack and tickets connect; by hour 24 the jobs have written ${total.toLocaleString('en-US')} pages, asked 6 questions, and admins verified 212.`}>
+    <div className="asm" role="img" aria-label={`Your org's first day: Salesforce, Slack and tickets connect; by hour 24 Asoka has written ${total.toLocaleString('en-US')} pages, asked 6 questions, and admins verified 212.`}>
       <div className="asm-h">
         <span className="tk">Your org · first day</span>
         <span className="asm-clock num">{t < START ? 'Connecting' : `Hour ${hour}`}</span>

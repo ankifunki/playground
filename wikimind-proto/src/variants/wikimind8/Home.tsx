@@ -29,7 +29,7 @@ export function HomeLive() {
   return (
     <>
       <div className="home-row">
-        {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : AG[last.ag].name}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
+        {last && <p className="liveln"><LivePulse /><span><b>{last.ag === 'person' ? last.who : 'Asoka'}</b> {last.t.charAt(0).toLowerCase() + last.t.slice(1)}</span></p>}
         <button className="btn primary tour-b" onClick={() => w.setTour(0)}><Icon name="play" size={12} />Take the 1-minute tour</button>
       </div>
     </>
@@ -110,12 +110,12 @@ export function MovingFocus() {
   )
 }
 
-/** Unwritten rules the jobs found. */
+/** Unwritten rules Asoka found. */
 export function RulesCard() {
   return (
     <>
       <section className="home-card">
-        <span className="tk">Unwritten rules the jobs found</span>
+        <span className="tk">Unwritten rules Asoka found</span>
         <ul className="rules8 cols">
           <li><b>At quarter end, large deals are approved in Slack before Salesforce.</b><small>Approvals · 9 #deal-desk threads</small></li>
           <li><b>Approval requests expire after 14 days, since two deals closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
@@ -132,9 +132,9 @@ export function HomeSources() {
   return (
     <>
       <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
-        <b>1,284 pages</b> written by 6 jobs from <b>3,912</b> observations this week. None typed by a person.
+        <b>1,284 pages</b> written by Asoka across 6 jobs from <b>3,912</b> observations this week. None typed by a person.
       </Sources>
-      <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span></p>
+      <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span><button className="wl" onClick={() => w.go('gen')}>Watch Asoka write a page</button></p>
     </>
   )
 }

@@ -12,6 +12,7 @@ import { Home } from './Home'
 import { NewsHome } from './NewsHome'
 import { AgentProfile } from './Agents'
 import { Chat } from './Chat'
+import { Generate } from './Generate'
 import { Misses } from './Misses'
 import { AllPages } from './Pages'
 import { Tour } from './Tour'
@@ -36,16 +37,17 @@ function useLook(): [Look, () => void] {
   return [look, () => setLook((l) => (l === 'b' ? 'current' : 'b'))]
 }
 
-/** Left sidebar: the workspace, search, and one space per job with its pages. A page a job is writing shows it. */
+/** Left sidebar: the workspace, search, and one space per job with its pages. A page Asoka is writing shows it. */
 function Sidebar() {
   const w = useW(), [q, setQ] = useState(''), [open, setOpen] = useState<Record<string, boolean>>({ approvals: true, integrations: true })
   const editingPage = w.presence?.page
   return (
     <nav className={'sb' + (w.nav ? ' open' : '')} aria-label="Workspace">
-      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 jobs</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
+      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · Asoka, 6 jobs</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { w.setSearch(q.trim()); w.go('all'); setQ('') } }} placeholder="Search 1,284 pages" aria-label="Search pages: Enter searches what they say" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={16} />Home</button>
       <button className={'sb-i' + (w.page === 'all' ? ' on' : '')} onClick={() => { w.setSearch(''); w.go('all') }}><Icon name="library" size={16} />All pages<span className="sb-n">1,284</span></button>
+      <button className={'sb-i' + (w.page === 'gen' ? ' on' : '')} onClick={() => w.go('gen')}><Icon name="pencil-line" size={16} />Watch Asoka write a page</button>
       <button className="sb-i" onClick={() => w.setRail(true)}><Icon name="activity" size={16} />Live activity<span className="sb-n"><LiveNum value={w.acts.length} /></span></button>
       <div className="sb-l">Groves</div>
       {SPACES.map((s) => {
@@ -82,13 +84,13 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
       <div className="top-r">
         <button className="ib top-menu" onClick={() => w.setNav(!w.nav)} aria-label={w.nav ? 'Hide pages' : 'Show pages'} aria-pressed={w.nav}><span className="hb" aria-hidden="true"><i /><i /><i /></span></button>
         <div className="crumb">
-          {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>{w.page === 'all' ? 'All pages' : 'Home'}</b>}
+          {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>{w.page === 'all' ? 'All pages' : w.page === 'gen' ? 'Watch Asoka write a page' : 'Home'}</b>}
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
-          <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} job is writing ${pr.label}: watch it` : `${here.length} jobs on this page`}>
+          <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `Asoka is writing ${pr.label}: watch it` : `${here.length} jobs touch this page`}>
             <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}><Ag id={id} size={pr && i === 0 ? 28 : 24} /></span>)}</span>
-            <span className="cap-t" aria-hidden={!pr}>{pr && <><b>{AG[pr.ag].name}</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
-            {!pr && <span className="here-t">{here.length === 1 ? '1 job here' : `${here.length} jobs here`}</span>}
+            <span className="cap-t" aria-hidden={!pr}>{pr && <><b>Asoka</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
+            {!pr && <span className="here-t">{here.length === 1 ? '1 job' : `${here.length} jobs`}</span>}
           </button>
         </div>
         <button className="look" onClick={onLook} aria-pressed={look === 'b'} title="Switch between today’s look and Direction B"><Icon name="sliders" size={14} /><span>Look</span><b>{look === 'b' ? 'B · Calibrated' : 'Current'}</b></button>
@@ -115,7 +117,7 @@ function Rail() {
             <li key={a.id} className={a.id > 0 && w.now - a.at < 6000 ? 'in' : ''}>
               {a.ag === 'person' ? <span className="rail-p" aria-hidden="true"><Icon name="user" size={12} /></span> : <Ag id={a.ag} size={22} />}
               <span className="rail-m">
-                <span className="rail-x"><b>{a.ag === 'person' ? a.who : AG[a.ag].name}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
+                <span className="rail-x"><b>{a.ag === 'person' ? a.who : 'Asoka'}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
                 <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
               </span>
               {a.block && TRACE[a.block] && w.proof && <button className="ib rail-ch" onClick={() => { setFrom(true); w.openTrace(a.block!) }} aria-label="Open the trace"><Icon name="chevron-right" size={16} /></button>}
@@ -149,7 +151,7 @@ function Shell({ news }: { news?: boolean }) {
       {w.nav && innerWidth < 900 && <button className="scrim" aria-label="Close pages" onClick={() => w.setNav(false)} />}
       <main className="main">
         <Top look={look} onLook={toggleLook} />
-        {w.page === 'home' ? (news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
+        {w.page === 'home' ? (news ? <NewsHome /> : <Home />) : w.page === 'all' ? <AllPages /> : w.page === 'gen' ? <Generate /> : w.page === 'discount-approvals' ? <Approvals /> : <Stub id={w.page} />}
         <Omni />
         <Tour />
       </main>
@@ -160,7 +162,7 @@ function Shell({ news }: { news?: boolean }) {
 
 /**
  * Wikimind 7: the wiki structure decision makers know (Confluence spaces, Notion pages, properties, blocks, toggles,
- * tables), made job first: each job keeps a space, presence shows who is on a page, edits are announced and typed
+ * tables), made agent first: each job has a space, presence shows who is on a page, edits are announced and typed
  * in where you can see them, and How it works is a live diagram of the job's flow with its conditional routes.
  */
 export default function Wikimind8({ news }: { news?: boolean }) {

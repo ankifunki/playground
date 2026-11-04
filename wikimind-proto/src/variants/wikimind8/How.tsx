@@ -70,7 +70,7 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
   type Ev = { at: number; tone: string; s: string; d: string; em: string }
   const evs: Ev[] = [
     { at: 0, tone: '', s: 'Moved to Negotiation', d: `Sam Ortiz · ${money(deal.amt)} at ${deal.disc}% off`, em: '0 s' },
-    { at: 4200, tone: 'agent', s: 'The job checked the rules', d: r.reason, em: '+2 s' },
+    { at: 4200, tone: 'agent', s: 'Asoka checked the rules', d: r.reason, em: '+2 s' },
     r.small ? { at: 7600, tone: 'ok', s: 'No approval needed', d: 'The deal moves on · receipt logged on this page', em: '+4 s' }
       : { at: 7600, tone: '', s: 'Locked and submitted', d: `Sent to ${r.first}`, em: '+4 s' },
     ...r.approvers.map((a, i) => { const ok = t > okAt[i]; return { at: i === 0 ? 7600 + 1 : okAt[i - 1], tone: ok ? 'ok' : 'wait', s: ok ? `${a.label} approved` : `Waiting for ${a.label === 'CRO' ? 'the CRO' : a.label === 'Finance' ? 'Finance' : 'the manager'}`, d: a.who, em: ok ? a.at : 'waiting' } }),
@@ -82,7 +82,7 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
   return (
     <div className="hwk" ref={root}>
       <dl className="hwk-stats">
-        <div><dt className="tk">The job’s part</dt><dd><b>4 s</b><span>to check and route a deal</span></dd></div>
+        <div><dt className="tk">Asoka’s part</dt><dd><b>4 s</b><span>to check and route a deal</span></dd></div>
         <div><dt className="tk">People approving</dt><dd><b>{r.small ? 'None' : r.people}</b><span>{r.small ? 'under $100,000, nothing to approve' : 'median wait for approvers'}</span></dd></div>
       </dl>
       <div className="rec">

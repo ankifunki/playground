@@ -47,7 +47,7 @@ function reply(text: string, c: Ctx): Reply {
   }
   if (/(tell|let|notify|post|message|update).*(know|sam|ana|jo|deal.?desk|slack|rep|team|channel)/.test(t)) {
     if (!d) return { who: 'approvals', text: 'About which deal?', next: ['Let Sam know about Orion platform'] }
-    return { who: 'approvals', text: 'Here’s a draft for #deal-desk. I’ll post it as the Approvals job.', objs: [{ k: 'slack', deal: d.name, state: 'draft' }] }
+    return { who: 'approvals', text: 'Here’s a draft for #deal-desk. I’ll post it as Asoka.', objs: [{ k: 'slack', deal: d.name, state: 'draft' }] }
   }
   if (/maria|exception|owner|wrong/.test(t)) {
     return { who: 'approvals', text: 'Maria Okafor in RevOps owns Discount approvals. I’ll ask her and bring her answer back here and to the page.', objs: [{ k: 'person', q: d ? `Can ${d.name} get an exception to the discount rule (${d.disc}% off)?` : text, state: 'draft' }] }
@@ -74,7 +74,7 @@ function reply(text: string, c: Ctx): Reply {
   if (/quarter/.test(t)) return { who: 'approvals', text: `At quarter end, Deal Desk approves large deals in #deal-desk first, then logs them in Salesforce (${c.qe[0]} of the last ${c.qe[1]} quarter ends). No policy says so.`, objs: [{ k: 'rule', block: 'qe' }] }
   if (/renewal/.test(t)) return { who: 'approvals', text: c.renewal === 'asking' ? 'Flat renewals skip approval, even over $100,000, but no rule explains it. I’m asking Maria Okafor.' : 'Flat renewals skip approval on purpose: policy since 2023.', objs: [{ k: 'rule', block: 'renew' }] }
   if (/chang|today|new|latest/.test(t)) return { who: 'approvals', text: c.latest.length ? `Latest: ${c.latest.join('; ')}.` : 'Nothing has changed in the last hour.', next: ['Who approves 30% off on a $240k deal?'] }
-  return { who: 'none', text: 'No job knows that yet, and none will guess. Ask about approvals, discounts, CPQ sync, quarter end or renewals, or ask a job to act on a deal.', next: ['Can Orion platform close at 38% off?', 'What changed today?'] }
+  return { who: 'none', text: 'I don’t know that yet, and I won’t guess. Ask about approvals, discounts, CPQ sync, quarter end or renewals, or ask me to act on a deal.', next: ['Can Orion platform close at 38% off?', 'What changed today?'] }
 }
 
 const RULE: Record<string, (f: number, c: Ctx) => { label: string; t: string }> = {
@@ -118,7 +118,7 @@ function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: Cha
     )
   }
   if (o.k === 'route' && d) {
-    const r = route(d, c.fin), steps = ['Rep', 'Approvals job', ...r.who, 'Unlocked']
+    const r = route(d, c.fin), steps = ['Rep', 'Asoka', ...r.who, 'Unlocked']
     return (
       <div className="cx-o cx-route" aria-label={`Route: ${steps.join(', then ')}`}>
         <span className="tk">Route under today’s config · {d.disc}% off</span>
@@ -139,7 +139,7 @@ function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: Cha
         })}</ol>
         {o.state === 'ask' && <div className="cx-btns"><button className="btn primary" onClick={() => set(mid, o, { state: 'running', step: 0 })}>Submit</button><button className="btn ghost" onClick={() => set(mid, o, { state: 'cancel' })}>Not now</button></div>}
         {o.state === 'cancel' && <p className="cx-note">Not submitted.</p>}
-        {o.state !== 'cancel' && <p className="cx-note">Runs as the Approvals job for {OWNER[d.name]}. Logged in Live activity.</p>}
+        {o.state !== 'cancel' && <p className="cx-note">Asoka runs it for {OWNER[d.name]}. Logged in Live activity.</p>}
       </div>
     )
   }
@@ -149,7 +149,7 @@ function Obj({ o, c, set, mid }: { o: ChatObj; c: Ctx; set: (mid: number, o: Cha
     return (
       <div className={'cx-o cx-slack ' + o.state}>
         <span className="tk"><Icon name="hash" size={12} />deal-desk</span>
-        <p><Ag id="approvals" size={20} /><span><b>Approvals job</b>@{OWNER[d.name].split(' ')[0]} {msg}</span></p>
+        <p><Ag id="approvals" size={20} /><span><b>Asoka</b>@{OWNER[d.name].split(' ')[0]} {msg}</span></p>
         {o.state === 'draft' && <div className="cx-btns"><button className="btn primary" onClick={() => set(mid, o, { state: 'sent' })}>Post</button><button className="btn ghost" onClick={() => set(mid, o, { state: 'cancel' })}>Not now</button></div>}
         {o.state === 'sent' && <p className="cx-done"><Icon name="circle-check" size={14} />Posted in #deal-desk</p>}
         {o.state === 'cancel' && <p className="cx-note">Not posted.</p>}
@@ -180,7 +180,7 @@ export function Chat() {
   const submitted = new Set<string>(), named: string[] = []
   w.chat.forEach((m) => { const d = findDeal(m.text); if (d) named.push(d.name); m.objs?.forEach((o) => { if (o.k === 'action' && o.state === 'done') submitted.add(o.deal); if ('deal' in o) named.push(o.deal) }) })
   const deal = DEALS.find((d) => d.name === named[named.length - 1]) || null
-  const latest = w.acts.filter((a) => a.kind === 'edit').slice(0, 3).map((a) => (a.ag === 'person' ? a.who + ' ' : AG[a.ag].name + ' job ') + a.t.charAt(0).toLowerCase() + a.t.slice(1))
+  const latest = w.acts.filter((a) => a.kind === 'edit').slice(0, 3).map((a) => (a.ag === 'person' ? a.who + ' ' : 'Asoka ') + a.t.charAt(0).toLowerCase() + a.t.slice(1))
   const c: Ctx = { fin: w.fin, cpq: w.cpq, renewal: w.renewal, qe: w.qe, deal, submitted, latest }
 
   // Answer the newest question: a typing line from the job that knows, then its reply.
@@ -237,12 +237,12 @@ export function Chat() {
   return (
     <div className="cx">
       <div className="cx-list" ref={list}>
-        {empty && <div className="cx-empty"><b>Ask anything</b><p>Each job answers from what it knows, shows what it rests on, and can act for you once you confirm.</p></div>}
+        {empty && <div className="cx-empty"><b>Ask anything</b><p>Asoka answers from what it knows, shows what each answer rests on, and can act for you once you confirm.</p></div>}
         {w.chat.map((m) => (
           <div key={m.id} data-cx={m.id} className={'cx-m ' + (m.who === 'you' ? 'you' : 'bot')}>
             {m.who === 'you' ? <p className="cx-you">{m.text}</p> : (
               <>
-                <span className="cx-who">{m.who === 'none' ? <span className="cx-none" aria-hidden="true"><Icon name="circle-help" size={12} /></span> : <Ag id={m.who as AgentId} size={20} />}<b>{m.who === 'none' ? 'No job' : AG[m.who as AgentId].name + ' job'}</b></span>
+                <span className="cx-who">{m.who === 'none' ? <span className="cx-none" aria-hidden="true"><Icon name="circle-help" size={12} /></span> : <Ag id={m.who as AgentId} size={20} />}<b>{m.who === 'none' ? 'Asoka' : 'Asoka · ' + AG[m.who as AgentId].name}</b></span>
                 {m.typing ? <span className="cx-typing" aria-label="Writing"><i /><i /><i /></span> : <>
                   <p className="cx-t">{m.text}</p>
                   {m.objs?.map((o, i) => <div key={i} className="cx-in" style={{ animationDelay: `${120 + i * 90}ms` }}><Obj o={o} c={c} set={set} mid={m.id} /></div>)}
@@ -255,7 +255,7 @@ export function Chat() {
       <div className="cx-foot">
         {next && <div className="cx-next">{next.map((n) => <button key={n} onClick={() => send(n)}>{n}</button>)}</div>}
         <form className="cx-in-bar" onSubmit={(e) => { e.preventDefault(); send() }}>
-          <textarea ref={inp} rows={1} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }} placeholder="Ask, or ask a job to do something" aria-label="Message the jobs" />
+          <textarea ref={inp} rows={1} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }} placeholder="Ask, or ask Asoka to do something" aria-label="Message the jobs" />
           <button className="om-go" type="submit" aria-label="Send" disabled={!q.trim()}><Icon name="arrow-right" size={16} /></button>
         </form>
         {!empty && <button className="wl cx-new" onClick={() => { w.setChat([]); inp.current?.focus() }}>New chat</button>}

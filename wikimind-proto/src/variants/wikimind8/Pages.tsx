@@ -60,7 +60,7 @@ export function AllPages() {
 
       {term && !pageHits.length && !textHits.length && (
         <div className="ix-none">
-          <p><b>No page says that yet.</b> Ask, and the job that knows answers or asks a person.</p>
+          <p><b>No page says that yet.</b> Ask, and Asoka answers from what it knows or asks a person.</p>
           <button className="btn soft" onClick={ask}>Ask instead<Icon name="arrow-right" size={16} /></button>
         </div>
       )}
