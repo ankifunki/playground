@@ -127,7 +127,7 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Chat input = the ask bar, smaller** (`.om-bar.cx-bar`): same surface, shadow, search icon, "This workspace" and send button; 48px tall, 12px corners.
 - **Jobs totals drop repeats in Wikimind 9:** run by Asoka and reliability live in the Status card, so the strip is pages, verified by a person, open questions, blockers. Blocker chips use short names (Okta logs) and never wrap; chip icons are centred.
 - **Grab cue:** one 20px grip 10px into every card's corner (icon 12px in); in the Updates cards it takes the column icon's exact place.
-- Coming up's quarter-end date is just "Nov 11".
+- **Coming up** columns are split by thin rules and share rows (CSS subgrid), so when, title, plan, meter and what's missing line up across events; the state is a pill (Ready green, Almost ready and Blocked amber, Waiting neutral). Dates are just "Nov 11".
 - **Section rules on a page:** each h2 section starts with a 1px `--hair` rule, 48px above and below it (not on Home, the demo page or All pages).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.

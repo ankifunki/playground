@@ -64,7 +64,7 @@ function Readiness() {
           return (
             <li key={e.key} className={ready ? 'ok' : 'gap'}>
               <span className="rd-when tk">{e.when}</span>
-              <button className="rd-t" onClick={e.open}><b>{e.title}</b><span className={'rd-st ' + (ready ? 'ok' : 'warn')}>{state}</span></button>
+              <button className="rd-t" onClick={e.open}><b>{e.title}</b><span className={'rd-st ' + (ready ? 'ok' : state === 'Waiting' ? 'wait' : 'warn')}>{state}</span></button>
               <p className="rd-will">{e.will}</p>
               <span className="rd-meter" aria-label={`${e.n} of ${e.of} ${e.unit}`}><span className="rd-seg" aria-hidden="true">{Array.from({ length: e.of }, (_, i) => <i key={i} className={i < e.n ? 'on' : ''} />)}</span>{e.n} of {e.of} {e.unit}</span>
               {e.missing && <p className="rd-miss">{e.missing}</p>}

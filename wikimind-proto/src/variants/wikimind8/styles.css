@@ -1902,3 +1902,23 @@ button.km-t{cursor:pointer}
 /* In the Updates cards the grip takes the column icon's place on hover, so it lines up with the label. */
 .w7 .h9 .h9-grid>.h9-s:has(.lv)>.h9-ctl{left:26px;top:22px}
 @media (hover:hover) and (pointer:fine){.h9-s:has(.lv):hover .lv-h>.ic:first-child{visibility:hidden}}
+/* Coming up: three columns split by thin rules, every part on a shared row (subgrid) so when, title, plan, meter
+   and what's missing line up across events; the state is a pill. Stacked when the module is narrow. */
+.w7 .h9 .rd ol{column-gap:0;row-gap:var(--s8);grid-template-rows:repeat(5,auto)}
+.w7 .h9 .rd li{display:grid;grid-row:span 5;grid-template-rows:subgrid;gap:var(--s8);padding:0 var(--s24);align-content:start}
+.w7 .h9 .rd li:first-child{padding-left:0}
+.w7 .h9 .rd li:last-child{padding-right:0}
+.w7 .h9 .rd li+li{border-left:1px solid var(--line)}
+.w7 .h9 .rd-t{align-items:center}
+.w7 .h9 .rd-st{display:inline-flex;align-items:center;height:22px;padding:0 var(--s8);border-radius:var(--r-pill);white-space:nowrap}
+.w7 .h9 .rd-st.ok{background:var(--okb);color:var(--ok)}
+.w7 .h9 .rd-st.warn{background:var(--warnb);color:var(--warn)}
+.w7 .h9 .rd-st.wait{background:var(--soft);color:var(--ink2)}
+.w7 .h9 .rd-meter{margin-top:0}
+.w7 .h9 .rd-miss{margin-top:0;align-self:start}
+@container mod (max-width:800px){
+ .w7 .h9 .rd ol{grid-template-rows:none;row-gap:var(--s20)}
+ .w7 .h9 .rd li{display:flex;grid-row:auto;padding:var(--s20) 0 0;border-left:0}
+ .w7 .h9 .rd li:first-child{padding-top:0}
+ .w7 .h9 .rd li+li{border-left:0;border-top:1px solid var(--line)}
+}
