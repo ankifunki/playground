@@ -1784,3 +1784,36 @@ button.km-t{cursor:pointer}
 .bk-row{display:flex;align-items:center;gap:var(--s12);margin-top:var(--s6)}
 .bk-row .wl{font:500 var(--fs-meta)/18px var(--sans);color:var(--link)}
 .gc-name{padding:0;border:0;background:none;text-align:left;cursor:pointer;font:500 var(--fs-body)/26px var(--sans);color:var(--ink);text-decoration:underline;text-decoration-color:var(--hl);text-underline-offset:4px}
+/* Preset chips: text centred in the pill (they were aligned to the baseline and sat high). */
+.dc-pre button{align-items:center;line-height:18px}
+/* Open questions: a chip on the job's row and a clickable count, both opening the question's panel. */
+.ov-qc{display:inline-flex;align-items:center;gap:var(--s4);padding:var(--s2) var(--s8);border-radius:var(--r-pill);background:var(--linkb);color:var(--link);font:500 var(--fs-meta)/18px var(--sans);cursor:pointer}
+@media (hover:hover) and (pointer:fine){.ov-qc:hover{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--link) 35%,transparent)}.ov-xq:hover{color:var(--link)}}
+.ov-xq{text-decoration:underline;text-decoration-color:var(--hl);text-underline-offset:3px;cursor:pointer}
+.w7 .bk .ap-h b{font:500 var(--fs-body)/26px var(--sans)}
+.bk-link{display:inline-flex;align-items:center;gap:var(--s6);align-self:flex-start;font:500 var(--fs-ui)/20px var(--sans);color:var(--link)}
+.bk-ans{display:flex;flex-direction:column;gap:var(--s8);width:100%}
+.bk-ans textarea{width:100%;box-sizing:border-box;resize:vertical;padding:var(--s8) var(--s12);border:0;border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line);background:var(--panel);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink);outline:none}
+.bk-ans textarea:focus{box-shadow:inset 0 0 0 1px var(--link)}
+.bk-ans>span{display:flex;gap:var(--s8)}
+/* New rule: a form in the right panel, then Asoka's checks and the owner's approval. */
+.rl-f{display:flex;flex-direction:column;gap:var(--s6)}
+.rl-f input,.rl-f textarea{width:100%;box-sizing:border-box;padding:var(--s8) var(--s12);border:0;border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line);background:var(--panel);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink);outline:none;resize:vertical}
+.rl-f input:focus,.rl-f textarea:focus{box-shadow:inset 0 0 0 1px var(--link)}
+.rl-sc{display:flex;flex-wrap:wrap;gap:var(--s6)}
+.rl-sc button{height:28px;padding:0 var(--s10);border:0;border-radius:var(--r-pill);background:none;box-shadow:inset 0 0 0 1px var(--line);font:500 var(--fs-meta)/18px var(--sans);color:var(--ink);cursor:pointer}
+.rl-sc button.on{background:var(--linkb);color:var(--link);box-shadow:none}
+.rl-note{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.rl-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s8)}
+.rl-steps li{display:flex;align-items:flex-start;gap:var(--s8);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.rl-steps li.done,.rl-steps li.now{color:var(--ink)}
+.rl-steps .cx-ck{margin-top:var(--s2)}
+.rl-steps li.done .cx-ck{background:var(--ok);box-shadow:none;color:var(--panel)}
+.rl-steps li.now .cx-ck{box-shadow:inset 0 0 0 1px var(--link)}
+.rl-steps li.now .cx-ck i{width:6px;height:6px;border-radius:50%;background:var(--link);animation:breathe .8s ease-in-out infinite}
+.rl-wait{display:flex;align-items:center;gap:var(--s8)}
+.w7 .rl-wait{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.rl-add{margin-top:var(--s12);height:32px;padding:0 var(--s12);font-size:var(--fs-meta)}
+.w7 .rl-why{margin:var(--s6) 0 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.w7 .rl-by{display:flex;align-items:center;gap:var(--s6);margin:var(--s6) 0 0;font:400 var(--fs-meta)/18px var(--sans);color:var(--ok)}
+.rail .rl-steps li{border:0;padding:0}

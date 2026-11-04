@@ -105,6 +105,16 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
     - **Who grants it**: Dev approves every grant.
   - The action is pinned at the foot: **Request access**, or ask the owner in Slack. After a grant the panel says what changed and the chip disappears.
   - Also opened from the profile's needs ("Why it's blocked") and the Gaps card's gap name.
+- **Open questions open a panel** (`QuestionPanel`, context in `QCTX` in `Agents.tsx`; store `question`, `openQuestion`):
+  - A job's "Asking …" chip, its "N open questions" count and the profile's questions open the panel.
+  - The panel shows the question, who Asoka is asking and since when, **What Asoka saw**, **Until it's answered**, and Open it on the page.
+  - The actions: **Remind <person> in Slack**, or **Answer it yourself** (Asoka checks your answer with them). Both are logged.
+- **Add a rule** (`Rules.tsx`; store `rules`, `addRule`, `rule`, `openRule`):
+  - The page's Rules section ends with Add a rule, which opens a panel: rule, what it says, applies to, why.
+  - **Propose rule** runs Asoka's checks (Salesforce config; #deal-desk and tickets; overlap with Who approves), then sends it to Maria Okafor.
+  - After about 5 s it is approved and added as a Rules toggle: "Added by you · approved by Maria Okafor", logged in Live activity, with See it on the page.
+  - A proposal still lands if the panel is closed mid-check.
+- **Preset chips** in Play a deal are centred (they sat on the baseline).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
   - Then what Asoka will do (UI 14), a segment meter with its count ("3 of 4 rules verified"), and the one thing missing with the action that closes it.

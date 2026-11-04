@@ -44,7 +44,12 @@ type W = {
   feed: 'ch' | 'le' | 'as' | null; openFeed: (f: 'ch' | 'le' | 'as' | null) => void
   /** Wikimind 9: one access blocker, with its context and the action that clears it, in the right panel. */
   blocker: Gap | null; openBlocker: (g: Gap | null) => void
+  /** Wikimind 9: one open question, with its context and what you can do, in the right panel. */
+  question: string | null; openQuestion: (q: string | null) => void
+  /** Wikimind 9: rules people add (after Maria approves), and the New rule panel. */
+  rules: UserRule[]; addRule: (r: UserRule) => void; rule: boolean; openRule: (b: boolean) => void
 }
+export type UserRule = { id: string; title: string; body: string; why: string; scope: string }
 export type Gap = 'okta' | 'netsuite'
 /** What each access gap blocks, and what granting it unblocks (points of work Asoka can then run). */
 export const GAPS: Record<Gap, { t: string; scope: string; ag: AgentId; job: string; pts: number; jobPts: number; why: string; after: string; owner: string; ask: string; since: string }> = {
@@ -89,7 +94,11 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   const [chat, setChat] = useState<ChatMsg[]>([]), [chatOn, setChatOnS] = useState(false), [chatFrom, setChatFrom] = useState<DOMRect | null>(null)
   const cid = useRef(1)
   const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null), [blocker, setBlocker] = useState<Gap | null>(null)
-  const openBlocker = (g: Gap | null) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(g); if (g) setRail(true) }
+  const [question, setQuestion] = useState<string | null>(null), [rules, setRules] = useState<UserRule[]>([]), [rule, setRule] = useState(false)
+  const addRule = (r: UserRule) => setRules((l) => [...l, r])
+  const openRule = (b: boolean) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(b); if (b) setRail(true) }
+  const openBlocker = (g: Gap | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setQuestion(null); setBlocker(g); if (g) setRail(true) }
+  const openQuestion = (q: string | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(q); if (q) setRail(true) }
   const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true) }
   const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
   // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
@@ -184,10 +193,10 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
       else if (e.key === 's' || e.key === 'S') arriveSlack()
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (blocker) setBlocker(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (blocker) setBlocker(null); else if (question) setQuestion(null); else if (rule) setRule(false); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker, question, openQuestion, rules, addRule, rule, openRule }}>{children}</Ctx.Provider>
 }

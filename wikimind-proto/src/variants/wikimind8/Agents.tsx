@@ -27,6 +27,14 @@ function questions(ag: AgentId, renewalAnswered: boolean, cpqFixed: boolean) {
   }
   return q[ag]
 }
+/** Why each open question was raised, and what Asoka does until it is answered. Demo data. */
+export const QCTX: Record<string, { ag: AgentId; person: string; since: string; saw: string; meanwhile: string; go?: string; block?: string }> = {
+  'Do flat renewals skip approval on purpose?': { ag: 'approvals', person: 'Maria Okafor, RevOps', since: 'Oct 27', saw: '14 renewals over $100,000 skipped approval last quarter, and no rule explains it.', meanwhile: 'Asoka asks a person before letting a flat renewal skip approval.', block: 'renew' },
+  'Who owns the Okta sign-in policy now?': { ag: 'security', person: 'IT', since: 'Nov 1', saw: 'The policy’s owner left in September; three changes since have no named approver.', meanwhile: 'Asoka won’t suggest changes to the policy until it knows who approves them.', go: 'login-policies' },
+  'Should invoice mismatches under $50 be corrected automatically?': { ag: 'finance', person: 'Dana Ruiz', since: 'Oct 30', saw: '31 of the last 42 mismatches were under $50, and each was fixed the same way by hand.', meanwhile: 'Asoka flags every mismatch to Finance ops; nothing is corrected automatically.', go: 'invoices' },
+  'Why do multi-currency quotes fail to sync?': { ag: 'integrations', person: 'Ben Ito', since: 'Oct 31', saw: '412 errors since a CPQ update on Oct 29; single-currency quotes still sync.', meanwhile: 'Multi-currency discounts don’t reach quotes; Asoka flags each one to Integrations.', block: 'cfg-cpq' },
+  'Is the data-loss escalation rule official?': { ag: 'support', person: 'Kim in Support', since: 'Oct 29', saw: '11 of 11 cases that mention data loss were escalated by hand, whatever their priority.', meanwhile: 'Asoka follows the practice and marks it unofficial on the page.', go: 'case-escalation' },
+}
 const BLOCKERS: Partial<Record<AgentId, string>> = { security: 'Okta sign-in logs, from IT', finance: 'NetSuite write access, from Finance' }
 /** The access gap behind each blocker, which Wikimind 9 can grant. */
 const BLOCK_GAP: Partial<Record<AgentId, Gap>> = { security: 'okta', finance: 'netsuite' }
@@ -136,11 +144,11 @@ export function AgentsOverview() {
           const g = groves.find((x) => x.ag === a.id)!, r = run.rel[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
           // Wikimind 9: a blocker shows first, as a clear chip that opens its panel (handled in the row's click).
           const bk = w.v9 && blocked(a.id) ? BLOCK_GAP[a.id] : undefined
-          const now = bk ? <span className="ov-blk" data-blk={bk}><Icon name="lock" size={12} />Blocked · {GAPS[bk].t}<Icon name="chevron-right" size={12} /></span> : live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
+          const now = bk ? <span className="ov-blk" data-blk={bk}><Icon name="lock" size={12} />Blocked · {GAPS[bk].t}<Icon name="chevron-right" size={12} /></span> : live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? (w.v9 && QCTX[q[0].q] ? <span className="ov-qc" data-q={q[0].q}><Icon name="circle-help" size={12} />{q[0].who}<Icon name="chevron-right" size={12} /></span> : <><Icon name="circle-help" size={12} />{q[0].who}</>) : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (blocked(a.id) ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
-              <button onClick={(e) => { const b = (e.target as HTMLElement).closest('[data-blk]'); if (b) { w.openBlocker(b.getAttribute('data-blk') as Gap); return } w.openAgent(w.agent === a.id ? null : a.id) }} aria-expanded={w.agent === a.id}>
-                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages{g.counts.old ? <> · <span className="ov-x">{g.counts.old} out of date</span></> : null}{q.length ? <> · <span className="ov-x">{q.length} open {q.length === 1 ? 'question' : 'questions'}</span></> : null}</small></span></span>
+              <button onClick={(e) => { const b = (e.target as HTMLElement).closest('[data-blk]'); if (b) { w.openBlocker(b.getAttribute('data-blk') as Gap); return } const qq = (e.target as HTMLElement).closest('[data-q]'); if (qq) { w.openQuestion(qq.getAttribute('data-q')); return } w.openAgent(w.agent === a.id ? null : a.id) }} aria-expanded={w.agent === a.id}>
+                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages{g.counts.old ? <> · <span className="ov-x">{g.counts.old} out of date</span></> : null}{q.length ? <> · <span className={'ov-x' + (w.v9 && q.some((x) => QCTX[x.q]) ? ' ov-xq' : '')} data-q={w.v9 ? q.find((x) => QCTX[x.q])?.q : undefined}>{q.length} open {q.length === 1 ? 'question' : 'questions'}</span></> : null}</small></span></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> {ow.short}</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
@@ -182,7 +190,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
         <div className="ap-know">
         <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul></div>
         {g.pages.length > 0 && <ul className="ap-list">{g.pages.map((p) => <li key={p.id}><button className="wl" onClick={() => w.go(p.id)}>{p.title}</button><small>re-read {ago(p.re)}</small></li>)}</ul>}
-        {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}><span>{x.q}</span><small>{x.who}</small></li>)}</ul></>}
+        {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}>{w.v9 && QCTX[x.q] ? <button className="wl" onClick={() => w.openQuestion(x.q)}>{x.q}</button> : <span>{x.q}</span>}<small>{x.who}</small></li>)}</ul></>}
       </section>
 
       <section>
@@ -243,6 +251,39 @@ export function BlockerPanel({ g }: { g: Gap }) {
             : <button className="btn ghost" onClick={() => { setAsked(true); w.log({ ag: x.ag, t: `Asked ${x.owner.split(' ·')[0]} in Slack for ${x.t} (${x.scope})`, page: 'discount-approvals', kind: 'ask' }) }}>{x.ask}</button>}
         </>}
       </div>
+    </div>
+  )
+}
+
+/**
+ * One open question in the right panel: the question, who Asoka is asking and since when, what it saw that raised it,
+ * and what it does until it's answered. Actions pinned at the foot: remind the person in Slack, or answer it yourself
+ * (Asoka still checks your answer with them). Opened from a job's Asking chip or open-question count, and its profile.
+ */
+export function QuestionPanel({ q }: { q: string }) {
+  const w = useW(), c = QCTX[q], first = c.person.split(/[ ,]/)[0]
+  const [reminded, setReminded] = useState(false), [writing, setWriting] = useState(false), [text, setText] = useState(''), [sent, setSent] = useState(false)
+  const answered = q.startsWith('Do flat renewals') && w.renewal === 'answered'
+  return (
+    <div className="ap bk">
+      <div className="ap-h"><Ag id={c.ag} size={28} /><div><b>{q}</b><small>{AG[c.ag].name} job · asking {c.person} since {c.since}</small></div></div>
+      {answered ? <section><h3>Answered</h3><p>Maria Okafor confirmed it in Slack: policy since 2023. Asoka wrote it into the page.</p></section> : <>
+        <section><h3>What Asoka saw</h3><p>{c.saw}</p></section>
+        <section><h3>Until it’s answered</h3><p>{c.meanwhile}</p></section>
+      </>}
+      {(c.block || c.go) && <button className="wl bk-link" onClick={() => (c.block ? w.jump(c.block) : w.go(c.go!))}>Open it on the page<Icon name="arrow-right" size={14} /></button>}
+      {!answered && <div className="ap-foot bk-foot">
+        {sent ? <span className="bk-asked"><Icon name="circle-check" size={14} />Answer sent. Asoka will check it with {first}.</span>
+          : writing ? <form className="bk-ans" onSubmit={(e) => { e.preventDefault(); if (!text.trim()) return; setSent(true); w.log({ ag: c.ag, t: `Got an answer from you on “${q}”; checking it with ${first}`, page: 'discount-approvals', kind: 'ask' }) }}>
+              <textarea rows={2} value={text} onChange={(e) => setText(e.target.value)} placeholder="Your answer" aria-label="Your answer" autoFocus />
+              <span><button className="btn primary" type="submit" disabled={!text.trim()}>Send</button><button className="btn ghost" type="button" onClick={() => setWriting(false)}>Cancel</button></span>
+            </form>
+          : <>
+            {reminded ? <span className="bk-asked"><Icon name="circle-check" size={14} />Reminded {first}</span>
+              : <button className="btn soft" onClick={() => { setReminded(true); w.log({ ag: c.ag, t: `Reminded ${c.person} in Slack: “${q}”`, page: 'discount-approvals', kind: 'ask' }) }}><Icon name="message-circle" size={14} />Remind {first} in Slack</button>}
+            <button className="btn ghost" onClick={() => setWriting(true)}>Answer it yourself</button>
+          </>}
+      </div>}
     </div>
   )
 }
