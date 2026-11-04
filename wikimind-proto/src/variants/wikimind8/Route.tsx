@@ -89,7 +89,7 @@ export function Route({ t, kind, f, okAt, end, label }: { t: number; kind: Kind;
         return (
           <span key={l.k + g} className={'rt-gate' + (mine && chosen ? ' mine' : chosen ? ' off' : '') + (ok ? ' ok' : wait ? ' wait' : '')} style={{ left: l.gx[j], top: ys[i] }}>
             <i />
-            <small>{ok && <Icon name="check" size={12} />}{g}</small>
+            <small>{g}</small>
           </span>
         )
       }))}

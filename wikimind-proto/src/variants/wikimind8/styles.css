@@ -821,7 +821,7 @@ input{font:inherit}
 .related li{border-top:1px solid var(--line)}
 .related button{display:block;width:100%;padding:var(--s14) 0;border:0;background:none;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .related b{display:block;font:500 var(--fs-ui)/20px var(--sans);color:var(--link)}
-.related button>span:not(.ag){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.related button>span:not(.ag):not(.rel-ic){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
 @media (hover:hover) and (pointer:fine){.related button:hover b{text-decoration:underline;text-underline-offset:3px}}
 @media (max-width:640px){.related{grid-template-columns:1fr}}
 .doc ul.cites,.doc ul.related{margin:0;padding:0}.doc ul.cites li,.doc ul.related li{margin:0}
@@ -913,7 +913,7 @@ button.km-t{cursor:pointer}
 #sim .thr-mark small{bottom:calc(100% + 2px)}
 /* Related pages: each page with its grove's agent tile. */
 .related button{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:var(--s12);align-items:start}
-.related b,.related button>span:not(.ag){grid-column:2}
+.related b,.related button>span:not(.ag):not(.rel-ic){grid-column:2}
 .related button>.ag{grid-column:1;grid-row:1 / span 2}
 /* How it works: the route map. Thin lanes for every route the config allows; the chosen one turns indigo and the deal
    travels it with a trail; gates swing open green as people approve; the clock races through their hours. */
@@ -961,3 +961,18 @@ button.km-t{cursor:pointer}
 .route-view .route{margin:0}
 .rt-gate small{top:16px}
 .hwk .rec>*{min-width:0}.route-view{max-width:100%}
+/* Route map, calmer: neutral ink and grey everywhere; indigo only for the deal and its trail (and the agent's own tile). */
+.rt-node>svg{position:absolute;inset:0;margin:auto}
+.rt-lane.scan{stroke:color-mix(in srgb,var(--ink) 30%,var(--line))}
+.rt-lane.on{stroke:color-mix(in srgb,var(--ink) 22%,var(--line))}
+.rt-ll.scan,.rt-ll.on{color:var(--ink)}
+.rt-gate.wait i{background:var(--ink)}
+.rt-gate.wait small{color:var(--ink)}
+.rt-gate.ok i{background:var(--ink2)}
+.rt-gate.ok small{color:var(--ink)}
+.rt-end.ok{background:var(--soft);color:var(--ink);box-shadow:none}
+.rt-tok.wait .rt-clock{color:var(--ink)}
+.rec-now.agent b,.rec-now.wait b,.rec-now.ok b{color:var(--ink)}
+/* Related pages: a neutral page icon (agent tiles mean "an agent did this", as in Cited by). */
+.rel-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:var(--r-tile);background:var(--soft);color:var(--ink2)}
+.related button>.rel-ic{grid-column:1;grid-row:1 / span 2}

@@ -143,7 +143,7 @@ export function Approvals() {
       <h2 id="related">Related pages</h2>
       <ul className="related">
         {RELATED.map((id) => (
-          <li key={id}><button onClick={() => w.go(id)}><Ag id={PAGES[id].ag} size={28} /><b>{PAGES[id].title}</b><span>{PAGES[id].lede}</span></button></li>
+          <li key={id}><button onClick={() => w.go(id)}><span className="rel-ic" aria-hidden="true"><Icon name="file-text" size={14} /></span><b>{PAGES[id].title}</b><span>{PAGES[id].lede}</span></button></li>
         ))}
       </ul>
 
