@@ -93,6 +93,8 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - 6px corners on cards, panels and buttons; cobalt primary buttons.
 - Flat cards drawn with a hairline, square-ended bars, and a ruled top bar.
 
+**Agent rows:** hovering or opening a row hides the rules above and below it, with a lighter tint (soft at 60%) that extends 8px past the content.
+
 **Odometer fix:** the outgoing digit is no longer removed from the DOM by hand on `animationend`; doing that crashed React (`removeChild`) whenever a total changed. A timer drops it, and `clip-path` clips it, which Safari respects.
 
 ## Wikimind 8 / 8b: the UX strategy's next steps (shared by both)

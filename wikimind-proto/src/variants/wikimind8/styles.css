@@ -1523,3 +1523,13 @@ button.km-t{cursor:pointer}
 :root[data-look="b"] .w7 :is(.path-bars i,.mini-bar i){border-radius:0}
 :root[data-look="b"] .w7 .doc h1{letter-spacing:-.04em}
 :root[data-look="b"] .w7 .top{border-bottom:1px solid var(--line)}
+/* Agent rows: hovering (or opening) a row hides the rules above and below it, with a lighter tint; the tint extends
+   8px past the content on each side so the tile isn't flush to its edge, while the content stays aligned. */
+.ov-rows li{transition:opacity .25s ease,border-color .15s ease}
+.ov-rows li>button{width:calc(100% + var(--s16));margin:0 calc(var(--s8) * -1);padding-left:var(--s8);padding-right:var(--s8)}
+.ov-rows li.on>button{background:color-mix(in srgb,var(--soft) 60%,transparent)}
+.ov-rows li.on,.ov-rows li.on+li{border-top-color:transparent}
+@media (hover:hover) and (pointer:fine){
+ .ov-rows li>button:hover{background:color-mix(in srgb,var(--soft) 60%,transparent)}
+ .ov-rows li:hover,.ov-rows li:hover+li{border-top-color:transparent}
+}
