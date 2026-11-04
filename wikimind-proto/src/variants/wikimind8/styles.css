@@ -1137,3 +1137,11 @@ button.km-t{cursor:pointer}
 .ov.f-ver .kn-s:not(.ver),.ov.f-ask .kn-s:not(.ask){opacity:.3}
 .ov.f-ver .kn-s.ver,.ov.f-ask .kn-s.ask{color:var(--ink)}
 .ap-know .ap-counts{grid-template-columns:1fr 1fr}
+/* Agents overview, merged: agent + pages | runs on its own | reliability | right now. */
+.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,1.3fr) minmax(0,1.6fr) 96px minmax(0,1.4fr)}
+.ov-ag small{font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+ .ov-rows li>button{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"ag rel" "own own" "now now"}
+ .ov-now:empty{display:none}
+}
+.doc ul.ov-rows,.doc ul.ov-sum{margin-left:0;padding-left:0}.doc ul.ov-rows li{margin:0}

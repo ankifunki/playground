@@ -106,16 +106,16 @@ export function AgentsOverview() {
   const total = groves.reduce((n, g) => n + g.total, 0), ver = groves.reduce((n, g) => n + g.counts.ver, 0)
   const qs = AGENTS.reduce((n, a) => n + questions(a.id, answered, fixed).length, 0), blockers = Object.keys(BLOCKERS).length
   const stats: { k: Filter; n: string; t: string }[] = [
-    { k: null, n: total.toLocaleString('en-US'), t: 'pages, all written by agents' },
-    { k: 'ver', n: ver.toLocaleString('en-US'), t: 'verified by a person' },
-    { k: null, n: '64%', t: 'of the work runs on its own' },
-    { k: null, n: '98.6%', t: 'reliability, 3 misses in 30 days' },
-    { k: 'ask', n: String(qs), t: 'open questions to people' },
+    { k: null, n: total.toLocaleString('en-US'), t: 'pages' },
+    { k: null, n: ver.toLocaleString('en-US'), t: 'verified by a person' },
+    { k: null, n: '64%', t: 'runs on its own' },
+    { k: null, n: '98.6%', t: 'reliability' },
+    { k: 'ask', n: String(qs), t: 'open questions' },
     { k: 'block', n: String(blockers), t: 'blockers' },
   ]
   return (
     <section className={'home-card ov' + (filter ? ' f-' + filter : '')} aria-label="What each agent knows and runs">
-      <div className="nh-h"><h2>What each agent knows and runs</h2><span className="tk">Select an agent for its full profile</span></div>
+      <div className="nh-h"><h2>What each agent knows and runs</h2></div>
       <ul className="ov-sum">
         {stats.map((s) => (
           <li key={s.t}>
@@ -124,16 +124,15 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>What it knows</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = REL[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
-          const now = live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : BLOCKERS[a.id] ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : <>{NEWEST[a.id]}</>
+          const now = live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : BLOCKERS[a.id] ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
-                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{a.job}</small></span></span>
-                <span className="ov-kb"><Know counts={g.counts} total={g.total} /></span>
+                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages</small></span></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
