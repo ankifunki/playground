@@ -1746,3 +1746,14 @@ button.km-t{cursor:pointer}
    the toolbar (with hide) at the top right. */
 .h9-s>.h9-ctl{right:auto;left:calc(var(--s24) * -1 - var(--s2));top:var(--s8)}
 .h9-edit .h9-s>.h9-ctl{left:auto;right:var(--s12);top:var(--s12)}
+/* The grab cue inside the card's top-left corner, in its padding. Card-less modules (the changed / learned / asking
+   columns) show it in place of the column's own icon while hovered. */
+.h9-s>.h9-ctl{left:var(--s4);top:var(--s4)}
+.h9-s:has(.lv)>.h9-ctl{left:calc(var(--s4) * -1);top:var(--s12)}
+@media (hover:hover) and (pointer:fine){.h9-s:has(.lv):hover .lv-h>.ic:first-child{visibility:hidden}}
+.h9-edit .h9-s>.h9-ctl{left:auto;right:var(--s12);top:var(--s12)}
+.w7 .h9 .h9-s:not(:has(.lv))>.h9-ctl{left:var(--s4);top:var(--s4);right:auto}
+.w7 .h9.h9-edit .h9-s>.h9-ctl{left:auto;right:var(--s12);top:var(--s12)}
+.w7 .h9 .h9-s:not(:has(.lv)):not(.h9-edit *)>.h9-ctl .h9-grip{width:16px;height:16px;background:none}
+.w7 .h9 .h9-s:not(:has(.lv))>.h9-ctl{left:var(--s2);top:var(--s2)}
+.w7 .h9 .h9-s:not(:has(.lv))>.h9-ctl .h9-grip .ic{width:14px;height:14px}
