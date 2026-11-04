@@ -31,6 +31,7 @@ const P: Record<string, React.ReactNode> = {
   'mouse-pointer-2': <path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z" />,
   library: <><path d="m16 6 4 14" /><path d="M12 6v14" /><path d="M8 8v12" /><path d="M4 4v16" /></>,
   code: <><path d="m16 18 6-6-6-6" /><path d="m8 6-6 6 6 6" /></>,
+  share: <><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path className="arrow" d="m16 6-4-4-4 4" /><path className="arrow" d="M12 2v13" /></>,
   play: <polygon points="6 3 20 12 6 21 6 3" />,
   'skip-back': <><polygon points="19 20 9 12 19 4 19 20" /><line x1="5" x2="5" y1="19" y2="5" /></>,
   'skip-forward': <><polygon points="5 4 15 12 5 20 5 4" /><line x1="19" x2="19" y1="5" y2="19" /></>,

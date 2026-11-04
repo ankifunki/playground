@@ -81,6 +81,7 @@ export function How({ deal = HELIOS, run = 0, onReset }: { deal?: Deal; run?: nu
 
   return (
     <div className="hwk" ref={root}>
+      {w.v9 && <button className="ib hwk-share" onClick={() => w.openShare('how')} aria-label="Share in Slack" title="Share in Slack"><Icon name="share" size={16} /></button>}
       <dl className="hwk-stats">
         <div><dt className="tk">Asoka’s part</dt><dd><b>4 s</b><span>to check and route a deal</span></dd></div>
         <div><dt className="tk">People approving</dt><dd><b>{r.small ? 'None' : r.people}</b><span>{r.small ? 'under $100,000, nothing to approve' : 'median wait for approvers'}</span></dd></div>

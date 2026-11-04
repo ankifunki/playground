@@ -140,7 +140,7 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Job</span><span>{ow.label}</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Job</span><span>{ow.label}</span><span>Reliability</span><span>{w.v9 ? 'Actions' : 'Right now'}</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = run.rel[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id

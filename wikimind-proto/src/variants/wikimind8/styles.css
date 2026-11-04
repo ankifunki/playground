@@ -1922,3 +1922,12 @@ button.km-t{cursor:pointer}
  .w7 .h9 .rd li:first-child{padding-top:0}
  .w7 .h9 .rd li+li{border-left:0;border-top:1px solid var(--line)}
 }
+/* Share in Slack lives on the How it works card itself, top right. */
+.hwk{position:relative}
+.w7 .hwk-share{position:absolute;top:var(--s20);right:var(--s20);width:36px;height:36px;border-radius:50%;color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){.w7 .hwk-share:hover{background:var(--soft);color:var(--ink)}}
+@media (max-width:640px){.w7 .hwk-share{top:var(--s12);right:var(--s12)}}
+/* Jobs: the column heads sit tight on their rule, close to the totals above. */
+.w7 .h9 .ov-sum{margin-bottom:var(--s10)}
+.w7 .h9 .ov-head{padding:0 0 var(--s8);border-bottom:1px solid var(--line);align-items:end}
+.w7 .h9 .ov-rows>li:first-child{border-top:0}

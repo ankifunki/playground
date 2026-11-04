@@ -36,7 +36,7 @@ export function Toc({ items, chips }: { items: TocItem[]; chips?: boolean }) {
   return (
     <nav className={'toc' + (chips ? ' chips' : '')} aria-label="On this page">
       <div className="toc-in">
-        <span className="tk toc-l">On this page</span>
+        {!w.v9 && <span className="tk toc-l">On this page</span>}
         <ol>
           {items.map((it) => (
             <li key={it.id} className={active === it.id ? 'on' : ''}>

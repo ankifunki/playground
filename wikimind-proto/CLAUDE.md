@@ -128,6 +128,10 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Jobs totals drop repeats in Wikimind 9:** run by Asoka and reliability live in the Status card, so the strip is pages, verified by a person, open questions, blockers. Blocker chips use short names (Okta logs) and never wrap; chip icons are centred.
 - **Grab cue:** one 20px grip 10px into every card's corner (icon 12px in); in the Updates cards it takes the column icon's exact place.
 - **Coming up** columns are split by thin rules and share rows (CSS subgrid), so when, title, plan, meter and what's missing line up across events; the state is a pill (Ready green, Almost ready and Blocked amber, Waiting neutral). Dates are just "Nov 11".
+- **Share sits on the How it works card:** a round share icon at the card's top right (`.hwk-share`, Lucide share), not beside the heading.
+- **Standalone How it works:** a self-contained page anyone can open (https://claude.ai/artifact/TDtjiYh85NrHoPZH4ebqf9): presets (each with a link, #helios #atlas #orion #kestrel), sliders, the record, the animated route, play/scrub, then the thresholds. Source in the session scratchpad (`how/index.html`), ported to plain JS from `How.tsx` and `Route.tsx`.
+- **No "On this page" label** on a page in Wikimind 9 (the rail stays).
+- **Jobs column heads** sit on their own rule, 24px under the totals; the last column is **Actions**.
 - **Section rules on a page:** each h2 section starts with a 1px `--hair` rule, 48px above and below it (not on Home, the demo page or All pages).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.

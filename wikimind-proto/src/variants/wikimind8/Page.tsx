@@ -131,7 +131,7 @@ export function Approvals() {
 
       <Toc items={w.proof ? SECTIONS : SECTIONS.filter((x) => x.id !== 'cited')} />
 
-      {w.v9 ? <div className="h2-row"><h2 id="how">How it works</h2><button className="btn ghost sh-btn" onClick={() => w.openShare('how')}><Icon name="hash" size={14} />Share in Slack</button></div> : <h2 id="how">How it works</h2>}
+      <h2 id="how">How it works</h2>
       {w.v9 ? <>
         {/* Wikimind 9: one section. Pick or set a deal; the player replays its route right below. */}
         <DealControls deal={demo.deal} onChange={(d) => setDemo((x) => ({ deal: d, run: x.run + 1 }))} />
