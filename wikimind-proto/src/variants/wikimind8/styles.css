@@ -2016,3 +2016,5 @@ button.km-t{cursor:pointer}
 .ti-conf-l button{display:inline-flex;align-items:center;gap:var(--s6);padding:0;border:0;background:none;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);cursor:pointer}
 .ti-conf-l button::before{content:"";width:8px;height:8px}
 @media (hover:hover) and (pointer:fine){.ti-conf-l button:hover{color:var(--ink)}}
+/* Approval tiers: lists sit on the text column, never on the default list indent. */
+.w7 .doc.ti ul,.w7 .doc.ti ol{margin-left:0;padding-left:0}
