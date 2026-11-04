@@ -1825,3 +1825,9 @@ button.km-t{cursor:pointer}
 .w7 article.doc:not(.home):not(.gn):not(.ix) h2[id],.w7 article.doc .h2-row{margin-top:var(--s48);padding-top:var(--s48);border-top:1px solid var(--hair)}
 .w7 article.doc .h2-row>h2[id]{margin-top:0;padding-top:0;border-top:0}
 .w7 article.doc:not(.home):not(.gn):not(.ix) .h2-row>h2[id]{margin-top:0;padding-top:0;border-top:0}
+/* Updates (Changed / Learned / Asking people) are cards on Wikimind 9's Home, like their neighbours. */
+.w7 .h9 .lv.one .lv-col{box-sizing:border-box;background:var(--panel);box-shadow:var(--sh);border-radius:12px;padding:var(--s8) var(--s28) var(--s24)}
+.w7 .h9 .lv.one .lv-h{border-top:0}
+.h9-s:has(.lv)>.h9-ctl{left:var(--s4);top:var(--s4)}
+@media (hover:hover) and (pointer:fine){.h9-s:has(.lv):hover .lv-h>.ic:first-child{visibility:visible}}
+@media (max-width:640px){.w7 .h9 .lv.one .lv-col{padding:var(--s4) var(--s20) var(--s20)}}
