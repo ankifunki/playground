@@ -17,6 +17,14 @@ type W = {
   trace: string | null; openTrace: (id: string | null) => void; extra: Record<string, TStep[]>
   agent: AgentId | null; openAgent: (a: AgentId | null) => void
   tour: number | null; setTour: (n: number | null) => void; change: () => void
+  /** Arrival from a Slack citation (the brief's third audience), and whether the visitor asked the page's owner. */
+  arrive: boolean; arriveSlack: () => void; leaveArrival: () => void; askedOwner: boolean; askOwner: () => void
+  /** The reliability misses, in the right panel: all of them or one agent's. */
+  misses: AgentId | 'all' | null; openMisses: (m: AgentId | 'all' | null) => void
+  /** All pages: the search term it opens with. */
+  search: string; setSearch: (q: string) => void
+  /** Proof on (default) or off (?proof=off), for the assumption test that hides traces and verification. */
+  proof: boolean
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -47,10 +55,13 @@ export function Provider({ children }: { children: ReactNode }) {
   const setRail = (b: boolean) => { setRailS(b); if (b) setNavS(false) }
   const [run, setRun] = useState(0), [trace, setTrace] = useState<string | null>(null), [extra, setExtra] = useState<Record<string, TStep[]>>({})
   const add = (id: string, ...st: TStep[]) => setExtra((m) => ({ ...m, [id]: [...(m[id] || []), ...st] }))
-  const [agent, setAgent] = useState<AgentId | null>(null)
-  const openTrace = (id: string | null) => { setTrace(id); if (id) setRail(true) }
+  const [agent, setAgent] = useState<AgentId | null>(null), [misses, setMisses] = useState<AgentId | 'all' | null>(null)
+  const [arrive, setArrive] = useState(false), [askedOwner, setAskedOwner] = useState(false), [search, setSearch] = useState('')
+  const [proof] = useState(() => typeof location === 'undefined' || new URLSearchParams(location.search).get('proof') !== 'off')
+  const openTrace = (id: string | null) => { if (!proof) return; setTrace(id); if (id) { setMisses(null); setRail(true) } }
+  const openMisses = (m: AgentId | 'all' | null) => { setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) }
   // An agent's profile shows in the right panel, like a trace; a trace opened from it shows on top.
-  const openAgent = (a: AgentId | null) => { setTrace(null); setAgent(a); if (a) setRail(true) }
+  const openAgent = (a: AgentId | null) => { setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
   useEffect(() => { const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t) }, [])
@@ -105,7 +116,15 @@ export function Provider({ children }: { children: ReactNode }) {
     setFin(20); setVerify('ok'); setExtra({}); setTrace(null); setQe([9, 12]); setRenewal('asking'); setCpq('failing'); setWhy({}); setPresence(null); setActs(SEED(Date.now()))
     setPage('discount-approvals'); window.scrollTo({ top: 0 }); setRun((r) => r + 1)
   }
-  const go = (p: string) => { setPage(p); setNav(false); window.scrollTo({ top: 0 }) }
+  const go = (p: string) => { setPage(p); setNav(false); if (p !== 'discount-approvals') setArrive(false); window.scrollTo({ top: 0 }) }
+  // A business user lands from the Approvals agent's push-back in Slack: the page opens on the cited rule.
+  const arriveSlack = () => { setTour(null); setRail(false); setTrace(null); setAskedOwner(false); setArrive(true); setPage('discount-approvals'); setNav(false); window.scrollTo({ top: 0 }) }
+  const leaveArrival = () => setArrive(false)
+  const askOwner = () => {
+    if (askedOwner) return
+    setAskedOwner(true)
+    act({ ag: 'approvals', t: 'Asked Maria Okafor whether Orion platform can skip the CRO, for Sam Ortiz', page: 'discount-approvals', block: 'who-cro', kind: 'ask' })
+  }
   const jump = (block: string) => {
     const doIt = () => document.getElementById('b-' + block)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' })
     if (page !== 'discount-approvals') { setPage('discount-approvals'); window.setTimeout(doIt, 80) } else doIt()
@@ -119,10 +138,11 @@ export function Provider({ children }: { children: ReactNode }) {
       else if (e.key === 'l' || e.key === 'L') answer()
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else { setRail(false); setNav(false) } }
+      else if (e.key === 's' || e.key === 'S') arriveSlack()
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof }}>{children}</Ctx.Provider>
 }

@@ -13,7 +13,7 @@ function Props({ ag, re, verify, extra }: { ag: keyof typeof AG; re: number; ver
   const w = useW(), [t0] = useState(w.now)
   return (
     <dl className="props">
-            <div><dt><Icon name="badge-check" size={16} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
+      <div className="pf"><dt><Icon name="badge-check" size={16} />Verified by</dt><dd className="vf-d"><span key={w.verify} className="vf">{verify ?? 'Dana Ruiz'}</span></dd></div>
       <div><dt><Icon name="scan-eye" size={16} />Last checked</dt><dd className="num"><i className="ldot" aria-hidden="true" />{ago(re + (w.now - t0) / 1000)}<span className="props-m">hourly, against Salesforce</span></dd></div>
       {extra}
     </dl>
@@ -70,6 +70,41 @@ const CITES: { ag: 'approvals' | 'finance'; what: React.ReactNode; where: string
 ]
 const RELATED = ['discount-policy', 'quarter-end', 'renewals', 'cpq-sync']
 
+/**
+ * Arriving from a citation (the brief's third audience): a rep was told no in Slack and followed the link. Lead with
+ * their exchange, the plain why, the next step, and the person who owns the rule; the cited sentence is highlighted
+ * below. Tone explains, never scolds: if the rule seems wrong, asking its owner is one tap and the agent does it.
+ */
+function Arrival() {
+  const w = useW()
+  if (!w.arrive) return null
+  const show = () => w.jump('who-cro')
+  return (
+    <section className="arv" aria-label="Why you are here">
+      <div className="arv-h">
+        <span className="tk"><Icon name="hash" size={12} />From #deal-desk · 2 h ago</span>
+        <button className="ib" onClick={w.leaveArrival} aria-label="Read the whole page"><Icon name="x" size={16} /></button>
+      </div>
+      <div className="arv-msg">
+        <p><span className="arv-av" aria-hidden="true"><Icon name="user" size={12} /></span><span><b>Sam Ortiz</b>Can we close Orion platform at 38% off today? They want to sign.</span></p>
+        <p><Ag id="approvals" size={20} /><span><b>Approvals agent</b>Not without the CRO: over 35% off, the CRO approves directly.</span></p>
+      </div>
+      <h2 className="arv-t">Discounts over 35% need the CRO</h2>
+      <p className="arv-why">They carry the most revenue risk, so Rippling’s CRO signs them off directly. Set in Salesforce (Large Deal Approval) and verified by Dana Ruiz.</p>
+      <dl className="arv-next">
+        <div><dt className="tk">What to do</dt><dd>Submit Orion platform for approval in Salesforce. It goes to the CRO, usually within a day.</dd></div>
+        <div><dt className="tk">Who owns the rule</dt><dd>Maria Okafor, RevOps</dd></div>
+      </dl>
+      <div className="arv-f">
+        {w.askedOwner
+          ? <p className="arv-done"><Icon name="circle-check" size={16} />Asked Maria. The Approvals agent will reply in your Slack thread with her answer.</p>
+          : <button className="btn soft" onClick={w.askOwner}>Think it’s wrong? Ask Maria<Icon name="arrow-right" size={16} /></button>}
+        <button className="btn ghost" onClick={show}>Show the rule</button>
+      </div>
+    </section>
+  )
+}
+
 /** The demo page: Discount approvals, written and kept by the Approvals agent. */
 export function Approvals() {
   const w = useW(), f = w.fin, cpqTarget = useTraceTarget('cfg-cpq')
@@ -81,9 +116,10 @@ export function Approvals() {
       <h1>Discount approvals</h1>
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
       <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals agent is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
+      <Arrival />
       <Props ag="approvals" re={4} verify={verify} extra={<>
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
-        <div><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num"><button className="wl" onClick={() => document.getElementById('cited')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })}>214 times this month, by 3 agents</button></dd></div>
+        <div className="pf"><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num"><button className="wl" onClick={() => document.getElementById('cited')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })}>214 times this month, by 3 agents</button></dd></div>
       </>} />
 
       <PathBar label={false} />
@@ -92,7 +128,7 @@ export function Approvals() {
         <p><span className="lt">Deals over $100,000 need approval before they move to Negotiation. The discount decides who approves. Most approvals take under four hours.</span></p>
       </Block>
 
-      <Toc items={SECTIONS} />
+      <Toc items={w.proof ? SECTIONS : SECTIONS.filter((x) => x.id !== 'cited')} />
 
       <h2 id="how">How it works</h2>
       <How deal={demo.deal} run={demo.run} onReset={() => setDemo((d) => ({ deal: HELIOS, run: d.run + 1 }))} />
@@ -102,7 +138,7 @@ export function Approvals() {
       <h2 id="who">Who approves</h2>
       <Block id="who-mgr"><ul><li><LiveText id="who-mgr" text={`Up to ${f}% off: the sales manager approves alone.`} /></li></ul></Block>
       <Block id="who-fin"><ul><li><LiveText id="who-fin" text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
-      <Block id="who-cro"><ul><li><span className="lt">Over 35%: the CRO approves directly.</span></li></ul></Block>
+      <Block id="who-cro" cls={w.arrive ? 'cited' : ''}>{w.arrive && <span className="cited-k tk">Cited to Sam Ortiz in Slack</span>}<ul><li><span className="lt">Over 35%: the CRO approves directly.</span></li></ul></Block>
 
       <h2 id="rules">Rules</h2>
       <Toggle id="r-exp" title="When a request expires"><p><span className="lt">Requests expire after 14 days, and the rep resubmits. Added in 2024, after two deals closed on six-week-old prices.</span></p></Toggle>
@@ -125,17 +161,17 @@ export function Approvals() {
             <tr><td className="code">Large Deal Approval</td><td>Approval process</td><td><LiveText text={`Routes deals over $100,000: manager, Finance over ${f}%, CRO over 35%`} /></td><td><span className="st">Active</span></td><td /></tr>
             <tr><td className="code">Discount_Requires_Reason</td><td>Validation rule</td><td>Blocks a discount over 10% without a reason</td><td><span className="st">Active</span></td><td /></tr>
             <tr><td className="code">Amount_Locked_After_Approval</td><td>Validation rule</td><td>Only Deal Desk can change an approved amount</td><td><span className="st">Active</span></td><td /></tr>
-            <tr id="b-cfg-cpq" className={'trc' + (w.presence?.block === 'cfg-cpq' ? ' editing' : '') + (w.trace === 'cfg-cpq' ? ' traced' : '')} {...cpqTarget}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="st warn">Failing for multi-currency</span> : <span className="st ok">Fixed · 40 of 40 synced</span>}<Chip id="cfg-cpq" /></td></tr>
+            <tr id="b-cfg-cpq" className={(w.proof ? 'trc' : '') + (w.presence?.block === 'cfg-cpq' ? ' editing' : '') + (w.trace === 'cfg-cpq' ? ' traced' : '')} {...cpqTarget}><td className="code">CPQ quote sync</td><td>Integration</td><td>Sends approved discounts to CPQ quotes</td><td>{w.cpq === 'failing' ? <span className="st warn">Failing for multi-currency</span> : <span className="st ok">Fixed · 40 of 40 synced</span>}<Chip id="cfg-cpq" /></td></tr>
           </tbody>
         </table>
       </Block>
 
-      <h2 id="cited">Cited by the agents</h2>
-      <ul className="cites">
+      <h2 id="cited" className="pf">Cited by the agents</h2>
+      <ul className="cites pf">
         {CITES.map((c) => (
           <li key={c.where}>
             <Ag id={c.ag} size={24} />
-            <div><p>{c.what}</p><small>{c.where} · cited <button className="wl" onClick={() => w.jump(c.block)}>{c.label}</button></small></div>
+            <div><p>{c.what}</p><small>{c.where} · cited <button className="wl" onClick={() => w.jump(c.block)}>{c.label}</button>{c.block === 'who-cro' && <> · <button className="wl" onClick={w.arriveSlack}>See what the rep saw</button></>}</small></div>
           </li>
         ))}
       </ul>

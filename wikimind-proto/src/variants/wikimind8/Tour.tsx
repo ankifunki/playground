@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
+import { Assemble } from './Assemble'
 import { Icon } from './Icon'
 import { useW } from './store'
 
 type Step = { page: string; sel: string; t: string; b: string; go?: (w: ReturnType<typeof useW>) => void }
 /** The 1-minute tour (Wikimind 5): the CIO's impressions from the brief, one at a time, each pointing at its proof. */
 const STEPS: Step[] = [
+  { page: 'home', sel: '.asm', t: 'This could be your org', b: 'Connect Salesforce and Slack. Within a day the agents write every page, ask about what they can’t tell, and your admins start verifying.' },
   { page: 'home', sel: '.home h1', t: 'Assembled automatically', b: 'Six agents wrote every page from Slack, tickets and six years of Salesforce changes, and keep it current. Nobody typed it.' },
   { page: 'home', sel: '.path.card', t: 'Where automation stands', b: '64% runs on its own. The rest asks a person first or waits on a named gap.' },
   { page: 'home', sel: '.sb', t: 'Every agent keeps a grove', b: 'Like a Confluence space, kept by one agent. A page being written shows in the tree.', go: (w) => w.setNav(true) },
@@ -17,7 +19,9 @@ const STEPS: Step[] = [
 
 export function Tour() {
   const w = useW(), i = w.tour, [box, setBox] = useState<DOMRect | null>(null), [ready, setReady] = useState(false)
-  const st = i === null ? null : STEPS[i]
+  // With proof off (?proof=off, for assumption test 1) there is no trace step.
+  const steps = w.proof ? STEPS : STEPS.filter((x) => x.sel !== '.rail')
+  const st = i === null ? null : steps[i]
   useEffect(() => {
     if (!st) return
     setReady(false)
@@ -40,22 +44,23 @@ export function Tour() {
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
   if (!st || i === null) return null
-  const next = () => (i < STEPS.length - 1 ? w.setTour(i + 1) : w.setTour(null))
+  const next = () => (i < steps.length - 1 ? w.setTour(i + 1) : w.setTour(null))
   const W = 340, below = box ? box.bottom + 210 < innerHeight : true
   const left = box ? Math.max(16, Math.min(innerWidth - W - 16, box.left + box.width / 2 - W / 2)) : innerWidth / 2 - W / 2
   const top = box ? (below ? Math.min(innerHeight - 220, box.bottom + 14) : Math.max(16, box.top - 14 - 190)) : innerHeight / 2 - 100
   return (
     <>
+      {st.sel === '.asm' && <Assemble />}
       {box && ready && <div className="tour-ring" style={{ left: box.left - 6, top: box.top - 6, width: box.width + 12, height: box.height + 12 }} />}
       <div className={'tour-card' + (ready ? ' on' : '')} role="dialog" aria-label={st.t} style={{ left, top, width: W }} key={i}>
-        <span className="tk">{i + 1} of {STEPS.length}</span>
+        <span className="tk">{i + 1} of {steps.length}</span>
         <b>{st.t}</b>
         <p>{st.b}</p>
         <div className="tour-f">
-          <span className="tour-dots">{STEPS.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
+          <span className="tour-dots">{steps.map((_, n) => <i key={n} className={n === i ? 'on' : n < i ? 'done' : ''} />)}</span>
           <button className="tour-x" onClick={() => w.setTour(null)}>Skip</button>
           {i > 0 && <button className="ib" onClick={() => w.setTour(i - 1)} aria-label="Back"><Icon name="arrow-right" size={14} /></button>}
-          <button className="btn primary tour-n" onClick={next}>{i < STEPS.length - 1 ? 'Next' : 'Done'}</button>
+          <button className="btn primary tour-n" onClick={next}>{i < steps.length - 1 ? 'Next' : 'Done'}</button>
         </div>
       </div>
     </>

@@ -60,6 +60,12 @@ export function Omni() {
     const a = answer(s); setAns(scope && a.ag ? { ...a, ag: scope } : a); setQ(''); setAsked(false); setMini(false); setSel(-1)
     const h = [s, ...hist.filter((x) => x !== s)].slice(0, 4); setHist(h); try { localStorage.setItem('w7-asks', JSON.stringify(h)) } catch { /* private mode */ }
   }
+  // A search that found nothing hands its question here (All pages' "Ask the agents"): open the bar and answer it.
+  const sub = useRef(submit); sub.current = submit
+  useEffect(() => {
+    const f = (e: Event) => { const t = (e as CustomEvent<string>).detail; setMini(false); if (t) sub.current(t); else inp.current?.focus() }
+    addEventListener('wm-ask', f); return () => removeEventListener('wm-ask', f)
+  }, [])
   // Auto-suggest, newest first: your recent questions, then questions raised by what just changed, then a few defaults.
   const FROM: Record<string, string> = { 'who-fin': 'Who approves a 30% discount now?', 'who-mgr': 'What can a sales manager approve alone?', qe: 'What happens at quarter end?', renew: 'Do flat renewals need approval?', 'cfg-cpq': 'Is CPQ quote sync working?', flow: 'How does a deal get approved?' }
   const live = w.acts.filter((a) => a.block && FROM[a.block]).map((a) => ({ t: FROM[a.block!], when: ago((w.now - a.at) / 1000) }))

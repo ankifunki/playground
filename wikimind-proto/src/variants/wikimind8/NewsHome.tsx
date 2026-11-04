@@ -3,6 +3,7 @@ import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
 import { Thresholds } from './Flow'
 import { AgentsOverview } from './Agents'
 import { HomeLive, HomeSources, RulesCard } from './Home'
+import { PathBar } from './Page'
 import { Icon } from './Icon'
 import { Ag, LiveNum } from './Live'
 import { RM, useW } from './store'
@@ -99,6 +100,17 @@ function ComingUp() {
   )
 }
 
+/** Wikimind 8's path to full automation, kept as a section rather than the headline, with the misses one click away. */
+function PathSection() {
+  const w = useW()
+  return (
+    <section className="nh-path" aria-label="Path to full automation">
+      <div className="nh-h"><h2>Path to full automation</h2><button className="wl pf" onClick={() => w.openMisses('all')}>98.6% reliable · see the 3 misses</button></div>
+      <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card label={false} />
+    </section>
+  )
+}
+
 /** Wikimind 8b's Home: the front page. */
 export function NewsHome() {
   const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -110,6 +122,7 @@ export function NewsHome() {
       <Today />
       <Stories />
       <AgentsOverview />
+      <PathSection />
       <ComingUp />
       <RulesCard />
       <HomeSources />

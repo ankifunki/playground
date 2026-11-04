@@ -1160,3 +1160,123 @@ button.km-t{cursor:pointer}
 @keyframes lnIn{from{transform:translateY(100%)}}
 @keyframes lnOut{to{transform:translateY(-100%)}}
 @media (prefers-reduced-motion:reduce){.ln-n,.ln-o{animation:none}.ln-o{display:none}}
+/* ---- Strategy next steps ---- */
+/* Proof off (?proof=off, assumption test 1): everything that proves the knowledge is hidden. */
+.w7.noproof .pf{display:none}
+/* Arrival from a citation: the rep's Slack exchange, the plain why, what to do, who owns the rule. One card. */
+.arv{background:var(--panel);box-shadow:var(--sh);border-radius:var(--r-md);padding:var(--s24) var(--s28) var(--s28);margin:var(--s24) 0 var(--s32);display:flex;flex-direction:column;gap:var(--s16);animation:rise .4s var(--eo) both}
+.arv-h{display:flex;align-items:center;justify-content:space-between;margin:calc(var(--s8) * -1) calc(var(--s12) * -1) calc(var(--s8) * -1) 0}
+.arv-h .tk{display:inline-flex;align-items:center;gap:var(--s6)}
+.arv-msg{display:flex;flex-direction:column;gap:var(--s12);padding:var(--s16);border-radius:var(--r-sm);background:var(--soft)}
+.arv-msg p{display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s10);margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.arv-msg b{display:block;font-weight:500}
+.arv-av{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--soft2);color:var(--ink2)}
+.w7 .arv-t{margin:var(--s4) 0 0;font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+.arv-why{margin:0;font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.arv-next{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:var(--s24);margin:0;padding:var(--s16) 0 0;border-top:1px solid var(--line)}
+.arv-next dd{margin:var(--s4) 0 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.arv-f{display:flex;flex-wrap:wrap;gap:var(--s8);align-items:center}
+.arv-done{display:flex;align-items:center;gap:var(--s8);margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ok);animation:fade .3s ease both}
+@media (max-width:640px){.arv{padding:var(--s20)}.arv-next{grid-template-columns:1fr;gap:var(--s12)}}
+/* The cited sentence keeps its highlighter, with a label naming who it was cited to. */
+.blk.cited .blk-c .lt{background-image:linear-gradient(color-mix(in srgb,var(--agent) 16%,transparent),color-mix(in srgb,var(--agent) 16%,transparent));background-size:100% .5em;background-position:0 88%;background-repeat:no-repeat}
+.cited-k{display:block;margin:0 0 var(--s4);color:var(--link)}
+/* Misses, in the right panel. */
+.ms-h{display:flex;flex-direction:column;gap:var(--s4)}
+.ms-h b{font:400 var(--fs-head)/36px var(--serif);color:var(--ink)}
+.ms-h p{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.ms-f{display:flex;gap:var(--s12);align-items:baseline;margin:0;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ms-f .wl{color:var(--link);font-weight:500}
+.ms-l{list-style:none;margin:0;padding:0}
+.ms-l li{display:flex;flex-direction:column;gap:var(--s10);padding:var(--s16) 0;border-top:1px solid var(--line)}
+.ms-k{display:flex;align-items:center;gap:var(--s8);font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ms-k .tk{margin-left:auto}
+.ms-l dl{margin:0;display:flex;flex-direction:column;gap:var(--s8)}
+.ms-l dd{margin:var(--s2) 0 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ms-go{display:inline-flex;align-items:center;gap:var(--s6);align-self:flex-start;color:var(--link);font:500 var(--fs-ui)/20px var(--sans)}
+.ap-rel .wl{font:inherit;color:var(--link);text-decoration:underline;text-underline-offset:3px}
+/* All pages: the flat corpus, A to Z, and one search across titles, summaries and sentences. */
+.ix-n{margin:0 0 var(--s24);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.ix-q{display:flex;align-items:center;gap:var(--s10);height:48px;padding:0 var(--s8) 0 var(--s16);border-radius:var(--r-sm);background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink2);margin:0 0 var(--s32)}
+.ix-q:focus-within{box-shadow:inset 0 0 0 1px var(--link)}
+.ix-q input{flex:1;min-width:0;border:0;background:none;outline:none;font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.ix-s,.ix-g{margin:0 0 var(--s32)}
+.w7 .ix h2.tk{margin:0 0 var(--s8);font-family:var(--mono)}
+.ix-p,.ix-t{list-style:none;margin:0;padding:0}
+.ix-p li,.ix-t li{border-top:1px solid var(--line)}
+.ix-p button,.ix-t button{display:flex;flex-direction:column;gap:var(--s4);width:100%;padding:var(--s14) 0;border:0;background:none;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ix-p b{font:500 var(--fs-body)/26px var(--sans);color:var(--link)}
+.ix-l{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ix-p small,.ix-t small{display:inline-flex;align-items:center;gap:var(--s6);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ix-t span{font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.ix mark{background:var(--linkb);color:inherit;border-radius:2px}
+.ix-none{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s12);padding:var(--s20) 0;border-top:1px solid var(--line)}
+.ix-none p{margin:0;font:400 var(--fs-body)/26px var(--sans);color:var(--ink2)}
+.ix-none b{color:var(--ink);font-weight:500}
+@media (hover:hover) and (pointer:fine){.ix-p button:hover b{text-decoration:underline;text-underline-offset:3px}.ix-t button:hover span{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:4px}}
+/* 8b's path section and the Home demo line. */
+.nh-path{margin:0 0 var(--s24)}
+.nh-path .nh-h{margin-bottom:var(--s12)}
+.nh-path .wl{color:var(--link);font:500 var(--fs-ui)/20px var(--sans)}
+.home-demo{display:flex;align-items:center;gap:var(--s10);margin:var(--s16) 0 0;font:400 var(--fs-meta)/18px var(--sans)}
+.home-demo .wl{color:var(--link)}
+/* Your org's first day, in the tour: sources connect, a day's clock runs, the groves fill. */
+.asm{position:fixed;z-index:119;left:50%;top:max(var(--s72),calc(var(--vtop, 12px) + 64px));width:min(560px,calc(100vw - 32px));transform:translateX(-50%);background:var(--panel);border-radius:var(--r-lg);box-shadow:var(--sh2);padding:var(--s20) var(--s24) var(--s24);display:flex;flex-direction:column;gap:var(--s16);animation:fade .3s ease both}
+.asm-h{display:flex;align-items:baseline;gap:var(--s12)}
+.asm-clock{font:450 var(--fs-label)/16px var(--mono);color:var(--link)}
+.asm-re{margin-left:auto;display:inline-flex;align-items:center;gap:var(--s4);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.asm-src{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s8)}
+.asm-src li{display:grid;grid-template-columns:14px minmax(0,1fr) 12px;column-gap:var(--s8);align-items:center;padding:var(--s8) var(--s10);border-radius:var(--r-sm);background:var(--soft);color:var(--ink2);transition:color .3s ease}
+.asm-src b{font:500 var(--fs-meta)/18px var(--sans);color:var(--ink)}
+.asm-src span{grid-column:2;font:400 var(--fs-meta)/18px var(--sans)}
+.asm-src li>svg:last-child{grid-row:1;grid-column:3;color:var(--ok);animation:fade .3s ease both}
+.asm-ag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s8)}
+.asm-ag li{display:grid;grid-template-columns:20px 96px minmax(0,1fr) 40px;gap:var(--s10);align-items:center}
+.asm-n{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.asm-bar{height:4px;border-radius:2px;background:var(--soft2);overflow:hidden}
+.asm-bar i{display:block;height:100%;background:var(--link);transform-origin:left}
+.asm-c{font:450 var(--fs-label)/16px var(--mono);color:var(--ink2);text-align:right}
+.asm-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;padding:var(--s12) 0 0;border-top:1px solid var(--line)}
+.asm-sum dd{margin:var(--s4) 0 0;font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+@media (max-width:640px){.asm-src{grid-template-columns:1fr}.asm-ag li{grid-template-columns:20px 80px minmax(0,1fr) 32px}.asm-sum dd{font-size:var(--fs-body);line-height:26px}}
+.w7 .ix ul{padding:0}
+/* ---- Look B · Calibrated instrument (data-look="b" on :root, switched from the top bar) ----
+   Cool paper neutrals, cobalt for agents and anything live, green / amber / slate for state only. Geist everywhere
+   (500 for headings, no serif); IBM Plex Mono for evidence: labels, counts, sources, timestamps. Signature: numbered
+   evidence marks on traced sentences, tabular figures, and one 2px signal line for anything live. */
+:root[data-look="b"]:not([data-theme="dark"]){
+ --bg:#F5F7F8;--panel:#FFFFFF;--soft:#EEF2F5;--soft2:#E3E9EE;--ink:#0F1720;--ink2:#5B6672;--line:#DDE3E8;--hair:#E8EDF1;
+ --link:#1F5BD8;--linkb:#E6EEFC;--agent:#1F5BD8;--agentb:#E6EEFC;--ok:#15803D;--okb:#E3F4E8;--warn:#B45309;--warnb:#FDF0E1;
+ --nav:#FFFFFF;--nav2:#F5F7F8;--navink:#0F1720;--navink2:#5B6672;
+ --sh:0 0 0 1px #DDE3E8,0 1px 2px rgba(15,23,32,.04);--sh2:0 0 0 1px #DDE3E8,0 12px 32px rgba(15,23,32,.1)}
+:root[data-look="b"][data-theme="dark"]{
+ --bg:#0D1117;--panel:#151B23;--soft:#1C2430;--soft2:#252F3C;--ink:#E6EDF3;--ink2:#9AA6B2;--line:#2A3441;--hair:#202935;
+ --link:#6EA0FF;--linkb:#16274A;--agent:#6EA0FF;--agentb:#16274A;--ok:#4ADE80;--okb:#12301E;--warn:#F5B35C;--warnb:#3A2812;
+ --nav:#151B23;--nav2:#0D1117;--navink:#E6EDF3;--navink2:#9AA6B2;
+ --sh:0 0 0 1px #2A3441,0 1px 2px rgba(0,0,0,.3);--sh2:0 0 0 1px #2A3441,0 12px 32px rgba(0,0,0,.4)}
+:root[data-look="b"]{--serif:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+:root[data-look="b"] .w7{font-variant-numeric:tabular-nums}
+/* Headings: Geist 500, tight; no serif anywhere. */
+:root[data-look="b"] .w7 :is(h1,h2,.arv-t,.ap-h b,.rec-name){font-weight:500;letter-spacing:-.025em}
+:root[data-look="b"] .w7 .doc h1{letter-spacing:-.035em}
+/* Plex Mono has 400 and 500; labels stay at 400 so evidence reads quiet. */
+:root[data-look="b"] .w7 :is(.tk,.sb-l,.sb-n,.sb-c,.ov-head,.asm-clock,.asm-c,.tbl th,.om-k,.path-l,.code){font-weight:400}
+/* Evidence marks: each traced sentence on a page carries a small mono number, like a footnote you can open. */
+:root[data-look="b"] .w7 .doc{counter-reset:ev}
+:root[data-look="b"] .w7 .blk.trc{counter-increment:ev}
+:root[data-look="b"] .w7 .blk.trc .blk-c .lt::after{content:counter(ev);display:inline-block;margin-left:var(--s4);padding:0 var(--s4);border-radius:var(--r-xs);background:var(--linkb);color:var(--link);font:400 var(--fs-label)/16px var(--mono);vertical-align:2px}
+/* One 2px signal line for anything live, in place of the radio icon and the pulsing dot. */
+:root[data-look="b"] .w7 .lp{width:2px;height:14px;border-radius:1px;background:var(--ink2)}
+:root[data-look="b"] .w7 .lp .ic{display:none}
+:root[data-look="b"] .w7 .lp.on{background:var(--link);animation:breathe 1.6s ease-in-out infinite}
+:root[data-look="b"] .w7 .lp.on::before{display:none}
+:root[data-look="b"] .w7 .ldot{width:2px;height:12px;border-radius:1px}
+:root[data-look="b"] .w7 .ldot::after{display:none}
+:root[data-look="b"] .w7 .ldot{animation:breathe 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){:root[data-look="b"] .w7 :is(.lp.on,.ldot){animation:none}}
+/* The look switch in the top bar. */
+.look{display:inline-flex;align-items:center;gap:var(--s6);height:32px;padding:0 var(--s12);border:0;border-radius:var(--r-pill);background:none;box-shadow:inset 0 0 0 1px var(--line);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:transform 160ms var(--eo),background-color .15s ease}
+.look b{font-weight:500;color:var(--ink)}
+.look:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.look:hover{background:var(--soft)}}
+@media (max-width:640px){.look{width:32px;padding:0;justify-content:center}.look span,.look b{display:none}.look[aria-pressed="true"]{color:var(--link);background:var(--linkb);box-shadow:none}}

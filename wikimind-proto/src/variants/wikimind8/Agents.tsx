@@ -97,7 +97,7 @@ function Know({ counts, total }: { counts: Record<St, number>; total: number }) 
   )
 }
 
-type Filter = null | 'ver' | 'ask' | 'block' | 'own'
+type Filter = null | 'ver' | 'ask' | 'block' | 'own' | 'rel'
 
 /** The overview: totals (each a filter) and one row per agent. Clicking a row opens the agent's profile. */
 export function AgentsOverview() {
@@ -109,7 +109,7 @@ export function AgentsOverview() {
     { k: null, n: total.toLocaleString('en-US'), t: 'pages' },
     { k: null, n: ver.toLocaleString('en-US'), t: 'verified by a person' },
     { k: null, n: '64%', t: 'runs on its own' },
-    { k: null, n: '98.6%', t: 'reliability' },
+    { k: 'rel', n: '98.6%', t: 'reliability' },
     { k: 'ask', n: String(qs), t: 'open questions' },
     { k: 'block', n: String(blockers), t: 'blockers' },
   ]
@@ -119,7 +119,8 @@ export function AgentsOverview() {
       <ul className="ov-sum">
         {stats.map((s) => (
           <li key={s.t}>
-            {s.k ? <button className={filter === s.k ? 'on' : ''} aria-pressed={filter === s.k} onClick={() => setFilter(filter === s.k ? null : s.k)}><b className="num"><LiveNum value={s.n} /></b><span>{s.t}</span></button>
+            {s.k === 'rel' ? <button className="pf-b" onClick={() => w.openMisses('all')} aria-label="Reliability 98.6%: see the 3 misses"><b className="num"><LiveNum value={s.n} /></b><span>{s.t} · 3 misses</span></button>
+              : s.k ? <button className={filter === s.k ? 'on' : ''} aria-pressed={filter === s.k} onClick={() => setFilter(filter === s.k ? null : s.k)}><b className="num"><LiveNum value={s.n} /></b><span>{s.t}</span></button>
               : <div><b className="num"><LiveNum value={s.n} /></b><span>{s.t}</span></div>}
           </li>
         ))}
@@ -182,7 +183,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
         <MiniBar own={r.own} ask={r.ask} />
         <div className="ap-ring"><span><b className="num">{r.own}%</b> runs on its own · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
         <ul className="ap-jobs">{JOBS[id].map((j) => <li key={j.t} className={j.st}><span>{j.t}</span><small>{JOB_ST[j.st]} · {j.n.toLocaleString('en-US')} in 30 days</small></li>)}</ul>
-        <div className="ap-rel"><span><b className="num">{r.rel.toFixed(1)}%</b> matched a person · {MISSES[id] ? `${MISSES[id]} miss` : 'no misses'} in 30 days</span><Spark ag={id} rel={r.rel} /></div>
+        <div className="ap-rel"><span><b className="num">{r.rel.toFixed(1)}%</b> matched a person · {MISSES[id] ? <button className="wl pf" onClick={() => w.openMisses(id)}>{MISSES[id]} miss</button> : 'no misses'} in 30 days</span><Spark ag={id} rel={r.rel} /></div>
       </section>
 
       <section>

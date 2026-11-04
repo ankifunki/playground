@@ -43,7 +43,7 @@ export function AutomationCards() {
     <>
       <PathBar own={64} ask={29} gaps="Okta sign-in logs, NetSuite write access" card label={false} />
       <div className="home-3">
-        <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl" onClick={() => w.go('discount-approvals')}>See the 3 misses</button></div>
+        <div className="hc"><span className="tk">Reliability</span><b>98.6%</b><p>matched a person on 1,912 decisions in 30 days</p><button className="wl pf" onClick={() => w.openMisses('all')}>See the 3 misses</button></div>
         <div className="hc"><span className="tk">Automation</span><b>64%</b><p>runs on its own, up from 51% in September</p></div>
         <div className="hc"><span className="tk">Gaps</span><b>7%</b><p>blocked until they get Okta sign-in logs and NetSuite write access</p></div>
       </div>
@@ -128,11 +128,13 @@ export function RulesCard() {
 
 /** The sources footer: an icon pile and a one-line summary of the corpus. */
 export function HomeSources() {
+  const w = useW()
   return (
     <>
       <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
         <b>1,284 pages</b> written by 6 agents from <b>3,912</b> observations this week. None typed by a person.
       </Sources>
+      <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span></p>
     </>
   )
 }

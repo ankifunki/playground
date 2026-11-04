@@ -33,7 +33,7 @@ export function LiveText({ text, id }: { text: string; id?: string }) {
 /** The chip on anything an agent changed: who and when. It opens the block's trace, like clicking the block itself. */
 export function Chip({ id }: { id: string }) {
   const w = useW(), y = w.why[id]
-  if (!y) return null
+  if (!y || !w.proof) return null
   const s = (w.now - y.at) / 1000, recent = s < 8
   return (
     <span className="chip-w">
@@ -51,7 +51,7 @@ export function Chip({ id }: { id: string }) {
  */
 export function useTraceTarget(id: string) {
   const w = useW()
-  if (!TRACE[id]) return {}
+  if (!TRACE[id] || !w.proof) return {}
   const open = () => w.openTrace(w.trace === id ? null : id)
   return {
     tabIndex: 0, title: 'See why',
@@ -63,7 +63,7 @@ export function useTraceTarget(id: string) {
 export function Block({ id, children, cls = '' }: { id: string; children: ReactNode; cls?: string }) {
   const w = useW(), editing = w.presence?.block === id, target = useTraceTarget(id)
   return (
-    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '') + (TRACE[id] ? ' trc' : '')}>
+    <div id={'b-' + id} className={'blk ' + cls + (editing ? ' editing' : '') + (w.trace === id ? ' traced' : '') + (TRACE[id] && w.proof ? ' trc' : '')}>
       {editing && <span className="cursor" aria-live="polite"><Ag id={w.presence!.ag} size={14} /><span>{AG[w.presence!.ag].name}</span><i className="cursor-dots" aria-hidden="true"><b /><b /><b /></i></span>}
       <div className="blk-c" {...target}>{children}</div>
     </div>

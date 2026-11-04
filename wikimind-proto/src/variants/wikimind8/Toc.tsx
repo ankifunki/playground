@@ -24,7 +24,13 @@ export function Toc({ items }: { items: TocItem[] }) {
     return () => { cancelAnimationFrame(raf); removeEventListener('scroll', f); removeEventListener('resize', f) }
   }, [items])
   // Keep the active chip in view in the narrow strip.
-  useEffect(() => { document.querySelector(`.toc a[data-id="${active}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' }) }, [active])
+  // Keep the current chip in view by scrolling the strip sideways only; scrollIntoView would also scroll the page.
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>(`.toc a[data-id="${active}"]`), box = el?.closest<HTMLElement>('ol')
+    if (!el || !box || box.scrollWidth <= box.clientWidth) return
+    const e = el.getBoundingClientRect(), b = box.getBoundingClientRect()
+    if (e.left < b.left) box.scrollLeft += e.left - b.left - 16; else if (e.right > b.right) box.scrollLeft += e.right - b.right + 16
+  }, [active])
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })
   const writing = w.presence?.page === 'discount-approvals' ? w.presence.block : null
   return (
