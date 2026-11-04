@@ -82,25 +82,17 @@ function Tiles({ tiles, size = 'm' }: { tiles: { st: St; page?: { id: string; ti
 }
 
 /**
- * What an agent knows as a ring: its area grows with the agent's page count (the largest grove gets the largest ring),
- * its arcs are the page states (verified, current, out of date, open question). A small dot orbits it slowly as the
- * agent re-reads. Upright bars stay reserved for how much work runs on its own, so the two never read alike.
+ * What an agent knows, as numbers: the page count, then one line of counts by state, each with a small colour key.
+ * Deliberately no chart: the row's only chart is the runs-on-its-own bar, so nothing competes with it.
  */
-function KnowRing({ counts, total, max, size, delay = 0 }: { counts: Record<St, number>; total: number; max: number; size?: number; delay?: number }) {
-  const d = size ?? Math.round((28 + 28 * Math.sqrt(total / max)) / 2) * 2, sw = d >= 80 ? 8 : 6, r = (d - sw) / 2, c = 2 * Math.PI * r, gap = 2
-  const order: St[] = ['ver', 'cur', 'old', 'ask']
-  let at = 0
-  const arcs = order.filter((k) => counts[k] > 0).map((k) => {
-    const len = Math.max(2, (c * counts[k]) / total - gap), arc = { k, len, off: at }
-    at += (c * counts[k]) / total
-    return arc
-  })
+function Know({ counts, total }: { counts: Record<St, number>; total: number }) {
+  const short: Record<St, string> = { ver: 'verified', cur: 'current', old: 'out of date', ask: 'open' }
   return (
-    <span className="kr" style={{ width: d, height: d, ['--d' as string]: delay + 's' }} role="img" aria-label={order.map((k) => `${counts[k]} ${STATE[k].toLowerCase()}`).join(', ')}>
-      <svg width={d} height={d} viewBox={`0 0 ${d} ${d}`} aria-hidden="true">
-        {arcs.map((x) => <circle key={x.k} className={'kr-s ' + x.k} cx={d / 2} cy={d / 2} r={r} strokeWidth={sw} strokeDasharray={`${x.len} ${c}`} strokeDashoffset={-x.off}><title>{`${STATE[x.k]} · ${counts[x.k]}`}</title></circle>)}
-      </svg>
-      <i className="kr-orbit" aria-hidden="true"><b style={{ width: sw - 2, height: sw - 2 }} /></i>
+    <span className="kn">
+      <b className="num">{total.toLocaleString('en-US')}<small> pages</small></b>
+      <span className="kn-l">{(['ver', 'cur', 'old', 'ask'] as St[]).filter((k) => counts[k] > 0).map((k) => (
+        <span key={k} className={'kn-s ' + k} title={STATE[k]}><i className={'km-t ' + k} />{counts[k]} {short[k]}</span>
+      ))}</span>
     </span>
   )
 }
@@ -141,7 +133,7 @@ export function AgentsOverview() {
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
                 <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{a.job}</small></span></span>
-                <span className="ov-kb"><KnowRing counts={g.counts} total={g.total} max={Math.max(...groves.map((x) => x.total))} delay={AGENTS.indexOf(a) * 2} /><span className="ov-kt"><b className="num">{g.total} pages</b><small>{g.counts.ver} verified{g.counts.ask ? ` · ${g.counts.ask} open ${g.counts.ask === 1 ? 'question' : 'questions'}` : ''}</small></span></span>
+                <span className="ov-kb"><Know counts={g.counts} total={g.total} /></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
@@ -149,9 +141,6 @@ export function AgentsOverview() {
             </li>
           )
         })}
-      </ul>
-      <ul className="km-l">
-        {(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}</li>)}
       </ul>
     </section>
   )
@@ -183,7 +172,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it knows</h3>
-        <div className="ap-know"><KnowRing counts={g.counts} total={g.total} max={g.total} size={96} />
+        <div className="ap-know">
         <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul></div>
         {g.pages.length > 0 && <ul className="ap-list">{g.pages.map((p) => <li key={p.id}><button className="wl" onClick={() => w.go(p.id)}>{p.title}</button><small>re-read {ago(p.re)}</small></li>)}</ul>}
         {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}><span>{x.q}</span><small>{x.who}</small></li>)}</ul></>}

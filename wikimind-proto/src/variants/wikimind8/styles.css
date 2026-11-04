@@ -1127,3 +1127,13 @@ button.km-t{cursor:pointer}
  .ov-rows li>button{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"ag ag" "kb rel" "own own" "now now";row-gap:var(--s12);align-items:center}
  .ov-ag{grid-area:ag}.ov-kb{grid-area:kb}.ov-own{grid-area:own}.ov-rel{grid-area:rel;text-align:right}.ov-now{grid-area:now}
 }
+/* What it knows, as numbers: page count (serif) and one line of state counts with colour keys. */
+.kn{display:flex;flex-direction:column;gap:var(--s4)}
+.kn>b{font:400 var(--fs-title)/28px var(--serif);color:var(--ink)}
+.kn>b small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.kn-l{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s12);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.kn-s{display:inline-flex;align-items:center;gap:var(--s6);white-space:nowrap;transition:opacity .25s ease,color .25s ease}
+.kn-s .km-t{width:6px;height:6px}
+.ov.f-ver .kn-s:not(.ver),.ov.f-ask .kn-s:not(.ask){opacity:.3}
+.ov.f-ver .kn-s.ver,.ov.f-ask .kn-s.ask{color:var(--ink)}
+.ap-know .ap-counts{grid-template-columns:1fr 1fr}
