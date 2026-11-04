@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
-import { REL } from './Home'
+import { MiniBar, REL } from './Home'
 import { Icon } from './Icon'
 import { Ag, LivePulse } from './Live'
 import { RM, useW } from './store'
@@ -82,28 +82,26 @@ function Tiles({ tiles, size = 'm' }: { tiles: { st: St; page?: { id: string; ti
 }
 
 /**
- * What an agent knows as one bar: its length is its page count (the largest grove fills the column), grouped by
- * state (verified, current, out of date, open question). A soft light passes along it as the agent re-reads.
+ * What an agent knows as a ring: its area grows with the agent's page count (the largest grove gets the largest ring),
+ * its arcs are the page states (verified, current, out of date, open question). A small dot orbits it slowly as the
+ * agent re-reads. Upright bars stay reserved for how much work runs on its own, so the two never read alike.
  */
-function KnowBar({ counts, total, max, size = 'm', delay = 0 }: { counts: Record<St, number>; total: number; max: number; size?: 'm' | 'l'; delay?: number }) {
+function KnowRing({ counts, total, max, size, delay = 0 }: { counts: Record<St, number>; total: number; max: number; size?: number; delay?: number }) {
+  const d = size ?? Math.round((28 + 28 * Math.sqrt(total / max)) / 2) * 2, sw = d >= 80 ? 8 : 6, r = (d - sw) / 2, c = 2 * Math.PI * r, gap = 2
   const order: St[] = ['ver', 'cur', 'old', 'ask']
+  let at = 0
+  const arcs = order.filter((k) => counts[k] > 0).map((k) => {
+    const len = Math.max(2, (c * counts[k]) / total - gap), arc = { k, len, off: at }
+    at += (c * counts[k]) / total
+    return arc
+  })
   return (
-    <span className={'kb ' + size} style={{ width: (total / max) * 100 + '%', ['--d' as string]: delay + 's' }} role="img" aria-label={order.map((k) => `${counts[k]} ${STATE[k].toLowerCase()}`).join(', ')}>
-      {order.filter((k) => counts[k] > 0).map((k) => <i key={k} className={'kb-s ' + k} style={{ flexGrow: counts[k] }} title={`${STATE[k]} · ${counts[k]}`} />)}
-      <b className="kb-read" aria-hidden="true" />
+    <span className="kr" style={{ width: d, height: d, ['--d' as string]: delay + 's' }} role="img" aria-label={order.map((k) => `${counts[k]} ${STATE[k].toLowerCase()}`).join(', ')}>
+      <svg width={d} height={d} viewBox={`0 0 ${d} ${d}`} aria-hidden="true">
+        {arcs.map((x) => <circle key={x.k} className={'kr-s ' + x.k} cx={d / 2} cy={d / 2} r={r} strokeWidth={sw} strokeDasharray={`${x.len} ${c}`} strokeDashoffset={-x.off}><title>{`${STATE[x.k]} · ${counts[x.k]}`}</title></circle>)}
+      </svg>
+      <i className="kr-orbit" aria-hidden="true"><b style={{ width: sw - 2, height: sw - 2 }} /></i>
     </span>
-  )
-}
-
-/** How much of an agent's work runs on its own, as a ring: dark = on its own, light = asks a person first. */
-function Ring({ own, ask, size = 24 }: { own: number; ask: number; size?: number }) {
-  const sw = size >= 40 ? 4 : 3, r = (size - sw) / 2, c = 2 * Math.PI * r
-  return (
-    <svg className="ring" width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${own}% runs on its own, ${ask}% asks a person first`}>
-      <circle cx={size / 2} cy={size / 2} r={r} className="ring-t" strokeWidth={sw} />
-      <circle cx={size / 2} cy={size / 2} r={r} className="ring-a" strokeWidth={sw} strokeDasharray={`${(c * (own + ask)) / 100} ${c}`} />
-      <circle cx={size / 2} cy={size / 2} r={r} className="ring-o" strokeWidth={sw} strokeDasharray={`${(c * own) / 100} ${c}`} />
-    </svg>
   )
 }
 
@@ -134,7 +132,7 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>What it knows · pages by state</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>What it knows</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = REL[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
@@ -142,9 +140,9 @@ export function AgentsOverview() {
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
-                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{g.total} pages · {a.job}</small></span></span>
-                <span className="ov-kb"><KnowBar counts={g.counts} total={g.total} max={Math.max(...groves.map((x) => x.total))} delay={AGENTS.indexOf(a) * 1.3} /></span>
-                <span className="ov-own"><Ring own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
+                <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{a.job}</small></span></span>
+                <span className="ov-kb"><KnowRing counts={g.counts} total={g.total} max={Math.max(...groves.map((x) => x.total))} delay={AGENTS.indexOf(a) * 2} /><span className="ov-kt"><b className="num">{g.total} pages</b><small>{g.counts.ver} verified{g.counts.ask ? ` · ${g.counts.ask} open ${g.counts.ask === 1 ? 'question' : 'questions'}` : ''}</small></span></span>
+                <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
               </button>
@@ -185,15 +183,16 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it knows</h3>
-        <KnowBar counts={g.counts} total={g.total} max={g.total} size="l" />
-        <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul>
+        <div className="ap-know"><KnowRing counts={g.counts} total={g.total} max={g.total} size={96} />
+        <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul></div>
         {g.pages.length > 0 && <ul className="ap-list">{g.pages.map((p) => <li key={p.id}><button className="wl" onClick={() => w.go(p.id)}>{p.title}</button><small>re-read {ago(p.re)}</small></li>)}</ul>}
         {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}><span>{x.q}</span><small>{x.who}</small></li>)}</ul></>}
       </section>
 
       <section>
         <h3>What it runs</h3>
-        <div className="ap-ring"><Ring own={r.own} ask={r.ask} size={48} /><span><b className="num">{r.own}%</b> runs on its own · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
+        <MiniBar own={r.own} ask={r.ask} />
+        <div className="ap-ring"><span><b className="num">{r.own}%</b> runs on its own · {r.ask}% asks a person first · {100 - r.own - r.ask}% people decide</span></div>
         <ul className="ap-jobs">{JOBS[id].map((j) => <li key={j.t} className={j.st}><span>{j.t}</span><small>{JOB_ST[j.st]} · {j.n.toLocaleString('en-US')} in 30 days</small></li>)}</ul>
         <div className="ap-rel"><span><b className="num">{r.rel.toFixed(1)}%</b> matched a person · {MISSES[id] ? `${MISSES[id]} miss` : 'no misses'} in 30 days</span><Spark ag={id} rel={r.rel} /></div>
       </section>

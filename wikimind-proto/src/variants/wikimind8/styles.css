@@ -1100,3 +1100,30 @@ button.km-t{cursor:pointer}
 .ap-jobs li.own{border-left-color:var(--ink)}
 .ap-jobs li.ask{border-left-color:color-mix(in srgb,var(--ink) 28%,transparent)}
 .ov-head,.ov-rows li>button{grid-template-columns:minmax(0,1.2fr) minmax(0,2.6fr) minmax(0,.8fr) 72px minmax(0,1.3fr)}
+/* Knowledge ring: area by page count, arcs by state, a small dot orbiting as the agent re-reads. */
+.ov-kb{display:flex;align-items:center;gap:var(--s12);padding-top:0}
+.ov-kt b{display:block;font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ov-kt small{display:block;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.kr{position:relative;flex:none;display:block}
+.kr svg{display:block;transform:rotate(-90deg)}
+.kr-s{fill:none;transition:opacity .25s ease}
+.kr-s.ver{stroke:var(--link)}
+.kr-s.cur{stroke:color-mix(in srgb,var(--link) 30%,transparent)}
+.kr-s.old{stroke:color-mix(in srgb,var(--ink) 18%,transparent)}
+.kr-s.ask{stroke:var(--warn)}
+.kr-orbit{position:absolute;inset:0;animation:krOrbit 14s linear infinite;animation-delay:calc(var(--d,0s) * -1)}
+.kr-orbit b{position:absolute;top:1px;left:50%;transform:translateX(-50%);border-radius:50%;background:var(--panel);box-shadow:0 0 0 1px color-mix(in srgb,var(--link) 40%,transparent)}
+@keyframes krOrbit{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.kr-orbit{animation:none}}
+.ov.f-ver .kr-s:not(.ver),.ov.f-ask .kr-s:not(.ask){opacity:.15}
+.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,1.3fr) minmax(0,1.3fr) minmax(0,1.7fr) 72px minmax(0,1.3fr);align-items:center}
+.ov-ag{align-items:center}
+.ov-own .mini-bar{display:inline-flex}
+.ap-know{display:flex;align-items:center;gap:var(--s16)}
+.ap-know .ap-counts{grid-template-columns:1fr;flex:1}
+.ap-ring{margin-top:var(--s4)}
+@media (max-width:640px){.ov-own .mini-bar{display:inline-flex}}
+@media (max-width:900px){
+ .ov-rows li>button{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"ag ag" "kb rel" "own own" "now now";row-gap:var(--s12);align-items:center}
+ .ov-ag{grid-area:ag}.ov-kb{grid-area:kb}.ov-own{grid-area:own}.ov-rel{grid-area:rel;text-align:right}.ov-now{grid-area:now}
+}
