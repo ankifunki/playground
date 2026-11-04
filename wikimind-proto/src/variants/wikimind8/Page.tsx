@@ -147,11 +147,10 @@ export function Approvals() {
       <Block id="who-fin"><ul><li><LiveText id="who-fin" text={`From ${f}% to 35%: the sales manager, then Finance.`} /></li></ul></Block>
       <Block id="who-cro" cls={w.arrive ? 'cited' : ''}>{w.arrive && <span className="cited-k tk">Cited to Sam Ortiz in Slack</span>}<ul><li><span className="lt">Over 35%: the CRO approves directly.</span></li></ul></Block>
 
-      <h2 id="rules">Rules</h2>
+      {w.v9 ? <div className="h2-row"><h2 id="rules">Rules</h2><button className="btn ghost rl-add" onClick={() => w.openRule(true)}><Icon name="plus" size={14} />Add a rule</button></div> : <h2 id="rules">Rules</h2>}
       <Toggle id="r-exp" title="When a request expires"><p><span className="lt">Requests expire after 14 days, and the rep resubmits. Added in 2024, after two deals closed on six-week-old prices.</span></p></Toggle>
       <Toggle id="r-after" title="After approval"><p><span className="lt">Once a deal is approved, only Deal Desk can change its amount. Discounts over 10% need a written reason.</span></p></Toggle>
       {w.rules.map((r) => <Toggle key={r.id} id={r.id} title={r.title}><p><span className="lt">{r.body}</span></p>{r.why && <p className="rl-why">{r.why}</p>}<p className="rl-by"><Icon name="circle-check" size={12} />Added by you · approved by Maria Okafor · {r.scope}</p></Toggle>)}
-      {w.v9 && <button className="btn ghost rl-add" onClick={() => w.openRule(true)}><Icon name="plus" size={14} />Add a rule</button>}
 
       <h2 id="practice">In practice</h2>
       <h3>Quarter-end approvals in Slack</h3>

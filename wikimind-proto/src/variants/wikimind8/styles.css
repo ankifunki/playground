@@ -1817,3 +1817,11 @@ button.km-t{cursor:pointer}
 .w7 .rl-why{margin:var(--s6) 0 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
 .w7 .rl-by{display:flex;align-items:center;gap:var(--s6);margin:var(--s6) 0 0;font:400 var(--fs-meta)/18px var(--sans);color:var(--ok)}
 .rail .rl-steps li{border:0;padding:0}
+/* A section heading with its action on the right (Rules · Add a rule). */
+.h2-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s16)}
+.h2-row .rl-add{margin:0;flex:none}
+.rail-solo{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink);padding-left:var(--s4)}
+/* A page's sections are divided by a light hairline above each heading (the Rules row carries it for its h2). */
+.w7 article.doc:not(.home):not(.gn):not(.ix) h2[id],.w7 article.doc .h2-row{margin-top:var(--s48);padding-top:var(--s48);border-top:1px solid var(--hair)}
+.w7 article.doc .h2-row>h2[id]{margin-top:0;padding-top:0;border-top:0}
+.w7 article.doc:not(.home):not(.gn):not(.ix) .h2-row>h2[id]{margin-top:0;padding-top:0;border-top:0}

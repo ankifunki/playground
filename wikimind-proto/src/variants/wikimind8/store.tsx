@@ -24,7 +24,8 @@ type W = {
   playing: boolean; setPlaying: (b: boolean) => void
   rail: boolean; setRail: (b: boolean) => void; nav: boolean; setNav: (b: boolean) => void
   replay: () => void; jump: (block: string) => void; log: (a: Omit<Act, 'id' | 'at'>) => void
-  trace: string | null; openTrace: (id: string | null) => void; extra: Record<string, TStep[]>
+  /** A trace; `fromActivity` nests it under Live activity (Back returns there). Every other panel stands alone. */
+  trace: string | null; openTrace: (id: string | null, fromActivity?: boolean) => void; traceFrom: boolean; extra: Record<string, TStep[]>
   agent: AgentId | null; openAgent: (a: AgentId | null) => void
   tour: number | null; setTour: (n: number | null) => void; change: () => void
   /** Arrival from a Slack citation (the brief's third audience), and whether the visitor asked the page's owner. */
@@ -96,10 +97,10 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null), [blocker, setBlocker] = useState<Gap | null>(null)
   const [question, setQuestion] = useState<string | null>(null), [rules, setRules] = useState<UserRule[]>([]), [rule, setRule] = useState(false)
   const addRule = (r: UserRule) => setRules((l) => [...l, r])
-  const openRule = (b: boolean) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(b); if (b) setRail(true) }
-  const openBlocker = (g: Gap | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setQuestion(null); setBlocker(g); if (g) setRail(true) }
-  const openQuestion = (q: string | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(q); if (q) setRail(true) }
-  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true) }
+  const openRule = (b: boolean) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(b); if (b) setRail(true); else setRailS(false) }
+  const openBlocker = (g: Gap | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setQuestion(null); setBlocker(g); if (g) setRail(true); else setRailS(false) }
+  const openQuestion = (q: string | null) => { setRule(false); setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(q); if (q) setRail(true); else setRailS(false) }
+  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true); else setRailS(false) }
   const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
   // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
   const grant = (g: Gap) => {
@@ -112,10 +113,16 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
     setChatFrom(from); setChat((c) => [...c, { id: cid.current++, who: 'you', text }]); setChatOn(true)
   }
   const [proof] = useState(() => typeof location === 'undefined' || new URLSearchParams(location.search).get('proof') !== 'off')
-  const openTrace = (id: string | null) => { if (!proof) return; setTrace(id); if (id) { setMisses(null); setRail(true) } }
-  const openMisses = (m: AgentId | 'all' | null) => { setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) }
+  const [traceFrom, setTraceFrom] = useState(false)
+  // A trace opened from Live activity goes back there when closed; one opened from the page closes the panel.
+  const openTrace = (id: string | null, fromActivity = false) => {
+    if (!proof) return
+    if (id) { setTraceFrom(fromActivity); setTrace(id); setMisses(null); setRail(true); return }
+    setTrace(null); if (!traceFrom) setRailS(false)
+  }
+  const openMisses = (m: AgentId | 'all' | null) => { setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) ; if (!m) setRailS(false) }
   // A job's profile shows in the right panel, like a trace; a trace opened from it shows on top.
-  const openAgent = (a: AgentId | null) => { setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) }
+  const openAgent = (a: AgentId | null) => { setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) ; if (!a) setRailS(false) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
   useEffect(() => { const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t) }, [])
@@ -193,10 +200,14 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
       else if (e.key === 's' || e.key === 'S') arriveSlack()
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (blocker) setBlocker(null); else if (question) setQuestion(null); else if (rule) setRule(false); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') {
+        if (trace && traceFrom) { setTrace(null); return }
+        if (trace || agent || misses || feed || blocker || question || rule || chatOn) { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(null); setQuestion(null); setRule(false); setChatOnS(false); setRailS(false); return }
+        setRail(false); setNav(false)
+      }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker, question, openQuestion, rules, addRule, rule, openRule }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, traceFrom, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker, question, openQuestion, rules, addRule, rule, openRule }}>{children}</Ctx.Provider>
 }

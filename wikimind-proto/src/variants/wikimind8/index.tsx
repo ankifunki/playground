@@ -108,11 +108,12 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
 
 /** The right rail: live activity across the workspace, newest first. Each item links to the block it changed. */
 function Rail() {
-  const w = useW(), [from, setFrom] = useState(false)
+  const w = useW()
   return (
     <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses && !w.feed && !w.blocker && !w.question && !w.rule ? ' chat' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace || w.agent || w.misses || w.feed || w.blocker || w.question || w.rule || w.chatOn ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else if (w.misses) w.openMisses(null); else if (w.feed) w.openFeed(null); else if (w.blocker) w.openBlocker(null); else if (w.question) w.openQuestion(null); else if (w.rule) w.openRule(false); else if (w.agent) w.openAgent(null); else w.setChatOn(false) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.blocker ? 'Blocked' : w.question ? 'Open question' : w.rule ? 'New rule' : w.agent ? 'Job' : 'Chat'}</span></span>
+        {w.trace && w.traceFrom ? <span className="rail-t"><button className="ib rail-back" onClick={() => w.openTrace(null)} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb"><span>Live activity</span>Trace</span></span>
+          : w.trace || w.agent || w.misses || w.feed || w.blocker || w.question || w.rule || w.chatOn ? <span className="rail-t rail-solo">{w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.blocker ? 'Blocked' : w.question ? 'Open question' : w.rule ? 'New rule' : w.agent ? 'Job' : 'Chat'}</span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
         <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.openFeed(null); w.openBlocker(null); w.openQuestion(null); w.openRule(false); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
@@ -126,7 +127,7 @@ function Rail() {
                 <span className="rail-x"><b>{a.ag === 'person' ? a.who : 'Asoka'}</b> {a.t.charAt(0).toLowerCase() + a.t.slice(1)}</span>
                 <small>{ago((w.now - a.at) / 1000)} · <button className="wl" onClick={() => (a.block ? w.jump(a.block) : w.go(a.page))}>{PAGES[a.page].title}</button></small>
               </span>
-              {a.block && TRACE[a.block] && w.proof && <button className="ib rail-ch" onClick={() => { setFrom(true); w.openTrace(a.block!) }} aria-label="Open the trace"><Icon name="chevron-right" size={16} /></button>}
+              {a.block && TRACE[a.block] && w.proof && <button className="ib rail-ch" onClick={() => w.openTrace(a.block!, true)} aria-label="Open the trace"><Icon name="chevron-right" size={16} /></button>}
             </li>
           )
         })}

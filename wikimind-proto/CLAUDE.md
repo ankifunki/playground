@@ -110,11 +110,14 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
   - The panel shows the question, who Asoka is asking and since when, **What Asoka saw**, **Until it's answered**, and Open it on the page.
   - The actions: **Remind <person> in Slack**, or **Answer it yourself** (Asoka checks your answer with them). Both are logged.
 - **Add a rule** (`Rules.tsx`; store `rules`, `addRule`, `rule`, `openRule`):
-  - The page's Rules section ends with Add a rule, which opens a panel: rule, what it says, applies to, why.
+  - The page's Rules heading carries Add a rule on its right, which opens a panel: rule, what it says, applies to, why.
   - **Propose rule** runs Asoka's checks (Salesforce config; #deal-desk and tickets; overlap with Who approves), then sends it to Maria Okafor.
   - After about 5 s it is approved and added as a Rules toggle: "Added by you · approved by Maria Okafor", logged in Live activity, with See it on the page.
   - A proposal still lands if the panel is closed mid-check.
 - **Preset chips** in Play a deal are centred (they sat on the baseline).
+- **Side panels stand alone:** only a trace opened from Live activity keeps the "Live activity / Trace" crumb and Back. Every other panel (blocker, question, rule, feed, job, misses, chat, a trace from the page) shows just its own title, and closing it (×, Esc) closes the rail. Store: `openTrace(id, fromActivity)`, `traceFrom`.
+- **Add a rule sits right of the Rules heading** (`.h2-row`).
+- **Section rules on a page:** each h2 section starts with a 1px `--hair` rule, 48px above and below it (not on Home, the demo page or All pages).
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
   - Then what Asoka will do (UI 14), a segment meter with its count ("3 of 4 rules verified"), and the one thing missing with the action that closes it.
