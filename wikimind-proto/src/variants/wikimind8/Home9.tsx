@@ -5,7 +5,7 @@ import { AG, type AgentId } from './data'
 import { HomeLive, HomeSources, MovingFocus, RulesCard, useRun } from './Home'
 import { Icon, type IconName } from './Icon'
 import { Ag } from './Live'
-import { ComingUp, Stories, Today } from './NewsHome'
+import { Stories, Today } from './NewsHome'
 import { PathBar } from './Page'
 import { GAPS, useW, type Gap } from './store'
 import { Toc, type TocItem } from './Toc'
@@ -34,6 +34,46 @@ function RunsCard() {
   return <div className="hc"><span className="tk">Asoka runs</span><b className="num">{run.own}%</b><p>of Rippling’s Salesforce admin work, up from 51% in September</p></div>
 }
 function GapsMod() { return <GapsCarousel blocked={useRun().blocked} /> }
+
+/**
+ * Coming up, around readiness: each event says what Asoka will do and how ready it is (verified rules or steps, as
+ * segments), with the one thing missing and the action that closes it. Ready means nothing is missing. It follows the
+ * demo: Maria's answer readies quarter-end close; granting Okta sign-in logs readies the access review.
+ */
+function Readiness() {
+  const w = useW()
+  const answered = w.renewal === 'answered', okta = w.access.okta === 'done'
+  type Ev = { key: string; when: string; ag: AgentId; title: string; will: string; n: number; of: number; unit: string; missing?: React.ReactNode; open?: () => void }
+  const evs: Ev[] = [
+    { key: 'qe', when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', will: 'Logs the deals Deal Desk approves in #deal-desk, and flags any over 35% that skip the CRO.',
+      n: answered ? 4 : 3, of: 4, unit: 'rules verified', open: () => w.go('quarter-end'),
+      missing: answered ? undefined : <>Do flat renewals skip approval on purpose? <span className="rd-who">Asking Maria Okafor</span></> },
+    { key: 'ar', when: 'Nov 15', ag: 'security', title: 'Access review', will: 'Lists admin and API users idle for 90 days and drafts the removals for IT to approve.',
+      n: okta ? 2 : 1, of: 2, unit: 'sources connected', open: () => w.go('access-reviews'),
+      missing: okta ? undefined : <span className="rd-act">Needs Okta sign-in logs<GrantBtn g="okta" label="Request" /></span> },
+    { key: 'ns', when: 'Waiting on Dev', ag: 'integrations', title: 'NetSuite sync retries', will: 'Retries a failed sync once, then flags it to Integrations with the error.',
+      n: 1, of: 2, unit: 'approvals', open: () => w.go('cpq-sync'), missing: <>Dev to approve the retry policy <span className="rd-who">asked Nov 2</span></> },
+  ]
+  return (
+    <section className="home-card rd">
+      <div className="nh-h"><h2>Coming up</h2><span className="tk">How ready Asoka is</span></div>
+      <ol>
+        {evs.map((e) => {
+          const ready = e.n >= e.of, state = ready ? 'Ready' : e.key === 'ns' ? 'Waiting' : e.n >= e.of - 1 && e.key === 'qe' ? 'Almost ready' : 'Blocked'
+          return (
+            <li key={e.key} className={ready ? 'ok' : 'gap'}>
+              <span className="rd-when tk">{e.when}</span>
+              <button className="rd-t" onClick={e.open}><b>{e.title}</b><span className={'rd-st ' + (ready ? 'ok' : 'warn')}>{state}</span></button>
+              <p className="rd-will">{e.will}</p>
+              <span className="rd-meter" aria-label={`${e.n} of ${e.of} ${e.unit}`}><span className="rd-seg" aria-hidden="true">{Array.from({ length: e.of }, (_, i) => <i key={i} className={i < e.n ? 'on' : ''} />)}</span>{e.n} of {e.of} {e.unit}</span>
+              {e.missing && <p className="rd-miss">{e.missing}</p>}
+            </li>
+          )
+        })}
+      </ol>
+    </section>
+  )
+}
 
 /**
  * The Gaps card as Wikimind 4's carousel: one access gap at a time, a pager in the header ("1 of 2" and two round
@@ -125,7 +165,7 @@ const MODS: Record<ModId, { t: string; nav: string; title?: string; body: () => 
   learned: { t: 'Learned', nav: 'Learned', body: () => <LiveColumn only="le" /> },
   asking: { t: 'Asking people', nav: 'Asking people', body: () => <LiveColumn only="as" /> },
   jobs: { t: 'What Asoka knows and runs, by job', nav: 'What Asoka knows and runs, by job', body: () => <AgentsOverview /> },
-  up: { t: 'Coming up', nav: 'Coming up', body: () => <ComingUp /> },
+  up: { t: 'Coming up', nav: 'Coming up', body: () => <Readiness /> },
   moving: { t: 'What’s moving and In focus', nav: 'What’s moving', body: () => <MovingFocus /> },
   rules: { t: 'Unwritten rules', nav: 'Unwritten rules Asoka found', body: () => <RulesCard /> },
   counts: { t: 'Today’s counts', nav: 'Observed, learned, rewrote today', body: () => <Today /> },

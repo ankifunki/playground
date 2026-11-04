@@ -1711,3 +1711,25 @@ button.km-t{cursor:pointer}
 .h9-grip{pointer-events:none}
 .h9-s>.h9-body>.hc,.h9-s>.h9-body>.path.card,.h9-s>.h9-body>.home-card{box-sizing:border-box}
 .w7 .h9 h1{max-width:none;text-wrap:pretty}
+/* Coming up, around readiness. Per event: when (Meta), title (Body 16/500) with its state in tone colour (no fill),
+   what Asoka will do (UI 14 ink2), a segment meter with its count (Meta), and the one thing missing. */
+.rd ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s32)}
+.rd li{display:flex;flex-direction:column;gap:var(--s6);min-width:0}
+.rd-when{color:var(--ink2)}
+.rd-t{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s8);padding:0;border:0;background:none;text-align:left;cursor:pointer}
+.w7 .rd-t b{font:500 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.rd-st{flex:none;font:500 var(--fs-meta)/18px var(--sans)}
+.rd-st.ok{color:var(--ok)}
+.rd-st.warn{color:var(--warn)}
+.w7 .rd-will{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.rd-meter{display:flex;align-items:center;gap:var(--s8);margin-top:var(--s4);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.rd-seg{display:inline-flex;gap:var(--s2)}
+.rd-seg i{width:16px;height:4px;border-radius:1px;background:var(--soft2)}
+.rd-seg i.on{background:var(--ink)}
+.rd li.ok .rd-seg i.on{background:var(--ok)}
+.w7 .rd-miss{margin:var(--s4) 0 0;padding-top:var(--s8);border-top:1px solid var(--line);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.rd-who{display:block;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.rd-act{display:flex;align-items:center;justify-content:space-between;gap:var(--s8)}
+@media (hover:hover) and (pointer:fine){.rd-t:hover b{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;text-decoration-color:var(--hl)}}
+@container mod (max-width:800px){.rd ol{grid-template-columns:1fr;gap:var(--s20)}.rd li+li{padding-top:var(--s20);border-top:1px solid var(--line)}}
+@media (max-width:900px){.rd ol{grid-template-columns:1fr;gap:var(--s20)}}

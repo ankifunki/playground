@@ -91,6 +91,14 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
 - **Cards in a shared row take the row's height** (grid `align-items:stretch`; cards are `box-sizing:border-box` so they never spill into the next row).
 - **Each module is a size container,** so its content follows its own width.
 - **Body type on Home:** every item uses three steps. The title is Body 16/26 at 500 in ink; the description is UI 14/20 in ink2; meta (job, scope, sources, dates) is Meta 12/18 in ink2. The Changed/Learned/Asking items lost their serif titles, job tiles and icon piles: the job is a Meta line with 12px source icons.
+- **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
+  - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
+  - Then what Asoka will do (UI 14), a segment meter with its count ("3 of 4 rules verified"), and the one thing missing with the action that closes it.
+  - The events:
+    - Quarter-end close: missing Maria's answer on flat renewals.
+    - Access review: blocked on Okta sign-in logs, with Request.
+    - NetSuite sync retries: waiting on Dev's approval.
+  - It follows the demo: `L` readies quarter-end close; granting Okta readies the access review.
 - **Asoka's mark rests as the triangle.** It takes a state only while Asoka is writing, or for about 4 s after new activity.
 
 **Demo page traces and sources:** on Watch Asoka write a page, a finished sentence that has a trace takes the page's highlighter on hover, and a click or Enter opens its trace (`Traced`, `tr` on script events). Each citation number shows its source on hover or focus (`Cite`: kind, what was read, source number).
