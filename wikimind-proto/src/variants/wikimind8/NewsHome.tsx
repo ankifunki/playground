@@ -10,11 +10,11 @@ import { RM, useW } from './store'
 
 /*
  * Wikimind 8b: Home as the brief's front page (Spec 6.2), between Wikipedia's home page and a newspaper's front page.
- * What the agents saw, learned and changed today first; the scale and aliveness of what they know as one living map;
- * what is coming up; browse by grove; and only then what the agents run on their own.
+ * What the jobs saw, learned and changed today first; the scale and aliveness of what they know as one living map;
+ * what is coming up; browse by grove; and only then what the jobs run on their own.
  */
 
-/** Today: what the agents observed, learned and rewrote. Observed ticks while you watch; live events move the others. */
+/** Today: what the jobs observed, learned and rewrote. Observed ticks while you watch; live events move the others. */
 function Today() {
   const w = useW(), [t0] = useState(w.now)
   // Observed ticks every ~4 s, so each tick reads as an event rather than a blur.
@@ -38,10 +38,10 @@ function Stories() {
   const w = useW(), moved = w.fin === 25, when = w.why['who-fin'] ? ago((w.now - w.why['who-fin'].at) / 1000) : 'Oct 28'
   const lead = moved
     ? { kick: `Changed in Salesforce · ${when}`, title: 'Finance now signs off on discounts over 25%, not 20%',
-      dek: <>Priya Shah changed Large Deal Approval. The Approvals agent rewrote Who approves and the flow on Discount approvals; Dana Ruiz {w.verify === 'checking' ? 'is re-checking it' : 'verified it again'}.</>,
+      dek: <>Priya Shah changed Large Deal Approval. The Approvals job rewrote Who approves and the flow on Discount approvals; Dana Ruiz {w.verify === 'checking' ? 'is re-checking it' : 'verified it again'}.</>,
       thr: <Thresholds fin={25} />, go: 'who-fin', cta: 'Read Who approves' }
     : { kick: 'Changed in Salesforce · Oct 28', title: 'Discounts over 35% now go straight to the CRO',
-      dek: <>The CRO threshold moved from 40% to 35%. The Approvals agent rewrote the rule and 3 other pages within the hour; Dana Ruiz verified it.</>,
+      dek: <>The CRO threshold moved from 40% to 35%. The Approvals job rewrote the rule and 3 other pages within the hour; Dana Ruiz verified it.</>,
       thr: <Thresholds fin={w.fin} />, go: 'who-cro', cta: 'Read Who approves' }
   const side: { ag: AgentId; kick: string; title: string; dek: string; open: () => void; tone?: string }[] = [
     w.cpq === 'failing'
@@ -76,17 +76,17 @@ function Stories() {
   )
 }
 
-/** Coming up: the processes and priorities the agents are preparing for. */
+/** Coming up: the processes and priorities the jobs are preparing for. */
 function ComingUp() {
   const w = useW()
   const items: { when: string; ag: AgentId; title: string; dek: string; go: string }[] = [
-    { when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', dek: 'Approvals usually triple. Deal Desk approves in #deal-desk first; the Approvals agent logs them after.', go: 'quarter-end' },
+    { when: 'Nov 11 · in 5 business days', ag: 'approvals', title: 'Quarter-end close', dek: 'Approvals usually triple. Deal Desk approves in #deal-desk first; the Approvals job logs them after.', go: 'quarter-end' },
     { when: 'Nov 15', ag: 'security', title: 'Access review due', dek: 'Admin and API users. The last review removed 14 stale API users.', go: 'access-reviews' },
-    { when: 'Waiting on Dev', ag: 'integrations', title: 'Retry policy for NetSuite sync', dek: 'The Integrations agent retries failed syncs once Dev approves it.', go: 'cpq-sync' },
+    { when: 'Waiting on Dev', ag: 'integrations', title: 'Retry policy for NetSuite sync', dek: 'The Integrations job retries failed syncs once Dev approves it.', go: 'cpq-sync' },
   ]
   return (
     <section className="home-card nh-up">
-      <div className="nh-h"><h2>Coming up</h2><span className="tk">What the agents are preparing for</span></div>
+      <div className="nh-h"><h2>Coming up</h2><span className="tk">What the jobs are preparing for</span></div>
       <ol>
         {items.map((it) => (
           <li key={it.title}><button onClick={() => w.go(it.go)}>

@@ -12,7 +12,7 @@ const TIER: Record<Tier, string> = { verified: 'Verified by a person', observed:
 
 /**
  * The trace behind one piece of knowledge: the claim, its trust tier, and the chain that produced it, oldest first:
- * what the agents observed (with the source and the words), how they reasoned, whom they asked, what they edited
+ * what the jobs observed (with the source and the words), how they reasoned, whom they asked, what they edited
  * (before and after), and who verified or revoked it. Live events add links as they happen.
  */
 export function Trace({ id }: { id: string }) {
@@ -35,7 +35,7 @@ export function Trace({ id }: { id: string }) {
             <div className="tr-b">
               <div className="tr-h"><span className="tr-k">{KIND[s.k].t}</span><span className="tr-at">{s.at}</span></div>
               <p className="tr-t">{s.t}</p>
-              <span className="tr-by">{s.by === 'person' ? <span className="tr-pp" aria-hidden="true"><Icon name="user" size={10} /></span> : <Ag id={s.by} size={16} />}{s.by === 'person' ? s.name : `${AG[s.by].name} agent`}</span>
+              <span className="tr-by">{s.by === 'person' ? <span className="tr-pp" aria-hidden="true"><Icon name="user" size={10} /></span> : <Ag id={s.by} size={16} />}{s.by === 'person' ? s.name : `${AG[s.by].name} job`}</span>
               {s.quote && <blockquote>{s.quote}</blockquote>}
               {s.before && <p className="tr-diff"><del>{s.before}</del>{s.after && <ins>{s.after}</ins>}</p>}
               {s.src && <span className="tr-src"><Icon name="file-text" size={12} />{s.src}</span>}
@@ -43,7 +43,7 @@ export function Trace({ id }: { id: string }) {
           </li>
         ))}
       </ol>
-      <p className="tr-foot">Every step is kept. Agents write; people verify, answer and revoke.</p>
+      <p className="tr-foot">Every step is kept. Jobs write; people verify, answer and revoke.</p>
     </div>
   )
 }

@@ -60,8 +60,8 @@ export function AllPages() {
 
       {term && !pageHits.length && !textHits.length && (
         <div className="ix-none">
-          <p><b>No page says that yet.</b> An agent can answer from what it knows, or ask a person.</p>
-          <button className="btn soft" onClick={ask}>Ask the agents<Icon name="arrow-right" size={16} /></button>
+          <p><b>No page says that yet.</b> Ask, and the job that knows answers or asks a person.</p>
+          <button className="btn soft" onClick={ask}>Ask instead<Icon name="arrow-right" size={16} /></button>
         </div>
       )}
       {textHits.length > 0 && (

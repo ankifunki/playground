@@ -6,7 +6,7 @@ export type TocItem = { id: string; t: string; blocks?: string[] }
 
 /**
  * On this page: the page's sections, with the one you are reading marked. Wide screens get a rail in the left margin
- * that stays in view; narrower screens get a strip of section chips that sticks under the top bar. A section an agent
+ * that stays in view; narrower screens get a strip of section chips that sticks under the top bar. A section a job
  * is writing right now shows the live mark.
  */
 export function Toc({ items }: { items: TocItem[] }) {

@@ -1,3 +1,4 @@
+import type React from 'react'
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import type { AgentId } from './data'
 import type { TStep } from './traces'
@@ -5,6 +6,15 @@ import type { TStep } from './traces'
 export type Act = { id: number; ag: AgentId | 'person'; who?: string; t: string; page: string; block?: string; at: number; kind: 'edit' | 'read' | 'verify' | 'ask' }
 /** Why a block changed: shown in the block's margin chip and its popover. */
 export type Why = { ag: AgentId; t: string; src: string; before: string; at: number }
+/** Chat: a conversation with the jobs in the right panel. Objects are live UI pulled into the thread. */
+export type ChatObj =
+  | { k: 'rule'; block: string }
+  | { k: 'record'; deal: string }
+  | { k: 'route'; deal: string }
+  | { k: 'action'; deal: string; state: 'ask' | 'running' | 'done' | 'cancel'; step: number }
+  | { k: 'slack'; deal: string; state: 'draft' | 'sent' | 'cancel' }
+  | { k: 'person'; q: string; state: 'draft' | 'sent' | 'cancel' }
+export type ChatMsg = { id: number; who: 'you' | AgentId | 'none'; text: string; objs?: ChatObj[]; next?: string[]; typing?: boolean }
 export type Presence = { ag: AgentId; block: string; label: string; page: string } | null
 
 type W = {
@@ -19,12 +29,15 @@ type W = {
   tour: number | null; setTour: (n: number | null) => void; change: () => void
   /** Arrival from a Slack citation (the brief's third audience), and whether the visitor asked the page's owner. */
   arrive: boolean; arriveSlack: () => void; leaveArrival: () => void; askedOwner: boolean; askOwner: () => void
-  /** The reliability misses, in the right panel: all of them or one agent's. */
+  /** The reliability misses, in the right panel: all of them or one job's. */
   misses: AgentId | 'all' | null; openMisses: (m: AgentId | 'all' | null) => void
   /** All pages: the search term it opens with. */
   search: string; setSearch: (q: string) => void
   /** Proof on (default) or off (?proof=off), for the assumption test that hides traces and verification. */
   proof: boolean
+  chat: ChatMsg[]; setChat: React.Dispatch<React.SetStateAction<ChatMsg[]>>; chatOn: boolean; setChatOn: (b: boolean) => void
+  /** Start (or continue) a chat from the ask bar; `from` is where the question was typed, for the hand-off motion. */
+  startChat: (text: string, from?: DOMRect | null) => void; chatFrom: DOMRect | null
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -38,9 +51,9 @@ const SEED = (t0: number): Act[] => [
 ]
 
 /**
- * The live engine. A short script plays while you read: an agent reads Slack and updates a count; Salesforce changes and
- * the agent rewrites a rule (verification is withdrawn, then restored); a person answers an open question; a sync is fixed.
- * Each edit is announced first (presence: "Approvals agent is editing Who approves"), then typed into the block.
+ * The live engine. A short script plays while you read: a job reads Slack and updates a count; Salesforce changes and
+ * the job rewrites a rule (verification is withdrawn, then restored); a person answers an open question; a sync is fixed.
+ * Each edit is announced first (presence: "Approvals job is editing Who approves"), then typed into the block.
  * Keys: C change, L answer, R replay.
  */
 export function Provider({ children }: { children: ReactNode }) {
@@ -57,10 +70,16 @@ export function Provider({ children }: { children: ReactNode }) {
   const add = (id: string, ...st: TStep[]) => setExtra((m) => ({ ...m, [id]: [...(m[id] || []), ...st] }))
   const [agent, setAgent] = useState<AgentId | null>(null), [misses, setMisses] = useState<AgentId | 'all' | null>(null)
   const [arrive, setArrive] = useState(false), [askedOwner, setAskedOwner] = useState(false), [search, setSearch] = useState('')
+  const [chat, setChat] = useState<ChatMsg[]>([]), [chatOn, setChatOnS] = useState(false), [chatFrom, setChatFrom] = useState<DOMRect | null>(null)
+  const cid = useRef(1)
+  const setChatOn = (b: boolean) => { setChatOnS(b); if (b) { setTrace(null); setAgent(null); setMisses(null); setRail(true) } }
+  const startChat = (text: string, from: DOMRect | null = null) => {
+    setChatFrom(from); setChat((c) => [...c, { id: cid.current++, who: 'you', text }]); setChatOn(true)
+  }
   const [proof] = useState(() => typeof location === 'undefined' || new URLSearchParams(location.search).get('proof') !== 'off')
   const openTrace = (id: string | null) => { if (!proof) return; setTrace(id); if (id) { setMisses(null); setRail(true) } }
   const openMisses = (m: AgentId | 'all' | null) => { setTrace(null); setAgent(null); setMisses(m); if (m) setRail(true) }
-  // An agent's profile shows in the right panel, like a trace; a trace opened from it shows on top.
+  // A job's profile shows in the right panel, like a trace; a trace opened from it shows on top.
   const openAgent = (a: AgentId | null) => { setTrace(null); setMisses(null); setAgent(a); if (a) setRail(true) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
@@ -117,7 +136,7 @@ export function Provider({ children }: { children: ReactNode }) {
     setPage('discount-approvals'); window.scrollTo({ top: 0 }); setRun((r) => r + 1)
   }
   const go = (p: string) => { setPage(p); setNav(false); if (p !== 'discount-approvals') setArrive(false); window.scrollTo({ top: 0 }) }
-  // A business user lands from the Approvals agent's push-back in Slack: the page opens on the cited rule.
+  // A business user lands from the Approvals job's push-back in Slack: the page opens on the cited rule.
   const arriveSlack = () => { setTour(null); setRail(false); setTrace(null); setAskedOwner(false); setArrive(true); setPage('discount-approvals'); setNav(false); window.scrollTo({ top: 0 }) }
   const leaveArrival = () => setArrive(false)
   const askOwner = () => {
@@ -139,10 +158,10 @@ export function Provider({ children }: { children: ReactNode }) {
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
       else if (e.key === 's' || e.key === 'S') arriveSlack()
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom }}>{children}</Ctx.Provider>
 }

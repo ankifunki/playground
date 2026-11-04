@@ -58,11 +58,11 @@ const SECTIONS: TocItem[] = [
   { id: 'rules', t: 'Rules', blocks: ['r-exp', 'r-after'] },
   { id: 'practice', t: 'In practice', blocks: ['qe', 'renew'] },
   { id: 'touches', t: 'What touches this', blocks: ['cfg', 'cfg-cpq'] },
-  { id: 'cited', t: 'Cited by the agents' },
+  { id: 'cited', t: 'Cited by the jobs' },
   { id: 'related', t: 'Related pages' },
 ]
 
-/** Where agents used this page to justify an action, newest first. Each cites one block, which the link opens. Demo data. */
+/** Where jobs used this page to justify an action, newest first. Each cites one block, which the link opens. Demo data. */
 const CITES: { ag: 'approvals' | 'finance'; what: React.ReactNode; where: string; block: string; label: string }[] = [
   { ag: 'approvals', what: <>Pushed back on approving <b>Orion platform</b> at 38% off without the CRO.</>, where: 'Slack · #deal-desk · 2 h ago', block: 'who-cro', label: 'Who approves' },
   { ag: 'approvals', what: <>Told a rep that <b>Kestrel new logo</b> needs no approval: $64,000 is under $100,000.</>, where: 'Ticket SF-4182 · yesterday', block: 'sum', label: 'the summary' },
@@ -73,7 +73,7 @@ const RELATED = ['discount-policy', 'quarter-end', 'renewals', 'cpq-sync']
 /**
  * Arriving from a citation (the brief's third audience): a rep was told no in Slack and followed the link. Lead with
  * their exchange, the plain why, the next step, and the person who owns the rule; the cited sentence is highlighted
- * below. Tone explains, never scolds: if the rule seems wrong, asking its owner is one tap and the agent does it.
+ * below. Tone explains, never scolds: if the rule seems wrong, asking its owner is one tap and the job does it.
  */
 function Arrival() {
   const w = useW()
@@ -87,7 +87,7 @@ function Arrival() {
       </div>
       <div className="arv-msg">
         <p><span className="arv-av" aria-hidden="true"><Icon name="user" size={12} /></span><span><b>Sam Ortiz</b>Can we close Orion platform at 38% off today? They want to sign.</span></p>
-        <p><Ag id="approvals" size={20} /><span><b>Approvals agent</b>Not without the CRO: over 35% off, the CRO approves directly.</span></p>
+        <p><Ag id="approvals" size={20} /><span><b>Approvals job</b>Not without the CRO: over 35% off, the CRO approves directly.</span></p>
       </div>
       <h2 className="arv-t">Discounts over 35% need the CRO</h2>
       <p className="arv-why">They carry the most revenue risk, so Rippling’s CRO signs them off directly. Set in Salesforce (Large Deal Approval) and verified by Dana Ruiz.</p>
@@ -97,7 +97,7 @@ function Arrival() {
       </dl>
       <div className="arv-f">
         {w.askedOwner
-          ? <p className="arv-done"><Icon name="circle-check" size={16} />Asked Maria. The Approvals agent will reply in your Slack thread with her answer.</p>
+          ? <p className="arv-done"><Icon name="circle-check" size={16} />Asked Maria. The Approvals job will reply in your Slack thread with her answer.</p>
           : <button className="btn soft" onClick={w.askOwner}>Think it’s wrong? Ask Maria<Icon name="arrow-right" size={16} /></button>}
         <button className="btn ghost" onClick={show}>Show the rule</button>
       </div>
@@ -105,7 +105,7 @@ function Arrival() {
   )
 }
 
-/** The demo page: Discount approvals, written and kept by the Approvals agent. */
+/** The demo page: Discount approvals, written and kept by the Approvals job. */
 export function Approvals() {
   const w = useW(), f = w.fin, cpqTarget = useTraceTarget('cfg-cpq')
   // How it works plays Helios by default; Try it out can hand it the visitor's own deal.
@@ -115,11 +115,11 @@ export function Approvals() {
     <article className="doc">
       <h1>Discount approvals</h1>
       <p className="byline">Kept by <Ag id="approvals" name /><span className="by-sep" />Owned by Maria Okafor, RevOps</p>
-      <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals agent is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
+      <p className="liveln"><LivePulse />{w.presence?.page === 'discount-approvals' ? <>Approvals job is writing <b>{w.presence.label}</b></> : <>Re-reading 2 new #deal-desk threads</>}</p>
       <Arrival />
       <Props ag="approvals" re={4} verify={verify} extra={<>
         <div><dt><Icon name="layers" size={16} />Sources</dt><dd>Salesforce config, 9 Slack threads, 4 tickets, 2 meetings</dd></div>
-        <div className="pf"><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num"><button className="wl" onClick={() => document.getElementById('cited')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })}>214 times this month, by 3 agents</button></dd></div>
+        <div className="pf"><dt><Icon name="arrow-right" size={16} />Cited</dt><dd className="num"><button className="wl" onClick={() => document.getElementById('cited')?.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' })}>214 times this month, by 3 jobs</button></dd></div>
       </>} />
 
       <PathBar label={false} />
@@ -166,7 +166,7 @@ export function Approvals() {
         </table>
       </Block>
 
-      <h2 id="cited" className="pf">Cited by the agents</h2>
+      <h2 id="cited" className="pf">Cited by the jobs</h2>
       <ul className="cites pf">
         {CITES.map((c) => (
           <li key={c.where}>
@@ -184,7 +184,7 @@ export function Approvals() {
       </ul>
 
       <Sources items={[{ ic: 'cloud', name: 'Salesforce config: Large Deal Approval, 2 validation rules' }, { ic: 'hash', name: 'Slack: 9 threads in #deal-desk and #revops' }, { ic: 'ticket', name: 'Tickets: 4' }, { ic: 'video', name: 'Meetings: 2 RevOps weeklies' }]}>
-        Written by the <b>Approvals agent</b> from <b>16 sources</b>. 5 of 8 statements verified by a person. Rewritten 6 times as Rippling changed.
+        Written by the <b>Approvals job</b> from <b>16 sources</b>. 5 of 8 statements verified by a person. Rewritten 6 times as Rippling changed.
       </Sources>
     </article>
   )

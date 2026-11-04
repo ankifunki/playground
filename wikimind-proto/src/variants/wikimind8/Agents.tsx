@@ -6,16 +6,16 @@ import { Ag, LiveNum, LivePulse } from './Live'
 import { RM, useW } from './store'
 
 /*
- * Wikimind 8b: every agent's full picture in one place. A strip of totals (each one a filter), one row per agent with
+ * Wikimind 8b: every job's full picture in one place. A strip of totals (each one a filter), one row per job with
  * what it knows (its pages as tiles), what it runs on its own, its reliability and what it is doing right now, and a
- * profile per agent in the right panel to dig deeper. Demo data.
+ * profile per job in the right panel to dig deeper. Demo data.
  */
 
 export type St = 'ver' | 'cur' | 'old' | 'ask'
 export const STATE: Record<St, string> = { ver: 'Verified by a person', cur: 'Current, re-read today', old: 'Out of date', ask: 'Open question' }
 const rnd = (i: number) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x) }
 
-/** Questions each agent is asking people right now. */
+/** Questions each job is asking people right now. */
 function questions(ag: AgentId, renewalAnswered: boolean, cpqFixed: boolean) {
   const q: Record<AgentId, { q: string; who: string }[]> = {
     approvals: [...(renewalAnswered ? [] : [{ q: 'Do flat renewals skip approval on purpose?', who: 'Asking Maria Okafor' }]), { q: 'Do EMEA deals go to the regional director first?', who: 'Watching for the next deal' }],
@@ -63,7 +63,7 @@ export function useGroves() {
   }), [answered, fixed])
 }
 
-/** The tiles of one grove; a few light up at a time as the agent reads them (DOM classes, no re-render). */
+/** The tiles of one grove; a few light up at a time as the job reads them (DOM classes, no re-render). */
 function Tiles({ tiles, size = 'm' }: { tiles: { st: St; page?: { id: string; title: string } }[]; size?: 's' | 'm' }) {
   const w = useW(), root = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -82,7 +82,7 @@ function Tiles({ tiles, size = 'm' }: { tiles: { st: St; page?: { id: string; ti
 }
 
 /**
- * What an agent knows, as numbers: the page count, then one line of counts by state, each with a small colour key.
+ * What a job knows, as numbers: the page count, then one line of counts by state, each with a small colour key.
  * Deliberately no chart: the row's only chart is the runs-on-its-own bar, so nothing competes with it.
  */
 function Know({ counts, total }: { counts: Record<St, number>; total: number }) {
@@ -99,7 +99,7 @@ function Know({ counts, total }: { counts: Record<St, number>; total: number }) 
 
 type Filter = null | 'ver' | 'ask' | 'block' | 'own' | 'rel'
 
-/** The overview: totals (each a filter) and one row per agent. Clicking a row opens the agent's profile. */
+/** The overview: totals (each a filter) and one row per job. Clicking a row opens the job's profile. */
 export function AgentsOverview() {
   const w = useW(), groves = useGroves(), [filter, setFilter] = useState<Filter>(null)
   const answered = w.renewal === 'answered', fixed = w.cpq === 'fixed'
@@ -114,8 +114,8 @@ export function AgentsOverview() {
     { k: 'block', n: String(blockers), t: 'blockers' },
   ]
   return (
-    <section className={'home-card ov' + (filter ? ' f-' + filter : '')} aria-label="What each agent knows and runs">
-      <div className="nh-h"><h2>What each agent knows and runs</h2></div>
+    <section className={'home-card ov' + (filter ? ' f-' + filter : '')} aria-label="What each job knows and runs">
+      <div className="nh-h"><h2>What each job knows and runs</h2></div>
       <ul className="ov-sum">
         {stats.map((s) => (
           <li key={s.t}>
@@ -125,7 +125,7 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Job</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = REL[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
@@ -146,7 +146,7 @@ export function AgentsOverview() {
   )
 }
 
-/** A 30-day reliability trend: one 1.5px line, seeded around the agent's figure. */
+/** A 30-day reliability trend: one 1.5px line, seeded around the job's figure. */
 function Spark({ ag, rel }: { ag: AgentId; rel: number }) {
   const pts = Array.from({ length: 30 }, (_, i) => Math.min(100, rel - 0.8 + (i / 29) * 0.8 + (rnd(ag.length * 31 + i) - 0.5) * 0.6))
   const lo = Math.min(...pts) - 0.2, hi = Math.max(...pts) + 0.2, W = 120, H = 28
@@ -154,7 +154,7 @@ function Spark({ ag, rel }: { ag: AgentId; rel: number }) {
   return <svg className="ap-spark" width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true"><path d={d} /></svg>
 }
 
-/** One agent's profile, in the right panel: what it knows, what it runs, what it needs, and what it did recently. */
+/** One job's profile, in the right panel: what it knows, what it runs, what it needs, and what it did recently. */
 export function AgentProfile({ id }: { id: AgentId }) {
   const w = useW(), a = AG[id], r = REL[id], g = useGroves().find((x) => x.ag === id)!
   const q = questions(id, w.renewal === 'answered', w.cpq === 'fixed'), acts = w.acts.filter((x) => x.ag === id).slice(0, 4)
@@ -162,7 +162,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
     <div className="ap">
       <div className="ap-h">
         <Ag id={id} size={28} />
-        <div><b>{a.name} agent</b><small>{a.job}</small></div>
+        <div><b>{a.name} job</b><small>{a.job}</small></div>
       </div>
       <dl className="ap-stats">
         <div><dt className="tk">Pages</dt><dd className="num">{g.total}</dd></div>

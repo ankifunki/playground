@@ -5,13 +5,13 @@ import { Icon } from './Icon'
 import { RM, useW } from './store'
 import { TRACE } from './traces'
 
-/** An agent's mark: a square indigo tile, optionally with its name. */
+/** A job's mark: a square indigo tile, optionally with its name. */
 export function Ag({ id, name, size = 22 }: { id: AgentId; name?: boolean; size?: number }) {
   const a = AG[id]
   return (
-    <span className={'ag' + (name ? ' named' : '')} title={a.name + ' agent'}>
+    <span className={'ag' + (name ? ' named' : '')} title={a.name + ' job'}>
       <span className="ag-t" style={{ width: size, height: size }}><Icon name={a.icon} size={Math.round(size * 0.29) * 2} /></span>
-      {name && <span className="ag-n">{a.name} agent</span>}
+      {name && <span className="ag-n">{a.name} job</span>}
     </span>
   )
 }
@@ -30,7 +30,7 @@ export function LiveText({ text, id }: { text: string; id?: string }) {
   return <><span key={n} className={'lt' + (n ? ' in' : '') + (fresh ? ' fresh' : '')}>{text}</span>{id && <Chip id={id} />}</>
 }
 
-/** The chip on anything an agent changed: who and when. It opens the block's trace, like clicking the block itself. */
+/** The chip on anything a job changed: who and when. It opens the block's trace, like clicking the block itself. */
 export function Chip({ id }: { id: string }) {
   const w = useW(), y = w.why[id]
   if (!y || !w.proof) return null

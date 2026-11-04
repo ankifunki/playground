@@ -1,6 +1,6 @@
 import type { IconName } from './Icon'
 
-/* Asoka is a team of specialist agents. In Wikimind 7 each agent keeps its own space, the way a team keeps a Confluence space. Demo data. */
+/* Asoka is a team of specialist jobs. In Wikimind 7 each job keeps its own space, the way a team keeps a Confluence space. Demo data. */
 export type AgentId = 'approvals' | 'access' | 'security' | 'finance' | 'integrations' | 'support'
 export type Agent = { id: AgentId; name: string; job: string; icon: IconName }
 export const AGENTS: Agent[] = [
@@ -14,7 +14,7 @@ export const AGENTS: Agent[] = [
 export const AG = Object.fromEntries(AGENTS.map((a) => [a.id, a])) as Record<AgentId, Agent>
 
 export type PageMeta = { id: string; title: string; ag: AgentId; n: number; lede: string; re: number }
-/** The page tree: one space per agent. n = pages under it in the full corpus; re = seconds since it was last re-read. */
+/** The page tree: one space per job. n = pages under it in the full corpus; re = seconds since it was last re-read. */
 export const SPACES: { ag: AgentId; pages: PageMeta[]; total: number }[] = [
   { ag: 'approvals', total: 386, pages: [
     { id: 'discount-approvals', title: 'Discount approvals', ag: 'approvals', n: 0, re: 4, lede: '' },
@@ -34,7 +34,7 @@ export const SPACES: { ag: AgentId; pages: PageMeta[]; total: number }[] = [
     { id: 'invoices', title: 'Invoices', ag: 'finance', n: 0, re: 2700, lede: 'How closed-won deals become NetSuite invoices, and who fixes a mismatch.' },
   ] },
   { ag: 'integrations', total: 193, pages: [
-    { id: 'cpq-sync', title: 'CPQ quote sync', ag: 'integrations', n: 0, re: 60, lede: 'Sends approved discounts from Salesforce to CPQ quotes. Failing for multi-currency deals since Oct 29; the Integrations agent asked Ben Ito why.' },
+    { id: 'cpq-sync', title: 'CPQ quote sync', ag: 'integrations', n: 0, re: 60, lede: 'Sends approved discounts from Salesforce to CPQ quotes. Failing for multi-currency deals since Oct 29; the Integrations job asked Ben Ito why.' },
   ] },
   { ag: 'support', total: 236, pages: [
     { id: 'case-escalation', title: 'Case escalation', ag: 'support', n: 0, re: 300, lede: 'When support cases go to engineering. Cases that mention data loss are escalated by hand, whatever their priority (11 of 11 cases).' },

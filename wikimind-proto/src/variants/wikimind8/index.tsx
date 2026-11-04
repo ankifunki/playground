@@ -11,6 +11,7 @@ import { Approvals, Stub } from './Page'
 import { Home } from './Home'
 import { NewsHome } from './NewsHome'
 import { AgentProfile } from './Agents'
+import { Chat } from './Chat'
 import { Misses } from './Misses'
 import { AllPages } from './Pages'
 import { Tour } from './Tour'
@@ -35,13 +36,13 @@ function useLook(): [Look, () => void] {
   return [look, () => setLook((l) => (l === 'b' ? 'current' : 'b'))]
 }
 
-/** Left sidebar: the workspace, search, and one space per agent with its pages. A page an agent is writing shows it. */
+/** Left sidebar: the workspace, search, and one space per job with its pages. A page a job is writing shows it. */
 function Sidebar() {
   const w = useW(), [q, setQ] = useState(''), [open, setOpen] = useState<Record<string, boolean>>({ approvals: true, integrations: true })
   const editingPage = w.presence?.page
   return (
     <nav className={'sb' + (w.nav ? ' open' : '')} aria-label="Workspace">
-      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 agents</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
+      <div className="sb-ws"><span className="sb-logo">R</span><span><b>Rippling</b><small>Wikimind · kept by 6 jobs</small></span><button className="ib sb-x" onClick={() => w.setNav(false)} aria-label="Close pages"><Icon name="x" size={16} /></button></div>
       <label className="sb-q"><Icon name="search" size={14} /><input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { w.setSearch(q.trim()); w.go('all'); setQ('') } }} placeholder="Search 1,284 pages" aria-label="Search pages: Enter searches what they say" /></label>
       <button className={'sb-i' + (w.page === 'home' ? ' on' : '')} onClick={() => w.go('home')}><Icon name="house" size={16} />Home</button>
       <button className={'sb-i' + (w.page === 'all' ? ' on' : '')} onClick={() => { w.setSearch(''); w.go('all') }}><Icon name="library" size={16} />All pages<span className="sb-n">1,284</span></button>
@@ -71,7 +72,7 @@ function Sidebar() {
   )
 }
 
-/** The top bar: where you are, who is on this page right now, the activity rail. Below it, presence when an agent is editing. */
+/** The top bar: where you are, who is on this page right now, the activity rail. Below it, presence when a job is editing. */
 function Top({ look, onLook }: { look: Look; onLook: () => void }) {
   const w = useW(), p = PAGES[w.page] || null
   const here: AgentId[] = p ? (p.id === 'discount-approvals' ? ['approvals', 'finance', 'integrations'] : [p.ag]) : AGENTS.map((a) => a.id)
@@ -84,10 +85,10 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
           {p ? <><button onClick={() => w.go('home')}>Rippling</button><Icon name="chevron-right" size={12} /><span className="crumb-sp"><Ag id={p.ag} size={16} />{AG[p.ag].name} grove</span><Icon name="chevron-right" size={12} /><b>{p.title}</b></> : <b>{w.page === 'all' ? 'All pages' : 'Home'}</b>}
         </div>
         <div className={'here' + (pr ? ' live' : '')}>
-          <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} agent is writing ${pr.label}: watch it` : `${here.length} agents on this page`}>
+          <button className="cap" onClick={() => pr && w.jump(pr.block)} disabled={!pr} aria-label={pr ? `${AG[pr.ag].name} job is writing ${pr.label}: watch it` : `${here.length} jobs on this page`}>
             <span className="here-p">{(pr ? [pr.ag, ...here.filter((x) => x !== pr.ag)] : here).map((id, i) => <span key={id} className={'here-a' + (pr && i === 0 ? ' w' : '')}><Ag id={id} size={pr && i === 0 ? 28 : 24} /></span>)}</span>
             <span className="cap-t" aria-hidden={!pr}>{pr && <><b>{AG[pr.ag].name}</b> writing <b>{pr.label}</b>{w.page === 'home' && <> · {PAGES[pr.page].title}</>}<Icon name="arrow-right" size={12} /></>}</span>
-            {!pr && <span className="here-t">{here.length === 1 ? '1 agent here' : `${here.length} agents here`}</span>}
+            {!pr && <span className="here-t">{here.length === 1 ? '1 job here' : `${here.length} jobs here`}</span>}
           </button>
         </div>
         <button className="look" onClick={onLook} aria-pressed={look === 'b'} title="Switch between today’s look and Direction B"><Icon name="sliders" size={14} /><span>Look</span><b>{look === 'b' ? 'B · Calibrated' : 'Current'}</b></button>
@@ -101,13 +102,13 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
 function Rail() {
   const w = useW(), [from, setFrom] = useState(false)
   return (
-    <aside className={'rail' + (w.rail ? ' open' : '')} aria-label="Live activity">
+    <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses ? ' chat' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace || w.agent || w.misses ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else if (w.misses) w.openMisses(null); else w.openAgent(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : w.misses ? 'Misses' : 'Agent'}</span></span>
+        {w.trace || w.agent || w.misses || w.chatOn ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else if (w.misses) w.openMisses(null); else if (w.agent) w.openAgent(null); else w.setChatOn(false) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : w.misses ? 'Misses' : w.agent ? 'Job' : 'Chat'}</span></span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
-        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null) }} aria-label="Close"><Icon name="x" size={16} /></button>
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
-      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : <div className="rail-list rail-pop">
+      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : w.chatOn ? <Chat /> : <div className="rail-list rail-pop">
       <ol>
         {w.acts.map((a) => {
           return (
@@ -122,6 +123,7 @@ function Rail() {
           )
         })}
       </ol>
+      {w.chat.length > 0 && <p className="rail-demo"><button className="wl" onClick={() => w.setChatOn(true)}>Back to your chat</button></p>}
       <p className="rail-demo"><span className="tk">Demo</span><button className="wl" onClick={w.replay}>Replay live updates</button></p>
       </div>}
     </aside>
@@ -158,8 +160,8 @@ function Shell({ news }: { news?: boolean }) {
 
 /**
  * Wikimind 7: the wiki structure decision makers know (Confluence spaces, Notion pages, properties, blocks, toggles,
- * tables), made agent first: each agent keeps a space, presence shows who is on a page, edits are announced and typed
- * in where you can see them, and How it works is a live diagram of the agent's flow with its conditional routes.
+ * tables), made job first: each job keeps a space, presence shows who is on a page, edits are announced and typed
+ * in where you can see them, and How it works is a live diagram of the job's flow with its conditional routes.
  */
 export default function Wikimind8({ news }: { news?: boolean }) {
   useVariantCss(css)

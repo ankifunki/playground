@@ -571,8 +571,8 @@ body{font-weight:400;margin:0;background:var(--panel);color:var(--ink);-webkit-f
 .om.act::before{opacity:1}
 @media (prefers-reduced-motion:reduce){.om::before{transition:none}}
 .doc.wide{max-width:1144px}
-.top-r{box-sizing:content-box;max-width:760px;padding:0 var(--s40)}
-.pg-home .top-r{max-width:1144px}
+/* One frame for every screen: the top bar is always Home's width, so it never jumps; pages keep a 760px reading column inside it. */
+.top-r{box-sizing:content-box;max-width:1144px;padding:0 var(--s40)}
 .w7.nav-on .top{z-index:20}
 @media (max-width:900px){.top-r{padding:0 var(--s20)}}
 .ags8{list-style:none;margin:0;padding:0}
@@ -791,7 +791,7 @@ input{font:inherit}
 .toc .lp{flex:none}
 @media (hover:hover) and (pointer:fine){.toc a:hover{color:var(--ink)}}
 @media (min-width:1200px){
- .toc{position:absolute;top:0;bottom:0;left:-216px;width:184px;padding-top:var(--s72)}
+ .toc{position:absolute;top:0;bottom:0;left:-152px;width:160px;padding-top:var(--s72)}
  .toc-in{position:sticky;top:96px}
  .toc-l{display:block;margin-bottom:var(--s12)}
  .toc-in ol{border-left:1px solid var(--line)}
@@ -1280,3 +1280,72 @@ button.km-t{cursor:pointer}
 .look:active{transform:scale(.97)}
 @media (hover:hover) and (pointer:fine){.look:hover{background:var(--soft)}}
 @media (max-width:640px){.look{width:32px;padding:0;justify-content:center}.look span,.look b{display:none}.look[aria-pressed="true"]{color:var(--link);background:var(--linkb);box-shadow:none}}
+/* ---- Chat in the right panel: questions from the ask bar move here; answers pull in live objects; actions wait for you. ---- */
+.rail.chat{width:440px}
+.cx{flex:1;min-height:0;display:flex;flex-direction:column}
+.cx-list{flex:1;min-height:0;overflow-y:auto;padding:var(--s8) var(--s20) var(--s16);display:flex;flex-direction:column;gap:var(--s20)}
+.cx-empty{margin:auto 0;display:flex;flex-direction:column;gap:var(--s6);color:var(--ink2);font:400 var(--fs-ui)/20px var(--sans)}
+.cx-empty b{font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+.cx-empty p{margin:0}
+.cx-m{display:flex;flex-direction:column;gap:var(--s8);animation:rise .32s var(--eo) both}
+.cx-m.you{align-items:flex-end}
+.cx-you,.cx-ghost{margin:0;max-width:85%;padding:var(--s10) var(--s14);border-radius:var(--r-lg);background:var(--linkb);color:var(--ink);font:400 var(--fs-ui)/20px var(--sans);text-wrap:pretty}
+.cx-ghost{position:fixed;z-index:130;max-width:none;box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;pointer-events:none;box-shadow:var(--sh2)}
+.cx-who{display:flex;align-items:center;gap:var(--s8);font:500 var(--fs-meta)/18px var(--sans);color:var(--ink)}
+.cx-none{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink2)}
+.cx-t{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink);text-wrap:pretty}
+.cx-typing{align-self:flex-start;display:inline-flex;gap:var(--s4);padding:var(--s6) 0}
+.cx-typing i{width:6px;height:6px;border-radius:50%;background:var(--ink2);animation:breathe 1s ease-in-out infinite}
+.cx-typing i:nth-child(2){animation-delay:.15s}.cx-typing i:nth-child(3){animation-delay:.3s}
+.cx-in{animation:rise .36s var(--eo) both}
+/* Objects pulled into the thread: one panel each, hairline, no fill except the Slack draft. */
+.cx-o{display:flex;flex-direction:column;gap:var(--s8);padding:var(--s14) var(--s16);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line);background:var(--panel)}
+.cx-o .tk{display:inline-flex;align-items:center;gap:var(--s6)}
+.cx-o p{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.cx-acts{display:flex;gap:var(--s16)}
+.cx-acts .wl,.cx-new{font:500 var(--fs-meta)/18px var(--sans);color:var(--link)}
+.cx-rule p{font:400 var(--fs-body)/26px var(--serif)}
+.cx-rh{display:flex;align-items:center;justify-content:space-between;gap:var(--s8)}
+.cx-st{display:inline-flex;align-items:center;gap:var(--s4);font:500 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.cx-st.lock{color:var(--link)}
+.cx-rec b{font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+.cx-rec dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--s8) var(--s16);margin:0}
+.cx-rec dd{margin:var(--s2) 0 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.cx-wait{padding-top:var(--s8);border-top:1px solid var(--line);color:var(--ink2)}
+.w7 .cx-wait{color:var(--ink2);font-size:var(--fs-meta);line-height:18px}
+.cx-route ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s6)}
+.cx-route li{display:inline-flex;align-items:center;gap:var(--s6);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.cx-route li+li::before{content:"";width:12px;height:1px;background:var(--hl);margin-right:var(--s2)}
+.cx-route li i{width:6px;height:6px;border-radius:50%;background:var(--hl)}
+.cx-route li.ag,.cx-route li.gate{color:var(--ink);font-weight:500}
+.cx-route li.gate i{width:2px;height:12px;border-radius:1px;background:var(--ink)}
+.cx-act b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.cx-act ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s6)}
+.cx-act li{display:flex;align-items:center;gap:var(--s8);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2);transition:color .2s ease}
+.cx-act li.done,.cx-act li.now{color:var(--ink)}
+.cx-ck{flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1px var(--line);color:var(--panel)}
+.cx-act li.done .cx-ck{background:var(--ok);box-shadow:none;animation:fade .2s ease both}
+.cx-act li.now .cx-ck{box-shadow:inset 0 0 0 1px var(--link)}
+.cx-act li.now .cx-ck i{width:6px;height:6px;border-radius:50%;background:var(--link);animation:breathe .8s ease-in-out infinite}
+.cx-act.done{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ok) 40%,var(--line))}
+.cx-btns{display:flex;gap:var(--s8);margin-top:var(--s4)}
+.cx-btns .btn{height:32px;padding:0 var(--s14)}
+.cx-note{margin:0}
+.w7 .cx-note{font-size:var(--fs-meta);line-height:18px;color:var(--ink2)}
+.cx-done{display:flex;align-items:center;gap:var(--s6)}
+.w7 .cx-done{color:var(--ok);font-size:var(--fs-meta);line-height:18px;animation:fade .3s ease both}
+.cx-slack{background:var(--soft);box-shadow:none}
+.cx-slack p,.cx-person p{display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s10)}
+.cx-slack p b,.cx-person p b{display:block;font-weight:500}
+.cx-av{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--soft2);color:var(--ink2)}
+.cx-foot{flex:none;display:flex;flex-direction:column;gap:var(--s8);padding:var(--s12) var(--s16) var(--s14);border-top:1px solid var(--hair)}
+.cx-next{display:flex;flex-wrap:wrap;gap:var(--s6)}
+.cx-next button{height:32px;padding:0 var(--s12);border:0;border-radius:var(--r-pill);background:var(--linkb);color:var(--link);font:500 var(--fs-meta)/18px var(--sans);cursor:pointer;animation:rise .3s var(--eo) both;-webkit-tap-highlight-color:transparent;transition:transform 160ms var(--eo)}
+.cx-next button:active{transform:scale(.97)}
+.cx-in-bar{display:flex;align-items:flex-end;gap:var(--s8);padding:var(--s6) var(--s6) var(--s6) var(--s14);border-radius:var(--r-lg);box-shadow:inset 0 0 0 1px var(--line);background:var(--panel)}
+.cx-in-bar:focus-within{box-shadow:inset 0 0 0 1px var(--link)}
+.cx-in-bar textarea{flex:1;min-width:0;resize:none;border:0;outline:none;background:none;padding:var(--s6) 0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink);max-height:120px;field-sizing:content}
+.cx-new{align-self:flex-start;background:none;border:0;padding:0;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.cx-m,.cx-in,.cx-next button{animation:fade .2s both}}
+.rail .cx ol{padding:0;overflow:visible;flex:none}
+.rail .cx li{border-top:0;padding:0}

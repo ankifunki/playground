@@ -20,7 +20,7 @@ const P: Record<string, React.ReactNode> = {
   text: <><path className="l1" d="M21 6H3" /><path className="l2" d="M15 12H3" /><path className="l3" d="M17 18H3" /></>,
   workflow: <><rect className="n1" width="8" height="8" x="3" y="3" rx="2" /><path className="edge" d="M7 11v4a2 2 0 0 0 2 2h4" /><rect className="n2" width="8" height="8" x="13" y="13" rx="2" /></>,
   'shield-check': <><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path className="tick" d="m9 12 2 2 4-4" /></>,
-  /* Agents */
+  /* Jobs */
   key: <><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" /><path d="m21 2-9.6 9.6" /><circle cx="7.5" cy="15.5" r="5.5" /></>,
   receipt: <><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" /><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" /><path d="M12 17.5v-11" /></>,
   'life-buoy': <><circle cx="12" cy="12" r="10" /><path d="m4.93 4.93 4.24 4.24" /><path d="m14.83 9.17 4.24-4.24" /><path d="m14.83 14.83 4.24 4.24" /><path d="m9.17 14.83-4.24 4.24" /><circle cx="12" cy="12" r="4" /></>,

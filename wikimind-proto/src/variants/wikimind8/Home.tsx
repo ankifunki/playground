@@ -5,8 +5,8 @@ import { Ag, LiveNum, LivePulse, Sources } from './Live'
 import { PathBar } from './Page'
 import { useW } from './store'
 
-/** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the agents, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
-/** Each agent's path to automation, and what is blocking or needed for the rest. Demo data. */
+/** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the jobs, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
+/** Each job's path to automation, and what is blocking or needed for the rest. Demo data. */
 export const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string; needs: string[] }> = {
   approvals: { rel: 99.0, own: 52, ask: 38, tag: 'Asking Maria', needs: ['Maria Okafor: confirm flat renewals skip approval on purpose (asked Oct 27)', 'One more EMEA deal, to confirm regional-director routing', 'Discounts over 20%: 30 more decisions that match a person'] },
   access: { rel: 98.1, own: 78, ask: 18, needs: ['Seat reclaims: 2 more decisions that match a person', 'Admin rights stay with people, by policy'] },
@@ -22,8 +22,8 @@ export function MiniBar({ own, ask }: { own: number; ask: number }) {
   return <span className="mini-bar" aria-label={`${own}% on its own, ${ask}% asks first, ${100 - own - ask}% blocked`}>{Array.from({ length: n }, (_, i) => <i key={i} className={i < o ? 'own' : i < o + a ? 'ask' : 'gap'} />)}</span>
 }
 
-/** Home (Wikimind 4's front page, at Wikimind 4's width): headline and live line, path to automation, three cards, the agents (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. Read-only. */
-/** The live line (the newest thing any agent did) and the tour button. */
+/** Home (Wikimind 4's front page, at Wikimind 4's width): headline and live line, path to automation, three cards, the jobs (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. Read-only. */
+/** The live line (the newest thing any job did) and the tour button. */
 export function HomeLive() {
   const w = useW(), last = w.acts[0]
   return (
@@ -51,13 +51,13 @@ export function AutomationCards() {
   )
 }
 
-/** The agents: each row has reliability, a mini path bar and whom it is asking, and expands to what it needs. */
+/** The jobs: each row has reliability, a mini path bar and whom it is asking, and expands to what it needs. */
 export function AgentsCard() {
   const w = useW(), [open, setOpen] = useState<AgentId | null>(null)
   return (
     <>
       <section className="home-card">
-        <div className="home-ch"><h2>The agents</h2><span className="tk">6 agents, one job each</span></div>
+        <div className="home-ch"><h2>The jobs</h2><span className="tk">6 jobs</span></div>
         <ul className="ags8">{AGENTS.map((a) => {
           const r = REL[a.id], isOpen = open === a.id, sp = SPACES.find((s) => s.ag === a.id)!
           return (
@@ -110,12 +110,12 @@ export function MovingFocus() {
   )
 }
 
-/** Unwritten rules the agents found. */
+/** Unwritten rules the jobs found. */
 export function RulesCard() {
   return (
     <>
       <section className="home-card">
-        <span className="tk">Unwritten rules the agents found</span>
+        <span className="tk">Unwritten rules the jobs found</span>
         <ul className="rules8 cols">
           <li><b>At quarter end, large deals are approved in Slack before Salesforce.</b><small>Approvals · 9 #deal-desk threads</small></li>
           <li><b>Approval requests expire after 14 days, since two deals closed on six-week-old prices.</b><small>Approvals · #revops, 2024</small></li>
@@ -132,7 +132,7 @@ export function HomeSources() {
   return (
     <>
       <Sources items={[{ ic: 'hash', name: 'Slack: 48,210 messages' }, { ic: 'ticket', name: 'Tickets: 1,912' }, { ic: 'cloud', name: 'Salesforce: six years of changes' }, { ic: 'video', name: 'Meetings: 214' }, { ic: 'file-text', name: 'Documents: 380' }]}>
-        <b>1,284 pages</b> written by 6 agents from <b>3,912</b> observations this week. None typed by a person.
+        <b>1,284 pages</b> written by 6 jobs from <b>3,912</b> observations this week. None typed by a person.
       </Sources>
       <p className="home-demo"><span className="tk">Demo</span><button className="wl" onClick={w.arriveSlack}>Arrive from a Slack citation</button><span className="tk">S</span></p>
     </>
@@ -140,12 +140,12 @@ export function HomeSources() {
 }
 
 /** Home (Wikimind 4's front page, at Wikimind 4's width): headline and live line, path to automation, three cards, the
- * agents (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. */
+ * jobs (each expands to what blocks it), what's moving beside the page in focus, unwritten rules, and the sources footer. */
 export function Home() {
   return (
     <article className="doc home wide">
       <p className="home-k">Rippling</p>
-      <h1>What the agents run today, and what they still need.</h1>
+      <h1>What runs on its own today, and what still needs people.</h1>
       <HomeLive />
       <AutomationCards />
       <AgentsCard />

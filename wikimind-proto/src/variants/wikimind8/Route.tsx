@@ -11,8 +11,8 @@ const hm = (m: number) => `+${Math.floor(m / 60)} h ${String(Math.round(m % 60))
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2)
 
 /**
- * The route map: how a deal gets approved, played. The deal leaves the rep, reaches the Approvals agent, and the path
- * forks into every route the live config allows (under $100k, up to f%, f–35%, over 35%). While the agent checks, it
+ * The route map: how a deal gets approved, played. The deal leaves the rep, reaches the Approvals job, and the path
+ * forks into every route the live config allows (under $100k, up to f%, f–35%, over 35%). While the job checks, it
  * scans the routes; then the one this deal takes turns indigo and the rest fall back. The deal travels it with an
  * indigo trail; each approver is a gate it waits at while a clock races through the hours, and the gate swings open
  * green when they approve. At the end the lock opens. Nothing else moves.
@@ -44,7 +44,7 @@ export function Route({ t, kind, f, okAt, end, label }: { t: number; kind: Kind;
     setPts(out); setL(total)
   }, [W, kind, f])
 
-  // Where the deal is along x at time t: to the agent, hold while it checks, then gate to gate, then to the lock.
+  // Where the deal is along x at time t: to the job, hold while it checks, then gate to gate, then to the lock.
   const hold = (x0 + ax) / 2 + 4, stop = xe - 44
   const kf: { t: number; x: number }[] = [{ t: 0, x: x0 }, { t: 1800, x: hold }, { t: 4200, x: hold }]
   if (kind === 'none') kf.push({ t: end, x: stop })
@@ -60,7 +60,7 @@ export function Route({ t, kind, f, okAt, end, label }: { t: number; kind: Kind;
 
   const chosen = t >= 4200, checking = t > 1800 && t < 4200, scan = checking && t > 2400 ? Math.floor((t - 2400) / 450) % 4 : -1
   const done = t > end + 400
-  // The clock: seconds while the agent works, hours racing while a person approves.
+  // The clock: seconds while the job works, hours racing while a person approves.
   let clock = t < 1800 ? '0 s' : t < 7600 ? `+${Math.min(4, Math.max(1, Math.round((t - 1800) / 1450)))} s` : kind === 'none' ? '+4 s' : ''
   let waiting = -1
   if (kind !== 'none' && t >= 7600) {
@@ -94,7 +94,7 @@ export function Route({ t, kind, f, okAt, end, label }: { t: number; kind: Kind;
         )
       }))}
       <span className="rt-node rt-start" style={{ left: x0, top: mid }}><small>Rep</small></span>
-      <span className={'rt-node rt-agent' + (checking ? ' busy' : '')} style={{ left: ax, top: mid }}><Icon name="stamp" size={14} /><small>Approvals agent</small></span>
+      <span className={'rt-node rt-agent' + (checking ? ' busy' : '')} style={{ left: ax, top: mid }}><Icon name="stamp" size={14} /><small>Approvals job</small></span>
       <span className={'rt-node rt-end' + (done ? ' ok' : '')} style={{ left: xe, top: mid }}><Icon name={done ? 'lock-open' : 'lock'} size={14} /></span>
       <span className={'rt-tok' + (waiting >= 0 ? ' wait' : '') + (done ? ' gone' : '')} style={{ transform: `translate(${at.x}px, ${at.y}px)` } as React.CSSProperties}>
         <b className="rt-clock">{clock}</b>
