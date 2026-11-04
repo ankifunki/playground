@@ -71,13 +71,21 @@ export function Block({ id, children, cls = '' }: { id: string; children: ReactN
 }
 
 /**
- * A number that changes while you watch: on each change it shows in the accent colour, then fades back to the text
- * colour, so a live update draws the eye once without staying loud. Never on first render. Clocks don't use it.
+ * A number that changes while you watch: only the characters that changed show in the accent colour, hold for a moment,
+ * then fade back to the text colour, so a live update draws the eye without the whole number shouting. Characters are
+ * compared from the right (1,240 to 1,242 flashes only the last digit). Never on first render. Clocks don't use it.
  */
 export function LiveNum({ value }: { value: string | number }) {
-  const prev = useRef(value), [n, setN] = useState(0)
-  useEffect(() => { if (prev.current !== value) { prev.current = value; setN((x) => x + 1) } }, [value])
-  return <span key={n} className={'ln' + (n ? ' on' : '')}>{value}</span>
+  const cur = String(value), prev = useRef(cur), [state, setState] = useState<{ n: number; changed: boolean[] }>({ n: 0, changed: [] })
+  useEffect(() => {
+    if (prev.current === cur) return
+    const a = prev.current, len = cur.length
+    const changed = cur.split('').map((ch, i) => { const j = a.length - (len - i); return j < 0 || a[j] !== ch })
+    prev.current = cur
+    setState((x) => ({ n: x.n + 1, changed }))
+  }, [cur])
+  if (!state.n) return <span className="ln">{cur}</span>
+  return <span className="ln" key={state.n}>{cur.split('').map((ch, i) => <span key={i} className={state.changed[i] ? 'ln-c' : undefined}>{ch}</span>)}</span>
 }
 
 /** The live mark: a small radio icon with a slow, soft pulse ring. Used wherever something is happening right now. */

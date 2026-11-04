@@ -1146,8 +1146,9 @@ button.km-t{cursor:pointer}
 }
 .doc ul.ov-rows,.doc ul.ov-sum{margin-left:0;padding-left:0}.doc ul.ov-rows li{margin:0}
 /* Live numbers: accent on change, then back to the text colour. */
-.ln.on{animation:lnFlash 1.6s var(--eo) both}
-@keyframes lnFlash{from{color:var(--link)}}
+/* Only the changed characters: hold in the accent for about a second, then fade to the text colour (~3.5s in all). */
+.ln-c{animation:lnFlash 3.6s ease-out both}
+@keyframes lnFlash{0%,28%{color:var(--link)}100%{color:inherit}}
 .ov-x{color:var(--ink)}
 .ov-sum b .ln{font:inherit;color:inherit;text-decoration:none}
 @media (min-width:901px){.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) 96px minmax(0,1.2fr)}}
