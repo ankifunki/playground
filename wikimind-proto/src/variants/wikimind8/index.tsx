@@ -10,6 +10,7 @@ import { TRACE } from './traces'
 import { Approvals, Stub } from './Page'
 import { Home } from './Home'
 import { NewsHome } from './NewsHome'
+import { AgentProfile } from './Agents'
 import { Tour } from './Tour'
 import { Provider, useW } from './store'
 import css from './styles.css?inline'
@@ -80,11 +81,11 @@ function Rail() {
   return (
     <aside className={'rail' + (w.rail ? ' open' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); w.openTrace(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}Trace</span></span>
+        {w.trace || w.agent ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else w.openAgent(null) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : 'Agent'}</span></span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
-        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null) }} aria-label="Close"><Icon name="x" size={16} /></button>
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
-      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : <div className="rail-list rail-pop">
+      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : <div className="rail-list rail-pop">
       <ol>
         {w.acts.map((a) => {
           return (

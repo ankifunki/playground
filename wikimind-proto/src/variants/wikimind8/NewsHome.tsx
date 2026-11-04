@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AG, AGENTS, ago, SPACES, type AgentId } from './data'
 import { Thresholds } from './Flow'
-import { AgentsCard, AutomationCards, HomeLive, HomeSources, RulesCard } from './Home'
+import { AgentsOverview } from './Agents'
+import { HomeLive, HomeSources, RulesCard } from './Home'
 import { Icon } from './Icon'
 import { Ag } from './Live'
 import { RM, useW } from './store'
@@ -73,58 +74,6 @@ function Stories() {
   )
 }
 
-/* The knowledge map: every page as one tile, grouped by grove. Each tile's look is one named state. */
-type St = 'ver' | 'cur' | 'old' | 'ask'
-const STATE: Record<St, string> = { ver: 'Verified by a person', cur: 'Current, re-read today', old: 'Out of date', ask: 'Open question' }
-const rnd = (i: number) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x) }
-const pick = (r: number): St => (r < 0.46 ? 'ver' : r < 0.86 ? 'cur' : r < 0.94 ? 'old' : 'ask')
-
-function KnowledgeMap() {
-  const w = useW(), root = useRef<HTMLDivElement>(null)
-  // One fixed state per tile (seeded), so the map is stable between renders. Named pages sit first in their grove.
-  const groves = useMemo(() => SPACES.map((s, g) => ({ ...s, tiles: Array.from({ length: s.total }, (_, i) => {
-    const page = s.pages[i]
-    const st: St = page?.id === 'renewals' ? 'ask' : page?.id === 'cpq-sync' ? 'ask' : page ? 'ver' : pick(rnd(g * 1000 + i))
-    return { st, page }
-  }) })), [])
-  const counts = useMemo(() => { const c: Record<St, number> = { ver: 0, cur: 0, old: 0, ask: 0 }; groves.forEach((g) => g.tiles.forEach((t) => c[t.st]++)); return c }, [groves])
-  // Alive: tiles light up as an agent reads them. Done on the DOM so 1,284 tiles never re-render.
-  useEffect(() => {
-    if (RM) return
-    const tiles = root.current ? [...root.current.querySelectorAll<HTMLElement>('.km-t')] : []
-    if (!tiles.length) return
-    const id = window.setInterval(() => {
-      for (let k = 0; k < 3; k++) {
-        const el = tiles[Math.floor(Math.random() * tiles.length)]
-        el.classList.add('obs'); window.setTimeout(() => el.classList.remove('obs'), 1200)
-      }
-    }, 420)
-    return () => window.clearInterval(id)
-  }, [])
-  const writing = w.presence?.page
-  return (
-    <section className="home-card nh-map" aria-label="Every page the agents keep">
-      <div className="nh-h"><h2>{(1284).toLocaleString('en-US')} pages, as the agents know them</h2><span className="tk">One tile per page · lit as an agent reads it</span></div>
-      <div className="km" ref={root}>
-        {groves.map((g) => (
-          <div key={g.ag} className="km-g">
-            <button className="km-gh" onClick={() => w.go(g.pages[0].id)}><Ag id={g.ag} size={20} /><b>{AG[g.ag].name} grove</b><span>{g.total} pages</span></button>
-            <div className="km-f">
-              {g.tiles.map((t, i) => t.page
-                ? <button key={i} className={'km-t ' + t.st + (writing === t.page.id ? ' w' : '')} title={`${t.page.title} · ${STATE[t.st]}`} aria-label={t.page.title} onClick={() => w.go(t.page!.id)} />
-                : <i key={i} className={'km-t ' + t.st} title={`${AG[g.ag].name} grove · ${STATE[t.st]}`} />)}
-            </div>
-          </div>
-        ))}
-      </div>
-      <ul className="km-l">
-        {(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{counts[k].toLocaleString('en-US')}</span></li>)}
-        <li><i className="km-t cur obs-k" />Being read now</li>
-      </ul>
-    </section>
-  )
-}
-
 /** Coming up: the processes and priorities the agents are preparing for. */
 function ComingUp() {
   const w = useW()
@@ -149,33 +98,6 @@ function ComingUp() {
   )
 }
 
-/** Browse by grove: each agent's grove with its size, freshness and newest change. */
-const NEWEST: Record<AgentId, { t: string; re: string }> = {
-  approvals: { t: 'Re-read Discount approvals against Salesforce', re: '4 s ago' },
-  access: { t: 'Updated Deal Desk: Priya Shah now leads it', re: '4 min ago' },
-  security: { t: 'Removed 14 stale API users from Access reviews', re: '20 min ago' },
-  finance: { t: 'Linked 3 invoice mismatches to NetSuite records', re: '45 min ago' },
-  integrations: { t: 'Asked Ben Ito why multi-currency quotes fail', re: '1 min ago' },
-  support: { t: 'Linked 3 cases to the data-loss escalation rule', re: '7 min ago' },
-}
-function Groves() {
-  const w = useW()
-  return (
-    <section className="nh-groves" aria-label="Browse by grove">
-      <div className="nh-h"><h2>Browse by grove</h2><span className="tk">Each agent keeps one</span></div>
-      <ul>
-        {AGENTS.map((a) => { const sp = SPACES.find((s) => s.ag === a.id)!, n = NEWEST[a.id], live = w.presence?.ag === a.id; return (
-          <li key={a.id}><button onClick={() => w.go(sp.pages[0].id)}>
-            <Ag id={a.id} size={28} />
-            <span className="nh-gt"><b>{a.name} grove</b><small>{sp.total} pages · re-read {n.re}</small><span>{live && w.presence ? `Writing ${w.presence.label} now` : n.t}</span></span>
-            <Icon name="arrow-right" size={16} />
-          </button></li>
-        ) })}
-      </ul>
-    </section>
-  )
-}
-
 /** Wikimind 8b's Home: the front page. */
 export function NewsHome() {
   const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -186,13 +108,9 @@ export function NewsHome() {
       <HomeLive />
       <Today />
       <Stories />
-      <KnowledgeMap />
+      <AgentsOverview />
       <ComingUp />
       <RulesCard />
-      <Groves />
-      <div className="nh-h nh-sep"><h2>What the agents run on their own</h2><span className="tk">And what they still need</span></div>
-      <AutomationCards />
-      <AgentsCard />
       <HomeSources />
     </article>
   )

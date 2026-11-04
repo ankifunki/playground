@@ -7,7 +7,7 @@ import { useW } from './store'
 
 /** Home (Wikimind 4's front page): a plain headline with one live line, the path to automation, three trust cards, the agents, what's moving beside the page in focus, unwritten rules and the spaces. Read-only. */
 /** Each agent's path to automation, and what is blocking or needed for the rest. Demo data. */
-const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string; needs: string[] }> = {
+export const REL: Record<AgentId, { rel: number; own: number; ask: number; tag?: string; needs: string[] }> = {
   approvals: { rel: 99.0, own: 52, ask: 38, tag: 'Asking Maria', needs: ['Maria Okafor: confirm flat renewals skip approval on purpose (asked Oct 27)', 'One more EMEA deal, to confirm regional-director routing', 'Discounts over 20%: 30 more decisions that match a person'] },
   access: { rel: 98.1, own: 78, ask: 18, needs: ['Seat reclaims: 2 more decisions that match a person', 'Admin rights stay with people, by policy'] },
   security: { rel: 97.4, own: 41, ask: 40, tag: 'Needs Okta logs', needs: ['IT: grant read access to Okta sign-in logs (asked Nov 1)', 'Device wipes: shadow 20 more'] },

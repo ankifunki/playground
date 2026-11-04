@@ -15,6 +15,7 @@ type W = {
   rail: boolean; setRail: (b: boolean) => void; nav: boolean; setNav: (b: boolean) => void
   replay: () => void; jump: (block: string) => void; log: (a: Omit<Act, 'id' | 'at'>) => void
   trace: string | null; openTrace: (id: string | null) => void; extra: Record<string, TStep[]>
+  agent: AgentId | null; openAgent: (a: AgentId | null) => void
   tour: number | null; setTour: (n: number | null) => void; change: () => void
 }
 const Ctx = createContext<W | null>(null)
@@ -46,7 +47,10 @@ export function Provider({ children }: { children: ReactNode }) {
   const setRail = (b: boolean) => { setRailS(b); if (b) setNavS(false) }
   const [run, setRun] = useState(0), [trace, setTrace] = useState<string | null>(null), [extra, setExtra] = useState<Record<string, TStep[]>>({})
   const add = (id: string, ...st: TStep[]) => setExtra((m) => ({ ...m, [id]: [...(m[id] || []), ...st] }))
+  const [agent, setAgent] = useState<AgentId | null>(null)
   const openTrace = (id: string | null) => { setTrace(id); if (id) setRail(true) }
+  // An agent's profile shows in the right panel, like a trace; a trace opened from it shows on top.
+  const openAgent = (a: AgentId | null) => { setTrace(null); setAgent(a); if (a) setRail(true) }
   const nid = useRef(1), timers = useRef<number[]>([])
 
   useEffect(() => { const t = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(t) }, [])
@@ -115,10 +119,10 @@ export function Provider({ children }: { children: ReactNode }) {
       else if (e.key === 'l' || e.key === 'L') answer()
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, tour, setTour, change }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change }}>{children}</Ctx.Provider>
 }

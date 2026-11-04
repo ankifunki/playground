@@ -976,3 +976,98 @@ button.km-t{cursor:pointer}
 /* Related pages: a neutral page icon (agent tiles mean "an agent did this", as in Cited by). */
 .rel-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:var(--r-tile);background:var(--soft);color:var(--ink2)}
 .related button>.rel-ic{grid-column:1;grid-row:1 / span 2}
+/* ---------- Wikimind 8b: what each agent knows and runs ---------- */
+.ov{margin-bottom:var(--s24)}
+.ov-sum{list-style:none;margin:0 0 var(--s24);padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ov-sum li+li{border-left:1px solid var(--line)}
+.ov-sum li>div,.ov-sum li>button{display:flex;flex-direction:column;gap:var(--s4);width:100%;height:100%;padding:var(--s16) var(--s16) var(--s16) 0;text-align:left}
+.ov-sum li+li>div,.ov-sum li+li>button{padding-left:var(--s16)}
+.ov-sum button{border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s ease}
+.ov-sum b{font:400 var(--fs-head)/36px var(--serif);color:var(--ink)}
+.ov-sum span{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ov-sum button span{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.ov-sum button.on{background:var(--soft)}
+.ov-sum button.on span{color:var(--ink);text-decoration-color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){.ov-sum button:hover{background:var(--soft)}}
+.ov-head,.ov-rows li>button{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2.2fr) minmax(0,1fr) 72px minmax(0,1.3fr);column-gap:var(--s24);align-items:start}
+.ov-head{padding:0 0 var(--s8);font:450 var(--fs-label)/16px var(--mono);color:var(--ink2)}
+.ov-rows{list-style:none;margin:0;padding:0}
+.ov-rows li{border-top:1px solid var(--line);transition:opacity .25s ease}
+.ov-rows li>button{width:100%;padding:var(--s16) var(--s8) var(--s16) 0;border:0;background:none;text-align:left;cursor:pointer;border-radius:var(--r-sm);-webkit-tap-highlight-color:transparent;transition:background-color .15s ease}
+.ov-rows li.on>button{background:var(--soft)}
+@media (hover:hover) and (pointer:fine){.ov-rows li>button:hover{background:var(--soft)}}
+.ov-ag{display:flex;gap:var(--s12);align-items:flex-start}
+.ov-ag b{display:block;font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ov-ag small{display:block;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ov-tiles{display:grid;grid-template-columns:repeat(auto-fill,6px);gap:2px;padding-top:var(--s2)}
+.ov-tiles .km-t{width:6px;height:6px}
+.ov-tiles.s{grid-template-columns:repeat(auto-fill,6px)}
+.ov-own{display:flex;align-items:center;gap:var(--s8);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ov-own .mini-bar{flex:none;transform:scale(.8);transform-origin:left center;margin-right:-24px}
+.ov-rel{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ov-now{display:flex;align-items:flex-start;gap:var(--s6);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ov-now .ic{flex:none;margin-top:3px}
+.ov-now.live{color:var(--link)}
+.ov .km-l{margin-top:var(--s8)}
+/* Filters dim what doesn't match. */
+.ov.f-ask .ov-rows li:not(.has-ask),.ov.f-block .ov-rows li:not(.has-block){opacity:.35}
+.ov.f-ver .ov-tiles .km-t:not(.ver),.ov.f-ask .ov-tiles .km-t:not(.ask){opacity:.15}
+.ov.f-own .ov-tiles{opacity:.35}
+.ov .ov-tiles .km-t{transition:opacity .25s ease,background-color .6s ease,box-shadow .6s ease}
+@media (max-width:900px){
+ .ov-sum{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ov-sum li:nth-child(4){border-left:0}
+ .ov-sum li:nth-child(n+4){border-top:1px solid var(--line)}
+ .ov-sum li:nth-child(4)>div{padding-left:0}
+ .ov-head{display:none}
+ .ov-rows li>button{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"ag own rel" "tiles tiles tiles" "now now now";row-gap:var(--s12)}
+ .ov-ag{grid-area:ag}.ov-tiles{grid-area:tiles}.ov-own{grid-area:own}.ov-rel{grid-area:rel}.ov-now{grid-area:now}
+}
+@media (max-width:640px){
+ .ov-sum{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ov-sum li:nth-child(odd){border-left:0}
+ .ov-sum li:nth-child(4){border-left:1px solid var(--line)}
+ .ov-sum li:nth-child(4)>div{padding-left:var(--s16)}
+ .ov-sum li:nth-child(odd)>div,.ov-sum li:nth-child(odd)>button{padding-left:0}
+ .ov-sum li:nth-child(n+3){border-top:1px solid var(--line)}
+ .ov-own .mini-bar{display:none}
+}
+/* Agent profile in the right panel. */
+.ap{display:flex;flex-direction:column;gap:var(--s20);padding-bottom:var(--s8)}
+.ap-h{display:flex;gap:var(--s12);align-items:flex-start}
+.ap-h b{display:block;font:400 var(--fs-title)/28px var(--serif);color:var(--ink)}
+.ap-h small{display:block;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ap-stats>div{padding:var(--s12) 0}
+.ap-stats>div+div{padding-left:var(--s12);border-left:1px solid var(--line)}
+.ap-stats dd{margin:var(--s4) 0 0;font:400 var(--fs-title)/28px var(--serif);color:var(--ink)}
+.ap section{display:flex;flex-direction:column;gap:var(--s10)}
+.ap h3{margin:0;font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ap h4{margin:var(--s6) 0 0}
+.ap-counts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:var(--s4) var(--s12)}
+.ap-counts li{display:flex;align-items:center;gap:var(--s6);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-counts .num{margin-left:auto;color:var(--ink)}
+.ap-list{list-style:none;margin:0;padding:0}
+.ap-list li{display:flex;flex-direction:column;gap:var(--s2);padding:var(--s8) 0;border-top:1px solid var(--line)}
+.ap-list li:first-child{border-top:0;padding-top:0}
+.ap-list span,.ap-list .wl{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink);text-align:left}
+.ap-list .wl{color:var(--link);font-weight:500}
+.ap-list small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-jobs{list-style:none;margin:0;padding:0}
+.ap-jobs li{display:flex;flex-direction:column;gap:var(--s2);padding:var(--s8) 0 var(--s8) var(--s12);border-left:2px solid var(--line)}
+.ap-jobs li.own{border-left-color:var(--link)}
+.ap-jobs li.ask{border-left-color:color-mix(in srgb,var(--link) 30%,transparent)}
+.ap-jobs span{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ap-jobs small{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-rel{display:flex;align-items:center;justify-content:space-between;gap:var(--s12);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.ap-rel b{font:500 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ap-spark{flex:none}
+.ap-spark path{fill:none;stroke:var(--ink2);stroke-width:1.5;stroke-linejoin:round}
+.ap-foot{position:sticky;bottom:0;padding:var(--s12) 0 0;background:var(--panel);border-top:1px solid var(--line)}
+.ov-head,.ov-rows li>button{grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) minmax(0,1.6fr) 72px minmax(0,1.2fr)}
+.ov-own .mini-bar{transform:none;margin-right:0;gap:2px}
+.ov-own .mini-bar i{width:2px}
+.ov-k{display:none;font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+@media (max-width:900px){.ov-k{display:inline}}
+.rail-sc .ap{padding:var(--s4) var(--s20) 0}
+.ap-foot{margin:0 calc(var(--s20) * -1);padding:var(--s12) var(--s20) var(--s16)}
