@@ -1071,3 +1071,20 @@ button.km-t{cursor:pointer}
 @media (max-width:900px){.ov-k{display:inline}}
 .rail-sc .ap{padding:var(--s4) var(--s20) 0}
 .ap-foot{margin:0 calc(var(--s20) * -1);padding:var(--s12) var(--s20) var(--s16)}
+/* Knowledge bar: length = pages (the largest grove fills the column), grouped by state; a soft light passes along it. */
+.ov-kb{display:block;padding-top:var(--s6)}
+.kb{position:relative;display:flex;gap:2px;height:10px;overflow:hidden}
+.kb.l{height:14px;width:100%}
+.kb-s{display:block;min-width:2px;height:100%}
+.kb-s.ver{background:var(--link)}
+.kb-s.cur{background:color-mix(in srgb,var(--link) 30%,transparent)}
+.kb-s.old{background:color-mix(in srgb,var(--ink) 18%,transparent)}
+.kb-s.ask{background:var(--warn)}
+.kb-read{position:absolute;top:0;bottom:0;left:0;width:32px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--panel) 55%,transparent),transparent);transform:translateX(-40px);animation:kbRead 7s linear infinite;animation-delay:var(--d,0s);pointer-events:none}
+@keyframes kbRead{0%{transform:translateX(-40px)}60%,100%{transform:translateX(calc(100cqw + 40px))}}
+.kb{container-type:inline-size}
+.ov .kb-s{transition:opacity .25s ease}
+.ov.f-ver .kb-s:not(.ver),.ov.f-ask .kb-s:not(.ask){opacity:.15}
+.ov.f-own .kb{opacity:.35}
+@media (prefers-reduced-motion:reduce){.kb-read{display:none}}
+.ap .kb{margin:var(--s2) 0 var(--s4)}

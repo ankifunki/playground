@@ -104,7 +104,7 @@ export function NewsHome() {
   return (
     <article className="doc home wide nh">
       <p className="home-k">Rippling · {date}</p>
-      <h1>What the agents saw, learned and changed today.</h1>
+      <h1>What changed in Rippling’s Salesforce and processes today, and what the agents learned.</h1>
       <HomeLive />
       <Today />
       <Stories />

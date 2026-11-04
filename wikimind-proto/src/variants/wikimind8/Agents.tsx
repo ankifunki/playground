@@ -44,7 +44,7 @@ const NEWEST: Record<AgentId, string> = {
   finance: 'Linked 3 invoice mismatches to NetSuite records', integrations: 'Asked Ben Ito why multi-currency quotes fail', support: 'Linked 3 cases to the data-loss escalation rule',
 }
 
-/** Every grove's pages as tile states (seeded, stable). Named pages sit first; open-question tiles match the questions. */
+/** Every grove's pages as states (seeded, stable). Named pages sit first; open-question tiles match the questions. */
 export function useGroves() {
   const w = useW(), answered = w.renewal === 'answered', fixed = w.cpq === 'fixed'
   return useMemo(() => SPACES.map((s, g) => {
@@ -81,6 +81,20 @@ function Tiles({ tiles, size = 'm' }: { tiles: { st: St; page?: { id: string; ti
   )
 }
 
+/**
+ * What an agent knows as one bar: its length is its page count (the largest grove fills the column), grouped by
+ * state (verified, current, out of date, open question). A soft light passes along it as the agent re-reads.
+ */
+function KnowBar({ counts, total, max, size = 'm', delay = 0 }: { counts: Record<St, number>; total: number; max: number; size?: 'm' | 'l'; delay?: number }) {
+  const order: St[] = ['ver', 'cur', 'old', 'ask']
+  return (
+    <span className={'kb ' + size} style={{ width: (total / max) * 100 + '%', ['--d' as string]: delay + 's' }} role="img" aria-label={order.map((k) => `${counts[k]} ${STATE[k].toLowerCase()}`).join(', ')}>
+      {order.filter((k) => counts[k] > 0).map((k) => <i key={k} className={'kb-s ' + k} style={{ flexGrow: counts[k] }} title={`${STATE[k]} · ${counts[k]}`} />)}
+      <b className="kb-read" aria-hidden="true" />
+    </span>
+  )
+}
+
 type Filter = null | 'ver' | 'ask' | 'block' | 'own'
 
 /** The overview: totals (each a filter) and one row per agent. Clicking a row opens the agent's profile. */
@@ -108,7 +122,7 @@ export function AgentsOverview() {
           </li>
         ))}
       </ul>
-      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>What it knows · one tile per page</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
+      <div className="ov-head" aria-hidden="true"><span>Agent</span><span>What it knows · pages by state</span><span>Runs on its own</span><span>Reliability</span><span>Right now</span></div>
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = REL[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
@@ -117,7 +131,7 @@ export function AgentsOverview() {
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (BLOCKERS[a.id] ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
               <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
                 <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small>{g.total} pages · {a.job}</small></span></span>
-                <Tiles tiles={g.tiles} />
+                <span className="ov-kb"><KnowBar counts={g.counts} total={g.total} max={Math.max(...groves.map((x) => x.total))} delay={AGENTS.indexOf(a) * 1.3} /></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> on its own</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
                 <span className={'ov-now' + (live ? ' live' : '')}>{now}</span>
@@ -128,7 +142,6 @@ export function AgentsOverview() {
       </ul>
       <ul className="km-l">
         {(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}</li>)}
-        <li><i className="km-t cur obs-k" />Being read now</li>
       </ul>
     </section>
   )
@@ -160,7 +173,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it knows</h3>
-        <Tiles tiles={g.tiles} size="s" />
+        <KnowBar counts={g.counts} total={g.total} max={g.total} size="l" />
         <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul>
         {g.pages.length > 0 && <ul className="ap-list">{g.pages.map((p) => <li key={p.id}><button className="wl" onClick={() => w.go(p.id)}>{p.title}</button><small>re-read {ago(p.re)}</small></li>)}</ul>}
         {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}><span>{x.q}</span><small>{x.who}</small></li>)}</ul></>}
