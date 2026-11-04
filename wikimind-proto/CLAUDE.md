@@ -97,6 +97,14 @@ Wikimind 8's workspace with a `v9` flag (`Provider v9`, read as `w.v9`), so 8 an
   - "Changed / Learned / Asking people" are the **Updates** feeds (`useFeeds`). Each column shows its newest three and a **More** link that opens the whole feed in the right panel (`FeedPanel`; store `feed`, `openFeed`), with older items the columns leave out.
   - "What Asoka knows and runs, by job" is **Jobs** in Wikimind 9.
   - Coming up has no subtitle.
+- **Blockers open a panel** (`BlockerPanel` in `Agents.tsx`; store `blocker`, `openBlocker`; context in `GAPS`):
+  - A blocked job shows a clear amber **Blocked · <access>** chip in its Jobs row; clicking it opens the panel instead of the profile.
+  - The panel has a header (job, scope, when it was asked), then:
+    - **Why it's blocked**: what Asoka can't do without it.
+    - **What unblocking does**: the job's share and the whole, e.g. 41% → 49% and 64% → 68%, plus the limits of the access.
+    - **Who grants it**: Dev approves every grant.
+  - The action is pinned at the foot: **Request access**, or ask the owner in Slack. After a grant the panel says what changed and the chip disappears.
+  - Also opened from the profile's needs ("Why it's blocked") and the Gaps card's gap name.
 - **Coming up, around readiness** (`Readiness` in `Home9.tsx`; 8b keeps its calendar version):
   - Each event shows when (Meta), the title (Body 16/500), and its state in tone colour with no fill: Ready, Almost ready, Blocked or Waiting.
   - Then what Asoka will do (UI 14), a segment meter with its count ("3 of 4 rules verified"), and the one thing missing with the action that closes it.

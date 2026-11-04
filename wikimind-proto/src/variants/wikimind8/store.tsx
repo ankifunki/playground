@@ -42,12 +42,18 @@ type W = {
   v9: boolean; access: Record<Gap, 'idle' | 'asking' | 'done'>; grant: (g: Gap) => void
   /** Wikimind 9: one updates feed in full, in the right panel. */
   feed: 'ch' | 'le' | 'as' | null; openFeed: (f: 'ch' | 'le' | 'as' | null) => void
+  /** Wikimind 9: one access blocker, with its context and the action that clears it, in the right panel. */
+  blocker: Gap | null; openBlocker: (g: Gap | null) => void
 }
 export type Gap = 'okta' | 'netsuite'
 /** What each access gap blocks, and what granting it unblocks (points of work Asoka can then run). */
-export const GAPS: Record<Gap, { t: string; scope: string; ag: AgentId; job: string; pts: number; jobPts: number }> = {
-  okta: { t: 'Okta sign-in logs', scope: 'read', ag: 'security', job: 'Security', pts: 4, jobPts: 8 },
-  netsuite: { t: 'NetSuite', scope: 'write', ag: 'finance', job: 'Finance ops', pts: 2, jobPts: 5 },
+export const GAPS: Record<Gap, { t: string; scope: string; ag: AgentId; job: string; pts: number; jobPts: number; why: string; after: string; owner: string; ask: string; since: string }> = {
+  okta: { t: 'Okta sign-in logs', scope: 'read', ag: 'security', job: 'Security', pts: 4, jobPts: 8, since: 'Asked Nov 1',
+    why: 'Without sign-in history, Asoka can’t tell a real alert from a rep who is travelling, so a person checks every sign-in alert first.',
+    after: 'Asoka reads sign-in logs only; it never changes Okta. Each read is logged on the page that used it.', owner: 'IT · Okta admin', ask: 'Ask IT in Slack' },
+  netsuite: { t: 'NetSuite', scope: 'write', ag: 'finance', job: 'Finance ops', pts: 2, jobPts: 5, since: 'Asked Oct 30',
+    why: 'Asoka finds invoice mismatches but can’t correct them, so Finance ops fixes each one by hand (42 in the last 30 days).',
+    after: 'Asoka writes invoice corrections only, each logged and reversible, and tells the invoice owner.', owner: 'Finance · NetSuite admin', ask: 'Ask Finance in Slack' },
 }
 const Ctx = createContext<W | null>(null)
 export const useW = () => useContext(Ctx)!
@@ -82,8 +88,9 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
   const [arrive, setArrive] = useState(false), [askedOwner, setAskedOwner] = useState(false), [search, setSearch] = useState('')
   const [chat, setChat] = useState<ChatMsg[]>([]), [chatOn, setChatOnS] = useState(false), [chatFrom, setChatFrom] = useState<DOMRect | null>(null)
   const cid = useRef(1)
-  const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null)
-  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setFeed(f); if (f) setRail(true) }
+  const [feed, setFeed] = useState<'ch' | 'le' | 'as' | null>(null), [blocker, setBlocker] = useState<Gap | null>(null)
+  const openBlocker = (g: Gap | null) => { setTrace(null); setAgent(null); setMisses(null); setFeed(null); setBlocker(g); if (g) setRail(true) }
+  const openFeed = (f: 'ch' | 'le' | 'as' | null) => { setTrace(null); setAgent(null); setMisses(null); setBlocker(null); setFeed(f); if (f) setRail(true) }
   const [access, setAccess] = useState<Record<Gap, 'idle' | 'asking' | 'done'>>({ okta: 'idle', netsuite: 'idle' })
   // Granting goes through a second approver (Dev), as in Wikimind 4; it lands about two seconds later.
   const grant = (g: Gap) => {
@@ -177,10 +184,10 @@ export function Provider({ children, v9 = false }: { children: ReactNode; v9?: b
       else if (e.key === 'r' || e.key === 'R') replay()
       else if (e.key === 't' || e.key === 'T') setTour(0)
       else if (e.key === 's' || e.key === 'S') arriveSlack()
-      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
+      else if (e.key === 'Escape') { if (trace) setTrace(null); else if (agent) setAgent(null); else if (misses) setMisses(null); else if (feed) setFeed(null); else if (blocker) setBlocker(null); else if (chatOn) setChatOnS(false); else { setRail(false); setNav(false) } }
     }
     addEventListener('keydown', k); return () => removeEventListener('keydown', k)
   })
 
-  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ page, go, fin, verify, qe, renewal, cpq, why, presence, acts, now, playing, setPlaying, rail, setRail, nav, setNav, replay, jump, log: act, trace, openTrace, extra, agent, openAgent, tour, setTour, change, arrive, arriveSlack, leaveArrival, askedOwner, askOwner, misses, openMisses, search, setSearch, proof, chat, setChat, chatOn, setChatOn, startChat, chatFrom, v9, access, grant, feed, openFeed, blocker, openBlocker }}>{children}</Ctx.Provider>
 }

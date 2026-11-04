@@ -134,10 +134,12 @@ export function AgentsOverview() {
       <ul className="ov-rows">
         {AGENTS.map((a) => {
           const g = groves.find((x) => x.ag === a.id)!, r = run.rel[a.id], q = questions(a.id, answered, fixed), live = w.presence?.ag === a.id
-          const now = live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
+          // Wikimind 9: a blocker shows first, as a clear chip that opens its panel (handled in the row's click).
+          const bk = w.v9 && blocked(a.id) ? BLOCK_GAP[a.id] : undefined
+          const now = bk ? <span className="ov-blk" data-blk={bk}><Icon name="lock" size={12} />Blocked · {GAPS[bk].t}<Icon name="chevron-right" size={12} /></span> : live && w.presence ? <><LivePulse />Writing {w.presence.label}</> : q[0]?.who.startsWith('Asking') ? <><Icon name="circle-help" size={12} />{q[0].who}</> : blocked(a.id) ? <><Icon name="lock" size={12} />Needs {BLOCKERS[a.id]!.split(',')[0]}</> : null
           return (
             <li key={a.id} className={(q.length ? 'has-ask ' : '') + (blocked(a.id) ? 'has-block ' : '') + (w.agent === a.id ? 'on' : '')}>
-              <button onClick={() => w.openAgent(w.agent === a.id ? null : a.id)} aria-expanded={w.agent === a.id}>
+              <button onClick={(e) => { const b = (e.target as HTMLElement).closest('[data-blk]'); if (b) { w.openBlocker(b.getAttribute('data-blk') as Gap); return } w.openAgent(w.agent === a.id ? null : a.id) }} aria-expanded={w.agent === a.id}>
                 <span className="ov-ag"><Ag id={a.id} size={28} /><span><b>{a.name}</b><small className="num">{g.total} pages{g.counts.old ? <> · <span className="ov-x">{g.counts.old} out of date</span></> : null}{q.length ? <> · <span className="ov-x">{q.length} open {q.length === 1 ? 'question' : 'questions'}</span></> : null}</small></span></span>
                 <span className="ov-own"><MiniBar own={r.own} ask={r.ask} /><span className="num">{r.own}%<small className="ov-k"> {ow.short}</small></span></span>
                 <span className="ov-rel num">{r.rel.toFixed(1)}%<small className="ov-k"> reliable</small></span>
@@ -193,7 +195,7 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it needs</h3>
-        <ul className="ap-list">{r.needs.map((n) => <li key={n}><span>{n}</span>{w.v9 && gap && n.includes(GAPS[gap].t) && <GrantBtn g={gap} />}</li>)}</ul>
+        <ul className="ap-list">{r.needs.map((n) => <li key={n}><span>{n}</span>{w.v9 && gap && n.includes(GAPS[gap].t) && <span className="bk-row"><GrantBtn g={gap} /><button className="wl" onClick={() => w.openBlocker(gap)}>Why it’s blocked</button></span>}</li>)}</ul>
         {w.v9 && gap && w.access[gap] === 'done' && <p className="gr-done"><Icon name="circle-check" size={14} />{GAPS[gap].t} granted · {GAPS[gap].jobPts} more points Asoka runs</p>}
       </section>
 
@@ -215,5 +217,32 @@ export function GrantBtn({ g, label = 'Request access' }: { g: Gap; label?: stri
     <button className={'btn soft gr-b' + (st === 'asking' ? ' busy' : '')} onClick={() => w.grant(g)} disabled={st === 'asking'} aria-live="polite">
       {st === 'asking' ? <><i className="gr-spin" aria-hidden="true" />Asking Dev to approve</> : <><Icon name="key" size={14} />{label}</>}
     </button>
+  )
+}
+
+/**
+ * One access blocker in the right panel: what Asoka can't do without it, what granting it changes (the job's share
+ * and the whole), who grants it, and the action pinned at the foot: Request access (Dev approves), or ask the owner in
+ * Slack. Opened from a job's Blocked chip, its profile's needs, and the Gaps card.
+ */
+export function BlockerPanel({ g }: { g: Gap }) {
+  const w = useW(), x = GAPS[g], st = w.access[g], run = useRun(), r = run.rel[x.ag], [asked, setAsked] = useState(false)
+  const done = st === 'done'
+  return (
+    <div className="ap bk">
+      <div className="ap-h"><Ag id={x.ag} size={28} /><div><b>{done ? `${x.t} granted` : `Needs ${x.t}`}</b><small>{x.job} job · {x.scope} access · {done ? 'unblocked' : x.since}</small></div></div>
+      <section><h3>{done ? 'What changed' : 'Why it’s blocked'}</h3><p>{done ? `Asoka now runs ${r.own}% of ${x.job} work, ${x.jobPts} points more.` : x.why}</p></section>
+      {!done && <section><h3>What unblocking does</h3>
+        <dl className="bk-n"><div><dt className="tk">{x.job}</dt><dd className="num">{r.own}% → {r.own + x.jobPts}%</dd></div><div><dt className="tk">All of Asoka</dt><dd className="num">{run.own}% → {run.own + x.pts}%</dd></div></dl>
+        <p>{x.after}</p></section>}
+      <section><h3>Who grants it</h3><p>{x.owner}. Dev approves every grant before Asoka uses it.</p></section>
+      <div className="ap-foot bk-foot">
+        {done ? <span className="gr-ok"><Icon name="circle-check" size={14} />Granted · Dev approved</span> : <>
+          <GrantBtn g={g} label="Request access" />
+          {asked ? <span className="bk-asked"><Icon name="circle-check" size={14} />Asked in Slack</span>
+            : <button className="btn ghost" onClick={() => { setAsked(true); w.log({ ag: x.ag, t: `Asked ${x.owner.split(' ·')[0]} in Slack for ${x.t} (${x.scope})`, page: 'discount-approvals', kind: 'ask' }) }}>{x.ask}</button>}
+        </>}
+      </div>
+    </div>
   )
 }

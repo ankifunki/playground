@@ -93,7 +93,7 @@ function GapsCarousel({ blocked }: { blocked: number }) {
       <p>{blocked ? 'blocked until Asoka gets access' : 'nothing is blocked by access'}</p>
       <div className={'gc-it ' + w.access[g]} key={g} tabIndex={0} aria-roledescription="slide" aria-label={`Gap ${i + 1} of ${n}: ${GAPS[g].t}`}
         onKeyDown={(e) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1) }}>
-        <span><b>{GAPS[g].t}</b><small>{GAPS[g].scope} · {GAPS[g].job} · {GAPS[g].pts}%</small></span>
+        <span><button className="gc-name" onClick={() => w.openBlocker(g)}>{GAPS[g].t}</button><small>{GAPS[g].scope} · {GAPS[g].job} · {GAPS[g].pts}%</small></span>
         <GrantBtn g={g} label="Request" />
       </div>
     </div>

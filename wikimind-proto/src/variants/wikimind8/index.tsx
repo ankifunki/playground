@@ -11,7 +11,7 @@ import { Approvals, Stub } from './Page'
 import { Home } from './Home'
 import { NewsHome } from './NewsHome'
 import { FEED_LABEL, FeedPanel, Home9 } from './Home9'
-import { AgentProfile } from './Agents'
+import { AgentProfile, BlockerPanel } from './Agents'
 import { Chat } from './Chat'
 import { Generate } from './Generate'
 import { Misses } from './Misses'
@@ -109,13 +109,13 @@ function Top({ look, onLook }: { look: Look; onLook: () => void }) {
 function Rail() {
   const w = useW(), [from, setFrom] = useState(false)
   return (
-    <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses && !w.feed ? ' chat' : '')} aria-label="Live activity">
+    <aside className={'rail' + (w.rail ? ' open' : '') + (w.chatOn && !w.trace && !w.agent && !w.misses && !w.feed && !w.blocker ? ' chat' : '')} aria-label="Live activity">
       <div className="rail-h">
-        {w.trace || w.agent || w.misses || w.feed || w.chatOn ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else if (w.misses) w.openMisses(null); else if (w.feed) w.openFeed(null); else if (w.agent) w.openAgent(null); else w.setChatOn(false) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.agent ? 'Job' : 'Chat'}</span></span>
+        {w.trace || w.agent || w.misses || w.feed || w.blocker || w.chatOn ? <span className="rail-t"><button className="ib rail-back" onClick={() => { setFrom(false); if (w.trace) w.openTrace(null); else if (w.misses) w.openMisses(null); else if (w.feed) w.openFeed(null); else if (w.blocker) w.openBlocker(null); else if (w.agent) w.openAgent(null); else w.setChatOn(false) }} aria-label="Back to live activity"><Icon name="chevron-right" size={16} /></button><span className="rail-crumb">{from && <span>Live activity</span>}{w.trace ? 'Trace' : w.misses ? 'Misses' : w.feed ? FEED_LABEL[w.feed] : w.blocker ? 'Blocked' : w.agent ? 'Job' : 'Chat'}</span></span>
           : <span className="rail-t"><LivePulse on={w.playing} />Live activity</span>}
-        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.openFeed(null); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
+        <button className="ib" onClick={() => { w.setRail(false); w.openTrace(null); w.openAgent(null); w.openMisses(null); w.openFeed(null); w.openBlocker(null); w.setChatOn(false) }} aria-label="Close"><Icon name="x" size={16} /></button>
       </div>
-      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.feed ? <div className="rail-sc rail-push" key={'f-' + w.feed}><FeedPanel id={w.feed} /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : w.chatOn ? <Chat /> : <div className="rail-list rail-pop">
+      {w.trace ? <div className="rail-sc rail-push" key={w.trace}><Trace id={w.trace} /></div> : w.misses ? <div className="rail-sc rail-push" key={'m-' + w.misses}><Misses only={w.misses} /></div> : w.feed ? <div className="rail-sc rail-push" key={'f-' + w.feed}><FeedPanel id={w.feed} /></div> : w.blocker ? <div className="rail-sc rail-push" key={'b-' + w.blocker}><BlockerPanel g={w.blocker} /></div> : w.agent ? <div className="rail-sc rail-push" key={w.agent}><AgentProfile id={w.agent} /></div> : w.chatOn ? <Chat /> : <div className="rail-list rail-pop">
       <ol>
         {w.acts.map((a) => {
           return (
