@@ -800,3 +800,46 @@ input{font:inherit}
 .here.live .here-a.w .ag-t{border-radius:50%;background:var(--linkb);color:var(--link);animation:capRing 1.6s ease-in-out infinite}
 @keyframes capRing{50%{box-shadow:0 0 0 2px color-mix(in srgb,var(--link) 24%,transparent)}}
 @media (prefers-reduced-motion:reduce){.here.live .here-a.w .ag-t{animation:none}}
+/* On this page. Wide: a rail in the left margin that stays in view. Narrower: a chip strip under the top bar. */
+.doc{position:relative}
+.doc h2[id]{scroll-margin-top:120px}
+.toc-in ol{list-style:none;margin:0;padding:0}
+.toc a{display:flex;align-items:center;gap:var(--s8);color:var(--ink2);text-decoration:none;font:400 var(--fs-ui)/20px var(--sans);-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.toc li.on a{color:var(--ink);font-weight:500}
+.toc .lp{flex:none}
+@media (hover:hover) and (pointer:fine){.toc a:hover{color:var(--ink)}}
+@media (min-width:1200px){
+ .toc{position:absolute;top:0;bottom:0;left:-216px;width:184px;padding-top:var(--s72)}
+ .toc-in{position:sticky;top:96px}
+ .toc-l{display:block;margin-bottom:var(--s12)}
+ .toc-in ol{border-left:1px solid var(--line)}
+ .toc li a{padding:var(--s6) 0 var(--s6) var(--s14);margin-left:-1px;border-left:2px solid transparent}
+ .toc li.on a{border-left-color:var(--link)}
+}
+@media (max-width:1199px){
+ .toc{position:sticky;top:56px;z-index:15;margin:var(--s40) calc(var(--s40) * -1) 0;padding:var(--s8) var(--s40);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--bg) 76%,transparent)}
+ .toc-l{display:none}
+ .toc-in ol{display:flex;gap:var(--s4);overflow-x:auto;scrollbar-width:none}
+ .toc-in ol::-webkit-scrollbar{display:none}
+ .toc li{flex:none}
+ .toc li a{padding:var(--s6) var(--s12);border-radius:var(--r-pill);white-space:nowrap}
+ .toc li.on a{background:var(--linkb);color:var(--link)}
+}
+@media (max-width:640px){.toc{margin:var(--s32) calc(var(--s20) * -1) 0;padding:var(--s8) var(--s20)}}
+/* Cited by the agents: what each agent did with this page, and the sentence it cited. */
+.cites{list-style:none;margin:0;padding:0}
+.cites li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:var(--s12);padding:var(--s14) 0;border-top:1px solid var(--line)}
+.cites li:last-child{border-bottom:1px solid var(--line)}
+.cites p{margin:0;font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.cites small{display:block;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+.cites small .wl{font-size:inherit;line-height:inherit}
+/* Related pages: title and one-line summary, two columns on wide screens. */
+.related{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s32)}
+.related li{border-top:1px solid var(--line)}
+.related button{display:block;width:100%;padding:var(--s14) 0;border:0;background:none;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.related b{display:block;font:500 var(--fs-ui)/20px var(--sans);color:var(--link)}
+.related span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2);font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
+@media (hover:hover) and (pointer:fine){.related button:hover b{text-decoration:underline;text-underline-offset:3px}}
+@media (max-width:640px){.related{grid-template-columns:1fr}}
+.doc ul.cites,.doc ul.related{margin:0;padding:0}.doc ul.cites li,.doc ul.related li{margin:0}
