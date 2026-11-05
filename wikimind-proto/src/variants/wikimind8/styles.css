@@ -2181,3 +2181,22 @@ button.km-t{cursor:pointer}
 @media (hover:hover) and (pointer:fine){.w7 .h9 .btn:hover,:root[data-look="b"] .w7 .h9 .btn:hover{background:var(--soft)}}
 .w7 .h9 .btn .ic{color:var(--ink2)}
 .w7 .h9 .wl,.w7 .h9 .lv .lv-more,.w7 .home-src .wl,.w7 .h9 ~ * .wl{color:var(--ink)}
+/* Status columns: their links sit on one line at the foot, whatever the text above. */
+.w7 .h9 .st9-row>.hc>.wl{margin-top:auto}
+.w7 .h9 .st9-row>.hc>p{margin-bottom:var(--s6)}
+/* Home 9: every button is the light indigo pill (soft): Watch Asoka in action, Request, See what changed, See the 3
+   misses, More, and the Jobs Actions chips (Asking …, Blocked · …). Footer demo links stay text links. */
+.w7 .h9 .btn,:root[data-look="b"] .w7 .h9 .btn,
+.w7 .h9 .st9-row>.hc>.wl,.w7 .h9 .lv .lv-more,.w7 .h9 .ov-qc,.w7 .h9 .ov-blk{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--s6);height:32px;padding:0 var(--s14);border:0;border-radius:var(--r-pill);
+  background:var(--linkb);color:var(--link);box-shadow:none;text-decoration:none;font:500 var(--fs-ui)/20px var(--sans);white-space:nowrap;cursor:pointer;
+  transition:background-color .15s ease,transform .16s var(--eo)}
+.w7 .h9 .btn .ic,.w7 .h9 .ov-qc .ic,.w7 .h9 .ov-blk .ic,.w7 .h9 .lv .lv-more .ic{color:currentColor}
+.w7 .h9 .st9-row>.hc>.wl,.w7 .h9 .lv .lv-more{align-self:flex-start;width:auto}
+@media (hover:hover) and (pointer:fine){
+  .w7 .h9 .btn:hover,:root[data-look="b"] .w7 .h9 .btn:hover,.w7 .h9 .st9-row>.hc>.wl:hover,.w7 .h9 .lv .lv-more:hover,.w7 .h9 .ov-qc:hover,.w7 .h9 .ov-blk:hover{background:color-mix(in srgb,var(--link) 18%,var(--panel));box-shadow:none;text-decoration:none}
+}
+.w7 .h9 .btn:active,.w7 .h9 .st9-row>.hc>.wl:active,.w7 .h9 .lv .lv-more:active,.w7 .h9 .ov-qc:active,.w7 .h9 .ov-blk:active{transform:scale(.97)}
+/* Jobs Actions chips fit their column: no trailing chevron (the pill is the affordance), 12px sides, never wider than the column. */
+.w7 .h9 .ov-qc,.w7 .h9 .ov-blk{padding:0 var(--s12);max-width:100%;min-width:0}
+.w7 .h9 :is(.ov-qc,.ov-blk)>.ic:last-child:not(:first-child){display:none}
