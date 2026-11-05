@@ -189,8 +189,8 @@ export function AgentProfile({ id }: { id: AgentId }) {
 
       <section>
         <h3>What it knows</h3>
-        <div className="ap-know">
-        <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul></div>
+        {!w.v9 && <div className="ap-know">
+        <ul className="ap-counts">{(Object.keys(STATE) as St[]).map((k) => <li key={k}><i className={'km-t ' + k} />{STATE[k]}<span className="num">{g.counts[k]}</span></li>)}</ul></div>}
         {g.pages.length > 0 && <ul className="ap-list">{g.pages.map((p) => <li key={p.id}><button className="wl" onClick={() => w.go(p.id)}>{p.title}</button><small>re-read {ago(p.re)}</small></li>)}</ul>}
         {q.length > 0 && <><h4 className="tk">Open questions</h4><ul className="ap-list">{q.map((x) => <li key={x.q}>{w.v9 && QCTX[x.q] ? <button className="wl" onClick={() => w.openQuestion(x.q)}>{x.q}</button> : <span>{x.q}</span>}<small>{x.who}</small></li>)}</ul></>}
       </section>

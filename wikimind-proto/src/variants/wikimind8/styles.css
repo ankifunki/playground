@@ -2157,3 +2157,27 @@ button.km-t{cursor:pointer}
 .w7 .ti-w-rule .ti-w-h{margin:0;font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
 .w7 .ti-w-rule .ti-oq-m2,.w7 .ti-w-rule .ti-ed{margin:0}
 .w7 .ti-w-rule .ti-w-h{text-wrap:pretty}
+/* Updates' title row carries the live Wikis updated count on the right (from 8b's Rewrote today). */
+.w7 article.doc.h9 .h9-grid>.h9-sh-row{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:var(--s16);margin:var(--s40) 0 0;padding-top:var(--s40);border-top:1px solid var(--hair);scroll-margin-top:120px}
+.w7 article.doc.h9 .h9-grid>.h9-sh-row:first-child{margin-top:0;padding-top:0;border-top:0}
+.w7 article.doc.h9 .h9-sh-row>h2{margin:0;padding:0;border:0}
+.h9-wu{display:inline-flex;align-items:center;gap:var(--s6);padding:0;border:0;background:none;cursor:pointer;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2);white-space:nowrap}
+.h9-wu b{font:500 var(--fs-body)/26px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+@media (hover:hover) and (pointer:fine){.h9-wu:hover span{color:var(--ink);text-decoration:underline;text-underline-offset:3px}}
+/* Status: Wikis updated | Reliability | Gaps and access, split by thin vertical rules; stacked when narrow. */
+.st9-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)}
+.w7 .h9 .st9-row>.hc+.hc{padding:0 var(--s28)}
+.w7 .h9 .st9-row>.hc:last-child{padding-right:0}
+@container mod (max-width:760px){
+ .st9-row{grid-template-columns:1fr}
+ .w7 .h9 .st9-row>.hc,.w7 .h9 .st9-row>.hc:last-child{padding:0}
+ .w7 .h9 .st9-row>.hc+.hc{padding:var(--s24) 0 0;margin-top:var(--s24);border-left:0;border-top:1px solid var(--hair)}
+}
+/* Status columns are equal. */
+.st9-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* Home 9: one button style and one link style. Buttons are the outlined pill (as Remind and Add a rule); links are ink
+   with an underline (See what changed, See the 3 misses, More, the demo links). Round icon controls stay as they are. */
+.w7 .h9 .btn,:root[data-look="b"] .w7 .h9 .btn{height:32px;padding:0 var(--s14);gap:var(--s6);background:var(--panel);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);font:500 var(--fs-ui)/20px var(--sans)}
+@media (hover:hover) and (pointer:fine){.w7 .h9 .btn:hover,:root[data-look="b"] .w7 .h9 .btn:hover{background:var(--soft)}}
+.w7 .h9 .btn .ic{color:var(--ink2)}
+.w7 .h9 .wl,.w7 .h9 .lv .lv-more,.w7 .home-src .wl,.w7 .h9 ~ * .wl{color:var(--ink)}

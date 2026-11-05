@@ -4,7 +4,7 @@ import { AgentsOverview, GrantBtn } from './Agents'
 import { AG, type AgentId } from './data'
 import { HomeLive, HomeSources, MovingFocus, RulesCard, useRun } from './Home'
 import { Icon, type IconName } from './Icon'
-import { Ag } from './Live'
+import { Ag, LiveNum } from './Live'
 import { Stories, Today } from './NewsHome'
 import { PathBar } from './Page'
 import { GAPS, useW, type Gap } from './store'
@@ -28,9 +28,14 @@ function StatusMod() {
   return (
     <div className="home-card st9">
       <PathBar own={run.own} ask={run.ask} gaps={gapNames} label={false} />
-      <div className="st9-row"><RelCard /><GapsCarousel blocked={run.blocked} /></div>
+      <div className="st9-row"><WikisCard /><RelCard /><GapsCarousel blocked={run.blocked} /></div>
     </div>
   )
+}
+/** Wikis updated today: 186 so far (against 1,240 changes observed across 1,284 pages), one more about every 15 s, plus every page Asoka edits while you watch. */
+function WikisCard() {
+  const w = useW(), [t0] = useState(w.now), n = 186 + Math.floor((w.now - t0) / 15000) + w.acts.filter((a) => a.id > 0 && a.kind === 'edit' && a.ag !== 'person').length
+  return <div className="hc"><div className="gc-h"><span className="tk">Wikis updated</span></div><b className="num"><LiveNum value={n} /></b><p>today, each with the reason and a trace</p><button className="wl" onClick={() => w.openFeed('ch')}>See what changed</button></div>
 }
 function RelCard() {
   const w = useW()
