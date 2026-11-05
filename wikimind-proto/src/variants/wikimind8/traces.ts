@@ -85,6 +85,8 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
   'ti-sharing': { label: 'Open question · report sharing', tier: 'open', steps: [
     { k: 'observed', by: 'security', t: 'Found no policy for report and dashboard sharing', src: 'approval-tiers.md · marked [Open]', at: 'Aug 11' },
     { k: 'reasoned', by: 'security', t: 'Widening visibility beyond the sales hierarchy is undecided, not an implicit yes: escalate rather than decide, and confirm access to data the requester may not be entitled to see.', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'Drafted a rule from how reports are shared today: within the sales hierarchy by default; wider sharing needs the report owner’s VP.', at: '3 days ago' },
+    { k: 'asked', by: 'security', t: 'Asked Lena Marchetti (VP Compliance), who approves sharing per Who signs off, to decide; Adaeze Nwosu implements', at: '3 days ago' },
   ] },
   'ti-skew': { label: 'Data caveat', tier: 'observed', steps: [
     { k: 'observed', by: 'security', t: 'The Setup Audit Trail returned its 2,000-row cap for the 90-day window', src: 'Setup Audit Trail · 90 days', at: 'Aug 11' },

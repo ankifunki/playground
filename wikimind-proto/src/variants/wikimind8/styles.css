@@ -2066,3 +2066,22 @@ button.km-t{cursor:pointer}
 .ti-g2-t{min-width:0}
 .ti-checked-q{font:400 var(--fs-meta)/18px var(--sans);color:var(--ink2)}
 .ti-plan-n{display:inline-flex;align-items:center;gap:var(--s4)}
+/* The report-sharing open question: question, why it matters, who decides, Asoka's draft, what waits; then the rule. */
+.ti-oq{margin:var(--s16) 0;padding:var(--s20) var(--s24);border-radius:var(--r-md);background:color-mix(in srgb,var(--warnb) 70%,var(--panel))}
+.ti-oq.done{background:color-mix(in srgb,var(--okb) 60%,var(--panel));animation:fade .4s ease both}
+.ti-oq-k{display:flex;align-items:center;gap:var(--s6);font:400 12px/16px var(--mono);color:var(--warn)}
+.ti-oq-k.ok{color:var(--ok)}
+.w7 .ti-oq-q{margin:var(--s8) 0 var(--s12);font:400 var(--fs-title)/30px var(--serif);color:var(--ink);text-wrap:balance}
+.ti-oq-f{margin:0;display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb,var(--warn) 20%,transparent)}
+.ti-oq-f>div{display:grid;grid-template-columns:136px minmax(0,1fr);gap:var(--s16);padding:var(--s10) 0;border-bottom:1px solid color-mix(in srgb,var(--warn) 20%,transparent)}
+.ti-oq-f dt{padding-top:2px}
+.ti-oq-f dd{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ti-oq-f b{font-weight:500}
+.ti-oq-m,.w7 .ti-oq-m2{color:var(--ink2);font:400 var(--fs-meta)/18px var(--sans)}
+.w7 .ti-oq-m2{margin:var(--s8) 0 0}
+.ti-draft{display:inline-flex;align-items:center;height:18px;margin-right:var(--s6);padding:0 var(--s6);border-radius:4px;box-shadow:inset 0 0 0 1px var(--line);font:400 12px/16px var(--mono);color:var(--ink2);vertical-align:1px}
+.w7 .ti-oq-w{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+.w7 .ti-oq-w li{margin:0}
+.ti-oq-a{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s12);margin-top:var(--s14)}
+@media (max-width:640px){.ti-oq{padding:var(--s16)}.ti-oq-f>div{grid-template-columns:1fr;gap:var(--s4)}}
+.w7 .ti-oq-w li{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}

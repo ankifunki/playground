@@ -64,13 +64,13 @@ const RELATED: { t: string; d: string }[] = [
  * the 9 approver rows; written by hand = the 2 gates, their 3 rules and the 2 dashboard steps; open = the missing
  * access model and the sharing policy. Each legend item jumps to its section.
  */
-function Confidence({ confirmed }: { confirmed: number }) {
+function Confidence({ confirmed, decided = 0 }: { confirmed: number; decided?: number }) {
   const CONF = [
     { k: 'live', t: 'Verified live', n: 13, to: 't-priv' },
-    ...(confirmed ? [{ k: 'person', t: 'Confirmed by a person', n: confirmed, to: 't-who' }] : []),
+    ...(confirmed + decided ? [{ k: 'person', t: 'Confirmed by a person', n: confirmed + decided, to: 't-who' }] : []),
     { k: 'kb', t: 'From the KB, not re-checked', n: 9 - confirmed, to: 't-who' },
     { k: 'manual', t: 'Written by hand', n: 7, to: 't-gates' },
-    { k: 'open', t: 'Open', n: 2, to: 't-access' },
+    ...(2 - decided ? [{ k: 'open', t: 'Open', n: 2 - decided, to: 't-access' }] : []),
   ]
   const total = CONF.reduce((s, c) => s + c.n, 0)
   const pct = (n: number) => Math.round((n / total) * 100)
@@ -134,7 +134,7 @@ export function Tiers() {
   // The page's live state: a re-check, a question to a person, a Salesforce change, an access request.
   const [check, setCheck] = useState<'idle' | 'checking' | 'done'>('idle'), [ask, setAsk] = useState<'idle' | 'asking' | 'answered'>('idle')
   const [moved, setMoved] = useState(false), [writing, setWriting] = useState(false), [req, setReq] = useState<Req>(0)
-  const timers = useRef<number[]>([]), movedRef = useRef(false)
+  const timers = useRef<number[]>([]), movedRef = useRef(false), decideShareRef = useRef<() => void>(() => {})
   movedRef.current = moved
   const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)) }
   const log = (t: string, kind: 'edit' | 'read' | 'ask' | 'verify', who?: string) => w.log({ ag: who ? 'person' : 'security', who, t, page: 'approval-tiers', kind })
@@ -146,6 +146,7 @@ export function Tiers() {
     later(12600, () => { setCheck('done'); log(`Re-checked the privilege surface against Salesforce: ${movedRef.current ? 'matches the latest change' : 'no change since the last read'}`, 'verify') })
     later(21000, () => { step('ti-f-machine', 'gate2'); log('Signed off the plan: Move the machine identities off System Administrator', 'verify', 'Lena Marchetti'); log('Asked Adaeze Nwosu to approve the write (gate 2)', 'ask') })
     later(24000, () => { step('ti-f-machine', 'applying'); log('Approved the write: Move the machine identities off System Administrator', 'verify', 'Adaeze Nwosu') })
+    shareTimer.current = window.setTimeout(() => decideShareRef.current(), 34000); timers.current.push(shareTimer.current)
     later(26000, () => { setFixedN(6); step('ti-f-machine', 'done'); log('Applied: 6 machine identities moved off admin · 6 seats recovered', 'edit') })
     later(5000, () => { setReq(1); log('Got a request: a Sales Ops analyst needs the Pipeline Health dashboard', 'read') })
     later(7000, () => { setReq(2); log('Assigned the dashboard permission set; asked Adaeze Nwosu to approve the connected app', 'edit') })
@@ -157,6 +158,15 @@ export function Tiers() {
   const [fix, setFix] = useState<Record<string, Fix>>({ 'ti-f-machine': 'gate1', 'ti-f-vendor': 'gate1' }), [fixedN, setFixedN] = useState(0), [nudged, setNudged] = useState(false)
   const machineNow = moved ? 6 : 7
   const step = (id: string, f: Fix) => setFix((x) => ({ ...x, [id]: f }))
+  const [share, setShare] = useState<'open' | 'decided'>('open'), [shareNudged, setShareNudged] = useState(false), shareTimer = useRef(0)
+  const decideShare = () => {
+    if (share === 'decided') return
+    setShare('decided')
+    log('Decided report and dashboard sharing: within the sales hierarchy by default; wider sharing needs the report owner’s VP', 'verify', 'Lena Marchetti')
+    log('Added the sharing rule to Approval tiers and routed the 2 waiting requests under it', 'edit')
+  }
+  const remindShare = () => { setShareNudged(true); log('Reminded Lena Marchetti in Slack: 2 requests wait on the report-sharing decision', 'ask'); window.clearTimeout(shareTimer.current); shareTimer.current = window.setTimeout(decideShare, 5000); timers.current.push(shareTimer.current) }
+  decideShareRef.current = decideShare
   const nudge = () => { setNudged(true); log('Reminded Lena Marchetti in Slack: the vendor permission-set fix waits on her sign-off (gate 1)', 'ask') }
   const done = (id: string) => fix[id] === 'done'
   const machine = done('ti-f-machine') ? 0 : machineNow
@@ -182,7 +192,7 @@ export function Tiers() {
           <div><dt><Icon name="badge-check" size={16} />Last verified</dt><dd>{fresh ? <>Today<span className="props-m">just now, against Salesforce</span></> : 'Aug 11, 2026'}</dd></div>
           <div><dt><Icon name="file-text" size={16} />Shown to</dt><dd>Asoka, always<span className="props-m">loaded with every request</span></dd></div>
           <div><dt><Icon name="layers" size={16} />Linked from</dt><dd>6 pages<span className="props-m">Index, Churn, Quote to cash…</span></dd></div>
-          <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} /></dd></div>
+          <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} decided={share === 'decided' ? 1 : 0} /></dd></div>
         </dl>
 
         <p className="lede">Who signs off on what, the two gates every production change passes through, and the access that carries the most risk today.</p>
@@ -257,7 +267,26 @@ export function Tiers() {
             </ol>
           </div>
         )}
-        <Block id="ti-sharing" cls="callout ask ti-call"><p><span className="lt">Report and dashboard sharing has no policy. Widening visibility beyond the sales hierarchy is undecided: escalate, don’t decide.</span></p></Block>
+        {share === 'open' ? (
+          <Block id="ti-sharing" cls="ti-oq">
+            <span className="ti-oq-k"><Icon name="circle-help" size={14} />Open question · a decision, not a knowledge gap</span>
+            <p className="ti-oq-q"><span className="lt">Who may see reports and dashboards beyond the sales hierarchy?</span></p>
+            <dl className="ti-oq-f">
+              <div><dt className="tk">Why it matters</dt><dd>Until it’s decided, Asoka escalates every request to widen visibility and never decides one itself. <b>2 requests are waiting.</b></dd></div>
+              <div><dt className="tk">Who decides</dt><dd>Lena Marchetti, VP Compliance <span className="ti-oq-m">· Adaeze Nwosu implements (from Who signs off)</span></dd></div>
+              <div><dt className="tk">Asoka’s draft</dt><dd><span className="ti-draft">Draft</span>Reports stay within the sales hierarchy by default; wider sharing needs the report owner’s VP. <span className="ti-oq-m">From how reports are shared today.</span></dd></div>
+              <div><dt className="tk">Waiting</dt><dd><ul className="ti-oq-w"><li>Marketing Ops · Pipeline by region dashboard</li><li>CS leadership · Renewal risk report</li></ul></dd></div>
+            </dl>
+            <div className="ti-oq-a"><span className="ti-asking"><LivePulse />Asked Lena Marchetti 3 days ago</span>{shareNudged ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded just now</span> : <button className="btn ghost" onClick={remindShare}><Icon name="hash" size={14} />Remind Lena in Slack</button>}</div>
+          </Block>
+        ) : (
+          <Block id="ti-sharing" cls="ti-oq done">
+            <span className="ti-oq-k ok"><Icon name="circle-check" size={14} />Rule · decided by Lena Marchetti just now</span>
+            <p className="ti-oq-q"><span className="lt">Reports and dashboards stay within the sales hierarchy by default; wider sharing needs the report owner’s VP.</span></p>
+            <span className="ti-ed">Edited just now · was an open question; Asoka’s draft, accepted as written</span>
+            <p className="ti-oq-m2">The 2 waiting requests now route to their report owners’ VPs. Adaeze Nwosu implements the sharing settings.</p>
+          </Block>
+        )}
 
         <h2 id="t-skew">Data caveat</h2>
         <Block id="ti-skew" cls="callout ti-call"><p><span className="lt">The Setup Audit Trail hit its <b>2,000-row cap</b> for the 90-day window. Rankings per person and category are trustworthy; <b>absolute counts understate</b>. Flow authorship is an audit-trail proxy, because the direct query has a gap. Say which of the two you rely on when quoting a number.</span></p></Block>
