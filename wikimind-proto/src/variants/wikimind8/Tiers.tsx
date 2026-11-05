@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon, type IconName } from './Icon'
-import { Ag, Asoka, Block, useTraceTarget } from './Live'
+import { Ag, Asoka, Block, LiveNum, LivePulse, useTraceTarget } from './Live'
 import { useW } from './store'
 import { Toc, type TocItem } from './Toc'
 import md from './approval-tiers.md?raw'
@@ -11,6 +11,14 @@ import md from './approval-tiers.md?raw'
  * only where the source flags it (the approver list is from the KB and not re-checked; the roster is verified live),
  * the two gates as a sequence, the privilege surface as numbers and ranked findings, the open question and the caveat
  * as callouts. Page / Markdown switches to the source file, to compare the two.
+ *
+ * Alive and agentic (scripted, nothing leaves the browser): Asoka does the work and people approve; the reader only
+ * watches, or nudges a person. The live line says what Asoka is doing on this page. It asks Dale Whitaker who owns
+ * data quality and rewrites the row when he answers (Confidence moves from KB to confirmed); it re-checks the roster
+ * on its own; a Salesforce change moves a machine identity off admin; a dashboard access request works through the
+ * two steps; and each High finding carries Asoka's own fix, moving through the two gates with their named approvers
+ * (the machine-identity fix is signed off and applied; the vendor fix waits on Lena, with Remind in Slack). Every
+ * event is logged in Live activity.
  */
 
 const SECTIONS: TocItem[] = [
@@ -56,13 +64,14 @@ const RELATED: { t: string; d: string }[] = [
  * the 9 approver rows; written by hand = the 2 gates, their 3 rules and the 2 dashboard steps; open = the missing
  * access model and the sharing policy. Each legend item jumps to its section.
  */
-const CONF = [
-  { k: 'live', t: 'Verified live', n: 13, to: 't-priv' },
-  { k: 'kb', t: 'From the KB, not re-checked', n: 9, to: 't-who' },
-  { k: 'manual', t: 'Written by hand', n: 7, to: 't-gates' },
-  { k: 'open', t: 'Open', n: 2, to: 't-access' },
-] as const
-function Confidence() {
+function Confidence({ confirmed }: { confirmed: number }) {
+  const CONF = [
+    { k: 'live', t: 'Verified live', n: 13, to: 't-priv' },
+    ...(confirmed ? [{ k: 'person', t: 'Confirmed by a person', n: confirmed, to: 't-who' }] : []),
+    { k: 'kb', t: 'From the KB, not re-checked', n: 9 - confirmed, to: 't-who' },
+    { k: 'manual', t: 'Written by hand', n: 7, to: 't-gates' },
+    { k: 'open', t: 'Open', n: 2, to: 't-access' },
+  ]
   const total = CONF.reduce((s, c) => s + c.n, 0)
   const pct = (n: number) => Math.round((n / total) * 100)
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -81,13 +90,88 @@ function Mark({ tone, icon, children }: { tone: 'ok' | 'warn' | 'open'; icon: Ic
   return <span className={'ti-mark ' + tone}><Icon name={icon} size={12} />{children}</span>
 }
 
+type Req = 0 | 1 | 2 | 3
+/** A fix moves through the page's own two gates: planned → gate 1 (Lena Marchetti signs off the plan) → gate 2 (Adaeze Nwosu approves the write) → applied. */
+type Fix = 'plan' | 'gate1' | 'gate2' | 'applying' | 'done'
+const PLAN: Record<string, { title: string; lines: (machine: number) => string[]; done: (machine: number) => string }> = {
+  'ti-f-machine': {
+    title: 'Move the machine identities off System Administrator',
+    lines: (m) => [`${m} integration users move to an integration licence and an API-only profile`, `Each keeps only the objects its integration reads and writes`, `Frees ${m} full Salesforce seats; admin drops to 12 people`],
+    done: (m) => `${m} machine identities moved off admin · ${m} seats recovered`,
+  },
+  'ti-f-vendor': {
+    title: 'Scope the vendor permission set',
+    lines: () => ['Remove ViewAllData, ModifyAllData and ViewSetup', 'Grant object permissions only for what the CS-platform sync reads and writes', 'The vendor’s integration user keeps working; nothing else changes'],
+    done: () => 'Vendor permission set scoped to its objects · no live powerful permission sets',
+  },
+}
+/** The plan for one fix, inline in its finding: what changes, then gate 1, gate 2 and the write, each with its person. */
+function FixPlan({ id, st, machine, nudged, onNudge }: { id: string; st: Fix; machine: number; nudged: boolean; onNudge: () => void }) {
+  const p = PLAN[id], order: Fix[] = ['plan', 'gate1', 'gate2', 'applying', 'done'], at = order.indexOf(st)
+  const rows = [
+    { k: 'gate1', t: 'Gate 1 · Lena Marchetti, VP Compliance, signs off the plan', wait: 'Gate 1 · waiting for Lena Marchetti to sign off · sent 2 h ago', ok: 'Signed off by Lena Marchetti' },
+    { k: 'gate2', t: 'Gate 2 · Adaeze Nwosu approves the write', wait: 'Waiting for Adaeze Nwosu', ok: 'Approved by Adaeze Nwosu' },
+    { k: 'applying', t: 'Asoka applies the change and logs each record', wait: 'Applying…', ok: 'Applied' },
+  ]
+  return (
+    <div className={'ti-plan' + (st === 'done' ? ' done' : '')}>
+      <span className="tk">Asoka’s fix · {p.title}</span>
+      <ul className="ti-plan-l">{p.lines(machine).map((l) => <li key={l}>{l}</li>)}</ul>
+      <ol className="ti-plan-g">
+        {rows.map((r, i) => {
+          const ri = i + 1, ok = at > ri, now = at === ri
+          return <li key={r.k} className={ok ? 'done' : now ? 'now' : ''}><span className="cx-ck" aria-hidden="true">{ok ? <Icon name="check" size={12} /> : now ? <i /> : null}</span>{ok ? r.ok : now ? r.wait : r.t}</li>
+        })}
+      </ol>
+      {st === 'gate1' && id === 'ti-f-vendor' && <div className="ti-plan-a">{nudged ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded Lena in Slack just now</span> : <button className="btn ghost" onClick={onNudge}><Icon name="hash" size={14} />Remind Lena in Slack</button>}<span className="ti-plan-n">Nothing changes until both gates approve.</span></div>}
+      {st === 'done' && <p className="ti-plan-d"><Icon name="circle-check" size={14} />{p.done(machine)}. Logged in Live activity.</p>}
+    </div>
+  )
+}
+
 export function Tiers() {
   const w = useW(), [view, setView] = useState<'page' | 'md'>('page'), sasha = useTraceTarget('ti-sasha')
+  // The page's live state: a re-check, a question to a person, a Salesforce change, an access request.
+  const [check, setCheck] = useState<'idle' | 'checking' | 'done'>('idle'), [ask, setAsk] = useState<'idle' | 'asking' | 'answered'>('idle')
+  const [moved, setMoved] = useState(false), [writing, setWriting] = useState(false), [req, setReq] = useState<Req>(0)
+  const timers = useRef<number[]>([]), movedRef = useRef(false)
+  movedRef.current = moved
+  const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)) }
+  const log = (t: string, kind: 'edit' | 'read' | 'ask' | 'verify', who?: string) => w.log({ ag: who ? 'person' : 'security', who, t, page: 'approval-tiers', kind })
+  useEffect(() => {
+    // A dashboard access request arrives and works through the two steps; then Salesforce changes under the page.
+    later(2500, () => { setAsk('asking'); log('Asked Dale Whitaker who owns data quality, since “Sasha Merrill” is an integration seat', 'ask') })
+    later(8500, () => { setAsk('answered'); log('Answered: Delphine Roux owns data quality and integration normalisation', 'ask', 'Dale Whitaker') })
+    later(10000, () => setCheck('checking'))
+    later(12600, () => { setCheck('done'); log(`Re-checked the privilege surface against Salesforce: ${movedRef.current ? 'matches the latest change' : 'no change since the last read'}`, 'verify') })
+    later(21000, () => { step('ti-f-machine', 'gate2'); log('Signed off the plan: Move the machine identities off System Administrator', 'verify', 'Lena Marchetti'); log('Asked Adaeze Nwosu to approve the write (gate 2)', 'ask') })
+    later(24000, () => { step('ti-f-machine', 'applying'); log('Approved the write: Move the machine identities off System Administrator', 'verify', 'Adaeze Nwosu') })
+    later(26000, () => { setFixedN(6); step('ti-f-machine', 'done'); log('Applied: 6 machine identities moved off admin · 6 seats recovered', 'edit') })
+    later(5000, () => { setReq(1); log('Got a request: a Sales Ops analyst needs the Pipeline Health dashboard', 'read') })
+    later(7000, () => { setReq(2); log('Assigned the dashboard permission set; asked Adaeze Nwosu to approve the connected app', 'edit') })
+    later(12000, () => { setReq(3); log('Approved the connected app: Pipeline Health access works', 'verify', 'Adaeze Nwosu') })
+    later(16000, () => { setWriting(true); log('Saw a machine identity move off System Administrator in Salesforce', 'read') })
+    later(18500, () => { setMoved(true); setWriting(false); log('Rewrote the privilege surface: 18 admin seats, 6 machine identities, 107 of 109 licences', 'edit') })
+    return () => { timers.current.forEach((t) => window.clearTimeout(t)); timers.current = [] }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const [fix, setFix] = useState<Record<string, Fix>>({ 'ti-f-machine': 'gate1', 'ti-f-vendor': 'gate1' }), [fixedN, setFixedN] = useState(0), [nudged, setNudged] = useState(false)
+  const machineNow = moved ? 6 : 7
+  const step = (id: string, f: Fix) => setFix((x) => ({ ...x, [id]: f }))
+  const nudge = () => { setNudged(true); log('Reminded Lena Marchetti in Slack: the vendor permission-set fix waits on her sign-off (gate 1)', 'ask') }
+  const done = (id: string) => fix[id] === 'done'
+  const machine = done('ti-f-machine') ? 0 : machineNow
+  const admin = 12 + machine, lic = (moved ? 107 : 108) - fixedN
+  const now = check === 'checking' ? { s: 'reading' as const, t: <>Re-checking the roster against Salesforce</> }
+    : writing ? { s: 'writing' as const, t: <>Rewriting <b>Privilege surface</b>: a machine identity left System Administrator</> }
+      : ask === 'asking' ? { s: 'asking' as const, t: <>Asking Dale Whitaker who owns data quality</> }
+        : req === 1 || req === 2 ? { s: 'thinking' as const, t: <>Routing a dashboard access request</> }
+          : { s: 'idle' as const, t: <>Watching profiles, permission sets and licences for changes</> }
+  const fresh = check === 'done' || moved
   return (
     <article className="doc ti">
       <h1>Approval tiers and the privilege surface</h1>
       <p className="byline">Kept by <Ag id="security" name /><span className="by-sep" />Source: written by hand, mapped from Markdown</p>
-      <p className="liveln"><Asoka size={20} state="idle" />Roster re-verified live; the approver list waits on a person{w.proof && <span className="ti-hint"> · hover any line to see where it came from</span>}</p>
+      <p className="liveln"><Asoka size={20} state={now.s} /><span key={now.s} className="ti-now">{now.t}</span>{w.proof && now.s === 'idle' && <span className="ti-hint"> · hover any line to see where it came from</span>}</p>
       <div className="ti-view" role="tablist" aria-label="View">
         <button role="tab" aria-selected={view === 'page'} className={view === 'page' ? 'on' : ''} onClick={() => setView('page')}>Page</button>
         <button role="tab" aria-selected={view === 'md'} className={view === 'md' ? 'on' : ''} onClick={() => setView('md')}>Markdown</button>
@@ -95,10 +179,10 @@ export function Tiers() {
 
       {view === 'md' ? <pre className="ti-md" aria-label="approval-tiers.md">{md}</pre> : <>
         <dl className="props">
-          <div><dt><Icon name="badge-check" size={16} />Last verified</dt><dd>Aug 11, 2026</dd></div>
+          <div><dt><Icon name="badge-check" size={16} />Last verified</dt><dd>{fresh ? <>Today<span className="props-m">just now, against Salesforce</span></> : 'Aug 11, 2026'}</dd></div>
           <div><dt><Icon name="file-text" size={16} />Shown to</dt><dd>Asoka, always<span className="props-m">loaded with every request</span></dd></div>
           <div><dt><Icon name="layers" size={16} />Linked from</dt><dd>6 pages<span className="props-m">Index, Churn, Quote to cash…</span></dd></div>
-          <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence /></dd></div>
+          <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} /></dd></div>
         </dl>
 
         <p className="lede">Who signs off on what, the two gates every production change passes through, and the access that carries the most risk today.</p>
@@ -111,17 +195,20 @@ export function Tiers() {
           <table>
             <thead><tr><th>Domain</th><th>Approvers</th></tr></thead>
             <tbody>{APPROVERS.map((a) => a.flag
-              ? <tr key={a.d} id="b-ti-sasha" className={'ti-flag' + (w.proof ? ' trc' : '') + (w.trace === 'ti-sasha' ? ' traced' : '')} {...sasha}><td>{a.d}</td><td>{a.who} <span className="ti-row-flag"><Mark tone="warn" icon="user">{a.flag}</Mark></span></td></tr>
+              ? <tr key={a.d} id="b-ti-sasha" className={(ask === 'answered' ? 'ti-fixed' : 'ti-flag') + (w.proof ? ' trc' : '') + (w.trace === 'ti-sasha' ? ' traced' : '')} {...sasha}><td>{a.d}</td><td>
+                {ask === 'answered' ? <><span className="ti-new">Delphine Roux (Sr Director Integration Services)</span> <span className="ti-row-flag"><Mark tone="ok" icon="circle-check">Confirmed by Dale Whitaker · just now</Mark></span><span className="ti-ed">Edited just now · was “Sasha Merrill”, an integration seat</span></>
+                  : <>{a.who} <span className="ti-row-flag"><Mark tone="warn" icon="user">{a.flag}</Mark>{ask === 'asking' && <span className="ti-asking"><LivePulse />Asoka is asking Dale Whitaker, VP GTM Ops</span>}</span></>}
+              </td></tr>
               : <tr key={a.d}><td>{a.d}</td><td>{a.who}</td></tr>)}</tbody>
           </table>
         </Block>
-        <p className="ti-aside">The flagged row points at a machine identity: a real defect in the org’s own approver list, and why people data and identity data have to be read together.</p>
+        <p className="ti-aside">{ask === 'answered' ? 'The row pointed at a machine identity; Dale Whitaker named the person who owns it. The rest of the list is still from the knowledge base.' : 'The flagged row points at a machine identity: a real defect in the org’s own approver list, and why people data and identity data have to be read together.'}</p>
 
         <h2 id="t-gates">Two gates</h2>
         {/* Two gates, simplified: the order as two plain rows, then three one-line rules. */}
         <Block id="ti-gates"><ol className="ti-g2">
-          <li><span className="ti-n">1</span><span className="lt"><b>Business gate.</b> The named RevOps approver signs off the plan: the exact records, dates, values and reasons.</span></li>
-          <li><span className="ti-n">2</span><span className="lt"><b>Platform gate.</b> Technical approval for the write itself, asked for only after gate 1.</span></li>
+          <li><span className="ti-n">1</span><span className="ti-g2-t"><span className="lt"><b>Business gate.</b> The named RevOps approver signs off the plan: the exact records, dates, values and reasons.</span></span></li>
+          <li><span className="ti-n">2</span><span className="ti-g2-t"><span className="lt"><b>Platform gate.</b> Technical approval for the write itself, asked for only after gate 1.</span></span></li>
         </ol></Block>
         <Block id="ti-notcount"><ul className="ti-g2-rules">
           <li><span className="lt"><b>For churn,</b> the approver confirms four inputs: account, churn date, reason picklist value and notes.</span></li>
@@ -130,30 +217,46 @@ export function Tiers() {
         </ul></Block>
 
         <h2 id="t-priv">Privilege surface</h2>
-        <p className="ti-note"><Mark tone="ok" icon="badge-check">Verified live</Mark></p>
+        <p className="ti-note ti-check"><Mark tone="ok" icon="badge-check">Verified live · {check === 'done' || moved ? 're-checked just now' : 're-checked 52 min ago'}</Mark>
+          {check === 'checking' ? <span className="ti-asking"><LivePulse />Asoka is re-checking against Salesforce</span> : <span className="ti-checked-q">Asoka re-checks hourly</span>}</p>
         <Block id="ti-roster"><dl className="ti-stats">
-          <div><dt className="tk">System Administrator seats</dt><dd><b>19</b><span>12 human · 7 machine · granted by profile, not role</span></dd></div>
-          <div><dt className="tk">Licences in use</dt><dd><b>108<small>/109</small></b><span>saturated: one seat left</span></dd></div>
-          <div><dt className="tk">Live powerful permission sets</dt><dd><b>1</b><span>of 7 · the vendor’s</span></dd></div>
+          <div><dt className="tk">System Administrator seats</dt><dd><b><LiveNum value={admin} /></b><span>12 human · <LiveNum value={machine} /> machine · granted by profile, not role</span></dd></div>
+          <div><dt className="tk">Licences in use</dt><dd><b><LiveNum value={lic} /><small>/109</small></b><span>{109 - lic === 1 ? 'saturated: one seat left' : `${109 - lic} seats free`}</span></dd></div>
+          <div><dt className="tk">Live powerful permission sets</dt><dd><b><LiveNum value={done('ti-f-vendor') ? 0 : 1} /></b><span>{done('ti-f-vendor') ? 'of 7 · the vendor’s is scoped' : 'of 7 · the vendor’s'}</span></dd></div>
         </dl></Block>
         <ol className="ti-find">
           {FINDINGS.map((f) => (
-            <li key={f.t} className={f.sev}>
-              <span className={'ti-sev ' + f.sev}>{f.sev === 'high' ? 'High' : f.sev === 'med' ? 'Watch' : 'Right'}</span>
-              <Block id={f.id}><b><span className="lt">{f.t}</span></b><p>{f.d}</p>{f.fix && <p className="ti-fix"><Icon name="arrow-right" size={12} />{f.fix}</p>}</Block>
+            <li key={f.t} className={done(f.id) ? 'ok' : f.sev}>
+              <span className={'ti-sev ' + (done(f.id) ? 'ok' : f.sev)}>{done(f.id) ? 'Fixed' : f.sev === 'high' ? 'High' : f.sev === 'med' ? 'Watch' : 'Right'}</span>
+              <div className="ti-fbody">
+              {f.id === 'ti-f-machine'
+                ? <Block id={f.id}><b><span className="lt">{done(f.id) ? <>No machine identities on System Administrator</> : <><span key={machine} className={moved ? 'ti-new' : ''}>{machine}</span> machine identities on full System Administrator</>}</span></b>{moved && <span className="ti-ed">Edited just now · one moved to an integration licence in Salesforce</span>}<p>{f.d}</p>{!fix[f.id] && <p className="ti-fix"><Icon name="arrow-right" size={12} />Move them to an integration licence + API-only profile: recovers ~{machine} seats and takes them off admin.</p>}</Block>
+                : <Block id={f.id}><b><span className="lt">{f.t}</span></b><p>{f.d}</p>{f.fix && !fix[f.id] && <p className="ti-fix"><Icon name="arrow-right" size={12} />{f.fix}</p>}</Block>}
+              {PLAN[f.id] && fix[f.id] && <FixPlan id={f.id} st={fix[f.id]} machine={f.id === 'ti-f-machine' && done(f.id) ? fixedN : machineNow} nudged={nudged} onNudge={nudge} />}
+              </div>
             </li>
           ))}
         </ol>
         <h3>Over-grants to flag</h3>
-        <Block id="ti-over"><ul className="ti-over">{OVER.map((x) => <li key={x}><span className="lt">{x}</span></li>)}</ul></Block>
+        <ul className="ti-over">{OVER.map((x, i) => <li key={x}><Block id={'ti-over-' + i}><span className="lt">{x}</span></Block></li>)}</ul>
 
         <h2 id="t-access">Access requests</h2>
         {/* Access requests, simplified like Two gates: the gap in one line, the dashboard steps as two rows, the open question last. */}
         <Block id="ti-model"><p className="ti-lead"><span className="lt"><b>Kestrel has no documented Salesforce access model.</b> That gap is behind most requests: permission sets, report visibility, field-level security, dashboards, freezes and licence counts.</span></p></Block>
         <Block id="ti-dash"><ol className="ti-g2">
-          <li><span className="ti-n">1</span><span className="lt"><b>Assign the dashboard permission set.</b> For access to an agent-built dashboard.</span></li>
-          <li><span className="ti-n">2</span><span className="lt"><b>Admin-approve the connected app.</b> Without it the grant fails with <code>invalid_app_access</code>, which looks as if it didn’t work.</span></li>
+          <li><span className="ti-n">1</span><span className="ti-g2-t"><span className="lt"><b>Assign the dashboard permission set.</b> For access to an agent-built dashboard.</span></span></li>
+          <li><span className="ti-n">2</span><span className="ti-g2-t"><span className="lt"><b>Admin-approve the connected app.</b> Without it the grant fails with <code>invalid_app_access</code>, which looks as if it didn’t work.</span></span></li>
         </ol></Block>
+        {req > 0 && (
+          <div className="ti-req" aria-live="polite">
+            <span className="ti-req-h"><LivePulse on={req < 3} /><span className="tk">Latest request · just now</span></span>
+            <p><b>A Sales Ops analyst needs the Pipeline Health dashboard.</b></p>
+            <ol>
+              <li className={req >= 2 ? 'done' : 'now'}><span className="cx-ck" aria-hidden="true">{req >= 2 ? <Icon name="check" size={12} /> : <i />}</span>Dashboard permission set assigned</li>
+              <li className={req >= 3 ? 'done' : req === 2 ? 'now' : ''}><span className="cx-ck" aria-hidden="true">{req >= 3 ? <Icon name="check" size={12} /> : req === 2 ? <i /> : null}</span>{req >= 3 ? 'Connected app approved by Adaeze Nwosu: access works' : 'Waiting for Adaeze Nwosu to approve the connected app'}</li>
+            </ol>
+          </div>
+        )}
         <Block id="ti-sharing" cls="callout ask ti-call"><p><span className="lt">Report and dashboard sharing has no policy. Widening visibility beyond the sales hierarchy is undecided: escalate, don’t decide.</span></p></Block>
 
         <h2 id="t-skew">Data caveat</h2>

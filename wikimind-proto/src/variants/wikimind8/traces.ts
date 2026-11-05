@@ -54,9 +54,25 @@ export const TRACE: Record<string, { label: string; tier: Tier; steps: TStep[] }
     { k: 'observed', by: 'security', t: 'The correctly scoped integration permission set has 9 assignees', src: 'Live Salesforce query · permission set assignments', at: 'Aug 11' },
     { k: 'reasoned', by: 'security', t: 'That is the right posture. It is not the answer to a “give me full access” request.', at: 'Aug 11' },
   ] },
-  'ti-over': { label: 'Over-grants to flag', tier: 'observed', steps: [
-    { k: 'observed', by: 'security', t: 'Read role and profile assignments: the Security lead and the COO on the CEO role, a Marketing user on System Administrator, a duplicate standard user for an executive, one AE on an unexpected role', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
-    { k: 'reasoned', by: 'security', t: 'Each looks wider than the job needs. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
+  'ti-over-0': { label: 'Over-grant · The Security lead on the CEO role', tier: 'observed', steps: [
+    { k: 'observed', by: 'security', t: 'The Security lead’s user sits on the CEO role', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'The CEO role sees every record under it in the hierarchy; a Security lead doesn’t need that to do the job. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
+  ] },
+  'ti-over-1': { label: 'Over-grant · A duplicate standard-user account for an executive', tier: 'observed', steps: [
+    { k: 'observed', by: 'security', t: 'An executive has two active users: their own and a standard-user duplicate', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'A second login doubles the access to review and burns a seat in a saturated org. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
+  ] },
+  'ti-over-2': { label: 'Over-grant · A Marketing user on System Administrator', tier: 'observed', steps: [
+    { k: 'observed', by: 'security', t: 'A Marketing user holds the System Administrator profile', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'Full admin is far wider than a Marketing job needs; admin is granted by profile here, so the profile is the grant. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
+  ] },
+  'ti-over-3': { label: 'Over-grant · The COO on the CEO role', tier: 'observed', steps: [
+    { k: 'observed', by: 'security', t: 'The COO’s user sits on the CEO role', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'Same as the Security lead: CEO-level visibility for a role that reports elsewhere. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
+  ] },
+  'ti-over-4': { label: 'Over-grant · One AE on a role that looks wrong', tier: 'observed', steps: [
+    { k: 'observed', by: 'security', t: 'One AE sits on a role that doesn’t match their team', src: 'Live Salesforce query · users by role and profile', at: 'Aug 11' },
+    { k: 'reasoned', by: 'security', t: 'Record visibility follows the role, so this AE may see deals outside their territory. Flagged for a person to decide; nothing was changed.', at: 'Aug 11' },
   ] },
   'ti-model': { label: 'Access requests · no access model', tier: 'open', steps: [
     { k: 'observed', by: 'security', t: 'Found no documented Salesforce access model for Kestrel; the gap is catalogued', src: 'Policies and ownership', at: 'Aug 11' },
