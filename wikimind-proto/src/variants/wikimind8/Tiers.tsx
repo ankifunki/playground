@@ -216,7 +216,7 @@ export function Tiers() {
   return (
     <article className="doc ti">
       <h1>Approval tiers and the privilege surface</h1>
-      <p className="byline">Kept by <Ag id="security" name /><span className="by-sep" />Source: written by hand, mapped from Markdown</p>
+      <p className="byline">Kept by <Ag id="security" name /></p>
       <p className="liveln"><Asoka size={20} state={now.s} /><span key={now.s} className="ti-now">{now.t}</span>{w.proof && now.s === 'idle' && <span className="ti-hint"> · hover any line to see where it came from</span>}</p>
       <div className="ti-view" role="tablist" aria-label="View">
         <button role="tab" aria-selected={view === 'page'} className={view === 'page' ? 'on' : ''} onClick={() => setView('page')}>Page</button>
