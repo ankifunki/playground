@@ -134,7 +134,7 @@ export function Asoka({ size = 20, state = 'idle', label, triangle }: { size?: n
       <title>{label || AS_TITLE[state]}</title>
       <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
         <rect width="24" height="24" fill="#fff" />
-        <g className="asoka-eye"><circle cx="12" cy="14.6" r="3" fill="none" stroke="#000" strokeWidth="2" /></g>
+        <g className="asoka-eye"><circle cx="12" cy="14.5" r="3" fill="none" stroke="#000" strokeWidth="2" /></g>
       </mask>
       <path className="asoka-tri" d="M12 3.4C13.57 6.17 15.13 8.93 16.7 11.7C18.27 14.47 19.83 17.23 21.4 20C18.27 20 15.13 20 12 20C8.87 20 5.73 20 2.6 20C4.17 17.23 5.73 14.47 7.3 11.7C8.87 8.93 10.43 6.17 12 3.4Z" mask={`url(#${id})`} />
     </svg>

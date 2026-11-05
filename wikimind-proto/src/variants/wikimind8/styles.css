@@ -2129,3 +2129,19 @@ button.km-t{cursor:pointer}
 .w7 .ti-on ol li{margin:0;display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s8);align-items:baseline;font:400 var(--fs-ui)/20px var(--sans)}
 .ti-on-i{font:400 12px/20px var(--mono);color:var(--ink2);text-align:center;font-variant-numeric:tabular-nums}
 .ti-on ol .wl{justify-self:start;text-align:left}
+/* Asoka's ring always sits at the centre of its shape (the triangle's incentre; the middle of the page, circle, block,
+   diamond and low block), and moves with the shape as it morphs. Only where the shape morphs too (Safari keeps the
+   triangle and the triangle's centre). Motion keeps it centred: reading sweeps the ring's gap, asking pops it. */
+@supports (d: path("M0 0")) {
+  .asoka-eye circle{cy:14.5px;transition:cy .6s var(--eo)}
+  .asoka.reading .asoka-eye circle,.asoka.thinking .asoka-eye circle,.asoka.asking .asoka-eye circle{cy:12px}
+  .asoka.writing .asoka-eye circle{cy:12.2px}
+  .asoka.waiting .asoka-eye circle{cy:14.2px}
+  .asoka.tri .asoka-eye circle{cy:14.5px}
+}
+.asoka.reading .asoka-eye{animation:none}
+.asoka.reading .asoka-eye circle{stroke-dasharray:15 3.85;animation:asSweep 2.4s linear infinite}
+@keyframes asSweep{to{stroke-dashoffset:-18.85}}
+.asoka.asking .asoka-eye{animation:asPop 2.4s var(--eo) infinite}
+@keyframes asPop{0%,100%{transform:none}30%,60%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.asoka .asoka-eye circle{transition:none;animation:none}}
