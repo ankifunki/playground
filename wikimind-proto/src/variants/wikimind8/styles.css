@@ -2122,3 +2122,10 @@ button.km-t{cursor:pointer}
 .ti-w.done .ti-w-k.ok{color:var(--ok)}
 .ti-on.clear{color:var(--ink)}
 .ti-on.clear .ti-on-h>.ic{color:var(--ok)}
+/* Waiting on Lena: roomier card, numbered items whose links line up with the heading text (avatar 20 + gap 8). */
+.w7 .ti .ti-on{padding:var(--s20) var(--s24);margin:var(--s24) 0 var(--s32);row-gap:var(--s14)}
+.ti-on>ol{grid-area:l}
+.w7 .ti-on ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s8)}
+.w7 .ti-on ol li{margin:0;display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s8);align-items:baseline;font:400 var(--fs-ui)/20px var(--sans)}
+.ti-on-i{font:400 12px/20px var(--mono);color:var(--ink2);text-align:center;font-variant-numeric:tabular-nums}
+.ti-on ol .wl{justify-self:start;text-align:left}

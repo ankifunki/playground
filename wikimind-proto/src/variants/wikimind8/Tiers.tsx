@@ -228,13 +228,14 @@ export function Tiers() {
           <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} decided={share === 'decided' ? 1 : 0} /></dd></div>
         </dl>
 
-        <div className={'ti-on' + (onLena.length ? '' : ' clear')} aria-live="polite">
-          {onLena.length ? <>
+        {/* Only while something waits on her; once she has signed and decided, the summary goes away. */}
+        {onLena.length > 0 && (
+          <div className="ti-on" aria-live="polite">
             <span className="ti-on-h"><span className="ti-on-av" aria-hidden="true"><Icon name="user" size={12} /></span><b>Waiting on Lena Marchetti</b><span className="ti-on-n">{onLena.length}</span></span>
-            <ul>{onLena.map((x) => <li key={x.id}><button className="wl" onClick={() => jump(x.id)}>{x.t}</button></li>)}</ul>
+            <ol>{onLena.map((x, i) => <li key={x.id}><span className="ti-on-i" aria-hidden="true">{i + 1}</span><button className="wl" onClick={() => jump(x.id)}>{x.t}</button></li>)}</ol>
             {reminded ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded in Slack just now</span> : <button className="btn ghost" onClick={remindLena}><Icon name="hash" size={14} />Remind Lena in Slack</button>}
-          </> : <span className="ti-on-h"><Icon name="circle-check" size={14} /><b>Nothing waits on Lena Marchetti</b><span className="ti-oq-m">She signed off both fixes and decided report sharing.</span></span>}
-        </div>
+          </div>
+        )}
 
         <p className="lede">Who signs off on what, the two gates every production change passes through, and the access that carries the most risk today.</p>
 
