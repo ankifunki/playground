@@ -212,7 +212,6 @@ export function Tiers() {
       : ask === 'asking' ? { s: 'asking' as const, t: <>Asking Dale Whitaker who owns data quality</> }
         : req === 1 || req === 2 ? { s: 'thinking' as const, t: <>Routing a dashboard access request</> }
           : { s: 'idle' as const, t: <>Watching profiles, permission sets and licences for changes</> }
-  const fresh = check === 'done' || moved
   return (
     <article className="doc ti">
       <h1>Approval tiers and the privilege surface</h1>
@@ -225,8 +224,6 @@ export function Tiers() {
 
       {view === 'md' ? <pre className="ti-md" aria-label="approval-tiers.md">{md}</pre> : <>
         <dl className="props">
-          <div><dt><Icon name="badge-check" size={16} />Last verified</dt><dd>{fresh ? <>Today<span className="props-m">just now, against Salesforce</span></> : 'Aug 11, 2026'}</dd></div>
-          <div><dt><Icon name="file-text" size={16} />Shown to</dt><dd>Asoka, always<span className="props-m">loaded with every request</span></dd></div>
           <div><dt><Icon name="layers" size={16} />Linked from</dt><dd>6 pages<span className="props-m">Index, Churn, Quote to cash…</span></dd></div>
           <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} decided={share === 'decided' ? 1 : 0} /></dd></div>
         </dl>
