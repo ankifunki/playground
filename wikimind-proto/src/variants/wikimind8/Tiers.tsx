@@ -116,7 +116,7 @@ function Waiting({ wid, kind, head, fields, steps, status, done, doneHead, doneN
   steps?: { st: 'done' | 'now' | ''; t: string }[]; status: React.ReactNode; done: boolean; doneHead: React.ReactNode; doneNote: React.ReactNode
 }) {
   if (done) return (
-    <div id={wid} className="ti-w done">
+    <div id={wid} className={kind === 'decision' ? 'ti-w-rule' : 'ti-w done'}>
       <span className="ti-w-k ok"><Icon name="circle-check" size={14} />{kind === 'fix' ? 'Fix · applied' : 'Rule · decided by Lena Marchetti just now'}</span>
       <p className="ti-w-h">{doneHead}</p>
       {doneNote}
@@ -300,20 +300,16 @@ export function Tiers() {
 
         <h2 id="t-access">Access requests</h2>
         {/* Access requests, simplified like Two gates: the gap in one line, the dashboard steps as two rows, the open question last. */}
-        <Block id="ti-model"><p className="ti-lead"><span className="lt"><b>Kestrel has no documented Salesforce access model.</b> That gap is behind most requests: permission sets, report visibility, field-level security, dashboards, freezes and licence counts.</span></p></Block>
+        <Block id="ti-model"><p className="ti-lead"><span className="lt">Kestrel has no documented Salesforce access model. That gap is behind most requests: permission sets, report visibility, field-level security, dashboards, freezes and licence counts.</span></p></Block>
         <Block id="ti-dash"><ol className="ti-g2">
           <li><span className="ti-n">1</span><span className="ti-g2-t"><span className="lt"><b>Assign the dashboard permission set.</b> For access to an agent-built dashboard.</span></span></li>
           <li><span className="ti-n">2</span><span className="ti-g2-t"><span className="lt"><b>Admin-approve the connected app.</b> Without it the grant fails with <code>invalid_app_access</code>, which looks as if it didn’t work.</span></span></li>
         </ol></Block>
         {req > 0 && (
-          <div className="ti-req" aria-live="polite">
-            <span className="ti-req-h"><LivePulse on={req < 3} /><span className="tk">Latest request · just now</span></span>
-            <p><b>A Sales Ops analyst needs the Pipeline Health dashboard.</b></p>
-            <ol>
-              <li className={req >= 2 ? 'done' : 'now'}><span className="cx-ck" aria-hidden="true">{req >= 2 ? <Icon name="check" size={12} /> : <i />}</span>Dashboard permission set assigned</li>
-              <li className={req >= 3 ? 'done' : req === 2 ? 'now' : ''}><span className="cx-ck" aria-hidden="true">{req >= 3 ? <Icon name="check" size={12} /> : req === 2 ? <i /> : null}</span>{req >= 3 ? 'Connected app approved by Adaeze Nwosu: access works' : 'Waiting for Adaeze Nwosu to approve the connected app'}</li>
-            </ol>
-          </div>
+          <p className={'ti-live' + (req >= 3 ? ' done' : '')} aria-live="polite">
+            {req < 3 ? <LivePulse /> : <Icon name="circle-check" size={14} />}
+            <span><b>Latest request</b> · a Sales Ops analyst {req >= 3 ? 'got' : 'needs'} the Pipeline Health dashboard · {req === 1 ? 'Asoka is assigning the permission set' : req === 2 ? 'step 1 done; waiting on Adaeze Nwosu for step 2' : 'both steps done, approved by Adaeze Nwosu just now'}</span>
+          </p>
         )}
         <Block id="ti-sharing">
           <Waiting wid="w-ti-sharing" kind="decision" head={<span className="lt">Who may see reports and dashboards beyond the sales hierarchy?</span>}

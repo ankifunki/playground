@@ -2145,3 +2145,15 @@ button.km-t{cursor:pointer}
 .asoka.asking .asoka-eye{animation:asPop 2.4s var(--eo) infinite}
 @keyframes asPop{0%,100%{transform:none}30%,60%{transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){.asoka .asoka-eye circle{transition:none;animation:none}}
+/* Access requests, streamlined to three styles: body text, hairline rows with a live line, one card only while a person must decide. */
+.w7 .ti .ti-lead{font-weight:400}
+.ti-g2 .ti-n{background:none;color:var(--ink2);font:400 12px/26px var(--mono);width:auto;height:auto;margin-top:0;display:block;text-align:left}
+.w7 .ti-live{display:flex;align-items:flex-start;gap:var(--s8);margin:var(--s12) 0 var(--s24);font:400 var(--fs-ui)/20px var(--sans);color:var(--ink2)}
+.ti-live>.ic,.ti-live>.lp{flex:none;margin-top:3px}
+.ti-live b{font-weight:500;color:var(--ink)}
+.ti-live.done>.ic{color:var(--ok)}
+.ti-w-rule{margin:var(--s16) 0;display:flex;flex-direction:column;gap:var(--s6);animation:fade .4s ease both}
+.ti-w-rule .ti-w-k{color:var(--ok)}
+.w7 .ti-w-rule .ti-w-h{margin:0;font:400 var(--fs-body)/26px var(--sans);color:var(--ink)}
+.w7 .ti-w-rule .ti-oq-m2,.w7 .ti-w-rule .ti-ed{margin:0}
+.w7 .ti-w-rule .ti-w-h{text-wrap:pretty}
