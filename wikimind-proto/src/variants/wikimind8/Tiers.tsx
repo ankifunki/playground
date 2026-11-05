@@ -91,85 +91,121 @@ function Mark({ tone, icon, children }: { tone: 'ok' | 'warn' | 'open'; icon: Ic
 }
 
 type Req = 0 | 1 | 2 | 3
-/** A fix moves through the page's own two gates: planned → gate 1 (Lena Marchetti signs off the plan) → gate 2 (Adaeze Nwosu approves the write) → applied. */
-type Fix = 'plan' | 'gate1' | 'gate2' | 'applying' | 'done'
-const PLAN: Record<string, { title: string; lines: (machine: number) => string[]; done: (machine: number) => string }> = {
+/** A fix moves through the page's own two gates: gate 1 (Lena Marchetti signs off the plan) → gate 2 (Adaeze Nwosu approves the write) → applied. */
+type Fix = 'gate1' | 'gate2' | 'applying' | 'done'
+const PLAN: Record<string, { title: string; lines: (machine: number) => string[]; done: (machine: number) => string; asked: string }> = {
   'ti-f-machine': {
-    title: 'Move the machine identities off System Administrator',
+    title: 'Move the machine identities off System Administrator', asked: '40 min ago',
     lines: (m) => [`${m} integration users move to an integration licence and an API-only profile`, `Each keeps only the objects its integration reads and writes`, `Frees ${m} full Salesforce seats; admin drops to 12 people`],
     done: (m) => `${m} machine identities moved off admin · ${m} seats recovered`,
   },
   'ti-f-vendor': {
-    title: 'Scope the vendor permission set',
+    title: 'Scope the vendor permission set', asked: '2 h ago',
     lines: () => ['Remove ViewAllData, ModifyAllData and ViewSetup', 'Grant object permissions only for what the CS-platform sync reads and writes', 'The vendor’s integration user keeps working; nothing else changes'],
     done: () => 'Vendor permission set scoped to its objects · no live powerful permission sets',
   },
 }
-/** The plan for one fix, inline in its finding: what changes, then gate 1, gate 2 and the write, each with its person. */
-function FixPlan({ id, st, machine, nudged, onNudge }: { id: string; st: Fix; machine: number; nudged: boolean; onNudge: () => void }) {
-  const p = PLAN[id], order: Fix[] = ['plan', 'gate1', 'gate2', 'applying', 'done'], at = order.indexOf(st)
-  const rows = [
-    { k: 'gate1', t: 'Gate 1 · Lena Marchetti, VP Compliance, signs off the plan', wait: 'Gate 1 · waiting for Lena Marchetti to sign off · sent 2 h ago', ok: 'Signed off by Lena Marchetti' },
-    { k: 'gate2', t: 'Gate 2 · Adaeze Nwosu approves the write', wait: 'Waiting for Adaeze Nwosu', ok: 'Approved by Adaeze Nwosu' },
-    { k: 'applying', t: 'Asoka applies the change and logs each record', wait: 'Applying…', ok: 'Applied' },
-  ]
+
+/**
+ * Waiting on a person: one pattern for everything Asoka drafted that a person has to approve or decide. A type label
+ * (Fix · needs sign-off, or Decision · needs a rule), the ask, what Asoka drafted, who decides, and the status; fixes
+ * also show their two gates. The reminder lives once, at the top of the page, per person.
+ */
+function Waiting({ wid, kind, head, fields, steps, status, done, doneHead, doneNote }: {
+  wid: string; kind: 'fix' | 'decision'; head: React.ReactNode; fields: { k: string; v: React.ReactNode }[]
+  steps?: { st: 'done' | 'now' | ''; t: string }[]; status: React.ReactNode; done: boolean; doneHead: React.ReactNode; doneNote: React.ReactNode
+}) {
+  if (done) return (
+    <div id={wid} className="ti-w done">
+      <span className="ti-w-k ok"><Icon name="circle-check" size={14} />{kind === 'fix' ? 'Fix · applied' : 'Rule · decided by Lena Marchetti just now'}</span>
+      <p className="ti-w-h">{doneHead}</p>
+      {doneNote}
+    </div>
+  )
   return (
-    <div className={'ti-plan' + (st === 'done' ? ' done' : '')}>
-      <span className="tk">Asoka’s fix · {p.title}</span>
-      <ul className="ti-plan-l">{p.lines(machine).map((l) => <li key={l}>{l}</li>)}</ul>
-      <ol className="ti-plan-g">
-        {rows.map((r, i) => {
-          const ri = i + 1, ok = at > ri, now = at === ri
-          return <li key={r.k} className={ok ? 'done' : now ? 'now' : ''}><span className="cx-ck" aria-hidden="true">{ok ? <Icon name="check" size={12} /> : now ? <i /> : null}</span>{ok ? r.ok : now ? r.wait : r.t}</li>
-        })}
-      </ol>
-      {st === 'gate1' && id === 'ti-f-vendor' && <div className="ti-plan-a">{nudged ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded Lena in Slack just now</span> : <button className="btn ghost" onClick={onNudge}><Icon name="hash" size={14} />Remind Lena in Slack</button>}<span className="ti-plan-n">Nothing changes until both gates approve.</span></div>}
-      {st === 'done' && <p className="ti-plan-d"><Icon name="circle-check" size={14} />{p.done(machine)}. Logged in Live activity.</p>}
+    <div id={wid} className="ti-w">
+      <span className="ti-w-k"><Icon name={kind === 'fix' ? 'workflow' : 'circle-help'} size={14} />{kind === 'fix' ? 'Fix · needs sign-off' : 'Decision · needs a rule'}</span>
+      <p className="ti-w-h">{head}</p>
+      <dl className="ti-w-f">{fields.map((f) => <div key={f.k}><dt className="tk">{f.k}</dt><dd>{f.v}</dd></div>)}</dl>
+      {steps && <ol className="ti-plan-g">{steps.map((x) => <li key={x.t} className={x.st}><span className="cx-ck" aria-hidden="true">{x.st === 'done' ? <Icon name="check" size={12} /> : x.st === 'now' ? <i /> : null}</span>{x.t}</li>)}</ol>}
+      <div className="ti-w-s">{status}</div>
     </div>
   )
 }
+const ago = (reminded: boolean, t: string) => (reminded ? 'reminded just now' : `asked ${t}`)
 
 export function Tiers() {
   const w = useW(), [view, setView] = useState<'page' | 'md'>('page'), sasha = useTraceTarget('ti-sasha')
-  // The page's live state: a re-check, a question to a person, a Salesforce change, an access request.
+  // The page's live state: a re-check, a question to a person, a Salesforce change, an access request, and what waits on Lena.
   const [check, setCheck] = useState<'idle' | 'checking' | 'done'>('idle'), [ask, setAsk] = useState<'idle' | 'asking' | 'answered'>('idle')
   const [moved, setMoved] = useState(false), [writing, setWriting] = useState(false), [req, setReq] = useState<Req>(0)
-  const timers = useRef<number[]>([]), movedRef = useRef(false), decideShareRef = useRef<() => void>(() => {})
-  movedRef.current = moved
+  const [fix, setFix] = useState<Record<string, Fix>>({ 'ti-f-machine': 'gate1', 'ti-f-vendor': 'gate1' }), [fixedN, setFixedN] = useState(0)
+  const [share, setShare] = useState<'open' | 'decided'>('open'), [reminded, setReminded] = useState(false)
+  const timers = useRef<number[]>([]), movedRef = useRef(false), fixRef = useRef(fix), shareRef = useRef(share)
+  movedRef.current = moved; fixRef.current = fix; shareRef.current = share
   const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)) }
   const log = (t: string, kind: 'edit' | 'read' | 'ask' | 'verify', who?: string) => w.log({ ag: who ? 'person' : 'security', who, t, page: 'approval-tiers', kind })
-  useEffect(() => {
-    // A dashboard access request arrives and works through the two steps; then Salesforce changes under the page.
-    later(2500, () => { setAsk('asking'); log('Asked Dale Whitaker who owns data quality, since “Sasha Merrill” is an integration seat', 'ask') })
-    later(8500, () => { setAsk('answered'); log('Answered: Delphine Roux owns data quality and integration normalisation', 'ask', 'Dale Whitaker') })
-    later(10000, () => setCheck('checking'))
-    later(12600, () => { setCheck('done'); log(`Re-checked the privilege surface against Salesforce: ${movedRef.current ? 'matches the latest change' : 'no change since the last read'}`, 'verify') })
-    later(21000, () => { step('ti-f-machine', 'gate2'); log('Signed off the plan: Move the machine identities off System Administrator', 'verify', 'Lena Marchetti'); log('Asked Adaeze Nwosu to approve the write (gate 2)', 'ask') })
-    later(24000, () => { step('ti-f-machine', 'applying'); log('Approved the write: Move the machine identities off System Administrator', 'verify', 'Adaeze Nwosu') })
-    shareTimer.current = window.setTimeout(() => decideShareRef.current(), 34000); timers.current.push(shareTimer.current)
-    later(26000, () => { setFixedN(6); step('ti-f-machine', 'done'); log('Applied: 6 machine identities moved off admin · 6 seats recovered', 'edit') })
-    later(5000, () => { setReq(1); log('Got a request: a Sales Ops analyst needs the Pipeline Health dashboard', 'read') })
-    later(7000, () => { setReq(2); log('Assigned the dashboard permission set; asked Adaeze Nwosu to approve the connected app', 'edit') })
-    later(12000, () => { setReq(3); log('Approved the connected app: Pipeline Health access works', 'verify', 'Adaeze Nwosu') })
-    later(16000, () => { setWriting(true); log('Saw a machine identity move off System Administrator in Salesforce', 'read') })
-    later(18500, () => { setMoved(true); setWriting(false); log('Rewrote the privilege surface: 18 admin seats, 6 machine identities, 107 of 109 licences', 'edit') })
-    return () => { timers.current.forEach((t) => window.clearTimeout(t)); timers.current = [] }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  const [fix, setFix] = useState<Record<string, Fix>>({ 'ti-f-machine': 'gate1', 'ti-f-vendor': 'gate1' }), [fixedN, setFixedN] = useState(0), [nudged, setNudged] = useState(false)
-  const machineNow = moved ? 6 : 7
   const step = (id: string, f: Fix) => setFix((x) => ({ ...x, [id]: f }))
-  const [share, setShare] = useState<'open' | 'decided'>('open'), [shareNudged, setShareNudged] = useState(false), shareTimer = useRef(0)
+  // Lena signs off a fix (gate 1); Asoka asks Adaeze (gate 2); she approves; Asoka applies it.
+  const signFix = (id: string) => {
+    if (fixRef.current[id] !== 'gate1') return
+    const t = PLAN[id].title
+    step(id, 'gate2'); fixRef.current = { ...fixRef.current, [id]: 'gate2' }
+    log(`Signed off the plan: ${t}`, 'verify', 'Lena Marchetti'); log('Asked Adaeze Nwosu to approve the write (gate 2)', 'ask')
+    later(3000, () => { step(id, 'applying'); log(`Approved the write: ${t}`, 'verify', 'Adaeze Nwosu') })
+    later(5000, () => { const m = movedRef.current ? 6 : 7; if (id === 'ti-f-machine') setFixedN(m); step(id, 'done'); log(`Applied: ${PLAN[id].done(m)}`, 'edit') })
+  }
   const decideShare = () => {
-    if (share === 'decided') return
-    setShare('decided')
+    if (shareRef.current === 'decided') return
+    setShare('decided'); shareRef.current = 'decided'
     log('Decided report and dashboard sharing: within the sales hierarchy by default; wider sharing needs the report owner’s VP', 'verify', 'Lena Marchetti')
     log('Added the sharing rule to Approval tiers and routed the 2 waiting requests under it', 'edit')
   }
-  const remindShare = () => { setShareNudged(true); log('Reminded Lena Marchetti in Slack: 2 requests wait on the report-sharing decision', 'ask'); window.clearTimeout(shareTimer.current); shareTimer.current = window.setTimeout(decideShare, 5000); timers.current.push(shareTimer.current) }
-  decideShareRef.current = decideShare
-  const nudge = () => { setNudged(true); log('Reminded Lena Marchetti in Slack: the vendor permission-set fix waits on her sign-off (gate 1)', 'ask') }
+  useEffect(() => {
+    later(2500, () => { setAsk('asking'); log('Asked Dale Whitaker who owns data quality, since “Sasha Merrill” is an integration seat', 'ask') })
+    later(5000, () => { setReq(1); log('Got a request: a Sales Ops analyst needs the Pipeline Health dashboard', 'read') })
+    later(7000, () => { setReq(2); log('Assigned the dashboard permission set; asked Adaeze Nwosu to approve the connected app', 'edit') })
+    later(8500, () => { setAsk('answered'); log('Answered: Delphine Roux owns data quality and integration normalisation', 'ask', 'Dale Whitaker') })
+    later(10000, () => setCheck('checking'))
+    later(12000, () => { setReq(3); log('Approved the connected app: Pipeline Health access works', 'verify', 'Adaeze Nwosu') })
+    later(12600, () => { setCheck('done'); log(`Re-checked the privilege surface against Salesforce: ${movedRef.current ? 'matches the latest change' : 'no change since the last read'}`, 'verify') })
+    later(16000, () => { setWriting(true); log('Saw a machine identity move off System Administrator in Salesforce', 'read') })
+    later(18500, () => { setMoved(true); setWriting(false); log('Rewrote the privilege surface: 18 admin seats, 6 machine identities, 107 of 109 licences', 'edit') })
+    // Left alone, Lena gets to the machine-identity fix at ~21 s and the sharing decision at ~34 s; the vendor fix waits.
+    later(21000, () => signFix('ti-f-machine'))
+    later(34000, decideShare)
+    return () => { timers.current.forEach((t) => window.clearTimeout(t)); timers.current = [] }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // Everything that waits on Lena, for the summary at the top and its one reminder.
+  const onLena = [
+    ...(fix['ti-f-machine'] === 'gate1' ? [{ id: 'w-ti-f-machine', t: 'Sign off: move the machine identities off admin' }] : []),
+    ...(fix['ti-f-vendor'] === 'gate1' ? [{ id: 'w-ti-f-vendor', t: 'Sign off: scope the vendor permission set' }] : []),
+    ...(share === 'open' ? [{ id: 'w-ti-sharing', t: 'Decide: who may see reports beyond the sales hierarchy' }] : []),
+  ]
+  const remindLena = () => {
+    setReminded(true)
+    log(`Reminded Lena Marchetti in Slack: ${onLena.length} ${onLena.length === 1 ? 'item waits' : 'items wait'} on her (${onLena.map((x) => x.t.split(':')[0].toLowerCase()).join(', ')})`, 'ask')
+    // A reminder brings her answers: each fix she still owes is signed off, then the decision.
+    let d = 3000
+    ;(['ti-f-machine', 'ti-f-vendor'] as const).forEach((id) => { if (fixRef.current[id] === 'gate1') { later(d, () => signFix(id)); d += 1200 } })
+    if (shareRef.current === 'open') later(d + 800, decideShare)
+  }
+  const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  const machineNow = moved ? 6 : 7
   const done = (id: string) => fix[id] === 'done'
   const machine = done('ti-f-machine') ? 0 : machineNow
+  const fixSteps = (id: string) => {
+    const at = ['gate1', 'gate2', 'applying', 'done'].indexOf(fix[id])
+    const st = (i: number): 'done' | 'now' | '' => (at > i ? 'done' : at === i ? 'now' : '')
+    return [
+      { st: st(0), t: at > 0 ? 'Gate 1 · signed off by Lena Marchetti' : 'Gate 1 · Lena Marchetti signs off the plan' },
+      { st: st(1), t: at > 1 ? 'Gate 2 · approved by Adaeze Nwosu' : 'Gate 2 · Adaeze Nwosu approves the write' },
+      { st: st(2), t: at > 2 ? 'Applied, each record logged' : 'Asoka applies the change and logs each record' },
+    ]
+  }
+  const fixStatus = (id: string) => fix[id] === 'gate1' ? <span className="ti-asking"><LivePulse />Waiting on Lena Marchetti · {ago(reminded, PLAN[id].asked)}</span>
+    : fix[id] === 'gate2' ? <span className="ti-asking"><LivePulse />Waiting on Adaeze Nwosu · asked just now</span>
+      : <span className="ti-asking"><LivePulse />Asoka is applying the change</span>
   const admin = 12 + machine, lic = (moved ? 107 : 108) - fixedN
   const now = check === 'checking' ? { s: 'reading' as const, t: <>Re-checking the roster against Salesforce</> }
     : writing ? { s: 'writing' as const, t: <>Rewriting <b>Privilege surface</b>: a machine identity left System Administrator</> }
@@ -194,6 +230,14 @@ export function Tiers() {
           <div><dt><Icon name="layers" size={16} />Linked from</dt><dd>6 pages<span className="props-m">Index, Churn, Quote to cash…</span></dd></div>
           <div className="ti-conf-p"><dt><Icon name="scan-eye" size={16} />Confidence</dt><dd><Confidence confirmed={ask === 'answered' ? 1 : 0} decided={share === 'decided' ? 1 : 0} /></dd></div>
         </dl>
+
+        <div className={'ti-on' + (onLena.length ? '' : ' clear')} aria-live="polite">
+          {onLena.length ? <>
+            <span className="ti-on-h"><span className="ti-on-av" aria-hidden="true"><Icon name="user" size={12} /></span><b>Waiting on Lena Marchetti</b><span className="ti-on-n">{onLena.length}</span></span>
+            <ul>{onLena.map((x) => <li key={x.id}><button className="wl" onClick={() => jump(x.id)}>{x.t}</button></li>)}</ul>
+            {reminded ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded in Slack just now</span> : <button className="btn ghost" onClick={remindLena}><Icon name="hash" size={14} />Remind Lena in Slack</button>}
+          </> : <span className="ti-on-h"><Icon name="circle-check" size={14} /><b>Nothing waits on Lena Marchetti</b><span className="ti-oq-m">She signed off both fixes and decided report sharing.</span></span>}
+        </div>
 
         <p className="lede">Who signs off on what, the two gates every production change passes through, and the access that carries the most risk today.</p>
 
@@ -242,7 +286,13 @@ export function Tiers() {
               {f.id === 'ti-f-machine'
                 ? <Block id={f.id}><b><span className="lt">{done(f.id) ? <>No machine identities on System Administrator</> : <><span key={machine} className={moved ? 'ti-new' : ''}>{machine}</span> machine identities on full System Administrator</>}</span></b>{moved && <span className="ti-ed">Edited just now · one moved to an integration licence in Salesforce</span>}<p>{f.d}</p>{!fix[f.id] && <p className="ti-fix"><Icon name="arrow-right" size={12} />Move them to an integration licence + API-only profile: recovers ~{machine} seats and takes them off admin.</p>}</Block>
                 : <Block id={f.id}><b><span className="lt">{f.t}</span></b><p>{f.d}</p>{f.fix && !fix[f.id] && <p className="ti-fix"><Icon name="arrow-right" size={12} />{f.fix}</p>}</Block>}
-              {PLAN[f.id] && fix[f.id] && <FixPlan id={f.id} st={fix[f.id]} machine={f.id === 'ti-f-machine' && done(f.id) ? fixedN : machineNow} nudged={nudged} onNudge={nudge} />}
+              {PLAN[f.id] && fix[f.id] && <Waiting wid={'w-' + f.id} kind="fix" head={PLAN[f.id].title}
+                fields={[
+                  { k: 'What changes', v: <ul className="ti-plan-l">{PLAN[f.id].lines(machineNow).map((l) => <li key={l}>{l}</li>)}</ul> },
+                  { k: 'Who decides', v: <>Lena Marchetti signs off the plan <span className="ti-oq-m">· Adaeze Nwosu approves the write</span></> },
+                ]}
+                steps={fixSteps(f.id)} status={fixStatus(f.id)} done={done(f.id)}
+                doneHead={PLAN[f.id].title} doneNote={<p className="ti-oq-m2">{PLAN[f.id].done(f.id === 'ti-f-machine' ? fixedN : 1)}. Signed off by Lena Marchetti, approved by Adaeze Nwosu.</p>} />}
               </div>
             </li>
           ))}
@@ -267,26 +317,19 @@ export function Tiers() {
             </ol>
           </div>
         )}
-        {share === 'open' ? (
-          <Block id="ti-sharing" cls="ti-oq">
-            <span className="ti-oq-k"><Icon name="circle-help" size={14} />Open question · a decision, not a knowledge gap</span>
-            <p className="ti-oq-q"><span className="lt">Who may see reports and dashboards beyond the sales hierarchy?</span></p>
-            <dl className="ti-oq-f">
-              <div><dt className="tk">Why it matters</dt><dd>Until it’s decided, Asoka escalates every request to widen visibility and never decides one itself. <b>2 requests are waiting.</b></dd></div>
-              <div><dt className="tk">Who decides</dt><dd>Lena Marchetti, VP Compliance <span className="ti-oq-m">· Adaeze Nwosu implements (from Who signs off)</span></dd></div>
-              <div><dt className="tk">Asoka’s draft</dt><dd><span className="ti-draft">Draft</span>Reports stay within the sales hierarchy by default; wider sharing needs the report owner’s VP. <span className="ti-oq-m">From how reports are shared today.</span></dd></div>
-              <div><dt className="tk">Waiting</dt><dd><ul className="ti-oq-w"><li>Marketing Ops · Pipeline by region dashboard</li><li>CS leadership · Renewal risk report</li></ul></dd></div>
-            </dl>
-            <div className="ti-oq-a"><span className="ti-asking"><LivePulse />Asked Lena Marchetti 3 days ago</span>{shareNudged ? <span className="ti-plan-n"><Icon name="circle-check" size={12} />Reminded just now</span> : <button className="btn ghost" onClick={remindShare}><Icon name="hash" size={14} />Remind Lena in Slack</button>}</div>
-          </Block>
-        ) : (
-          <Block id="ti-sharing" cls="ti-oq done">
-            <span className="ti-oq-k ok"><Icon name="circle-check" size={14} />Rule · decided by Lena Marchetti just now</span>
-            <p className="ti-oq-q"><span className="lt">Reports and dashboards stay within the sales hierarchy by default; wider sharing needs the report owner’s VP.</span></p>
-            <span className="ti-ed">Edited just now · was an open question; Asoka’s draft, accepted as written</span>
-            <p className="ti-oq-m2">The 2 waiting requests now route to their report owners’ VPs. Adaeze Nwosu implements the sharing settings.</p>
-          </Block>
-        )}
+        <Block id="ti-sharing">
+          <Waiting wid="w-ti-sharing" kind="decision" head={<span className="lt">Who may see reports and dashboards beyond the sales hierarchy?</span>}
+            fields={[
+              { k: 'Why it matters', v: <>Until it’s decided, Asoka escalates every request to widen visibility and never decides one itself. <b>2 requests are waiting.</b></> },
+              { k: 'Who decides', v: <>Lena Marchetti, VP Compliance <span className="ti-oq-m">· Adaeze Nwosu implements (from Who signs off)</span></> },
+              { k: 'Asoka’s draft', v: <><span className="ti-draft">Draft</span>Reports stay within the sales hierarchy by default; wider sharing needs the report owner’s VP. <span className="ti-oq-m">From how reports are shared today.</span></> },
+              { k: 'Waiting', v: <ul className="ti-oq-w"><li>Marketing Ops · Pipeline by region dashboard</li><li>CS leadership · Renewal risk report</li></ul> },
+            ]}
+            status={<span className="ti-asking"><LivePulse />Waiting on Lena Marchetti · {ago(reminded, '3 days ago')}</span>}
+            done={share === 'decided'}
+            doneHead={<span className="lt">Reports and dashboards stay within the sales hierarchy by default; wider sharing needs the report owner’s VP.</span>}
+            doneNote={<><span className="ti-ed">Edited just now · was an open question; Asoka’s draft, accepted as written</span><p className="ti-oq-m2">The 2 waiting requests now route to their report owners’ VPs. Adaeze Nwosu implements the sharing settings.</p></>} />
+        </Block>
 
         <h2 id="t-skew">Data caveat</h2>
         <Block id="ti-skew" cls="callout ti-call"><p><span className="lt">The Setup Audit Trail hit its <b>2,000-row cap</b> for the 90-day window. Rankings per person and category are trustworthy; <b>absolute counts understate</b>. Flow authorship is an audit-trail proxy, because the direct query has a gap. Say which of the two you rely on when quoting a number.</span></p></Block>

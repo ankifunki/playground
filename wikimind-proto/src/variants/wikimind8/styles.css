@@ -2085,3 +2085,40 @@ button.km-t{cursor:pointer}
 .ti-oq-a{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s12);margin-top:var(--s14)}
 @media (max-width:640px){.ti-oq{padding:var(--s16)}.ti-oq-f>div{grid-template-columns:1fr;gap:var(--s4)}}
 .w7 .ti-oq-w li{font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+/* Waiting on a person: one card for fixes and decisions; the summary of what waits on Lena, with one reminder. */
+.ti-w{align-self:stretch;margin:var(--s4) 0 0;padding:var(--s16) var(--s20);border-radius:var(--r-md);background:color-mix(in srgb,var(--warnb) 70%,var(--panel));display:flex;flex-direction:column;gap:var(--s10)}
+.ti-w.done{background:color-mix(in srgb,var(--okb) 60%,var(--panel));animation:fade .4s ease both}
+.ti-w-k{display:flex;align-items:center;gap:var(--s6);font:400 12px/16px var(--mono);color:var(--warn)}
+.ti-w-k.ok{color:var(--ok)}
+.w7 .ti-w-h{margin:0;font:400 var(--fs-title)/30px var(--serif);color:var(--ink);text-wrap:balance}
+.ti-w-f{margin:0;display:flex;flex-direction:column;border-top:1px solid color-mix(in srgb,var(--warn) 20%,transparent)}
+.ti-w-f>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--s16);padding:var(--s10) 0;border-bottom:1px solid color-mix(in srgb,var(--warn) 20%,transparent)}
+.ti-w-f dt{padding-top:2px}
+.ti-w-f dd{margin:0;font:400 var(--fs-ui)/20px var(--sans);color:var(--ink)}
+.ti-w-f b{font-weight:500}
+.ti-w .ti-plan-g{border-top:0;padding-top:0}
+.w7 .ti-find .ti-w li{display:flex;grid-template-columns:none;gap:var(--s8);padding:0;border-radius:0;background:none;box-shadow:none}
+.w7 .ti-find .ti-w .ti-plan-l li{display:block;padding-left:var(--s14)}
+.ti-w-s{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s12)}
+.ti-on{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s8) var(--s16);margin:var(--s24) 0 0;padding:var(--s14) var(--s16);border-radius:var(--r-md);background:color-mix(in srgb,var(--warnb) 70%,var(--panel))}
+.ti-on.clear{background:color-mix(in srgb,var(--okb) 60%,var(--panel));color:var(--ok)}
+.ti-on-h{display:flex;align-items:center;gap:var(--s8);font:400 var(--fs-ui)/20px var(--sans)}
+.ti-on-h b{font-weight:500;color:var(--ink)}
+.ti-on-av{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--panel);color:var(--ink2)}
+.ti-on-n{min-width:20px;height:20px;padding:0 var(--s6);border-radius:var(--r-pill);display:inline-grid;place-items:center;background:var(--warn);color:var(--panel);font:500 12px/16px var(--sans)}
+.w7 .ti-on ul{list-style:none;margin:0;padding:0;flex:1 1 320px;display:flex;flex-direction:column;gap:var(--s2)}
+.w7 .ti-on li{margin:0;font:400 var(--fs-ui)/20px var(--sans)}
+@media (max-width:640px){.ti-w{padding:var(--s14)}.ti-w-f>div{grid-template-columns:1fr;gap:var(--s4)}}
+.w7 .ti-find .ti-w .ti-w-h{margin:0;font:400 var(--fs-title)/30px var(--serif);color:var(--ink)}
+.ti-on{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"h b" "l l";gap:var(--s10) var(--s16)}
+.ti-on>.ti-on-h{grid-area:h}.ti-on>ul{grid-area:l}.ti-on>.btn,.ti-on>.ti-plan-n{grid-area:b;justify-self:end}
+.ti-on.clear{grid-template-areas:"h h"}
+/* Waiting cards are regular cards; only the status line carries tone (amber while waiting, green once done). */
+.ti-w,.ti-w.done,.ti-on,.ti-on.clear{background:var(--panel);box-shadow:var(--sh)}
+.ti-find .ti-w,.ti-find .ti-w.done{box-shadow:inset 0 0 0 1px var(--line)}
+.ti-w-k,.ti-w-k.ok{color:var(--ink2)}
+.ti-w-f,.ti-w-f>div{border-color:var(--line)}
+.ti-w-s .ti-asking{color:var(--warn)}
+.ti-w.done .ti-w-k.ok{color:var(--ok)}
+.ti-on.clear{color:var(--ink)}
+.ti-on.clear .ti-on-h>.ic{color:var(--ok)}
